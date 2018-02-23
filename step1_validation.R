@@ -67,6 +67,7 @@ names.ls <- purrr::map(cut1.dat, function(x) {
     paste(study.extract, y, sep = ".")
   })
 }) %>% purrr::flatten() %>% as.character()
+
 eval.c2 <- purrr::pmap(list(
   pred.c2, cut2, cut2.dat, cut1.dat
 ), function(x, y, a, b) {
@@ -79,12 +80,16 @@ eval.c2 <- purrr::pmap(list(
 readr::write_rds(eval.c2, "outputs/evals/cut2_eval.rds")
 
 # visualize evaluation results
-plot.c2.noThreshold <- plot_evals("outputs/evals/cut2_eval.rds", 
-                                  plot.title = "Cut 2 Validation - No Threshold", 
-                                  save = TRUE, print = FALSE, threshold = FALSE, 
-                                  algs = c("mlr_ridge", "mlr_lasso"))
+plot.c2.noThreshold <- plot_evals(
+  "outputs/evals/cut2_eval.rds", 
+  plot.title = "Cut 2 Validation - No Threshold", 
+  save = TRUE, print = FALSE, threshold = FALSE, 
+  algs = c("mlr_ridge", "mlr_lasso")
+  )
 
-plot.c2.threshold <- plot_evals("outputs/evals/cut2_eval.rds", 
-                                plot.title = "Cut 2 Validation - Threshold", 
-                                save = TRUE, print = FALSE, threshold = TRUE, 
-                                algs = c("adaboost", "rf"))
+plot.c2.threshold <- plot_evals(
+  "outputs/evals/cut2_eval.rds", 
+  plot.title = "Cut 2 Validation - Threshold", 
+  save = TRUE, print = FALSE, threshold = TRUE, 
+  algs = c("adaboost", "rf")
+  )
