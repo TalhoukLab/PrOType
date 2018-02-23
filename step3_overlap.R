@@ -88,12 +88,7 @@ eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
   pname <- paste0("outputs/evals/", y, ".rds")
   ptitle <- stringr::str_split(y, "_") %>% 
     purrr::map(., ~paste(.[1], .[2], .[3], sep = " "))
-  p.ls <- list(
-    noThreshold = plot_evals_noCBT(pname, plot.title = paste0(ptitle, " - No Threshold"), 
-                                            save = TRUE, print = FALSE, threshold = FALSE),
-    threshold = plot_evals_noCBT(pname, plot.title = paste0(ptitle, " - Threshold"), 
-                                    save = TRUE, print = FALSE, threshold = TRUE)
-  )
+  p.ls <- plot_evals_noCBT(pname, plot.title = paste0(ptitle), save = TRUE, print = FALSE)
   return(p.ls)
 })
 

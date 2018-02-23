@@ -203,7 +203,7 @@ plot_evals <- function(eval.dir, plot.title, algs = c("mlr_ridge", "mlr_lasso"),
 }
 
 plot_evals_noCBT <- function(eval.dir1, plot.title, algs = c("mlr_ridge", "mlr_lasso", "adaboost", "rf"), 
-                             threshold = TRUE, print = TRUE, save = TRUE, col.cust = NULL, 
+                             print = TRUE, save = TRUE, col.cust = NULL, 
                              y.lim.class = c(0.1, 1), y.lim.all = c(0.25, 1))
 #********************************************************************
 # Plot evaluation measures by class and overall.
@@ -321,12 +321,12 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title, algs = c("mlr_ri
   if(!threshold)
   {
     # import IV results
-    sup.iv.xpn <- readr::read_rds("data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds")
-    sup.iv.cbt <- readr::read_rds("data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds")
+    sup.iv.xpn <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds"))
+    sup.iv.cbt <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds"))
   } else {
     # import IV results
-    sup.iv.xpn <- readr::read_rds("data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-    sup.iv.cbt <- readr::read_rds("data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+    sup.iv.xpn <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds"))
+    sup.iv.cbt <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds"))
   }
   
   # create mapping tables for xpn & cbt
@@ -438,12 +438,12 @@ top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title, print = TRUE
   if(!threshold)
   {
     # import IV results
-    sup.iv.xpn <- readr::read_rds("data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds")
-    sup.iv.cbt <- readr::read_rds("data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds")
+    sup.iv.xpn <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds"))
+    sup.iv.cbt <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds"))
   } else {
     # import IV results
-    sup.iv.xpn <- readr::read_rds("data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-    sup.iv.cbt <- readr::read_rds("data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+    sup.iv.xpn <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds"))
+    sup.iv.cbt <- readr::read_rds(paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds"))
   }
   
   # create mapping tables for xpn & cbt
