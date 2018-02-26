@@ -4,6 +4,7 @@
 
 suppressPackageStartupMessages({
   source("Rscripts/validation_plots.R")
+  require(ggplot2)
   require(tidyverse)
   require(splendid) # This is a github Package
   require(caret)
