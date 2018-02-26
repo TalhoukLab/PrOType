@@ -1,6 +1,6 @@
 # HGSC Classification Pipeline Instructions
 
-This documentation will guide you through the process to run the Nanostring pipeline.
+This documentation will guide you through the process to run the HGSC Classification pipeline.
 
 Each step below belongs to its self-contained directory, which includes all scripts
 and dependencies required for that particular step. Within each self-contained 
