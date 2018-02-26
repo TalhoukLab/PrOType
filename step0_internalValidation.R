@@ -5,11 +5,9 @@
 suppressPackageStartupMessages({
   source("Rscripts/validation_plots.R")
   require(tidyverse)
-  require(splendid)
+  require(splendid) # This is a github Package
   require(caret)
 })
-
-set.seed(2017)
 
 
 # top algos overall NO threshold
@@ -79,3 +77,4 @@ ggsave(
   filename = "outputs/plots/top2_algorithms_threshold.png", 
   width = 16, height = 9
   )
+
