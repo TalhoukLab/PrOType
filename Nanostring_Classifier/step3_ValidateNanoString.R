@@ -1,50 +1,53 @@
 ###############################################################
-############# STEP 3: Overlap Validation (Cut 3) ##############
+################# STEP 3: Validate Nanostring #################
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("Rscripts/NanostringEvals.R")
+  source("utils/ValidateNanoString.R")
+  source("utils/validation_plots.R")
   require(tidyverse)
   require(splendid)
   require(caret)
 })
 
+set.seed(2017)
+
+
+
 # import cut 1 fits
 fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
 
-# consider overlapping cases
-mapping <- get_mapping() 
+# import overlapping data
+map <- get_mapping() 
+overlap.nstring <- get_nstring_overlap(map = map)
 
-# import validation array data
-array <- import_array(mapping = mapping)
-
-# predict overlap array
-pred.overlap.array <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
+# predict overlap nstring
+pred.overlap.nstring <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
   purrr::map2(x, names(x), function(z, k) {
     # use commented lines to print results to file
     #bc <- stringr::str_sub(y, nchar(y) - 2, nchar(y))
-    #fname <- paste0("outputs/predictions/array_", bc, "_", k, ".rds")
+    #fname <- paste0("outputs/predictions/nstring_overlap_", bc, "_", k, ".rds")
     #preds <- predict_overlap(z, nstring.batches)
     #readr::write_rds(preds, path = fname)
     #return(preds)
-    predict_overlap(z, overlap.array)
+    predict_overlap(z, overlap.nstring)
   })
-}) %>% purrr::modify_depth(., 2, function(x) {
-  get_overlap(overlap.array, x, map)
+}) 
+
+# import evals from validation step
+pred.overlap.array <- readr::read_rds("outputs/predictions/pred_overlap_array.rds")
+
+
+# combine overlapping array and nstring
+overlap <- purrr::map2(pred.overlap.array, pred.overlap.nstring, function(x, y) {
+  purrr::map2(x, y, function(z, k) {
+    combine(z, overlap.nstring, k)
+  })
 })
-
-preds <- predict(fit.c1$ridge_xpn,newdata = array$all.array, type="class")
-
-caret::confusionMatrix(preds,factor(mapping$overall$published))
-
- predict(fit.c1$adaboost_xpn,newdata = array$aocs.array, type="class") %>% 
-   list(caret::confusionMatrix(factor(mapping$aocs$published), .),
-        splendid::evaluation(factor(mapping$overall$published),.))
-
 
 # evaluate overlap results
 eval.overlap <- purrr::modify_depth(overlap, 2, function(x) {
-  evaluate_results(x)
+  evaluate_all(x)
 }) %>% purrr::map(., function(x) {
   purrr::transpose(x)
 }) %>% purrr::transpose(.)
@@ -76,8 +79,6 @@ eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
   p.ls <- plot_evals_noCBT(
     pname, plot.title = paste0(ptitle), 
     save = TRUE, print = FALSE
-    )
+  )
   return(p.ls)
 })
-
-

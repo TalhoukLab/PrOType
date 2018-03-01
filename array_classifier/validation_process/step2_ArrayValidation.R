@@ -1,10 +1,10 @@
 ###############################################################
-############# STEP 3: Overlap Validation (Cut 3) ##############
+################## STEP 2: Array Validation ##################
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("Rscripts/validation_plots.R")
-  source("Rscripts/overlap_cut3.R")
+  source("utils/ArrayValidation.R")
+  source("utils/validation_plots.R")
   require(tidyverse)
   require(splendid)
   require(caret)
@@ -20,7 +20,6 @@ fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
 # import overlapping data
 map <- get_mapping() %>% filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
 overlap.array <- import_array(map = map)
-overlap.nstring <- get_nstring_overlap(map = map)
 
 # predict overlap array
 pred.overlap.array <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
@@ -36,30 +35,11 @@ pred.overlap.array <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
 }) %>% purrr::modify_depth(., 2, function(x) {
   get_overlap(overlap.array, x, map)
 })
-
-# predict overlap nstring
-pred.overlap.nstring <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
-  purrr::map2(x, names(x), function(z, k) {
-    # use commented lines to print results to file
-    #bc <- stringr::str_sub(y, nchar(y) - 2, nchar(y))
-    #fname <- paste0("outputs/predictions/nstring_overlap_", bc, "_", k, ".rds")
-    #preds <- predict_overlap(z, nstring.batches)
-    #readr::write_rds(preds, path = fname)
-    #return(preds)
-    predict_overlap(z, overlap.nstring)
-  })
-}) 
-
-# combine overlapping array and nstring
-overlap <- purrr::map2(pred.overlap.array, pred.overlap.nstring, function(x, y) {
-  purrr::map2(x, y, function(z, k) {
-    combine(z, overlap.nstring, k)
-  })
-})
+readr::write_rds(pred.overlap.array, "outputs/predictions/pred_overlap_array.rds")
 
 # evaluate overlap results
-eval.overlap <- purrr::modify_depth(overlap, 2, function(x) {
-  evaluate_results(x)
+eval.overlap <- purrr::modify_depth(pred.overlap.array, 2, function(x) {
+  evaluate_array(x)
 }) %>% purrr::map(., function(x) {
   purrr::transpose(x)
 }) %>% purrr::transpose(.)
@@ -91,7 +71,7 @@ eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
   p.ls <- plot_evals_noCBT(
     pname, plot.title = paste0(ptitle), 
     save = TRUE, print = FALSE
-    )
+  )
   return(p.ls)
 })
 

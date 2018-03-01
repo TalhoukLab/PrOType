@@ -3,7 +3,7 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("Rscripts/nanostring.R")
+  source("utils/PredictNanoString.R")
   require(tidyverse)
   require(splendid)
   require(caret)
@@ -15,7 +15,7 @@ set.seed(2017)
 
 # import nanostring
 train.dat <- prep_data("ov.afc1_xpn", dir = "data/")
-nstring.batches <- load_nanostring("nanostring/", train.dat$npcp[,-1])
+nstring.batches <- load_nanostring("data/", train.dat$npcp[,-1])
 
 # import cut 1 fits
 fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")

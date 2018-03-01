@@ -4,15 +4,15 @@
 # load dependencies
 suppressPackageStartupMessages({
   require(tidyverse)
-  source("Rscripts/utils.R")
+  source("utils/build_mapping.R")
 })
 
 # Functions ----
 
 prep_data <- function(dataSet, dir = "./")
-#********************************************************************
-# Prepare data for cross-platform to Nanostring
-#********************************************************************
+  #********************************************************************
+  # Prepare data for cross-platform to Nanostring
+  #********************************************************************
 {
   # build mapping table
   map <- build_mapping(dataSet)
@@ -56,9 +56,9 @@ prep_data <- function(dataSet, dir = "./")
 }
 
 load_nanostring <- function(dir, npcp)
-#********************************************************************
-# Load Nanostring data - all batches, aocs & tcga
-#********************************************************************
+  #********************************************************************
+  # Load Nanostring data - all batches, aocs & tcga
+  #********************************************************************
 {
   # import batch 1 nanostring
   b1 <- read.csv(paste0(dir,"nanostring_classifier_data_batch1_20170217_updated.csv")) %>%
@@ -83,7 +83,7 @@ load_nanostring <- function(dir, npcp)
     magrittr::extract(colnames(npcp)) %>% 
     data.frame(.)
   data.table::setattr(b3.hk, 'ottaID', b3$OTTA.ID)
-
+  
   # import batch 4 nanostring
   b4 <- read.csv(paste0(dir,"nanostring_classifier_data_batch4_20170512.csv"), header = TRUE, stringsAsFactors = FALSE) %>%
     data.table::setattr(., 'batch', "b4") 
@@ -91,7 +91,7 @@ load_nanostring <- function(dir, npcp)
     magrittr::extract(colnames(npcp)) %>% 
     data.frame(.)
   data.table::setattr(b4.hk, 'ottaID', b4$OTTA.ID)
-
+  
   # combine into list
   test.dat <- list(
     b1 = b1,
@@ -117,13 +117,13 @@ load_nanostring <- function(dir, npcp)
 }
 
 train <- function(x.processed, alg)
-#********************************************************************
-# Train model on prepared data
-#   x.process: data.frame with genes as columns and rownames as
-#              sampleIDs
-#   alg: algorithm to fit to x.processed. See splendid for eligible
-#        models.
-#********************************************************************
+  #********************************************************************
+  # Train model on prepared data
+  #   x.process: data.frame with genes as columns and rownames as
+  #              sampleIDs
+  #   alg: algorithm to fit to x.processed. See splendid for eligible
+  #        models.
+  #********************************************************************
 {
   x <- x.processed[,-1]
   lab <- x.processed[,1]
@@ -132,11 +132,11 @@ train <- function(x.processed, alg)
 }
 
 predict_nstring <- function(fit, nstring)
-#********************************************************************
-# Predict fit on nanostring data
-#   fit: model fit returned from train()
-#   nstring: nanostring data on which to predict
-#********************************************************************
+  #********************************************************************
+  # Predict fit on nanostring data
+  #   fit: model fit returned from train()
+  #   nstring: nanostring data on which to predict
+  #********************************************************************
 {
   pred <- splendid::prediction(mod = fit, data = nstring, class = rep(NA, nrow(nstring)), threshold = 0) %>%
     data.table::setattr(., name = "ottaID", value = rownames(nstring)) %>%
