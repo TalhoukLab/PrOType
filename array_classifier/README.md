@@ -9,9 +9,12 @@ executing the particular job.
 
 The pipeline is to be run in a cluster environment with qsub.
 
+
+## Cluster Pipeline
+
 ---
 
-## 1. Unsupervised Analysis
+### 1. Unsupervised Analysis
 
 The unsupervised analysis performs consensus clustering to obtain the diceR labels 
 in a distributed, cluster environment. The steps to execute this pipeline are as
@@ -43,7 +46,7 @@ follows:
 
 ---
 
-## 2. Gene Mapping
+### 2. Gene Mapping
 
 This step will map the genes of your data to Nanostring in preparation for cross-platform
 analysis. The mapping identifies and selects those genes that intersect between both
@@ -68,7 +71,7 @@ platforms. To run gene mapping, follow the steps below:
 
 ---
 
-## 3. Supervised Analysis
+### 3. Supervised Analysis
 
 The supervised analysis performs an ensemble classification scheme which performs a specified
 number of bootstrap sampled fits for a selection of classification algorithms. Bootstrapping
@@ -101,7 +104,7 @@ to run the supervised analysis are as follows:
   
 ---
 
-## 3.5. Internal Validation Summary
+### 4. Internal Validation Summary
 
 Internal validation will return a summary of the results for the supervised learning analysis
 conducted previously. These will include a ranking of the algorithms and the bootstrap 
@@ -127,3 +130,11 @@ confidence intervals for various metrics. The follow the steps below to return t
 6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`. 
 
 
+---
+
+---
+
+
+## Post Processing
+
+TBD
