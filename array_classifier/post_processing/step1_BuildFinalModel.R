@@ -27,7 +27,6 @@ fit.c1 <- purrr::map2(cut1, cut1.dat, function(x, y) {
     #fit <- train(x, alg = z);
     #readr::write_rds(fit, path = paste0("outputs/fits/", y, "_", z, ".rds"));
     #return(fit)
-    .GlobalEnv$.Random.seed <- seed
     train(x, alg = z);
   }) %>% purrr::set_names(algos)
 }) %>% purrr::set_names(cut1.dat)

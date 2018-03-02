@@ -66,6 +66,10 @@ train <- function(x.processed, alg)
   #   alg: algorithm of interest (see splendid docs for further details)
   #********************************************************************
 {
+  if (exists(".Random.seed", .GlobalEnv))
+    .GlobalEnv$.Random.seed <- seed
+  print(runif(3)) # make sure seed is working
+  
   x <- x.processed[,-1]
   lab <- x.processed[,1]
   fit <- splendid::classification(data = x, class = lab, algorithms = alg, standardize = FALSE)
