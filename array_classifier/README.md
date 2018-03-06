@@ -54,7 +54,7 @@ follows:
     4. `make merge`
     5. `make ConFun`
     6. `make FinalClust`
-6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`.
+6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`, where `nameOfStudy` is of course, the name of the study.
 
 ---
 
