@@ -151,11 +151,13 @@ Internal validation will return a summary of the results for the supervised lear
 * `utils`: utility/helper functions required for the analysis
 * `data`: data provided to you with the name `data` should replace this directory, which contains all necessary data dependencies for the post processing.
 
+---
 
-### Transferring `1_cluster_pipeline` results to `2_post_processing`
+#### Transferring `1_cluster_pipeline` results to `2_post_processing`
 
 The `data` folder provided to you should contain all necessary data dependencies to run the post processing. If you are interested in examining the results returned after running the pipeline yourself, you must transfer the `data_pr_studyname`, where studyname is the name of the study, from the outputs of the pipeline and replace those corresponding directories (with the same name) located in the data folder. The `data_pr_studyname` contains all necessary outputs required for post-processing.
 
+---
 
 The following should be run in sequential order:
 
