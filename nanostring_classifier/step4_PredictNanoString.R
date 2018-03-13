@@ -18,7 +18,7 @@ Van_mod <- readr::read_rds("./outputs/fits/ov.afc1_xpn_adaboost.rds")
 genes <- Van_mod$names
 
 # load nanostring data
-nsdat <- load_nanostring("./data/nanostring/",genes)
+nsdat <- load_nanostring("./data/",genes)
 
 # predict nanostring data
 pred.nano <- predict(Van_mod,nsdat,type = "class") %>% 
