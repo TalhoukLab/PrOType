@@ -55,11 +55,15 @@ prep_data <- function(dataSet, dir = "./")
   ))
 }
 
-load_nanostring <- function(dir, npcp)
+load_nanostring <- function(dir, genes)
   #********************************************************************
   # Load Nanostring data - all batches, aocs & tcga
   #********************************************************************
 {
+  # format gene data for extraction from nstring
+  npcp <- data.frame(t(genes))
+  colnames(npcp) <- genes
+
   # import batch 1 nanostring
   b1 <- read.csv(paste0(dir,"nanostring_classifier_data_batch1_20170217_updated.csv")) %>%
     data.table::setattr(., 'batch', "b1")
