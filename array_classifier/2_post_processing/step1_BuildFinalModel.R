@@ -23,11 +23,11 @@ cut1 <- purrr::map(cut1.dat, function(x) {
 algos <- c("mlr_ridge", "mlr_lasso", "adaboost", "rf")
 fit.c1 <- purrr::map2(cut1, cut1.dat, function(x, y) {
   purrr::map(algos, function(z) {
-    #uncomment below to write to file
-    #fit <- train(x, alg = z);
-    #readr::write_rds(fit, path = paste0("outputs/fits/", y, "_", z, ".rds"));
-    #return(fit)
-    train(x, alg = z);
+    #comment below to ignore individual fits
+    fit <- train(x, alg = z);
+    readr::write_rds(fit, path = paste0("outputs/fits/", y, "_", z, ".rds"));
+    return(fit)
+    #train(x, alg = z);
   }) %>% purrr::set_names(algos)
 }) %>% purrr::set_names(cut1.dat)
 readr::write_rds(fit.c1, "outputs/fits/all_fits.rds")
