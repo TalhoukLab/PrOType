@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 
 # Functions ----
 
-get_mapping <- function(dir = "data/")
+get_mapping <- function(dir = "data/nanostring/")
   #********************************************************************
   # Import overlapping samples from TCGA and GSE and combine. Table
   # also includes published labels.

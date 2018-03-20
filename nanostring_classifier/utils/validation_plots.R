@@ -4,7 +4,7 @@
 # load dependencies
 suppressPackageStartupMessages({
   require(tidyverse)
-  source("utils/build_mapping.R")
+  source("nanostring_classifier/utils/build_mapping.R")
 })
 
 

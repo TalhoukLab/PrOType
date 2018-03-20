@@ -4,7 +4,7 @@
 # load dependencies
 suppressPackageStartupMessages({
   require(tidyverse)
-  source("utils/build_mapping.R")
+  source("array_classifier/2_post_processing/utils/build_mapping.R")
 })
 
 

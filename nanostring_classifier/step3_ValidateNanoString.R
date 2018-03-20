@@ -3,8 +3,8 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("utils/ValidateNanoString.R")
-  source("utils/validation_plots.R")
+  source("nanostring_classifier/utils/ValidateNanoString.R")
+  source("nanostring_classifier/utils/validation_plots.R")
   require(tidyverse)
   require(splendid)
   require(caret)
