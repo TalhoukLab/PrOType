@@ -10,7 +10,7 @@ suppressPackageStartupMessages({
 
 # Functions ----
 
-get_mapping <- function(dir = "data/")
+get_mapping <- function(dir = "array_classifier/2_post_processing/data/nanostring/")
   #********************************************************************
   # Import overlapping samples from TCGA and GSE and combine. Table
   # also includes published labels.
@@ -31,7 +31,7 @@ get_mapping <- function(dir = "data/")
   return(map)
 }
 
-import_array <- function(dir = "data/", map)
+import_array <- function(dir = "array_classifier/2_post_processing/data/", map)
   #********************************************************************
   # Import array data of overlapped samples and select those that
   # match the mapping table returned from get_mapping()

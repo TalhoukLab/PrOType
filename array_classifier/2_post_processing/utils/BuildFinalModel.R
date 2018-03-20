@@ -59,7 +59,7 @@ select_top_algos <- function(dir, study, n_top = 1)
   return(top_algs)
 }
 
-train <- function(x.processed, alg)
+train_final <- function(x.processed, alg)
   #********************************************************************
   # train a given algorithm on a given training set
   #   x.processed: training set

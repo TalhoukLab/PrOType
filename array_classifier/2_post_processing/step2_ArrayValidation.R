@@ -3,8 +3,8 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("utils/ArrayValidation.R")
-  source("utils/validation_plots.R")
+  source("array_classifier/2_post_processing/utils/ArrayValidation.R")
+  source("array_classifier/2_post_processing/utils/validation_plots.R")
   require(tidyverse)
   require(splendid)
   require(caret)
@@ -15,7 +15,7 @@ set.seed(2017)
 
 
 # import cut 1 fits
-fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
+fit.c1 <- readr::read_rds("array_classifier/2_post_processing/outputs/fits/all_fits.rds")
 
 # import overlapping data
 map <- get_mapping() %>% filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
