@@ -83,6 +83,6 @@ touch $Rname
 echo 'fdir <- "'$outputDir'"' > $Rname
 echo 'ndat <- c("'$data_sets'")' >> $Rname
 echo 'mname <- "'$fname'"' >> $Rname
-echo 'source("'$workDir'3.5_IVSummary/train_eval.R")' >> $Rname
+echo 'source("'$workDir'4_IVSummary/train_eval.R")' >> $Rname
 
 Rscript $Rname

@@ -61,6 +61,6 @@ echo 'outDir <- "'$outputDir'"' > $Rname
 echo 'inDir <- "'$inputDir'"' >> $Rname
 echo 'fdat <- c("'$data_sets'")' >> $Rname
 echo 'top <- 3' >> $Rname
-echo 'source("'$workDir'3.5_IVSummary/CIsupLearn.R")' >> $Rname
+echo 'source("'$workDir'4_IVSummary/CIsupLearn.R")' >> $Rname
 
 Rscript $Rname

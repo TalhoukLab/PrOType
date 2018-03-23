@@ -60,7 +60,7 @@ for i in $dataSet; do
 	touch $Rname
 	echo 'fdir <- "'$inputDir$i'"' > $Rname
 	echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds"' >> $Rname
-	echo 'source("'$workDir'3.5_IVSummary/ivSummary.R")' >> $Rname
+	echo 'source("'$workDir'4_IVSummary/ivSummary.R")' >> $Rname
 
 	touch $shname
 	echo '#!/bin/bash' > $shname
@@ -125,5 +125,5 @@ done
 
 # combine all iv tables
 export PATH=$RPath:$PATH
-Rscript $workDir'3.5_IVSummary/ivCombine.R' $ivSummary
+Rscript $workDir'4_IVSummary/ivCombine.R' $ivSummary
 
