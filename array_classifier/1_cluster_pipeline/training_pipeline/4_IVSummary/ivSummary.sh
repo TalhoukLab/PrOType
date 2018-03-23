@@ -1,6 +1,6 @@
 #!/bin/sh
 
-. 3.5_IVSummary/Parameters.sh
+. 4_IVSummary/Parameters.sh
 
 ## specify the working directory
 #if [ "$user" = "" ]

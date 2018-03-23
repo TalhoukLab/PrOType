@@ -41,15 +41,15 @@ SLreduce:
 
 # return internal validation summary
 trainEval:
-	./3.5_IVSummary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./4_IVSummary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 supLearn:
-	./3.5_IVSummary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+	./4_IVSummary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 IVsummary:
-	./3.5_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./4_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 %:
 		@:
