@@ -115,7 +115,7 @@ The supervised analysis performs an ensemble classification scheme which perform
 
 Internal validation will return a summary of the results for the supervised learning analysis conducted previously. These will include a ranking of the algorithms and the bootstrap confidence intervals for various metrics. The follow the steps below to return the IV summary:
 
-1. `cd` into the `3_Supervised` directory from the main working directory.
+1. `cd` into the `4_IVSummary` directory from the main working directory.
 2. Open `Parameters.sh` with your favourite text editor.
 3. Specify the paramters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line of the server if you are uncertain.
