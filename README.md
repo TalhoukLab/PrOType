@@ -4,7 +4,7 @@ Molecular Classification of Ovarian Cancer
 
 This is a repository of all the necessary scripts to run the Vancouver analysis of the molecular subtypes of High Grade Serous Ovarian Carcinoma. 
 
-![Caption for the picture.](studyDesign.png)
+![Caption for the picture.](assets/studyDesign.png)
 
 In order to successfully run the scripts on this repository, a directory named data should be created and should contain the needed data.
 
