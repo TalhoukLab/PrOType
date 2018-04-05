@@ -3,31 +3,91 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("array_classifier/2_post_processing/utils/BuildFinalModel.R")
-  source("array_classifier/2_post_processing/utils/build_mapping.R")
+  source("utils/utils.R")
   require(tidyverse)
   require(splendid)
   require(caret)
 })
 
-seed<- readRDS("array_classifier/2_post_processing/data/seed.rds")
-
 # import training data
-train.dat.names <- c("ov.afc1_xpn", "ov.afc1_cbt")
-traindat <- purrr::map(train.dat.names, function(x) {
-  import_study("array_classifier/2_post_processing/data/", study = x) 
-}) %>% set_names(cut1.dat)
+xpn.dat <- import_study("data/", "ov.afc1_xpn")
+cbt.dat <- import_study("data/", "ov.afc1_cbt")
 
+# fit algo
+seed<- readRDS("data/seed.rds")
 
-# fit algos to cut 1
-algos <- c("mlr_ridge", "mlr_lasso", "adaboost", "rf")
-fit.c1 <- purrr::map2(traindat, train.dat.names, function(x, y) {
-  purrr::map(algos, function(z) {
-    #comment below to ignore individual fits
-    fit <- train_final(x, alg = z);
-    readr::write_rds(fit, path = paste0("array_classifier/2_post_processing/outputs/fits/", y, "_", z, ".rds"));
-    return(fit)
-  }) %>% purrr::set_names(algos)
-}) %>% purrr::set_names(cut1.dat)
+.Random.seed <- seed
+fit.xpn.adaboost <- train_final(xpn.dat, alg = "adaboost")
+readr::write_rds(
+  fit.xpn.adaboost, 
+  paste0("outputs/fits/ov.afc1_xpn_adaboost.rds")
+  )
 
-readr::write_rds(fit.c1, "array_classifier/2_post_processing/outputs/fits/all_fits.rds")
+.Random.seed <- seed
+fit.xpn.rf <- train_final(xpn.dat, alg = "rf")
+readr::write_rds(
+  fit.xpn.rf, 
+  paste0("outputs/fits/ov.afc1_xpn_rf.rds")
+  )
+
+.Random.seed <- seed
+fit.xpn.mlr_ridge <- train_final(xpn.dat, alg = "mlr_ridge")
+readr::write_rds(
+  fit.xpn.mlr_ridge, 
+  paste0("outputs/fits/ov.afc1_xpn_mlr_ridge.rds")
+  )
+
+.Random.seed <- seed
+fit.xpn.mlr_lasso <- train_final(xpn.dat, alg = "mlr_lasso")
+readr::write_rds(
+  fit.xpn.mlr_lasso, 
+  paste0("outputs/fits/ov.afc1_xpn_mlr_lasso.rds")
+  )
+
+.Random.seed <- seed
+fit.cbt.adaboost <- train_final(cbt.dat, alg = "adaboost")
+readr::write_rds(
+  fit.cbt.adaboost, 
+  paste0("outputs/fits/ov.afc1_cbt_adaboost.rds")
+  )
+
+.Random.seed <- seed
+fit.cbt.rf <- train_final(cbt.dat, alg = "rf")
+readr::write_rds(
+  fit.cbt.rf, 
+  paste0("outputs/fits/ov.afc1_cbt_rf.rds")
+  )
+
+.Random.seed <- seed
+fit.cbt.mlr_ridge <- train_final(cbt.dat, alg = "mlr_ridge")
+readr::write_rds(
+  fit.cbt.mlr_ridge, 
+  paste0("outputs/fits/ov.afc1_cbt_mlr_ridge.rds")
+  )
+
+.Random.seed <- seed
+fit.cbt.mlr_lasso <- train_final(cbt.dat, alg = "mlr_lasso")
+readr::write_rds(
+  fit.cbt.mlr_lasso, 
+  paste0("outputs/fits/ov.afc1_cbt_mlr_lasso.rds")
+  )
+
+# build list of all fits
+be <- c("ov.afc1_xpn", "ov.afc1_cbt")
+algs <- c("adaboost", "rf", "mlr_ridge", "mlr_lasso")
+fit.c1 <- list()
+alg.list <- list()
+for(i in 1:length(be))
+{
+  for(j in 1:length(algs))
+  {
+    fit.tmp <- readr::read_rds(
+      paste0("outputs/fits/", be[i], "_", algs[j], ".rds")
+    )
+    alg.list[[j]] <- fit.tmp
+  }
+  names(alg.list) <- algs
+  fit.c1[[i]] <- alg.list
+}
+names(fit.c1) <- be
+readr::write_rds(fit.c1, "outputs/fits/all_fits.rds")

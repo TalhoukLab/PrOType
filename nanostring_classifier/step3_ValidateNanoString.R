@@ -3,8 +3,7 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("nanostring_classifier/utils/ValidateNanoString.R")
-  source("nanostring_classifier/utils/validation_plots.R")
+  source("utils/utils.R")
   require(tidyverse)
   require(splendid)
   require(caret)
@@ -13,72 +12,36 @@ suppressPackageStartupMessages({
 set.seed(2017)
 
 
-
 # import cut 1 fits
-fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
+fit.c1 <- readr::read_rds("outputs/fits/ov.afc1_cbt_adaboost.rds")
 
 # import overlapping data
 map <- get_mapping() 
 overlap.nstring <- get_nstring_overlap(map = map)
 
 # predict overlap nstring
-pred.overlap.nstring <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
-  purrr::map2(x, names(x), function(z, k) {
-    # use commented lines to print results to file
-    #bc <- stringr::str_sub(y, nchar(y) - 2, nchar(y))
-    #fname <- paste0("outputs/predictions/nstring_overlap_", bc, "_", k, ".rds")
-    #preds <- predict_overlap(z, nstring.batches)
-    #readr::write_rds(preds, path = fname)
-    #return(preds)
-    predict_overlap(z, overlap.nstring)
-  })
-}) 
+pred.overlap.nstring <- predict_overlap(fit.c1, overlap.nstring)
 
-# import evals from validation step
-pred.overlap.array <- readr::read_rds("outputs/predictions/pred_overlap_array.rds")
-
+# import adaboost predictions from validation step
+pred.overlap.array <- readr::read_rds(
+  "outputs/predictions/pred_overlap_array.rds"
+  )$ov.afc1_xpn$adaboost
 
 # combine overlapping array and nstring
-overlap <- purrr::map2(pred.overlap.array, pred.overlap.nstring, function(x, y) {
-  purrr::map2(x, y, function(z, k) {
-    combine(z, overlap.nstring, k)
-  })
-})
+overlap <- combine(pred.overlap.array, overlap.nstring, pred.overlap.nstring)
 
 # evaluate overlap results
-eval.overlap <- purrr::modify_depth(overlap, 2, function(x) {
-  evaluate_all(x)
-}) %>% purrr::map(., function(x) {
-  purrr::transpose(x)
-}) %>% purrr::transpose(.)
-
-
-names.ls <- purrr::map(eval.overlap, function(x) {
-  sname <- names(x)
-  purrr::map2(x, sname, function(y, z) {
-    study.extract <- stringr::str_sub(z, nchar(z) - 2, nchar(z))
-    aname <- names(y)
-    paste(study.extract, aname, sep = ".")
-  }) %>% purrr::flatten()
-})
-
-evals.all <- purrr::pmap(list(
-  eval.overlap, names.ls, names(eval.overlap)
-), function(x, y, z) {
-  named <- purrr::flatten(x) %>% purrr::set_names(y)
-  readr::write_rds(named, paste0("outputs/evals/", z, ".rds"))
-  return(named)
-})
-
+eval.overlap <- evaluate_all(overlap) %>%
+  purrr::transpose(.)
+readr::write_rds(
+  eval.overlap,
+  paste0("outputs/evals/ov.afc1_xpn_adaboost.rds")
+)
 
 # visualize evaluation results
-eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
-  pname <- paste0("outputs/evals/", y, ".rds")
-  ptitle <- stringr::str_split(y, "_") %>% 
-    purrr::map(., ~paste(.[1], .[2], .[3], sep = " "))
-  p.ls <- plot_evals_noCBT(
-    pname, plot.title = paste0(ptitle), 
-    save = TRUE, print = FALSE
-  )
-  return(p.ls)
-})
+#eval.plot <- plot_evals_noCBT(
+#  paste0("outputs/evals/xpn_adaboost.rds"),
+#  plot.title = "XPN Adaboost",
+#  save = TRUE, print = FALSE,
+#  alg = "adaboost"
+#)

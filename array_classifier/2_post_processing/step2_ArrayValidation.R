@@ -3,19 +3,17 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("array_classifier/2_post_processing/utils/ArrayValidation.R")
-  source("array_classifier/2_post_processing/utils/validation_plots.R")
+  source("utils/utils.R")
   require(tidyverse)
   require(splendid)
   require(caret)
+  require(glmnet)
 })
 
 set.seed(2017)
 
-
-
 # import cut 1 fits
-fit.c1 <- readr::read_rds("array_classifier/2_post_processing/outputs/fits/all_fits.rds")
+fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
 
 # import overlapping data
 map <- get_mapping() %>% filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
@@ -24,13 +22,12 @@ overlap.array <- import_array(map = map)
 # predict overlap array
 pred.overlap.array <- purrr::map2(fit.c1, names(fit.c1), function(x, y) {
   purrr::map2(x, names(x), function(z, k) {
-    # use commented lines to print results to file
-    #bc <- stringr::str_sub(y, nchar(y) - 2, nchar(y))
-    #fname <- paste0("outputs/predictions/array_", bc, "_", k, ".rds")
-    #preds <- predict_overlap(z, nstring.batches)
-    #readr::write_rds(preds, path = fname)
-    #return(preds)
-    predict_overlap(z, overlap.array)
+    bc <- stringr::str_sub(y, nchar(y) - 2, nchar(y))
+    fname <- paste0("outputs/predictions/array_", bc, "_", k, ".rds")
+    preds <- predict_overlap(z, overlap.array)
+    readr::write_rds(preds, path = fname)
+    return(preds)
+    #predict_overlap(z, overlap.array)
   })
 }) %>% purrr::modify_depth(., 2, function(x) {
   get_overlap(overlap.array, x, map)
@@ -44,7 +41,7 @@ eval.overlap <- purrr::modify_depth(pred.overlap.array, 2, function(x) {
   purrr::transpose(x)
 }) %>% purrr::transpose(.)
 
-
+# create naming list structure
 names.ls <- purrr::map(eval.overlap, function(x) {
   sname <- names(x)
   purrr::map2(x, sname, function(y, z) {
@@ -54,6 +51,7 @@ names.ls <- purrr::map(eval.overlap, function(x) {
   }) %>% purrr::flatten()
 })
 
+# name overlapping evaluation results list
 evals.all <- purrr::pmap(list(
   eval.overlap, names.ls, names(eval.overlap)
 ), function(x, y, z) {
@@ -61,7 +59,6 @@ evals.all <- purrr::pmap(list(
   readr::write_rds(named, paste0("outputs/evals/", z, ".rds"))
   return(named)
 })
-
 
 # visualize evaluation results
 eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
@@ -74,5 +71,4 @@ eval.plots <- purrr::map2(evals.all, names(evals.all), function(x, y) {
   )
   return(p.ls)
 })
-
 

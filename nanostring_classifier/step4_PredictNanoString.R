@@ -3,14 +3,13 @@
 ###############################################################
 
 suppressPackageStartupMessages({
-  source("utils/PredictNanoString.R")
+  source("utils/utils.R")
   require(tidyverse)
   require(splendid)
   require(caret)
 })
 
 set.seed(2017)
-
 
 
 # load vancouver model
@@ -21,8 +20,8 @@ genes <- Van_mod$names
 nsdat <- load_nanostring("./data/",genes)
 
 # predict nanostring data
-pred.nano <- predict(Van_mod,nsdat,type = "class") %>% 
-  data_frame(ottaID=rownames(nsdat),preds=.)
+pred.nano <- predict(Van_mod, nsdat, type = "class") %>% 
+  data_frame(ottaID = rownames(nsdat), preds = .)
 
 # Prediction file circulated to check that prediction match
 #preds <- read.csv("/Users/atalhouk/Repositories/NanoString/HGSCS/data/intermediate/predictions.csv", stringsAsFactors = TRUE)
