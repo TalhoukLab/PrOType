@@ -13,7 +13,5 @@
 
 To run the NanoString classifier, the following should be run in sequential order:
 
-1. Open the Rproj `nanostring_classifier.Rproj`
-2. `step3_ValidationNanoString`: The optimal model and batch-correction method are validated on the overlapping samples between Affymetrix and Nanostring.
-3. `step4_PredictNanoString`: The optimal model (adaboost) is used to predict all samples of NanoString.
-4. Close the Rproj
+1. `step3_ValidationNanoString`: The optimal model and batch-correction method are validated on the overlapping samples between Affymetrix and Nanostring.
+2. `step4_PredictNanoString`: The optimal model (adaboost) is used to predict all samples of NanoString.
