@@ -2,21 +2,16 @@
 ################# STEP 3: Validate Nanostring #################
 ###############################################################
 
-suppressPackageStartupMessages({
-  source("utils/utils.R")
-  require(tidyverse)
-  require(splendid)
-  require(caret)
-})
+library(here)
+source(here("nanostring_classifier/utils/utils.R"))
 
 set.seed(2017)
-
 
 # import cut 1 fits
 fit.c1 <- readr::read_rds("outputs/fits/ov.afc1_cbt_adaboost.rds")
 
 # import overlapping data
-map <- get_mapping() 
+map <- get_mapping()
 overlap.nstring <- get_nstring_overlap(map = map)
 
 # predict overlap nstring
@@ -37,11 +32,3 @@ readr::write_rds(
   eval.overlap,
   paste0("outputs/evals/ov.afc1_xpn_adaboost.rds")
 )
-
-# visualize evaluation results
-#eval.plot <- plot_evals_noCBT(
-#  paste0("outputs/evals/xpn_adaboost.rds"),
-#  plot.title = "XPN Adaboost",
-#  save = TRUE, print = FALSE,
-#  alg = "adaboost"
-#)
