@@ -161,9 +161,7 @@ The `data` folder provided to you should contain all necessary data dependencies
 
 The following should be run in sequential order:
 
-1. Open the Rproj file located in `2_post_processing`
-2. `step0_InternalValidation`: The supervised learning ensemble is evaluated through a series of visualizations of top performing algorithms.
-3. `step1_BuildFinalModel.R`: The top models from the previous step and fit to the cut 1 array data and evaluated.
-4. `step2_ArrayValidation.R`: The fitted models are evaluated against "cut 3", which contains the overlap samples. These results are benchmarked against published labels.
-5. Transfer the outputs folder containing all outputs of steps 1 to 3 and the data folder to `PrOType/nanostring_classifier` and navigate to this directory and continue the following steps provided in that README.md. 
-6. Close the Rproj file
+1. `step0_InternalValidation`: The supervised learning ensemble is evaluated through a series of visualizations of top performing algorithms.
+2. `step1_BuildFinalModel.R`: The top models from the previous step and fit to the cut 1 array data and evaluated.
+3. `step2_ArrayValidation.R`: The fitted models are evaluated against "cut 3", which contains the overlap samples. These results are benchmarked against published labels.
+4. Transfer the outputs folder containing all outputs of steps 1 to 3 and the data folder to `PrOType/nanostring_classifier` and navigate to this directory and continue the following steps provided in that `README.md`.

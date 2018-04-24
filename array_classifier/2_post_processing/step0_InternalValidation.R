@@ -2,7 +2,8 @@
 ###### STEP 0: Plot Overall Algorithm Performance - Cut 1 #####
 ###############################################################
 
-source("utils/utils.R")
+library(here)
+source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 # top algos overall NO threshold
 ranked.algo <- top_algo_plot(

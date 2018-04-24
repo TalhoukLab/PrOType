@@ -2,7 +2,8 @@
 ################## STEP 2: Array Validation ##################
 ###############################################################
 
-source("utils/utils.R")
+library(here)
+source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 set.seed(2017)
 

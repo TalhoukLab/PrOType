@@ -2,7 +2,8 @@
 ################ STEP 1: Fit Models on Cut 1 ##################
 ###############################################################
 
-source("utils/utils.R")
+library(here)
+source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 # import training data
 xpn.dat <- import_study("data/", "ov.afc1_xpn")
