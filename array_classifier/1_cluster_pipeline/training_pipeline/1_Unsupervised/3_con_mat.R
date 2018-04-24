@@ -1,4 +1,13 @@
+library(diceR)
 
-# Compute the consensus Matrix
-conmat <-diceR:::consensus_summary(ssclust) 
-saveRDS(conmat,paste0(sfdir,"/con_mat_",ndat,"/CM_",algs,s,"_",ndat,".rds"))
+#' Read in imputed data and create consensus matrices, then save to conmat dir
+pl_conmat <- function() {
+  fs::dir_create("conmat")
+  fs::dir_ls("imputed") %>%
+    purrr::map(readRDS) %>%
+    purrr::map(consensus_combine, element = "matrix") %>%
+    purrr::set_names(gsub("imputed", "conmat", names(.))) %>%
+    purrr::iwalk(saveRDS)
+}
+
+pl_conmat()

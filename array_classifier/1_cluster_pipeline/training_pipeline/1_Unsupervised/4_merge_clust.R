@@ -1,53 +1,27 @@
-# Merge results together to form array
+library(diceR)
 
-# Inputs: dir, reps, algs
-
-library(abind)
-library(dplyr)
-library(magrittr)
-
-multMerge <- function(algs, fnames, newdir){
-#Seperate the algorithms
-algF <- switch (algs,
-	nmfbrunet = unique(grep(c("nmfbrunet"), fnames, value=TRUE)),
-	nmflee = unique(grep(c("nmflee"), fnames, value=TRUE)),
-	distalgs = unique(grep(c("dist"), fnames, value=TRUE)),
-	rest = unique(grep(c("rest"), fnames, value=TRUE))
-)
-
-#Get the seeds
-temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
-Seeds <- as.numeric(purrr::map_chr(temp,`[`,1))
-error <- 0
-
-# Merge the seeds within algorithm when all have completed
-if (!all(c(1:reps)%in%Seeds)){
-	cat (paste(algs,"failed:"))
-	cat(which(!(c(1:reps)%in%Seeds)))
-	error <- 1
+#' `pl_merge_clust` returns a raw merged cluster array, a knn-imputed cluster
+#' array, and a completely imputed (using majority voting) cluster array all
+#' saved to file.
+pl_merge_clust <- function(data, nk = 4) {
+  E <- pl_merge_clust_impl("raw")
+  Eknn <- pl_merge_clust_impl("imputed")
+  Ecomp <- impute_missing(Eknn, data, nk = nk)
+  fs::dir_create("merged")
+  dplyr::lst(E, Eknn, Ecomp) %>%
+    purrr::set_names(paste0("merged/", names(.), ".rds")) %>%
+    purrr::iwalk(saveRDS)
 }
 
-# Merge RDS_out
-lalgo <- lapply(paste0(newdir,algF),readRDS) %>% abind(., along = 2)
-dimnames(lalgo)[[2]] = paste0("R",Seeds)
-return(lalgo)
+pl_merge_clust_impl <- function(path) {
+  out <- fs::dir_ls(path) %>%
+    purrr::map(readRDS) %>%
+    split(purrr::map_chr(purrr::map(., dimnames), 3)) %>%
+    purrr::map(abind::abind, along = 2) %>%
+    abind::abind(along = 3)
+  dimnames(out)[[2]] <- paste0("R", seq_along(dimnames(out)[[2]]))
+  out
 }
 
-#Merge the raw clustering	
-fnames <- gtools::mixedsort(list.files(path = paste0(dir,"/rds_out_",ndat)))
-newdir <- paste0(dir,"/rds_out_",ndat,"/")
-E <- abind(lapply(algs, multMerge, fnames = fnames, newdir=newdir), along = 3)
-saveRDS(E,file = paste0(dir,paste0("/data_pr_",ndat,"/E_",ndat,".rds")))
-
-rm(fnames,E, newdir)
-
-#Merge KNN_imputed clustering
-fnames <- gtools::mixedsort(list.files(path = paste0(dir,"/imputed_clust_",ndat,"/")))
-newdir <- paste0(dir,"/imputed_clust_",ndat,"/")
-E_knn <- abind(lapply(algs, multMerge, fnames = fnames, newdir=newdir), along = 3)
-cdat <- readRDS(paste0(dir,"/data_pr_",ndat,"/cdat_",ndat,".rds"))
-saveRDS(E_knn,file = paste0(dir,"/data_pr_",ndat,"/E_knn_",ndat,".rds"))
-Ecomp <- diceR::impute_missing(E_knn, data=cdat,nk=4)
-saveRDS(Ecomp,file = paste0(dir,"/data_pr_",ndat,"/Ecomp_",ndat,".rds"))
-
-rm(fnames,E_knn, newdir,Ecomp)
+# Constructs the objects E, Eknn, and Ecomp from `dice` and saves to file
+pl_merge_clust(cdat)

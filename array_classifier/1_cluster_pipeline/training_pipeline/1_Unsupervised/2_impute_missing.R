@@ -1,2 +1,13 @@
-E_knn <- apply(ssclust, 2:4, impute_knn, data = cdat, seed = 123)
-saveRDS(E_knn,paste0(sfdir,"/imputed_clust_",ndat,"/E_knn_",algs,s,"_",ndat,".rds"))
+library(diceR)
+
+#' Read in raw data, impute and save to imputed directory
+pl_impute <- function(data, seed = 123) {
+  fs::dir_create("imputed")
+  fs::dir_ls("raw") %>%
+    purrr::map(readRDS) %>%
+    purrr::map(apply, 2:4, impute_knn, data = data, seed = seed) %>%
+    purrr::set_names(gsub("raw", "imputed", names(.))) %>%
+    purrr::iwalk(saveRDS)
+}
+
+pl_impute(ssclust)
