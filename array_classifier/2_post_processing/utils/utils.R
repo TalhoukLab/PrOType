@@ -262,49 +262,34 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
 
   # create mapping tables for xpn & cbt
   xpn.map <- build_mapping("ov.afc1_xpn") %>%
-    dplyr::mutate(class = as.factor(labs)) %>%
-    dplyr::select(-labs)
+    dplyr::transmute(labels, class = as.factor(labs))
   cbt.map <- build_mapping("ov.afc1_cbt") %>%
-    dplyr::mutate(class = as.factor(labs)) %>%
-    dplyr::select(-labs)
+    dplyr::transmute(labels, class = as.factor(labs))
 
   # process the xpn data
   iv.xpn.class <- sup.iv.xpn %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
-                  stringr::str_detect(measure, '\\.')) %>%
-    dplyr::mutate(
-      class = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[2]) %>%
-        unlist() %>%
-        as.factor(),
-      measure = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[1]) %>%
-        unlist() %>%
-        as.factor()
-    ) %>%
+                  stringr::str_detect(measure, "\\.")) %>%
+    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    dplyr::mutate_at(c("measure", "class"), as.factor) %>%
+    dplyr::select(-class, class) %>%
     dplyr::inner_join(xpn.map, by = "class")
 
   # process the cbt data
   iv.cbt.class <- sup.iv.cbt %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
-                  stringr::str_detect(measure, '\\.')) %>%
-    dplyr::mutate(
-      class = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[2]) %>%
-        unlist() %>%
-        as.factor(),
-      measure = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[1]) %>%
-        unlist() %>%
-        as.factor()
-    ) %>%
+                  stringr::str_detect(measure, "\\.")) %>%
+    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    dplyr::mutate_at(c("measure", "class"), as.factor) %>%
+    dplyr::select(-class, class) %>%
     dplyr::inner_join(cbt.map, by = "class")
 
   # combine xpn and cbt
-  iv.combine.class <- rbind.data.frame(iv.xpn.class, iv.cbt.class) %>%
-    dplyr::mutate(batch_correction = as.factor(batch_correction))
+  iv.combine.class <- rbind(iv.xpn.class, iv.cbt.class) %>%
+    dplyr::mutate(bcm = interaction(batch_correction, mod)) %>%
+    dplyr::group_by(batch_correction, mod, measure)
 
   # plot class-wise metrics
   pd <- ggplot2::position_dodge(width = 0.5)
@@ -320,55 +305,46 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
 
   # create iv plot
   p1 <- iv.combine.class %>%
-    dplyr::group_by(batch_correction, mod, measure) %>%
     ggplot2::ggplot(ggplot2::aes(
       x = labels,
       y = percentile_50,
-      colour = interaction(batch_correction, mod),
-      group = interaction(batch_correction, mod)
+      colour = bcm,
+      group = bcm
     )) +
-    ggplot2::geom_point(stat = 'summary', fun.y = mean, position = pd) +
+    ggplot2::geom_point(stat = "summary", fun.y = mean, position = pd) +
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
-      width = .4,
+      width = 0.4,
       position = pd
     ) +
     ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~measure, scales = "free") +
+    ggplot2::facet_wrap(~ measure, scales = "free") +
     ggplot2::scale_colour_manual(values = col, name = "Batch and Model") +
     ggplot2::labs(x = "Subtype",
                   y = "Evaluation Measure Value",
                   title = plot.title)
 
-  # process xpn data for general metrics
-  iv.xpn <- sup.iv.xpn %>%
+  # process and combine xpn and cbt for general metrics
+  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1"))
-
-  # process cbt data for general metrics
-  iv.cbt <- sup.iv.cbt %>%
-    dplyr::filter(mod %in% algs,
-                  normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1"))
-
-  # combine xpn and cbt for general metrics
-  iv.combine <- rbind.data.frame(iv.xpn, iv.cbt) %>%
-    dplyr::mutate(batch_correction = as.factor(batch_correction))
+                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
+    dplyr::mutate(batch_correction = as.factor(batch_correction),
+                  bcm = interaction(batch_correction, mod)) %>%
+    dplyr::group_by(batch_correction, mod, measure)
 
   # plot general metrics
   p2 <- iv.combine %>%
-    dplyr::group_by(batch_correction, mod, measure) %>%
     ggplot2::ggplot(ggplot2::aes(
       x = mod,
       y = percentile_50,
-      colour = interaction(batch_correction, mod),
-      group = interaction(batch_correction, mod)
+      colour = bcm,
+      group = bcm
     )) +
     ggplot2::geom_point(position = pd) +
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
-      width = .4,
+      width = 0.4,
       position = pd
     ) +
     ggplot2::theme_bw() +
