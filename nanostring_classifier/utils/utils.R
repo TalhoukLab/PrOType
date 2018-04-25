@@ -233,11 +233,9 @@ load_nanostring <- function(dir, genes) {
 #        models.
 #********************************************************************
 train <- function(x.processed, alg) {
-  x <- x.processed[, -1]
-  lab <- x.processed[, 1]
   splendid::classification(
-    data = x,
-    class = lab,
+    data = x.processed[, -1],
+    class = x.processed[, 1],
     algorithms = alg,
     standardize = FALSE
   )

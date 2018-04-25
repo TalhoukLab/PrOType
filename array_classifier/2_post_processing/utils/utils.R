@@ -50,11 +50,9 @@ import_study <- function(dir, study = "ov.afc1_cbt", hc.normalize = TRUE) {
 #   alg: algorithm of interest (see splendid docs for further details)
 #********************************************************************
 train_final <- function(x.processed, alg) {
-  x <- x.processed[, -1]
-  lab <- x.processed[, 1]
   splendid::classification(
-    data = x,
-    class = lab,
+    data = x.processed[, -1],
+    class = x.processed[, 1],
     algorithms = alg,
     standardize = FALSE
   )
