@@ -325,7 +325,7 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
 
   # save plots
   if (save) {
-    fn <- file.path("outputs/plots", stringr::str_remove_all(plot.title, " "))
+    fn <- file.path("outputs/plots", gsub(" ", "", plot.title))
     ggplot2::ggsave(p1, filename = paste0(fn, "_byclass.png"))
     ggplot2::ggsave(p2, filename = paste0(fn, "_overall.png"))
   }
@@ -428,7 +428,7 @@ plot_evals_noCBT <- function(dir, plot.title,
 
   # save plots
   if (save) {
-    fn <- file.path("outputs/plots", stringr::str_remove_all(plot.title, " "))
+    fn <- file.path("outputs/plots", gsub(" ", "", plot.title))
     ggplot2::ggsave(p1, filename = paste0(fn, "_byclass.png"))
     ggplot2::ggsave(p2, filename = paste0(fn, "_overall.png"))
   }
