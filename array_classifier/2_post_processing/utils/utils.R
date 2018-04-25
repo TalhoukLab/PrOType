@@ -166,28 +166,14 @@ top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title,
       readr::read_rds()
   }
 
-  # create mapping tables for xpn & cbt
-  xpn.map <- build_mapping("ov.afc1_xpn") %>%
-    dplyr::mutate(class = as.factor(labs)) %>%
-    dplyr::select(-labs)
-  cbt.map <- build_mapping("ov.afc1_cbt") %>%
-    dplyr::mutate(class = as.factor(labs)) %>%
-    dplyr::select(-labs)
-
   # process data for general metrics
-  iv.xpn <- sup.iv.xpn %>%
+  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
     dplyr::filter(normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1"))
-
-  iv.cbt <- sup.iv.cbt %>%
-    dplyr::filter(normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1"))
-
-  iv.combine <- rbind.data.frame(iv.xpn, iv.cbt) %>%
+                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
     dplyr::mutate(batch_correction = as.factor(batch_correction))
 
   # plot general metrics
-  pd <- position_dodge(width = 0.5)
+  pd <- ggplot2::position_dodge(width = 0.5)
   if (is.null(col.cust)) {
     if (threshold) {
       col <- c("#e66b00", "#efa667",
@@ -216,22 +202,25 @@ top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title,
 
   # prepare df for ggplot2
   df <- iv.combine %>%
+    dplyr::mutate(mod = reorder(mod, -percentile_50),
+                  bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
-  df$mod <- with(df, reorder(mod, -percentile_50))
 
   # plot evaluation measures
   p1 <- df %>%
     ggplot2::ggplot(ggplot2::aes(
-      x = reorder(mod, -percentile_50),
+      x = mod,
       y = percentile_50,
-      colour = interaction(batch_correction, mod),
-      group = interaction(batch_correction, mod)
+      colour = bcm,
+      group = bcm
     )) +
     ggplot2::geom_point(position = pd) +
     ggplot2::facet_wrap(~measure) +
-    ggplot2::geom_errorbar(ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
-                           width = 0.4,
-                           position = pd) +
+    ggplot2::geom_errorbar(
+      ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
+      width = 0.4,
+      position = pd
+    ) +
     ggplot2::theme_bw() +
     ggplot2::ylim(0.6, 1) +
     ggplot2::scale_colour_manual(values = col, name = "Batch and Model") +
@@ -243,10 +232,8 @@ top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title,
 
   # save plot
   if (save) {
-    ggplot2::ggsave(
-      p1,
-      filename = paste0("outputs/plots/all_algos_ranked.png")
-    )
+    ggplot2::ggsave(plot = p1,
+                    filename = paste0("outputs/plots/all_algos_ranked.png"))
   }
   if (print) print(p1)
   p1
@@ -320,7 +307,7 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
     dplyr::mutate(batch_correction = as.factor(batch_correction))
 
   # plot class-wise metrics
-  pd <- position_dodge(width = 0.5)
+  pd <- ggplot2::position_dodge(width = 0.5)
   if (is.null(col.cust)) {
     if (threshold) {
       col <- c("#05660e", "#7acc81", "#e66b00", "#efa667")
