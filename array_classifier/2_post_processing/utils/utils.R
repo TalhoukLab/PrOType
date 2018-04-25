@@ -261,33 +261,32 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
   }
 
   # create mapping tables for xpn & cbt
-  xpn.map <- build_mapping("ov.afc1_xpn") %>%
-    dplyr::transmute(labels, class = as.factor(labs))
-  cbt.map <- build_mapping("ov.afc1_cbt") %>%
-    dplyr::transmute(labels, class = as.factor(labs))
+  maps <- c("ov.afc1_xpn", "ov.afc1_cbt") %>%
+    purrr::set_names(c("xpn", "cbt")) %>%
+    purrr::map(build_mapping) %>%
+    purrr::map(dplyr::transmute, labels, class = as.factor(labs))
 
-  # process the xpn data
-  iv.xpn.class <- sup.iv.xpn %>%
+  # process and combine xpn and cbt data
+  iv.combine.class <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
                   stringr::str_detect(measure, "\\.")) %>%
     tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
     dplyr::mutate_at(c("measure", "class"), as.factor) %>%
     dplyr::select(-class, class) %>%
-    dplyr::inner_join(xpn.map, by = "class")
+    dplyr::mutate(
+      labels = unlist(purrr::map2(
+        class, batch_correction,
+        ~ maps[[.y]]$labels[match(.x, maps[[.y]]$class)])),
+      bcm = interaction(batch_correction, mod)
+    ) %>%
+    dplyr::group_by(batch_correction, mod, measure)
 
-  # process the cbt data
-  iv.cbt.class <- sup.iv.cbt %>%
+  # process and combine xpn and cbt for general metrics
+  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
-                  stringr::str_detect(measure, "\\.")) %>%
-    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
-    dplyr::mutate_at(c("measure", "class"), as.factor) %>%
-    dplyr::select(-class, class) %>%
-    dplyr::inner_join(cbt.map, by = "class")
-
-  # combine xpn and cbt
-  iv.combine.class <- rbind(iv.xpn.class, iv.cbt.class) %>%
+                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
     dplyr::mutate(bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
 
@@ -323,15 +322,6 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
     ggplot2::ggplot(ggplot2::aes(x = labels)) +
     ggplot2::xlab("Subtype") +
     gglayers
-
-  # process and combine xpn and cbt for general metrics
-  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
-    dplyr::filter(mod %in% algs,
-                  normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
-    dplyr::mutate(batch_correction = as.factor(batch_correction),
-                  bcm = interaction(batch_correction, mod)) %>%
-    dplyr::group_by(batch_correction, mod, measure)
 
   # plot general metrics
   p2 <- iv.combine %>%
