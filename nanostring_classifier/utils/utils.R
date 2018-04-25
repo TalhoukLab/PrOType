@@ -112,12 +112,12 @@ evaluate_all <- function(x) {
 #********************************************************************
 # Prepare data for cross-platform to Nanostring
 #********************************************************************
-prep_data <- function(dataSet, dir = "data/") {
-  # build mapping table
-  map <- build_mapping(dataSet)
+prep_data <- function(dataSet, dir = "data") {
+  subdir <- paste0("data_pr_", dataSet) # subdirectory
+  map <- build_mapping(dataSet) # build mapping table
 
   # read npcp normalized by housekeeping genes
-  npcp.tmp <- paste0(dir, "data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds") %>%
+  npcp.tmp <- file.path(dir, subdir, paste0("npcp-hcNorm_", dataSet, ".rds")) %>%
     readr::read_rds()
 
   # process rownames
@@ -130,7 +130,7 @@ prep_data <- function(dataSet, dir = "data/") {
     tibble::column_to_rownames("sampleID")
 
   # read in diceR cluster labels (hgsc subtypes)
-  train.class.tmp <- paste0(dir, "data_pr_", dataSet, "/all_clusts_", dataSet, ".rds") %>%
+  train.class.tmp <- file.path(dir, subdir, paste0("all_clusts_", dataSet, ".rds")) %>%
     readr::read_rds() %>%
     magrittr::extract(, 1) %>%
     data.frame(labs = .) %>%
@@ -165,13 +165,13 @@ prep_data <- function(dataSet, dir = "data/") {
 #********************************************************************
 # Load Nanostring data - all batches, aocs & tcga
 #********************************************************************
-load_nanostring <- function(dir = "data/", genes) {
+load_nanostring <- function(dir = "data", genes) {
   # format gene data for extraction from nstring
   npcp <- data.frame(t(genes))
   colnames(npcp) <- genes
 
   # import batch 1 nanostring
-  b1 <- paste0(dir, "nanostring_classifier_data_batch1_20170217_updated.csv") %>%
+  b1 <- file.path(dir, "nanostring_classifier_data_batch1_20170217_updated.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b1")
   b1.hk <- b1 %>%
@@ -180,7 +180,7 @@ load_nanostring <- function(dir = "data/", genes) {
     data.table::setattr("ottaID", b1$OTTA.ID)
 
   # import batch 2 nanostring
-  b2 <- paste0(dir, "nanostring_classifier_data_batch2_20170221.csv") %>%
+  b2 <- file.path(dir, "nanostring_classifier_data_batch2_20170221.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b2")
   b2.hk <- b2 %>%
@@ -189,7 +189,7 @@ load_nanostring <- function(dir = "data/", genes) {
     data.table::setattr("ottaID", b2$OTTA.ID)
 
   # import batch 3 nanostring
-  b3 <- paste0(dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
+  b3 <- file.path(dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b3")
   b3.hk <- b3 %>%
@@ -198,7 +198,7 @@ load_nanostring <- function(dir = "data/", genes) {
     data.table::setattr("ottaID", b3$OTTA.ID)
 
   # import batch 4 nanostring
-  b4 <- paste0(dir, "nanostring_classifier_data_batch4_20170512.csv") %>%
+  b4 <- file.path(dir, "nanostring_classifier_data_batch4_20170512.csv") %>%
     read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
     data.table::setattr("batch", "b4")
   b4.hk <- b4 %>%
