@@ -28,20 +28,20 @@ get_mapping <- function(dir = "data/") {
   # TCGA overlap
   tcga.mapped <- paste0(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
-    dplyr::select(c(
+    dplyr::select(
       sampleID = TCGA,
       ottaID = `OTTA-ID`,
       published = `MOL-SUBTYPE-NAME (published)`
-    ))
+    )
 
   # GSE overlap
   gse.mapped <- paste0(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
-    dplyr::select(c(
+    dplyr::select(
       sampleID = GSE9891,
       ottaID = `OTTA ID`,
       published = `MOL-SUBTYPE-NAME (published)`
-    ))
+    )
 
   # combine & drop NAs
   dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
