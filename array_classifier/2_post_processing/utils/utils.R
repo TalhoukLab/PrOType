@@ -518,16 +518,14 @@ plot_evals <- function(eval.dir, plot.title, algs = c("mlr_ridge", "mlr_lasso"),
       alg = stringr::str_split(mod, "\\.") %>%
         purrr::map(~ .[2]) %>%
         unlist() %>%
-        as.factor(),
+        as.factor() %>%
+        factor(levels = rev(levels(.))), # reorganize factor levels
       batch_correction = stringr::str_split(mod, "\\.") %>%
         purrr::map(~ .[1]) %>%
         unlist() %>%
         as.factor()
     ) %>%
     dplyr::select(-mod)
-
-  # reorganize factor levels
-  overall$alg <- factor(overall$alg, levels = rev(levels(overall$alg)))
 
   # specify colouring
   if (is.null(col.cust)) {
@@ -588,18 +586,15 @@ plot_evals_noCBT <- function(dir, plot.title,
   # do some preprocessing on the eval list
   evals.extract <- evals %>%
     purrr::map(purrr::flatten) %>%
-    purrr::map(
-      ~ data.frame(cs = .$cs) %>%
-        tibble::rownames_to_column("measure")
-    )
+    purrr::map(~ data.frame(cs = .$cs) %>%
+                 tibble::rownames_to_column("measure"))
 
   # grab the names of the list
   names.list <- names(evals.extract)
 
   # prepare the eval list for plotting
-  evals.prep <- purrr::map2(names.list, evals.extract, ~ {
-    .y %>% data.frame(alg = .x, .)
-  }) %>%
+  evals.prep <- purrr::map2(names.list, evals.extract,
+                            ~ .y %>% data.frame(alg = .x, .)) %>%
     dplyr::bind_rows() %>%
     dplyr::mutate(
       alg = as.factor(alg),
@@ -615,7 +610,8 @@ plot_evals_noCBT <- function(dir, plot.title,
       mod = stringr::str_split(alg, "\\.") %>%
         purrr::map(~ .[2]) %>%
         unlist() %>%
-        as.factor(),
+        as.factor() %>%
+        factor(levels = rev(levels(.))), # reorganize factor levels
       batch_correction = stringr::str_split(alg, "\\.") %>%
         purrr::map(~ .[1]) %>%
         unlist() %>%
@@ -623,9 +619,6 @@ plot_evals_noCBT <- function(dir, plot.title,
       value = cs) %>%
     dplyr::select(-c(cs, alg)) %>%
     dplyr::filter(batch_correction == "xpn")
-
-  # reorganize factor levels
-  evals.prep$mod <- factor(evals.prep$mod, levels = rev(levels(evals.prep$mod)))
 
   # specify positioning and colour
   pd <- ggplot2::position_dodge(width = 0.5)
