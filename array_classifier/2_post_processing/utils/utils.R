@@ -364,60 +364,21 @@ plot_evals_noCBT <- function(dir, plot.title,
   # grab the names of the list
   names.list <- names(evals.extract)
 
-  # prepare the eval list for plotting
+  # prepare eval list for plotting
   evals.prep <- purrr::map2(names.list, evals.extract,
                             ~ .y %>% data.frame(alg = .x, .)) %>%
     dplyr::bind_rows() %>%
-    dplyr::mutate(
-      alg = as.factor(alg),
-      measure = as.factor(measure),
-      class = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[2]) %>%
-        unlist() %>%
-        as.factor(),
-      measure = stringr::str_split(measure, "\\.") %>%
-        purrr::map(~ .[1]) %>%
-        unlist() %>%
-        as.factor(),
-      mod = stringr::str_split(alg, "\\.") %>%
-        purrr::map(~ .[2]) %>%
-        unlist() %>%
-        as.factor() %>%
-        factor(levels = rev(levels(.))), # reorganize factor levels
-      batch_correction = stringr::str_split(alg, "\\.") %>%
-        purrr::map(~ .[1]) %>%
-        unlist() %>%
-        as.factor(),
-      value = cs) %>%
-    dplyr::select(-c(cs, alg)) %>%
-    dplyr::filter(batch_correction == "xpn")
+    dplyr::mutate_at(c("alg", "measure"), as.factor) %>%
+    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    tidyr::separate(alg, c("batch_correction", "mod"), sep = "\\.") %>%
+    dplyr::mutate_at(c("measure", "class", "batch_correction", "mod"),
+                     as.factor) %>%
+    dplyr::mutate(mod = factor(mod, levels = rev(levels(mod)))) %>% # reverse
+    dplyr::select(-cs, value = cs) %>% # move to end and rename
+    dplyr::filter(batch_correction == "xpn") %>%
+    dplyr::mutate(bcm = interaction(batch_correction, mod))
 
-  # specify positioning and colour
-  pd <- ggplot2::position_dodge(width = 0.5)
-  col <- c("#878787", "magenta", "#05660e", "#e66b00")
-  brks <- paste(rep(c("xpn"), 4), algs, sep = ".")
-
-  # create class-wise plots for class eval measures
-  p1 <- evals.prep %>%
-    ggplot2::ggplot(ggplot2::aes(
-      x = class,
-      y = value,
-      colour = interaction(batch_correction, mod),
-      group = interaction(batch_correction, mod)
-    )) +
-    ggplot2::geom_point(position = pd, size = 3) +
-    ggplot2::facet_wrap(~measure, scales = "free") +
-    ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~measure, scales = "free") +
-    ggplot2::scale_colour_manual(values = col,
-                                 name = "Batch and Model",
-                                 breaks = brks) +
-    ggplot2::labs(x = "Evaluation Measure",
-                  y = "Evaluation Measure Value",
-                  title = plot.title) +
-    ggplot2::ylim(y.lim.class)
-
-  # prepare eval list for plottin overall evaluation measures
+  # prepare eval list for plotting overall evaluation measures
   overall.prep <- evals %>%
     purrr::map(purrr::flatten) %>%
     purrr::map(~ data.frame(
@@ -428,44 +389,48 @@ plot_evals_noCBT <- function(dir, plot.title,
     purrr::map2(., names.list, ~ data.frame(mod = .y, .x)) %>%
     dplyr::bind_rows() %>%
     reshape2::melt(variable.name = "measure", value.name = "value") %>%
-    dplyr::mutate(
-      alg = stringr::str_split(mod, "\\.") %>%
-        purrr::map(~ .[2]) %>%
-        unlist() %>%
-        as.factor(),
-      batch_correction = stringr::str_split(mod, "\\.") %>%
-        purrr::map(~ .[1]) %>%
-        unlist() %>%
-        as.factor()
-    ) %>%
-    dplyr::select(-mod) %>%
+    tidyr::separate(mod, c("batch_correction", "alg"), sep = "\\.") %>%
+    dplyr::mutate_at(c("batch_correction", "alg"), as.factor) %>%
+    dplyr::mutate(alg = factor(alg, levels = rev(levels(alg))), # reverse
+                  bcm = interaction(batch_correction, alg)) %>%
     dplyr::filter(batch_correction == "xpn")
 
-  # reorganize factor levels
-  overall.prep$alg <- factor(overall.prep$alg,
-                             levels = rev(levels(overall.prep$alg)))
+  # specify positioning and colour
+  pd <- ggplot2::position_dodge(width = 0.5)
+  brks <- paste(rep("xpn", 4), algs, sep = ".")
 
-  # specify colouring
-  col <- c("#05660e", "magenta", "#878787", "#e66b00")
+  # store common ggplot layers
+  gglayers <- list(
+    ggplot2::aes(y = value, colour = bcm, group = bcm),
+    ggplot2::geom_point(position = pd, size = 3),
+    ggplot2::facet_wrap(~ measure, scales = "free") ,
+    ggplot2::theme_bw(),
+    ggplot2::labs(x = "Evaluation Measure",
+                  y = "Evaluation Measure Value",
+                  title = plot.title)
+  )
+
+  # create class-wise plots for class eval measures
+  p1 <- evals.prep %>%
+    ggplot2::ggplot(ggplot2::aes(x = class)) +
+    ggplot2::scale_colour_manual(
+      values = c("#878787", "magenta", "#05660e", "#e66b00"),
+      name = "Batch and Model",
+      breaks = brks
+    ) +
+    ggplot2::ylim(y.lim.class) +
+    gglayers
 
   # plot overall evaluation measures
   p2 <- overall.prep %>%
-    ggplot2::ggplot(ggplot2::aes(
-      x = alg,
-      y = value,
-      colour = interaction(batch_correction, alg),
-      group = interaction(batch_correction, alg)
-    )) +
-    ggplot2::geom_point(position = pd, size = 3) +
-    ggplot2::facet_wrap(~measure, scales = "free") +
-    ggplot2::theme_bw() +
-    ggplot2::scale_colour_manual(values = col,
-                                 name = "Batch and Model",
-                                 breaks = brks) +
-    ggplot2::labs(x = "Evaluation Measure",
-                  y = "Evaluation Measure Value",
-                  title = plot.title) +
-    ggplot2::ylim(y.lim.all)
+    ggplot2::ggplot(ggplot2::aes(x = alg)) +
+    ggplot2::scale_colour_manual(
+      values = c("#05660e", "magenta", "#878787", "#e66b00"),
+      name = "Batch and Model",
+      breaks = brks
+    ) +
+    ggplot2::ylim(y.lim.all) +
+    gglayers
 
   # save plots
   if (save) {
