@@ -24,9 +24,9 @@ build_mapping <- function(train.set) {
 # Import overlapping samples from TCGA and GSE and combine. Table
 # also includes published labels.
 #********************************************************************
-get_mapping <- function(dir = "data/") {
+get_mapping <- function(dir = "data") {
   # TCGA overlap
-  tcga.mapped <- paste0(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
+  tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
     dplyr::select(
       sampleID = TCGA,
@@ -35,7 +35,7 @@ get_mapping <- function(dir = "data/") {
     )
 
   # GSE overlap
-  gse.mapped <- paste0(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
+  gse.mapped <- file.path(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
     dplyr::select(
       sampleID = GSE9891,
@@ -52,12 +52,13 @@ get_mapping <- function(dir = "data/") {
 # Import nanostring data of overlapped samples and select those that
 # match the mapping table returned from get_mapping()
 #********************************************************************
-get_nstring_overlap <- function(dir = "data/", map) {
-  nanostring <- paste0(dir, "nanostring_aocs_tcga.rds") %>%
+get_nstring_overlap <- function(dir = "data", map) {
+  nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("ottaID") %>%
     dplyr::inner_join(map, ., by = "ottaID") %>%
     dplyr::select(-c(sampleID, published)) %>%
+    as.data.frame() %>%
     tibble::column_to_rownames("ottaID")
   nanostring
 }
@@ -111,7 +112,7 @@ evaluate_all <- function(x) {
 #********************************************************************
 # Prepare data for cross-platform to Nanostring
 #********************************************************************
-prep_data <- function(dataSet, dir = "./") {
+prep_data <- function(dataSet, dir = "data/") {
   # build mapping table
   map <- build_mapping(dataSet)
 
@@ -164,13 +165,13 @@ prep_data <- function(dataSet, dir = "./") {
 #********************************************************************
 # Load Nanostring data - all batches, aocs & tcga
 #********************************************************************
-load_nanostring <- function(dir, genes) {
+load_nanostring <- function(dir = "data/", genes) {
   # format gene data for extraction from nstring
   npcp <- data.frame(t(genes))
   colnames(npcp) <- genes
 
   # import batch 1 nanostring
-  b1 <- paste0(dir,"nanostring_classifier_data_batch1_20170217_updated.csv") %>%
+  b1 <- paste0(dir, "nanostring_classifier_data_batch1_20170217_updated.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b1")
   b1.hk <- b1 %>%
@@ -179,7 +180,7 @@ load_nanostring <- function(dir, genes) {
     data.table::setattr("ottaID", b1$OTTA.ID)
 
   # import batch 2 nanostring
-  b2 <- paste0(dir,"nanostring_classifier_data_batch2_20170221.csv") %>%
+  b2 <- paste0(dir, "nanostring_classifier_data_batch2_20170221.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b2")
   b2.hk <- b2 %>%
@@ -188,7 +189,7 @@ load_nanostring <- function(dir, genes) {
     data.table::setattr("ottaID", b2$OTTA.ID)
 
   # import batch 3 nanostring
-  b3 <- paste0(dir,"nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
+  b3 <- paste0(dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
     read.csv() %>%
     data.table::setattr("batch", "b3")
   b3.hk <- b3 %>%
@@ -197,7 +198,7 @@ load_nanostring <- function(dir, genes) {
     data.table::setattr("ottaID", b3$OTTA.ID)
 
   # import batch 4 nanostring
-  b4 <- paste0(dir,"nanostring_classifier_data_batch4_20170512.csv") %>%
+  b4 <- paste0(dir, "nanostring_classifier_data_batch4_20170512.csv") %>%
     read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
     data.table::setattr("batch", "b4")
   b4.hk <- b4 %>%
