@@ -303,26 +303,26 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
     col <- col.cust
   }
 
-  # create iv plot
-  p1 <- iv.combine.class %>%
-    ggplot2::ggplot(ggplot2::aes(
-      x = labels,
-      y = percentile_50,
-      colour = bcm,
-      group = bcm
-    )) +
-    ggplot2::geom_point(stat = "summary", fun.y = mean, position = pd) +
+  # store common ggplot layers
+  gglayers <- list(
+    ggplot2::aes(y = percentile_50, colour = bcm, group = bcm),
+    ggplot2::geom_point(position = pd),
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
       width = 0.4,
       position = pd
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~ measure, scales = "free") +
-    ggplot2::scale_colour_manual(values = col, name = "Batch and Model") +
-    ggplot2::labs(x = "Subtype",
-                  y = "Evaluation Measure Value",
-                  title = plot.title)
+    ),
+    ggplot2::theme_bw(),
+    ggplot2::facet_wrap(~ measure, scales = "free"),
+    ggplot2::scale_colour_manual(values = col, name = "Batch and Model"),
+    ggplot2::labs(y = "Evaluation Measure Value", title = plot.title)
+  )
+
+  # create iv plot
+  p1 <- iv.combine.class %>%
+    ggplot2::ggplot(ggplot2::aes(x = labels)) +
+    ggplot2::xlab("Subtype") +
+    gglayers
 
   # process and combine xpn and cbt for general metrics
   iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
@@ -335,24 +335,9 @@ sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
 
   # plot general metrics
   p2 <- iv.combine %>%
-    ggplot2::ggplot(ggplot2::aes(
-      x = mod,
-      y = percentile_50,
-      colour = bcm,
-      group = bcm
-    )) +
-    ggplot2::geom_point(position = pd) +
-    ggplot2::geom_errorbar(
-      ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
-      width = 0.4,
-      position = pd
-    ) +
-    ggplot2::theme_bw() +
-    ggplot2::facet_wrap(~measure, scales = "free") +
-    ggplot2::scale_colour_manual(values = col, name = "Batch and Model") +
-    ggplot2::labs(x = "Evaluation Measure",
-                  y = "Evaluation Measure Value",
-                  title = plot.title)
+    ggplot2::ggplot(ggplot2::aes(x = mod)) +
+    ggplot2::xlab("Evaluation Measure") +
+    gglayers
 
   # save plots
   if (save) {
