@@ -130,10 +130,9 @@ predict_overlap <- function(fit, new.data) {
   splendid::prediction(
     mod = fit,
     data = new.data,
-    class = seq_len(nrow(new.data)),
-    threshold = 0
+    class = seq_len(nrow(new.data))
   ) %>%
-    data.table::setattr(., "sampleID", rownames(new.data))
+    data.table::setattr("sampleID", rownames(new.data))
 }
 
 #********************************************************************
