@@ -25,7 +25,8 @@ build_mapping <- function(train.set) {
 #     is.test.set: required to specify format if test set should be
 #                  returned.
 #********************************************************************
-import_study <- function(dir, study = "ov.afc1_cbt", hc.normalize = TRUE) {
+import_study <- function(dir = "data/", study = "ov.afc1_cbt",
+                         hc.normalize = TRUE) {
   # specify hc normalized npcp or not
   hc <- ifelse(hc.normalize, "-hcNorm", "")
 
@@ -150,7 +151,7 @@ evaluate_array <- function(x) {
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title,
+top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
                           print = TRUE, save = TRUE, col.cust = NULL) {
   if (!threshold) {
     # import IV results
@@ -243,7 +244,7 @@ top_algo_plot <- function(dir = "./", threshold = TRUE, plot.title,
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-sup_plots <- function(dir = "./", threshold = TRUE, plot.title,
+sup_plots <- function(dir = "data/", threshold = TRUE, plot.title,
                       algs = c("mlr_ridge", "mlr_lasso"),
                       print = TRUE, save = TRUE, col.cust = NULL) {
   if (!threshold) {
