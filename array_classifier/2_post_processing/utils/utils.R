@@ -30,23 +30,18 @@ import_study <- function(dir, study = "ov.afc1_cbt", hc.normalize = TRUE) {
   hc <- ifelse(hc.normalize, "-hcNorm", "")
 
   # import the npcp and diceR labels
-  dat <- readr::read_rds(
-    paste0(dir, "data_pr_", study, "/npcp", hc, "_", study, ".rds")
-  ) %>%
-    `rownames<-`(rownames(dat) %>% stringr::str_sub(0, nchar(.) - 7))
+  dat <- paste0(dir, "data_pr_", study, "/npcp", hc, "_", study, ".rds") %>%
+    readr::read_rds() %>%
+    `rownames<-`(stringr::str_sub(rownames(.), end = -8))
 
-  # select k-modes as best enemble algorithm
-  labs <- readr::read_rds(
-    paste0(dir, "data_pr_", study, "/all_clusts_", study, ".rds")
-  ) %>%
-    magrittr::use_series("kmodes")
+  # select k-modes as best enemble algorithm and map labels to npcp
+  y <- paste0(dir, "data_pr_", study, "/all_clusts_", study, ".rds") %>%
+    readr::read_rds() %>%
+    dplyr::select(labs = kmodes) %>%
+    dplyr::inner_join(build_mapping(study), by = "labs") %>%
+    dplyr::select(y = labels)
 
-  # map labels to npcp
-  mapping <- build_mapping(study)
-  labs.mapped <- data.frame(labs = labs) %>%
-    dplyr::inner_join(mapping, by = "labs") %>%
-    dplyr::select(labels)
-  data.frame(y = labs.mapped$labels, dat)
+  data.frame(y, dat)
 }
 
 #********************************************************************
