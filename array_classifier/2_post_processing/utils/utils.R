@@ -25,18 +25,18 @@ build_mapping <- function(train.set) {
 #     is.test.set: required to specify format if test set should be
 #                  returned.
 #********************************************************************
-import_study <- function(dir = "data/", study = "ov.afc1_cbt",
+import_study <- function(dir = "data", study = "ov.afc1_cbt",
                          hc.normalize = TRUE) {
-  # specify hc normalized npcp or not
-  hc <- ifelse(hc.normalize, "-hcNorm", "")
+  subdir <- paste0("data_pr_", study) # subdirectory
+  hc <- ifelse(hc.normalize, "-hcNorm", "") # specify hc normalized npcp or not
 
   # import the npcp and diceR labels
-  dat <- paste0(dir, "data_pr_", study, "/npcp", hc, "_", study, ".rds") %>%
+  dat <- file.path(dir, subdir, paste0("npcp", hc, "_", study, ".rds")) %>%
     readr::read_rds() %>%
     `rownames<-`(stringr::str_sub(rownames(.), end = -8))
 
   # select k-modes as best enemble algorithm and map labels to npcp
-  y <- paste0(dir, "data_pr_", study, "/all_clusts_", study, ".rds") %>%
+  y <- file.path(dir, subdir, paste0("all_clusts_", study, ".rds")) %>%
     readr::read_rds() %>%
     dplyr::select(labs = kmodes) %>%
     dplyr::inner_join(build_mapping(study), by = "labs") %>%
@@ -63,9 +63,9 @@ train_final <- function(x.processed, alg) {
 # Import overlapping samples from TCGA and GSE and combine. Table
 # also includes published labels.
 #********************************************************************
-get_mapping <- function(dir = "data/") {
+get_mapping <- function(dir = "data") {
   # TCGA overlap
-  tcga.mapped <- paste0(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
+  tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
     dplyr::select(
       sampleID = TCGA,
@@ -74,7 +74,7 @@ get_mapping <- function(dir = "data/") {
     )
 
   # GSE overlap
-  gse.mapped <- paste0(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
+  gse.mapped <- file.path(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv() %>%
     dplyr::select(
       sampleID = GSE9891,
@@ -91,14 +91,14 @@ get_mapping <- function(dir = "data/") {
 # Import array data of overlapped samples and select those that
 # match the mapping table returned from get_mapping()
 #********************************************************************
-import_array <- function(dir = "data/", map) {
+import_array <- function(dir = "data", map) {
   # GSE
-  validation.gse <- paste0(dir, "ValidationSet/validation_gse.rds") %>%
+  validation.gse <- file.path(dir, "ValidationSet/validation_gse.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("sampleID")
 
   # TCGA
-  validation.tcga <- paste0(dir, "ValidationSet/validation_tcga.rds") %>%
+  validation.tcga <- file.path(dir, "ValidationSet/validation_tcga.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("sampleID")
 
@@ -151,11 +151,11 @@ evaluate_array <- function(x) {
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
+top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
                           print = TRUE, save = TRUE, col.cust = NULL) {
   # IV threshold filenames
-  fn.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-  fn.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+  fn.iv.xpn <- file.path(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
+  fn.iv.cbt <- file.path(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
   if (!threshold) {
     # IV filenames
     fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
@@ -230,8 +230,7 @@ top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
 
   # save plot
   if (save) {
-    ggplot2::ggsave(plot = p1,
-                    filename = paste0("outputs/plots/all_algos_ranked.png"))
+    ggplot2::ggsave(plot = p1, filename = "outputs/plots/all_algos_ranked.png")
   }
   if (print) print(p1)
   p1
@@ -241,12 +240,12 @@ top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-sup_plots <- function(dir = "data/", threshold = TRUE, plot.title,
+sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
                       algs = c("mlr_ridge", "mlr_lasso"),
                       print = TRUE, save = TRUE, col.cust = NULL) {
   # IV threshold filenames
-  fn.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-  fn.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+  fn.iv.xpn <- file.path(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
+  fn.iv.cbt <- file.path(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
   if (!threshold) {
     # IV filenames
     fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
@@ -326,7 +325,7 @@ sup_plots <- function(dir = "data/", threshold = TRUE, plot.title,
 
   # save plots
   if (save) {
-    fn <- paste0("outputs/plots/", stringr::str_remove_all(plot.title, " "))
+    fn <- file.path("outputs/plots", stringr::str_remove_all(plot.title, " "))
     ggplot2::ggsave(p1, filename = paste0(fn, "_byclass.png"))
     ggplot2::ggsave(p2, filename = paste0(fn, "_overall.png"))
   }
@@ -429,7 +428,7 @@ plot_evals_noCBT <- function(dir, plot.title,
 
   # save plots
   if (save) {
-    fn <- paste0("outputs/plots/", stringr::str_remove_all(plot.title, " "))
+    fn <- file.path("outputs/plots", stringr::str_remove_all(plot.title, " "))
     ggplot2::ggsave(p1, filename = paste0(fn, "_byclass.png"))
     ggplot2::ggsave(p2, filename = paste0(fn, "_overall.png"))
   }
