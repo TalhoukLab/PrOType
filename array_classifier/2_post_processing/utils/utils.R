@@ -102,9 +102,9 @@ import_array <- function(dir = "data/", map) {
     tibble::rownames_to_column("sampleID")
 
   # combine and match with mapping table
-  validation.set <- bind_rows(validation.gse, validation.tcga) %>%
-    dplyr::inner_join(map, ., by = "sampleID") %>%
-    dplyr::select(-c(ottaID, published)) %>%
+  validation.set <- dplyr::bind_rows(validation.gse, validation.tcga) %>%
+    dplyr::inner_join(map["sampleID"], ., by = "sampleID") %>%
+    as.data.frame() %>%
     tibble::column_to_rownames("sampleID")
   validation.set
 }
