@@ -153,19 +153,16 @@ evaluate_array <- function(x) {
 #********************************************************************
 top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
                           print = TRUE, save = TRUE, col.cust = NULL) {
-  if (threshold) {
-    # import IV threshold results
-    sup.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds") %>%
-      readr::read_rds()
-    sup.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds") %>%
-      readr::read_rds()
-  } else {
-    # import IV results
-    sup.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds") %>%
-      readr::read_rds()
-    sup.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds") %>%
-      readr::read_rds()
+  # IV threshold filenames
+  fn.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
+  fn.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+  if (!threshold) {
+    # IV filenames
+    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
+    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
   }
+  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
+  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
 
   # process data for general metrics
   iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
@@ -247,19 +244,16 @@ top_algo_plot <- function(dir = "data/", threshold = TRUE, plot.title,
 sup_plots <- function(dir = "data/", threshold = TRUE, plot.title,
                       algs = c("mlr_ridge", "mlr_lasso"),
                       print = TRUE, save = TRUE, col.cust = NULL) {
-  if (threshold) {
-    # import IV threshold results
-    sup.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds") %>%
-      readr::read_rds()
-    sup.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds") %>%
-      readr::read_rds()
-  } else {
-    # import IV results
-    sup.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn.rds") %>%
-      readr::read_rds()
-    sup.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt.rds") %>%
-      readr::read_rds()
+  # IV threshold filenames
+  fn.iv.xpn <- paste0(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
+  fn.iv.cbt <- paste0(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+  if (!threshold) {
+    # IV filenames
+    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
+    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
   }
+  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
+  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
 
   # create mapping tables for xpn & cbt
   maps <- c("ov.afc1_xpn", "ov.afc1_cbt") %>%
