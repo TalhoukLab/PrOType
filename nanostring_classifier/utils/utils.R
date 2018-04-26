@@ -151,52 +151,30 @@ load_nanostring <- function(dir = "data", genes) {
 
   # import batch 1 nanostring
   b1 <- file.path(dir, "nanostring_classifier_data_batch1_20170217_updated.csv") %>%
-    read.csv() %>%
-    data.table::setattr("batch", "b1")
-  b1.hk <- b1 %>%
-    magrittr::extract(colnames(npcp)) %>%
-    data.frame() %>%
-    data.table::setattr("ottaID", b1$OTTA.ID)
+    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
+    dplyr::mutate(batch = "b1")
 
   # import batch 2 nanostring
   b2 <- file.path(dir, "nanostring_classifier_data_batch2_20170221.csv") %>%
-    read.csv() %>%
-    data.table::setattr("batch", "b2")
-  b2.hk <- b2 %>%
-    magrittr::extract(colnames(npcp)) %>%
-    data.frame() %>%
-    data.table::setattr("ottaID", b2$OTTA.ID)
+    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
+    dplyr::mutate(batch = "b2")
 
   # import batch 3 nanostring
   b3 <- file.path(dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
-    read.csv() %>%
-    data.table::setattr("batch", "b3")
-  b3.hk <- b3 %>%
-    magrittr::extract(colnames(npcp)) %>%
-    data.frame() %>%
-    data.table::setattr("ottaID", b3$OTTA.ID)
+    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
+    dplyr::mutate(batch = "b3")
 
   # import batch 4 nanostring
   b4 <- file.path(dir, "nanostring_classifier_data_batch4_20170512.csv") %>%
     read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
-    data.table::setattr("batch", "b4")
-  b4.hk <- b4 %>%
-    magrittr::extract(colnames(npcp)) %>%
-    data.frame() %>%
-    data.table::setattr("ottaID", b4$OTTA.ID)
+    dplyr::mutate(batch = "b4")
 
   # combine into list
   test.dat <- tibble::lst(b1, b2, b3, b4)
 
-  # find intersecting genes
-  genes <- colnames(npcp)
-
   # extract intersecting genes
   matched <- test.dat %>%
-    purrr::map(function(x) x %>%
-                 dplyr::select(c("OTTA.ID", genes)) %>%
-                 dplyr::mutate(batch = as.factor(attr(., "batch")))) %>%
-    dplyr::bind_rows() %>%
+    purrr::map_df(`[`, c("OTTA.ID", genes, "batch")) %>%
     tibble::column_to_rownames("OTTA.ID") %>%
     na.omit() %>%
     data.table::setattr("batch", .$batch) %>%
