@@ -96,15 +96,15 @@ combine <- function(mapped.dat, nstring.overlap, nstring.pred) {
 evaluate_all <- function(x) {
   published_vs_array <- list(
     splendid::evaluation(x$published, x$array),
-    caret::confusionMatrix(x$published, x$array)
+    caret::confusionMatrix(x$array, x$published)
   )
   published_vs_nstring <- list(
     splendid::evaluation(x$published, x$nstring),
-    caret::confusionMatrix(x$published, x$nstring)
+    caret::confusionMatrix(x$nstring, x$published)
   )
   array_vs_nstring <- list(
     splendid::evaluation(x$array, x$nstring),
-    caret::confusionMatrix(x$array, x$nstring)
+    caret::confusionMatrix(x$nstring, x$array)
   )
   tibble::lst(published_vs_array, published_vs_nstring, array_vs_nstring)
 }
