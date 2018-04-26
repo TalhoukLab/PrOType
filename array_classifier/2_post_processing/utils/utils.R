@@ -319,11 +319,8 @@ plot_evals_noCBT <- function(dir, plot.title,
   # prepare eval list for plotting overall evaluation measures
   overall.prep <- evals %>%
     purrr::map(purrr::flatten) %>%
-    purrr::map(~ data.frame(
-      accuracy = .$accuracy,
-      auc = .$auc,
-      macro_f1 = .$macro_f1
-    )) %>%
+    purrr::map(`[`, c("accuracy", "auc", "macro_f1")) %>%
+    purrr::map(as.data.frame) %>%
     purrr::map2_df(., names.list, ~ data.frame(mod = .y, .x)) %>%
     reshape2::melt(variable.name = "measure", value.name = "value") %>%
     tidyr::separate(mod, c("batch_correction", "alg"), sep = "\\.") %>%
