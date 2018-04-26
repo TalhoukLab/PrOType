@@ -207,11 +207,9 @@ predict_nstring <- function(fit, nstring) {
   pred <- splendid::prediction(
     mod = fit,
     data = nstring,
-    class = rep(NA, nrow(nstring)),
-    threshold = 0
+    class = rep(NA, nrow(nstring))
   ) %>%
     data.table::setattr("ottaID", rownames(nstring)) %>%
     data.table::setattr("batch", attr(nstring, "batch"))
-  df <- data.frame(ottaID = rownames(nstring), pred = pred)
   pred
 }
