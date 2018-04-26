@@ -83,8 +83,7 @@ predict_overlap <- function(fit, new.data) {
 combine <- function(mapped.dat, nstring.overlap, nstring.pred) {
   overlap <- nstring.overlap %>%
     tibble::rownames_to_column("ottaID") %>%
-    data.frame(nstring = nstring.pred) %>%
-    dplyr::select(ottaID, nstring) %>%
+    dplyr::transmute(ottaID, nstring = nstring.pred) %>%
     dplyr::inner_join(mapped.dat, ., by = "ottaID") %>%
     dplyr::select(sampleID, ottaID, published, array, nstring)
   overlap
