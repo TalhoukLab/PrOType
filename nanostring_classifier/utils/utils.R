@@ -11,34 +11,6 @@ source(here("assets/utils.R"))
 # Functions ----
 
 #********************************************************************
-# Import overlapping samples from TCGA and GSE and combine. Table
-# also includes published labels.
-#********************************************************************
-get_mapping <- function(dir = "data") {
-  # TCGA overlap
-  tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
-    readr::read_csv() %>%
-    dplyr::select(
-      sampleID = TCGA,
-      ottaID = `OTTA-ID`,
-      published = `MOL-SUBTYPE-NAME (published)`
-    )
-
-  # GSE overlap
-  gse.mapped <- file.path(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
-    readr::read_csv() %>%
-    dplyr::select(
-      sampleID = GSE9891,
-      ottaID = `OTTA ID`,
-      published = `MOL-SUBTYPE-NAME (published)`
-    )
-
-  # combine & drop NAs
-  dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
-    dplyr::filter(published != "n/a")
-}
-
-#********************************************************************
 # Import nanostring data of overlapped samples and select those that
 # match the mapping table returned from get_mapping()
 #********************************************************************
