@@ -92,7 +92,7 @@ get_overlap <- function(array, pred, map) {
 evaluate_array <- function(x) {
   published_vs_array <- list(
     splendid::evaluation(x$published, x$array),
-    caret::confusionMatrix(x$published, x$array)
+    caret::confusionMatrix(x$array, x$published)
   )
   tibble::lst(published_vs_array)
 }
