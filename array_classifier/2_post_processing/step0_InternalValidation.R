@@ -5,82 +5,79 @@
 library(here)
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
-# top algos overall NO threshold
-ranked.algo <- top_algo_plot(
-  dir = "data/",
-  threshold = FALSE,
-  plot.title = "Algorithm Performance Ranking",
-  print = FALSE,
-  save = FALSE
-)
+# Common arguments
+plot_args <- list(dir = "data", print = FALSE, save = FALSE)
+save_args <- list(width = 16, height = 9)
+save_dir <- "outputs/plots"
 
-ggplot2::ggsave(
-  ranked.algo,
-  filename = "outputs/plots/ranked_algorithms_noThreshold.png",
-  width = 16,
-  height = 9
+# top algos overall NO threshold
+ranked.algo <- purrr::invoke(top_algo_plot,
+                             plot_args,
+                             threshold = FALSE,
+                             plot.title = "Algorithm Performance Ranking")
+
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "ranked_algorithms_noThreshold.png"),
+  plot = ranked.algo
 )
 
 # top algos overall threshold
-ranked.algo.threshold <- top_algo_plot(
-  dir = "data/",
-  threshold = TRUE,
-  plot.title = "Algorithm Performance Ranking with Threshold",
-  print = FALSE,
-  save = FALSE
-)
+ranked.algo.threshold <- purrr::invoke(top_algo_plot,
+                                       plot_args,
+                                       threshold = TRUE,
+                                       plot.title = "Algorithm Performance Ranking with Threshold")
 
-ggplot2::ggsave(
-  ranked.algo.threshold,
-  filename = "outputs/plots/ranked_algorithms_threshold.png",
-  width = 16,
-  height = 9
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "ranked_algorithms_threshold.png"),
+  plot = ranked.algo.threshold
 )
 
 # top two NO threshold
-top.algs <- sup_plots(
-  dir = "data/",
-  plot.title = "Top Supervised Alg Evaluation",
+top.algs <- purrr::invoke(
+  sup_plots,
+  plot_args,
   threshold = FALSE,
-  print = FALSE,
-  save = FALSE,
+  plot.title = "Top Supervised Alg Evaluation",
   algs = c("mlr_ridge", "mlr_lasso")
 )
 
-ggplot2::ggsave(
-  top.algs[[1]],
-  filename = "outputs/plots/top2_algorithms_byClass_noThreshold.png",
-  width = 16,
-  height = 9
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "top2_algorithms_byClass_noThreshold.png"),
+  plot = top.algs[[1]]
 )
 
-ggplot2::ggsave(
-  top.algs[[2]],
-  filename = "outputs/plots/top2_algorithms_noThreshold.png",
-  width = 16,
-  height = 9
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "top2_algorithms_noThreshold.png"),
+  plot = top.algs[[2]]
 )
 
 # top two threshold
-top.algs.threshold <- sup_plots(
-  dir = "data/",
-  plot.title = "Top Supervised Alg Evaluation with Threshold",
+top.algs.threshold <- purrr::invoke(
+  sup_plots,
+  plot_args,
   threshold = TRUE,
-  print = FALSE,
-  save = FALSE,
+  plot.title = "Top Supervised Alg Evaluation with Threshold",
   algs = c("adaboost", "rf")
 )
 
-ggplot2::ggsave(
-  top.algs.threshold[[1]],
-  filename = "outputs/plots/top2_algorithms_byClass_threshold.png",
-  width = 16,
-  height = 9
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "top2_algorithms_byClass_threshold.png"),
+  plot = top.algs.threshold[[1]]
 )
 
-ggplot2::ggsave(
-  top.algs.threshold[[2]],
-  filename = "outputs/plots/top2_algorithms_threshold.png",
-  width = 16,
-  height = 9
+purrr::invoke(
+  ggplot2::ggsave,
+  save_args,
+  filename = file.path(save_dir, "top2_algorithms_threshold.png"),
+  plot = top.algs.threshold[[2]]
 )
