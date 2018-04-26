@@ -240,7 +240,7 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
     if (threshold) {
       col <- c("#05660e", "#7acc81", "#e66b00", "#efa667")
     } else {
-      col <- c("#878787", "#c6c6c6","magenta", "#f49ae3")
+      col <- c("#878787", "#c6c6c6", "magenta", "#f49ae3")
     }
   } else {
     col <- col.cust
