@@ -54,18 +54,14 @@ train_final <- function(x.processed, alg) {
 # match the mapping table returned from get_mapping()
 #********************************************************************
 import_array <- function(dir = "data", map) {
-  # GSE
-  validation.gse <- file.path(dir, "ValidationSet/validation_gse.rds") %>%
-    readr::read_rds() %>%
-    tibble::rownames_to_column("sampleID")
-
-  # TCGA
-  validation.tcga <- file.path(dir, "ValidationSet/validation_tcga.rds") %>%
-    readr::read_rds() %>%
-    tibble::rownames_to_column("sampleID")
-
-  # combine and match with mapping table
-  validation.set <- dplyr::bind_rows(validation.gse, validation.tcga) %>%
+  # combine GSE and TCGA validation data and match with mapping table
+  validation.set <- c("gse", "tcga") %>%
+    purrr::map(
+      ~ file.path(dir, "ValidationSet", paste0("validation_", ., ".rds")) %>%
+        readr::read_rds() %>%
+        tibble::rownames_to_column("sampleID")
+    ) %>%
+    dplyr::bind_rows() %>%
     dplyr::inner_join(map["sampleID"], ., by = "sampleID") %>%
     as.data.frame() %>%
     tibble::column_to_rownames("sampleID")
