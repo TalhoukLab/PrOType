@@ -304,9 +304,8 @@ plot_evals_noCBT <- function(dir, plot.title,
   names.list <- names(evals.extract)
 
   # prepare eval list for plotting
-  evals.prep <- purrr::map2(names.list, evals.extract,
-                            ~ .y %>% data.frame(alg = .x, .)) %>%
-    dplyr::bind_rows() %>%
+  evals.prep <- purrr::map2_df(names.list, evals.extract,
+                               ~ .y %>% data.frame(alg = .x, .)) %>%
     dplyr::mutate_at(c("alg", "measure"), as.factor) %>%
     tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
     tidyr::separate(alg, c("batch_correction", "mod"), sep = "\\.") %>%
@@ -325,8 +324,7 @@ plot_evals_noCBT <- function(dir, plot.title,
       auc = .$auc,
       macro_f1 = .$macro_f1
     )) %>%
-    purrr::map2(., names.list, ~ data.frame(mod = .y, .x)) %>%
-    dplyr::bind_rows() %>%
+    purrr::map2_df(., names.list, ~ data.frame(mod = .y, .x)) %>%
     reshape2::melt(variable.name = "measure", value.name = "value") %>%
     tidyr::separate(mod, c("batch_correction", "alg"), sep = "\\.") %>%
     dplyr::mutate_at(c("batch_correction", "alg"), as.factor) %>%
