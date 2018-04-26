@@ -173,22 +173,6 @@ load_nanostring <- function(dir = "data", genes) {
 }
 
 #********************************************************************
-# Train model on prepared data
-#   x.process: data.frame with genes as columns and rownames as
-#              sampleIDs
-#   alg: algorithm to fit to x.processed. See splendid for eligible
-#        models.
-#********************************************************************
-train <- function(x.processed, alg) {
-  splendid::classification(
-    data = x.processed[, -1],
-    class = x.processed[, 1],
-    algorithms = alg,
-    standardize = FALSE
-  )
-}
-
-#********************************************************************
 # Predict fit on nanostring data
 #   fit: model fit returned from train()
 #   nstring: nanostring data on which to predict
