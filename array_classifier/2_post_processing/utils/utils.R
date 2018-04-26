@@ -87,18 +87,6 @@ get_overlap <- function(array, pred, map) {
 }
 
 #********************************************************************
-# Simple predict function to take it a fit and predict on new.data
-#********************************************************************
-predict_overlap <- function(fit, new.data) {
-  splendid::prediction(
-    mod = fit,
-    data = new.data,
-    class = seq_len(nrow(new.data))
-  ) %>%
-    data.table::setattr("sampleID", rownames(new.data))
-}
-
-#********************************************************************
 # Return list of evaluation measures. Output is required for ploting.
 #********************************************************************
 evaluate_array <- function(x) {

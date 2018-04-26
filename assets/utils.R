@@ -38,3 +38,15 @@ get_mapping <- function(dir = "data") {
   dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
     dplyr::filter(published != "n/a")
 }
+
+#********************************************************************
+# Simple predict function to take it a fit and predict on new.data
+#********************************************************************
+predict_overlap <- function(fit, new.data) {
+  splendid::prediction(
+    mod = fit,
+    data = new.data,
+    class = seq_len(nrow(new.data))
+  ) %>%
+    data.table::setattr("sampleID", rownames(new.data))
+}

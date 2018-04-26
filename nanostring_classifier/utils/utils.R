@@ -26,18 +26,6 @@ get_nstring_overlap <- function(dir = "data", map) {
 }
 
 #********************************************************************
-# Simple predict function to take it a fit and predict on new.data
-#********************************************************************
-predict_overlap <- function(fit, new.data) {
-  splendid::prediction(
-    mod = fit,
-    data = new.data,
-    class = seq_len(nrow(new.data))
-  ) %>%
-    data.table::setattr("sampleID", rownames(new.data))
-}
-
-#********************************************************************
 # Combine nanostring, its predictions and array, then join with
 # mapping table. Return table containing predicted labels on
 # nanostring and array in addition to published labels.
