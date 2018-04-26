@@ -114,52 +114,32 @@ evaluate_all <- function(x) {
 #********************************************************************
 prep_data <- function(dataSet, dir = "data") {
   subdir <- paste0("data_pr_", dataSet) # subdirectory
-  map <- build_mapping(dataSet) # build mapping table
 
   # read npcp normalized by housekeeping genes
   npcp.tmp <- file.path(dir, subdir, paste0("npcp-hcNorm_", dataSet, ".rds")) %>%
-    readr::read_rds()
-
-  # process rownames
-  # i.e. OV_TCGA_FEAST_TCGA_31_1946_01_CEL_gz => OV_TCGA_FEAST_TCGA_31_1946_01
-  # if the above is not an issue, comment out these lines
-  charDrop <- function(x) stringr::str_sub(x, 0, nchar(x) - 7)
-  npcp.tmp <- npcp.tmp %>%
-    data.frame(sampleID = rownames(.), .) %>%
-    dplyr::mutate(sampleID = charDrop(as.character(sampleID))) %>%
-    tibble::column_to_rownames("sampleID")
+    readr::read_rds() %>%
+    `rownames<-`(stringr::str_sub(rownames(.), end = -8)) # process rownames
 
   # read in diceR cluster labels (hgsc subtypes)
   train.class.tmp <- file.path(dir, subdir, paste0("all_clusts_", dataSet, ".rds")) %>%
     readr::read_rds() %>%
-    magrittr::extract(, 1) %>%
-    data.frame(labs = .) %>%
-    dplyr::inner_join(map, by = "labs") %>%
-    magrittr::use_series("labels")
+    dplyr::select(labs = 1) %>%
+    dplyr::inner_join(build_mapping(dataSet), by = "labs") %>%
+    dplyr::pull(labels)
 
   # read in required prep files
-  point_to_underscore <- function(x) stringr::str_replace(as.character(x), pattern = "\\.", replacement = "_")
-  plus_to_underscore <- function(x) stringr::str_replace(as.character(x), pattern = "\\+", replacement = "_")
-  inclusion <- readr::read_csv(paste0(dir, "inclusion.csv")) %>%
-    dplyr::mutate(Label = point_to_underscore(Label),
-                  Label = plus_to_underscore(Label))
-  keep <- inclusion %>%
-    dplyr::filter(post == 1) %>%
-    dplyr::select(Label) # This is both cut 1 and 2
-  overlap <- inclusion %>%
-    dplyr::filter(post == 3) %>%
-    dplyr::select(Label)
-  original <- read.csv(paste0(dir, "Subtype_Original.csv"), stringsAsFactors = TRUE)
-  labels <- read.csv(paste0(dir, "NS_final_labels.csv"), stringsAsFactors = TRUE)
-  npcp <- npcp.tmp[rownames(npcp.tmp) %in% keep$Label, ]
-  train.class <- train.class.tmp[rownames(npcp.tmp) %in% keep$Label]
+  inclusion <- readr::read_csv(file.path(dir, "inclusion.csv"))
+  original <- read.csv(file.path(dir, "Subtype_Original.csv"))
+  labels <- read.csv(file.path(dir, "NS_final_labels.csv"))
 
-  df <- data.frame(lab = train.class, npcp)
-  list(
-    npcp = df,
-    original = original,
-    labels = labels
-  )
+  # only keep post == 1
+  keep <- inclusion %>%
+    dplyr::mutate(Label = gsub("\\.|\\+", "_", Label)) %>%
+    dplyr::filter(post == 1) %>%
+    dplyr::pull(Label) %>%  # This is both cut 1 and 2
+    magrittr::is_in(rownames(npcp.tmp), .)
+  npcp <- data.frame(lab = train.class.tmp[keep], npcp.tmp[keep, ])
+  tibble::lst(npcp, original, labels)
 }
 
 #********************************************************************
