@@ -118,38 +118,14 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
                   measure %in% c("auc", "accuracy", "macro_f1")) %>%
     dplyr::mutate(batch_correction = as.factor(batch_correction))
 
-  # plot general metrics
-  if (is.null(col.cust)) {
-    if (threshold) {
-      col <- c("#e66b00", "#efa667",
-               "#05660e", "#7acc81",
-               "#878787", "#c6c6c6",
-               "blue", "#6f95e8",
-               "magenta", "#f49ae3",
-               "purple", "#b296d3",
-               "#ffbe00", "#ffd866",
-               "brown", "#ce9565",
-               "red", "#dd9d9d")
-    } else {
-      col <- c("#878787", "#c6c6c6",
-               "magenta", "#f49ae3",
-               "blue", "#6f95e8",
-               "purple", "#b296d3",
-               "#05660e", "#7acc81",
-               "#e66b00", "#efa667",
-               "#ffbe00", "#ffd866",
-               "brown", "#ce9565",
-               "red", "#dd9d9d")
-    }
-  } else {
-    col <- col.cust
-  }
-
   # prepare df for ggplot2
   df <- iv.combine %>%
     dplyr::mutate(mod = reorder(mod, -percentile_50),
                   bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
+
+  # create colour palette
+  col <- col.cust %||% purrr::map_chr(levels(droplevels(df$bcm)), match_colour)
 
   # plot evaluation measures
   p <- df %>%
@@ -231,16 +207,9 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
     dplyr::mutate(bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
 
-  # plot class-wise metrics
-  if (is.null(col.cust)) {
-    if (threshold) {
-      col <- c("#05660e", "#7acc81", "#e66b00", "#efa667")
-    } else {
-      col <- c("#878787", "#c6c6c6", "magenta", "#f49ae3")
-    }
-  } else {
-    col <- col.cust
-  }
+  # create colour palette
+  col <- col.cust %||% purrr::map_chr(levels(droplevels(iv.combine$bcm)),
+                                      match_colour)
 
   # store common ggplot layers
   gglayers <- list(
@@ -378,4 +347,29 @@ plot_evals_noCBT <- function(dir, plot.title,
     print(p2)
   }
   list(p1, p2)
+}
+
+# match batch and algorithm combinations to colour palette
+match_colour <- function(x) {
+  switch(
+    as.character(x),
+    xpn.mlr_ridge = "#878787",
+    cbt.mlr_ridge = "#c6c6c6",
+    xpn.mlr_lasso = "magenta",
+    cbt.mlr_lasso = "#f49ae3",
+    xpn.svm = "blue",
+    cbt.svm = "#6f95e8",
+    xpn.pam = "purple",
+    cbt.pam = "#b296d3",
+    xpn.rf = "#05660e",
+    cbt.rf = "#7acc81",
+    xpn.adaboost = "#e66b00",
+    cbt.adaboost = "#efa667",
+    xpn.nbayes = "#ffbe00",
+    cbt.nbayes = "#ffd866",
+    xpn.knn = "brown",
+    cbt.knn = "#ce9565",
+    xpn.lda = "red",
+    cbt.lda = "#dd9d9d"
+  )
 }
