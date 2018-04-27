@@ -152,7 +152,7 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
     dplyr::group_by(batch_correction, mod, measure)
 
   # plot evaluation measures
-  p1 <- df %>%
+  p <- df %>%
     ggplot2::ggplot(ggplot2::aes(
       x = mod,
       y = percentile_50,
@@ -177,10 +177,10 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
 
   # save plot
   if (save) {
-    ggplot2::ggsave(plot = p1, filename = "outputs/plots/all_algos_ranked.png")
+    ggplot2::ggsave(plot = p, filename = "outputs/plots/all_algos_ranked.png")
   }
-  if (print) print(p1)
-  p1
+  if (print) print(p)
+  p
 }
 
 #********************************************************************
