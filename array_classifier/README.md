@@ -87,16 +87,16 @@ The supervised analysis performs an ensemble classification scheme which perform
 
 1. `cd` into the `3_Supervised` directory from the main working directory.
 2. Open `Parameters.sh` with your favourite text editor.
-3. Specify the paramters specific to your system and purpose.
+3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line of the server if you are uncertain.
     * type: specify the platform type of the gene expression data you require (affy or agil)
     * **dataSet**: specify the name of the dataset you are calling
     * **reps**: number of bootstrap resamples to perform per algorithm
     * **IsHousekeepingNormalized**: "TRUE" indicates you are using housekeeping normalized data for your analysis. The normalization/no-normalization is decided during the gene mapping section.
     * **normalizeBy**: The type of normalization to perform on the data set. No normalization is recommended. See the package `splendid` for further details.
-    * **minVar**: The minimum variance a gene should have across samples. If above minVar, it is dropped.
+    * **minVar**: The minimum variance a gene should have across samples. Genes with variance less than `minVar` are dropped.
     * **threshold**: Predicted labels receive a class of "unclassified" whenever the largest predicted probability of a sample is less than the specified threshold. See implementation in `splendid:::class_threshold`.
-    * **normType**: if normalizeBy is not None, then select the type of normalization (conventional or robust)
+    * **normType**: if `normalizeBy` is not None, then select the type of normalization (conventional or robust)
     * **workDir**: your working directory (path where this pipeline exists)
     * **outputDir**: the output directory (path where pipeline outputs will be stored)
     * **inputDir**: path of the raw input data used for clustering (may be same as output directory for the unsupervised analysis, since results of that analysis are being called here)
@@ -117,10 +117,10 @@ Internal validation will return a summary of the results for the supervised lear
 
 1. `cd` into the `4_IVSummary` directory from the main working directory.
 2. Open `Parameters.sh` with your favourite text editor.
-3. Specify the paramters specific to your system and purpose.
+3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line of the server if you are uncertain.
     * **type**: specify the platform type of the gene expression data you require (affy or agil)
-    * **dataSet**: specify a list of data sets seperated by a space. i.e `dataSet=("ov.afc2_xpn ov.afc1_xpn")`
+    * **dataSet**: specify a list of data sets separated by a space. i.e `dataSet=("ov.afc2_xpn ov.afc1_xpn")`
     * **top**: select the top N number of algorithms you wish to return.
     * **workDir**: your working directory (path where this pipeline exists)
     * **outputDir**: the output directory (path where pipeline outputs will be stored)
@@ -155,7 +155,7 @@ Internal validation will return a summary of the results for the supervised lear
 
 #### Transferring `1_cluster_pipeline` results to `2_post_processing`
 
-The `data` folder provided to you should contain all necessary data dependencies to run the post processing. If you are interested in examining the results returned after running the pipeline yourself, you must transfer the `data_pr_studyname`, where studyname is the name of the study, from the outputs of the pipeline and replace those corresponding directories (with the same name) located in the data folder. The `data_pr_studyname` contains all necessary outputs required for post-processing.
+The `data` folder provided to you should contain all necessary data dependencies to run the post processing. If you are interested in examining the results returned after running the pipeline yourself, you must transfer the `data_pr_studyname`, where `studyname` is the name of the study, from the outputs of the pipeline and replace those corresponding directories (with the same name) located in the data folder. The `data_pr_studyname` contains all necessary outputs required for post-processing.
 
 ---
 
