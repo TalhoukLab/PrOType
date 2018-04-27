@@ -119,7 +119,6 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
     dplyr::mutate(batch_correction = as.factor(batch_correction))
 
   # plot general metrics
-  pd <- ggplot2::position_dodge(width = 0.5)
   if (is.null(col.cust)) {
     if (threshold) {
       col <- c("#e66b00", "#efa667",
@@ -160,12 +159,12 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
       colour = bcm,
       group = bcm
     )) +
-    ggplot2::geom_point(position = pd) +
+    ggplot2::geom_point(position = ggplot2::position_dodge(width = 0.5)) +
     ggplot2::facet_wrap(~measure) +
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
       width = 0.4,
-      position = pd
+      position = ggplot2::position_dodge(width = 0.5)
     ) +
     ggplot2::theme_bw() +
     ggplot2::ylim(0.6, 1) +
@@ -233,7 +232,6 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
     dplyr::group_by(batch_correction, mod, measure)
 
   # plot class-wise metrics
-  pd <- ggplot2::position_dodge(width = 0.5)
   if (is.null(col.cust)) {
     if (threshold) {
       col <- c("#05660e", "#7acc81", "#e66b00", "#efa667")
@@ -247,11 +245,11 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
   # store common ggplot layers
   gglayers <- list(
     ggplot2::aes(y = percentile_50, colour = bcm, group = bcm),
-    ggplot2::geom_point(position = pd),
+    ggplot2::geom_point(position = ggplot2::position_dodge(width = 0.5)),
     ggplot2::geom_errorbar(
       ggplot2::aes(ymin = percentile_5, ymax = percentile_95),
       width = 0.4,
-      position = pd
+      position = ggplot2::position_dodge(width = 0.5)
     ),
     ggplot2::theme_bw(),
     ggplot2::facet_wrap(~ measure, scales = "free"),
@@ -331,20 +329,19 @@ plot_evals_noCBT <- function(dir, plot.title,
                   bcm = interaction(batch_correction, alg)) %>%
     dplyr::filter(batch_correction == "xpn")
 
-  # specify positioning and colour
-  pd <- ggplot2::position_dodge(width = 0.5)
-  brks <- paste(rep("xpn", 4), algs, sep = ".")
-
   # store common ggplot layers
   gglayers <- list(
     ggplot2::aes(y = value, colour = bcm, group = bcm),
-    ggplot2::geom_point(position = pd, size = 3),
+    ggplot2::geom_point(position = ggplot2::position_dodge(width = 0.5),
+                        size = 3),
     ggplot2::facet_wrap(~ measure, scales = "free") ,
     ggplot2::theme_bw(),
     ggplot2::labs(x = "Evaluation Measure",
                   y = "Evaluation Measure Value",
                   title = plot.title)
   )
+  # specify breaks
+  brks <- paste(rep("xpn", 4), algs, sep = ".")
 
   # create class-wise plots for class eval measures
   p1 <- evals.prep %>%
