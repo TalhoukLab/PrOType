@@ -288,7 +288,7 @@ plot_evals_noCBT <- function(plot.title, dir,
                   title = plot.title)
   )
   # specify breaks
-  brks <- paste(rep("xpn", 4), algs, sep = ".")
+  brks <- paste("xpn", algs, sep = ".")
 
   # create class-wise plots for class eval measures
   p1 <- evals.prep %>%
