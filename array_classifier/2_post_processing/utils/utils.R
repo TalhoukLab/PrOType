@@ -134,7 +134,7 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
     ggplot2::labs(x = "Evaluation Measure",
                   y = "Evaluation Measure Value",
                   title = plot.title) +
-    ggplot2::theme(legend.position = 'bottom') +
+    ggplot2::theme(legend.position = "bottom") +
     ggplot2::guides(color = guide_legend(nrow = 2, byrow = FALSE))
 
   # save plot
