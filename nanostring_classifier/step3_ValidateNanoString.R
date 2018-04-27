@@ -26,9 +26,5 @@ pred.overlap.array <- readr::read_rds(
 overlap <- combine(pred.overlap.array, overlap.nstring, pred.overlap.nstring)
 
 # evaluate overlap results
-eval.overlap <- evaluate_all(overlap) %>%
-  purrr::transpose(.)
-readr::write_rds(
-  eval.overlap,
-  paste0("outputs/evals/ov.afc1_xpn_adaboost.rds")
-)
+eval.overlap <- purrr::transpose(evaluate_all(overlap))
+readr::write_rds(eval.overlap, "outputs/evals/ov.afc1_xpn_adaboost.rds")
