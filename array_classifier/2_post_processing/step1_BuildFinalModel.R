@@ -11,30 +11,20 @@ cbt.dat <- import_study("data", "ov.afc1_cbt")
 save_dir <- "outputs/fits"
 
 # fit algo
-seed <- readRDS("data/seed.rds")
-
-.Random.seed <- seed
 fit.xpn.adaboost <- train_final(xpn.dat, alg = "adaboost", file.name = file.path(save_dir, "ov.afc1_xpn_adaboost.rds"))
 
-.Random.seed <- seed
 fit.xpn.rf <- train_final(xpn.dat, alg = "rf", file.name = file.path(save_dir, "ov.afc1_xpn_rf.rds"))
 
-.Random.seed <- seed
 fit.xpn.mlr_ridge <- train_final(xpn.dat, alg = "mlr_ridge", file.name = file.path(save_dir, "ov.afc1_xpn_mlr_ridge.rds"))
 
-.Random.seed <- seed
 fit.xpn.mlr_lasso <- train_final(xpn.dat, alg = "mlr_lasso", file.name = file.path(save_dir, "ov.afc1_xpn_mlr_lasso.rds"))
 
-.Random.seed <- seed
 fit.cbt.adaboost <- train_final(cbt.dat, alg = "adaboost", file.name = file.path(save_dir, "ov.afc1_cbt_adaboost.rds"))
 
-.Random.seed <- seed
 fit.cbt.rf <- train_final(cbt.dat, alg = "rf", file.name = file.path(save_dir, "ov.afc1_cbt_rf.rds"))
 
-.Random.seed <- seed
 fit.cbt.mlr_ridge <- train_final(cbt.dat, alg = "mlr_ridge", file.name = file.path(save_dir, "ov.afc1_cbt_mlr_ridge.rds"))
 
-.Random.seed <- seed
 fit.cbt.mlr_lasso <- train_final(cbt.dat, alg = "mlr_lasso", file.name = file.path(save_dir, "ov.afc1_cbt_mlr_lasso.rds"))
 
 # build list of all fits
