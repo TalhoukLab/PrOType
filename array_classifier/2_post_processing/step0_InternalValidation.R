@@ -9,54 +9,38 @@ source(here("array_classifier/2_post_processing/utils/utils.R"))
 plot_args <- list(dir = "data", print = FALSE, save = FALSE)
 save_args <- list(width = 16, height = 9)
 save_dir <- "outputs/plots"
+ranked_fn <- file.path(save_dir, c("ranked_algorithms_noThreshold.png",
+                                   "ranked_algorithms_threshold.png"))
+top2_fn <- file.path(save_dir, c("top2_algorithms_byClass_noThreshold.png",
+                                 "top2_algorithms_noThreshold.png"))
+top2_th_fn <- file.path(save_dir, c("top2_algorithms_byClass_threshold.png",
+                                    "top2_algorithms_threshold.png"))
 
-# top algos overall NO threshold
-ranked.algo <- purrr::invoke(top_algo_plot,
-                             plot_args,
-                             threshold = FALSE,
-                             plot.title = "Algorithm Performance Ranking")
+# top algos overall (without/with) threshold
+ranked.algo <- purrr::map2(
+  c(FALSE, TRUE),
+  c("Algorithm Performance Ranking",
+    "Algorithm Performance Ranking with Threshold"),
+  ~ purrr::invoke(top_algo_plot, plot_args, threshold = .x, plot.title = .y)
+) %>% purrr::set_names(ranked_fn)
 
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "ranked_algorithms_noThreshold.png"),
-  plot = ranked.algo
-)
-
-# top algos overall threshold
-ranked.algo.threshold <- purrr::invoke(top_algo_plot,
-                                       plot_args,
-                                       threshold = TRUE,
-                                       plot.title = "Algorithm Performance Ranking with Threshold")
-
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "ranked_algorithms_threshold.png"),
-  plot = ranked.algo.threshold
+purrr::iwalk(
+  ranked.algo,
+  ~ purrr::invoke(ggplot2::gsave, save_args, filename = .y, plot = .x)
 )
 
 # top two NO threshold
-top.algs <- purrr::invoke(
+top.algs.no.threshold <- purrr::invoke(
   sup_plots,
   plot_args,
   threshold = FALSE,
   plot.title = "Top Supervised Alg Evaluation",
   algs = c("mlr_ridge", "mlr_lasso")
-)
+) %>% purrr::set_names(top2_fn)
 
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "top2_algorithms_byClass_noThreshold.png"),
-  plot = top.algs[[1]]
-)
-
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "top2_algorithms_noThreshold.png"),
-  plot = top.algs[[2]]
+purrr::iwalk(
+  top.algs.no.threshold,
+  ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
 
 # top two threshold
@@ -66,18 +50,9 @@ top.algs.threshold <- purrr::invoke(
   threshold = TRUE,
   plot.title = "Top Supervised Alg Evaluation with Threshold",
   algs = c("adaboost", "rf")
-)
+) %>% purrr::set_names(top2_th_fn)
 
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "top2_algorithms_byClass_threshold.png"),
-  plot = top.algs.threshold[[1]]
-)
-
-purrr::invoke(
-  ggplot2::ggsave,
-  save_args,
-  filename = file.path(save_dir, "top2_algorithms_threshold.png"),
-  plot = top.algs.threshold[[2]]
+purrr::iwalk(
+  top.algs.threshold,
+  ~ purrr::invoke(ggplot2::gsave, save_args, filename = .y, plot = .x)
 )
