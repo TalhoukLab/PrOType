@@ -99,28 +99,18 @@ load_nanostring <- function(dir = "data", genes) {
   npcp <- data.frame(t(genes))
   colnames(npcp) <- genes
 
-  # import batch 1 nanostring
-  b1 <- file.path(dir, "nanostring_classifier_data_batch1_20170217_updated.csv") %>%
-    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
-    dplyr::mutate(batch = "b1")
+  # nanostring data filenames
+  batches <- file.path(dir, c(
+    "nanostring_classifier_data_batch1_20170217_updated.csv",
+    "nanostring_classifier_data_batch2_20170221.csv",
+    "nanostring_classifier_data_batch3_20170307_updated_NCO.csv",
+    "nanostring_classifier_data_batch4_20170512.csv"
+  )) %>% purrr::set_names(gsub(".*(b)atch([0-9]+).*", "\\1\\2", .))
 
-  # import batch 2 nanostring
-  b2 <- file.path(dir, "nanostring_classifier_data_batch2_20170221.csv") %>%
-    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
-    dplyr::mutate(batch = "b2")
-
-  # import batch 3 nanostring
-  b3 <- file.path(dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv") %>%
-    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
-    dplyr::mutate(batch = "b3")
-
-  # import batch 4 nanostring
-  b4 <- file.path(dir, "nanostring_classifier_data_batch4_20170512.csv") %>%
-    read.csv(header = TRUE, stringsAsFactors = FALSE) %>%
-    dplyr::mutate(batch = "b4")
-
-  # combine into list
-  test.dat <- tibble::lst(b1, b2, b3, b4)
+  # import batch 1-4 nanostring and combine into list
+  test.dat <- batches %>%
+    purrr::imap(~ read.csv(.x, header = TRUE, stringsAsFactors = FALSE) %>%
+                  dplyr::mutate(batch = .y))
 
   # extract intersecting genes
   matched <- test.dat %>%
