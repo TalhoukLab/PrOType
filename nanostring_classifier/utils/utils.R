@@ -87,7 +87,8 @@ prep_data <- function(dataSet, dir = "data") {
     dplyr::filter(post == 1) %>%
     dplyr::pull(Label) %>%  # This is both cut 1 and 2
     magrittr::is_in(rownames(npcp.tmp), .)
-  npcp <- data.frame(lab = train.class.tmp[keep], npcp.tmp[keep, ])
+  npcp <- data.frame(lab = train.class.tmp[keep], npcp.tmp[keep, ],
+                     check.names = FALSE)
   tibble::lst(npcp, original, labels)
 }
 
@@ -109,14 +110,15 @@ load_nanostring <- function(dir = "data", genes) {
 
   # import batch 1-4 nanostring and combine into list
   test.dat <- batches %>%
-    purrr::imap(~ read.csv(.x, header = TRUE, stringsAsFactors = FALSE) %>%
-                  dplyr::mutate(batch = .y))
+    purrr::imap(~ dplyr::mutate(readr::read_csv(.x), batch = .y))
 
   # extract intersecting genes
   matched <- test.dat %>%
-    purrr::map_df(`[`, c("OTTA.ID", genes, "batch")) %>%
-    tibble::column_to_rownames("OTTA.ID") %>%
+    purrr::map_df(`[`, c("OTTA ID", genes, "batch")) %>%
+    as.data.frame() %>%
     na.omit() %>%
+    `rownames<-`(NULL) %>%
+    tibble::column_to_rownames("OTTA ID") %>%
     data.table::setattr("batch", .$batch) %>%
     dplyr::select(-batch)
   matched
