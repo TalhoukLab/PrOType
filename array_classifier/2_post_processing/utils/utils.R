@@ -101,19 +101,8 @@ evaluate_array <- function(x) {
 #********************************************************************
 top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
                           print = TRUE, save = TRUE, col.cust = NULL) {
-  # IV threshold filenames
-  fn.iv.xpn <- file.path(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-  fn.iv.cbt <- file.path(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
-  if (!threshold) {
-    # IV filenames
-    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
-    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
-  }
-  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
-  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
-
   # process data for general metrics
-  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
+  iv.combine <- import_iv(dir = dir, threshold = threshold) %>%
     dplyr::filter(normalization == "hc",
                   measure %in% c("auc", "accuracy", "macro_f1")) %>%
     dplyr::mutate(batch_correction = as.factor(batch_correction))
@@ -166,25 +155,17 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
 sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
                       algs = c("mlr_ridge", "mlr_lasso"),
                       print = TRUE, save = TRUE, col.cust = NULL) {
-  # IV threshold filenames
-  fn.iv.xpn <- file.path(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
-  fn.iv.cbt <- file.path(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
-  if (!threshold) {
-    # IV filenames
-    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
-    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
-  }
-  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
-  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
-
   # create mapping tables for xpn & cbt
   maps <- c("ov.afc1_xpn", "ov.afc1_cbt") %>%
     purrr::set_names(c("xpn", "cbt")) %>%
     purrr::map(build_mapping) %>%
     purrr::map(dplyr::transmute, labels, class = as.factor(labs))
 
+  # import iv data
+  iv.data <- import_iv(dir = dir, threshold = threshold)
+
   # process and combine xpn and cbt data
-  iv.combine.class <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
+  iv.combine.class <- iv.data %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
                   stringr::str_detect(measure, "\\.")) %>%
@@ -200,7 +181,7 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
     dplyr::group_by(batch_correction, mod, measure)
 
   # process and combine xpn and cbt for general metrics
-  iv.combine <- rbind(sup.iv.xpn, sup.iv.cbt) %>%
+  iv.combine <- iv.data %>%
     dplyr::filter(mod %in% algs,
                   normalization == "hc",
                   measure %in% c("auc", "accuracy", "macro_f1")) %>%
@@ -347,6 +328,21 @@ plot_evals_noCBT <- function(dir, plot.title,
     print(p2)
   }
   list(p1, p2)
+}
+
+# import (threshold) iv summary data
+import_iv <- function(dir = "data", threshold = TRUE) {
+  # IV threshold filenames
+  fn.iv.xpn <- file.path(dir, "data_pr_ov.afc1_xpn/iv_summary_ov.afc1_xpn_threshold.rds")
+  fn.iv.cbt <- file.path(dir, "data_pr_ov.afc1_cbt/iv_summary_ov.afc1_cbt_threshold.rds")
+  if (!threshold) {
+    # IV filenames
+    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
+    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
+  }
+  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
+  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
+  rbind(sup.iv.xpn, sup.iv.cbt)
 }
 
 # match batch and algorithm combinations to colour palette
