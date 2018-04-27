@@ -26,7 +26,7 @@ ranked.algo <- purrr::map2(
 
 purrr::iwalk(
   ranked.algo,
-  ~ purrr::invoke(ggplot2::gsave, save_args, filename = .y, plot = .x)
+  ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
 
 # top two NO threshold
@@ -54,5 +54,5 @@ top.algs.threshold <- purrr::invoke(
 
 purrr::iwalk(
   top.algs.threshold,
-  ~ purrr::invoke(ggplot2::gsave, save_args, filename = .y, plot = .x)
+  ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
