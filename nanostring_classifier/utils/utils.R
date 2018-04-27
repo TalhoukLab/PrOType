@@ -18,8 +18,7 @@ get_nstring_overlap <- function(dir = "data", map) {
   nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("ottaID") %>%
-    dplyr::inner_join(map, ., by = "ottaID") %>%
-    dplyr::select(-c(sampleID, published)) %>%
+    dplyr::inner_join(map["ottaID"], ., by = "ottaID") %>%
     as.data.frame() %>%
     tibble::column_to_rownames("ottaID")
   nanostring
