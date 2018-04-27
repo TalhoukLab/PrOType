@@ -38,19 +38,11 @@ fit.cbt.mlr_ridge <- train_final(cbt.dat, alg = "mlr_ridge", file.name = file.pa
 fit.cbt.mlr_lasso <- train_final(cbt.dat, alg = "mlr_lasso", file.name = file.path(save_dir, "ov.afc1_cbt_mlr_lasso.rds"))
 
 # build list of all fits
-be <- c("ov.afc1_xpn", "ov.afc1_cbt")
-algs <- c("adaboost", "rf", "mlr_ridge", "mlr_lasso")
-fit.c1 <- list()
-alg.list <- list()
-for (i in seq_along(be)) {
-  for (j in seq_along(algs)) {
-    fit.tmp <- readr::read_rds(
-      file.path(save_dir, paste0(be[i], "_", algs[j], ".rds"))
-    )
-    alg.list[[j]] <- fit.tmp
-  }
-  names(alg.list) <- algs
-  fit.c1[[i]] <- alg.list
-}
-names(fit.c1) <- be
+be <- purrr::set_names(c("ov.afc1_xpn", "ov.afc1_cbt"))
+algs <- purrr::set_names(c("adaboost", "rf", "mlr_ridge", "mlr_lasso"))
+fit.c1 <- purrr::map(be, function(b) {
+  purrr::map(algs, function(a) {
+    readr::read_rds(file.path(save_dir, paste0(b, "_", a, ".rds")))
+  })
+})
 readr::write_rds(fit.c1, file.path(save_dir, "all_fits.rds"))
