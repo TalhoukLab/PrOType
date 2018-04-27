@@ -6,6 +6,8 @@ library(here)
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 set.seed(2017)
+preds_dir <- "outputs/predictions"
+evals_dir <- "outputs/evals"
 
 # import cut 1 fits
 fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
@@ -19,15 +21,16 @@ overlap.array <- import_array(map = map)
 pred.overlap.array <- fit.c1 %>%
   purrr::imap(~ {
     purrr::imap(.x, function(z, k) {
-      bc <- stringr::str_sub(.y, nchar(.y) - 2, nchar(.y))
-      fname <- paste0("outputs/predictions/array_", bc, "_", k, ".rds")
+      bc <- stringr::str_sub(.y, nchar(.y) - 2)
+      fname <- file.path(preds_dir, paste0("array_", bc, "_", k, ".rds"))
       preds <- predict_overlap(z, overlap.array)
       readr::write_rds(preds, path = fname)
       return(preds)
     })
   }) %>%
   purrr::modify_depth(2, ~ get_overlap(overlap.array, ., map))
-readr::write_rds(pred.overlap.array, "outputs/predictions/pred_overlap_array.rds")
+readr::write_rds(pred.overlap.array,
+                 file.path(preds_dir, "pred_overlap_array.rds"))
 
 # evaluate overlap results
 eval.overlap <- pred.overlap.array %>%
@@ -39,9 +42,8 @@ eval.overlap <- pred.overlap.array %>%
 names.ls <- eval.overlap %>%
   purrr::map(~ {
     purrr::imap(., function(y, z) {
-      study.extract <- stringr::str_sub(z, nchar(z) - 2, nchar(z))
-      aname <- names(y)
-      paste(study.extract, aname, sep = ".")
+      study.extract <- stringr::str_sub(z, nchar(z) - 2)
+      paste(study.extract, names(y), sep = ".")
     }) %>%
       purrr::flatten()
   })
@@ -49,21 +51,16 @@ names.ls <- eval.overlap %>%
 # name overlapping evaluation results list
 evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
   purrr::pmap(~ {
-    named <- purrr::flatten(..1) %>% purrr::set_names(..2)
-    readr::write_rds(named, paste0("outputs/evals/", ..3, ".rds"))
+    named <- purrr::set_names(purrr::flatten(..1), ..2)
+    readr::write_rds(named, file.path(evals_dir, paste0(..3, ".rds")))
     return(named)
   })
 
 # visualize evaluation results
-eval.plots <- purrr::imap(evals.all, function(x, y) {
-  pname <- paste0("outputs/evals/", y, ".rds")
-  ptitle <- stringr::str_split(y, "_") %>%
-    purrr::map(~ paste(.[1], .[2], .[3], sep = " "))
-  p.ls <- plot_evals_noCBT(
-    pname,
-    plot.title = paste0(ptitle),
+eval.plots <- names(evals.all) %>%
+  purrr::map(~ plot_evals_noCBT(
+    dir = file.path(evals_dir, paste0(., ".rds")),
+    plot.title = gsub("_", " ", .),
     save = TRUE,
     print = FALSE
-  )
-  p.ls
-})
+  ))
