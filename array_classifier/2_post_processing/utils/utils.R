@@ -101,15 +101,12 @@ evaluate_array <- function(x) {
 #********************************************************************
 top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
                           print = TRUE, save = TRUE, col.cust = NULL) {
-  # process data for general metrics
-  iv.combine <- import_iv(dir = dir, threshold = threshold) %>%
+  # import iv data, process for general metrics, prepare for ggplot
+  df <- import_iv(dir = dir, threshold = threshold) %>%
     dplyr::filter(normalization == "hc",
                   measure %in% c("auc", "accuracy", "macro_f1")) %>%
-    dplyr::mutate(batch_correction = as.factor(batch_correction))
-
-  # prepare df for ggplot2
-  df <- iv.combine %>%
-    dplyr::mutate(mod = reorder(mod, -percentile_50),
+    dplyr::mutate(batch_correction = as.factor(batch_correction),
+                  mod = reorder(mod, -percentile_50),
                   bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
 
