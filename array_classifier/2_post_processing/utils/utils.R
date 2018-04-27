@@ -99,7 +99,7 @@ evaluate_array <- function(x) {
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
+top_algo_plot <- function(plot.title, dir = "data", threshold = TRUE,
                           print = TRUE, save = TRUE, col.cust = NULL) {
   # import iv data, process for general metrics, prepare for ggplot
   df <- import_iv(dir = dir, threshold = threshold) %>%
@@ -149,7 +149,7 @@ top_algo_plot <- function(dir = "data", threshold = TRUE, plot.title,
 # Plot evaluation measures by class and overall for top algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
 #********************************************************************
-sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
+sup_plots <- function(plot.title, dir = "data", threshold = TRUE,
                       algs = c("mlr_ridge", "mlr_lasso"),
                       print = TRUE, save = TRUE, col.cust = NULL) {
   # create mapping tables for xpn & cbt
@@ -235,7 +235,7 @@ sup_plots <- function(dir = "data", threshold = TRUE, plot.title,
 # Plot evaluation measures by class and overall.
 #   eval.dir: path to evaluation list
 #********************************************************************
-plot_evals_noCBT <- function(dir, plot.title,
+plot_evals_noCBT <- function(plot.title, dir,
                              algs = c("mlr_ridge", "mlr_lasso", "adaboost", "rf"),
                              print = TRUE, save = TRUE, col.cust = NULL,
                              y.lim.class = c(0.1, 1), y.lim.all = c(0.25, 1)) {
