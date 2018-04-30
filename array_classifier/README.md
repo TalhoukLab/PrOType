@@ -2,12 +2,13 @@
 
 This documentation will guide you through the process of running the array classification pipeline, which entails the following:
 
-1. `1_cluster_pipeline`: performs consensus clustering to determine HGSC subtypes then an ensemble supervised scheme to classify these subtypes, all of which are conducted in a cluster environment sequentially. 
-2. `2_post_processing`: validates the top performing classifiers across batch correction methods (XPN and CBT) and selects the candidate model to be used with cross-platform prediction on Nanostring.
+1. `1_cluster_pipeline`: performs consensus clustering to determine HGSC subtypes using an unsupervised ensemble  method and performs supervised analysis to classify these subtypes, all of which are conducted in a computer cluster environment sequentially. 
+
+2. `2_post_processing`: validates the top performing classifiers for different batch correction methods (XPN and CBT) and selects the candidate model to be used for prediction on Nanostring.
 
 Please follow the manual below to run the pipeline on your system.
 
-Data required by the pipeline will be provided upon request.
+Data required by the pipeline is provided upon request.
 
 
 

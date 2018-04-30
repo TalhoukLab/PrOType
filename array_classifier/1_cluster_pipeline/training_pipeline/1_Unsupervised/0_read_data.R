@@ -5,13 +5,10 @@
 library(diceR)
 library(tidyverse)
 
-# load data
-#fname <- paste0(dpath, ndat, ".rds")
-#tdat <- readRDS(fname) %>% t(.)
 
 # load data
 fname <- paste0(dpath, ndat, ".RData")
-tdat <- load(fname) %>% get(.) %>% t(.) 
+tdat <- load(fname) %>% get(.) %>% t(.)
 
 
 #Center and scale
