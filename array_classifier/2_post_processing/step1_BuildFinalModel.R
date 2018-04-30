@@ -16,7 +16,14 @@ save_dir <- "outputs/fits"
 # fit algo
 purrr::walk2(all.dat, be, ~ {
   purrr::walk(algs, function(a) {
-    train_final(.x, a, file.path(save_dir, paste0(.y, "_", a, ".rds")))
+    fit <- splendid::classification(
+      data = .x[, -1],
+      class = .x[, 1],
+      algorithms = a,
+      standardize = FALSE
+    )
+    readr::write_rds(fit, file.path(save_dir, paste0(.y, "_", a, ".rds")))
+    fit
   })
 })
 

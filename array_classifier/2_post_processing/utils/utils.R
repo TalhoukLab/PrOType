@@ -36,23 +36,6 @@ import_study <- function(dir = "data", study = "ov.afc1_cbt",
 }
 
 #********************************************************************
-# train a given algorithm on a given training set
-#   x.processed: training set
-#   alg: algorithm of interest (see splendid docs for further details)
-#   file.name: if not NULL, fit will be saved to an rds object
-#********************************************************************
-train_final <- function(x.processed, alg, file.name = NULL) {
-  fit <- splendid::classification(
-    data = x.processed[, -1],
-    class = x.processed[, 1],
-    algorithms = alg,
-    standardize = FALSE
-  )
-  if (!is.null(file.name)) readr::write_rds(fit, file.name)
-  fit
-}
-
-#********************************************************************
 # Import array data of overlapped samples and select those that
 # match the mapping table returned from get_mapping()
 #********************************************************************
