@@ -1,86 +1,93 @@
+# Fixed Inputs: cdat, ndat, sfdir, r, k
+# Variable Inputs: algs, s
+
 library(diceR)
+library(tidyverse)
 
 # Categories of algorithms
 NALG <- "nmf"
 DALG <- c("hc", "diana", "km", "pam")
-OALG <- c("ap", "sc", "gmm", "block", "som", "cmeans", "hdbscan")
+OALG <- c("ap", "sc", "gmm", "block", "som", "cmeans")
 
 #' Helper functions for parallel clustering
 pl_cluster <- function(data, nk = 4, reps = 1000, algorithms = NULL,
                        nmf.method = c("brunet", "lee"), distance = "euclidean",
-                       file.name = NULL, ...) {
-  args <- dplyr::lst(data, nk, reps = 1, ...)
-  r <- seq_len(reps)
-  algs <- dplyr::lst(NALG, DALG, OALG) %>%
-    purrr::map(~ algorithms[algorithms %in% .])
-  fs::dir_create("raw")
-  pl_cluster_nmf(args, r, algs$NALG, nmf.method, file.name)
-  pl_cluster_dist(args, r, algs$DALG, distance, file.name)
-  pl_cluster_other(args, r, algs$OALG, file.name)
-}
-
-pl_cluster_nmf <- function(args, reps, algorithms, nmf.method, file.name) {
-  if (length(algorithms) > 0) {
-    purrr::map(nmf.method, function(m) {
-      purrr::map(reps, function(r) {
-        purrr::invoke(
-          consensus_cluster,
-          args,
-          algorithms = algorithms,
-          nmf.method = m,
-          seed.data = r,
-          file.name = paste0("raw/",
-                             paste("raw", algorithms, m, r, file.name, sep = "_"))
-        )
-      })
-    })
+                       seed.data = 1, dir.name = ".", file.name = NULL, ...) {
+  args <- tibble::lst(data, nk, reps = 1, ...)
+  ALG <- tibble::lst(NALG, DALG, OALG)
+  algorithms <- algorithms %||% purrr::flatten_chr(ALG)
+  algs <- purrr::map(ALG, ~ algorithms[algorithms %in% .])
+  fs::dir_create(dir.name)
+  if (length(algs$NALG) > 0) {
+    pl_cluster_nmf(args, seed.data, algs$NALG, nmf.method, dir.name, file.name)
+  }
+  if (length(algs$DALG) > 0) {
+    pl_cluster_dist(args, seed.data, algs$DALG, distance, dir.name, file.name)
+  }
+  if (Length(algs$OALG) > 0) {
+    pl_cluster_other(args, seed.data, algs$OALG, dir.name, file.name)
   }
 }
 
-pl_cluster_dist <- function(args, reps, algorithms, distance, file.name) {
-  if (length(algorithms) > 0) {
-    purrr::map(algorithms, function(a) {
-      purrr::map(distance, function(d) {
-        purrr::map(reps, function(r) {
-          purrr::invoke(
-            consensus_cluster,
-            args,
-            algorithms = a,
-            seed.data = r,
-            file.name = paste0("raw/",
-                               paste("raw", a, d, r, file.name, sep = "_"))
-          )
-        })
-      })
-    })
-  }
+pl_cluster_nmf <- function(args, seed.data, algorithms, nmf.method, dir.name,
+                           file.name) {
+  purrr::map(nmf.method, function(m) {
+    purrr::invoke(
+      consensus_cluster,
+      args,
+      algorithms = algorithms,
+      nmf.method = m,
+      seed.data = seed.data,
+      file.name = file.path(dir.name,
+                            paste(algorithms, m, seed.data, file.name,
+                                  sep = "_"))
+    )
+  })
 }
 
-pl_cluster_other <- function(args, reps, algorithms, file.name) {
-  if (length(algorithms) > 0) {
-    purrr::map(algorithms, function(a) {
-      purrr::map(reps, function(r) {
-        purrr::invoke(
-          consensus_cluster,
-          args,
-          algorithms = a,
-          seed.data = r,
-          file.name = paste0("raw/",
-                             paste("raw", a, r, file.name, sep = "_"))
-        )
-      })
+pl_cluster_dist <- function(args, seed.data, algorithms, distance, dir.name,
+                            file.name) {
+  purrr::map(algorithms, function(a) {
+    purrr::map(distance, function(d) {
+      purrr::invoke(
+        consensus_cluster,
+        args,
+        algorithms = a,
+        distance = d,
+        seed.data = seed.data,
+        file.name = file.path(dir.name,
+                              paste(a, d, seed.data, file.name, sep = "_"))
+      )
     })
-  }
+  })
+}
+
+pl_cluster_other <- function(args, seed.data, algorithms, dir.name, file.name) {
+  purrr::map(algorithms, function(a) {
+    purrr::invoke(
+      consensus_cluster,
+      args,
+      algorithms = a,
+      seed.data = seed.data,
+      file.name = file.path(dir.name,
+                            paste(a, seed.data, file.name, sep = "_"))
+    )
+  })
 }
 
 # Run parallel clustering and save objects
+k <- 4
+r <- 1
+
 ssclust <- pl_cluster(
   data = cdat,
-  nk = 4,
-  reps = 1,
+  nk = k,
+  reps = r,
+  algorithms = algs,
   distance = c("euclidean", "spearman", "manhattan"),
   prep.data = "none",
-  seed.data = 1,
+  seed.data = s,
   save = TRUE,
-  file.name = "cc_out"
+  dir.name = paste0(sfdir, "/rds_out_", ndat),
+  file.name = ndat
 )
