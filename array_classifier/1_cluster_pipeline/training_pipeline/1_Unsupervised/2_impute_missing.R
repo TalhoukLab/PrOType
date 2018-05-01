@@ -1,13 +1,10 @@
-library(diceR)
+# Fixed Inputs: cdat, ndat, sfdir, ssclust
+# Variable Inputs: algs, s
 
-#' Read in raw data, impute and save to imputed directory
-pl_impute <- function(data, seed = 123) {
-  fs::dir_create("imputed")
-  fs::dir_ls("raw") %>%
-    purrr::map(readRDS) %>%
-    purrr::map(apply, 2:4, impute_knn, data = data, seed = seed) %>%
-    purrr::set_names(gsub("raw", "imputed", names(.))) %>%
-    purrr::iwalk(saveRDS)
+#' Impute E to make E_knn and save to imputed directory
+pl_impute <- function(E, data, seed = 123, dir.name = ".") {
+  E_knn <- apply(E, 2:4, diceR::impute_knn, data = data, seed = seed)
+  saveRDS(E_knn, file.path(dir.name, paste0("E_knn_", algs, s, "_", ndat, ".rds")))
 }
 
-pl_impute(ssclust)
+pl_impute(E = ssclust, data = cdat, dir.name = paste0(sfdir, "/imputed_clust_", ndat))
