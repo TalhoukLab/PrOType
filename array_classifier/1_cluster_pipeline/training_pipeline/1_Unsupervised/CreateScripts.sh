@@ -54,7 +54,7 @@
 #fi
 
 # algorithms, consensus and modulus parameters
-algs=(nmf hc diana km pam ap sc gmm block som cmeans)
+algs=(NALG DALG OALG)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 c=100 # use for determining splitting criterion (min 100 reps required)
 
