@@ -1,46 +1,51 @@
+library(purrr)
 library(diceR)
 
-#' Parallel evaluation
-pl_evaluate <- function(data, nk, n = 5) {
-  fs::dir_create("evaluate")
+hc <- function(x, k, method = "average") {
+  as.integer(stats::cutree(stats::hclust(stats::dist(x), method = method), k))
+}
+
+# Input-----
+alldat <- dat
+
+# Final Clustering ----
+for (i in seq_along(alldat)) {
+  ddir <- paste0(fdir, alldat[i], "/data_pr_", alldat[i])
+
+  # Read in the data used for clustering
+  cdat <- readRDS(paste0(ddir, "/cdat_", alldat[i], ".rds"))
+
   # Read in the consensus matrices
-  cons.mat <- fs::dir_ls("conmat") %>%
-    purrr::map(readRDS)
-  cl.mat <- readRDS("merged/conmat.rds") %>%
-    purrr::map(~ hc(stats::dist(.), k = nk)) %>%
-    purrr::map_df(relabel_class, ref.cl = .[[1]])
-  final <- fs::dir_ls("consensus") %>%
-    purrr::map_df(readRDS) %>%
-    dplyr::mutate_all(as.integer) %>%
-    purrr::set_names(gsub(".*cons_(.*).rds", "\\1", names(.))) %>%
-    cbind(cl.mat)
+  cons.mat <- readRDS(paste0(ddir, "/Final_CM_", alldat[i], ".rds"))
+
+  # Obtain HC from each algorithm and relabel
+  cl.mat <- purrr::map(cons.mat, hc, k = 4) %>%
+    lapply(diceR::relabel_class, ref.cl = .[[1]]) %>%
+    data.frame()
+
+  final <- data.frame(
+    CSPA = readRDS(paste0(ddir, "/cons_CSPA_", alldat[i], ".rds")),
+    kmodes = readRDS(paste0(ddir, "/cons_kmodes_", alldat[i], ".rds")),
+    majority = readRDS(paste0(ddir, "/cons_majority_", alldat[i], ".rds")),
+    cts = readRDS(paste0(ddir, "/cons_LCEcts_", alldat[i], ".rds")),
+    srs = readRDS(paste0(ddir, "/cons_LCEsrs_", alldat[i], ".rds")),
+    asrs = readRDS(paste0(ddir, "/cons_LCEasrs_", alldat[i], ".rds")),
+    cl.mat
+  )
 
   # relabel the elements of the data frame
   finalR <- final
-  finalR[] <- apply(final, 2, relabel_class, ref.cl = final[, "majority"])
+  finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, "majority"])
 
   # Cluster evaluate at this point
-  ii <- ivi_table(finalR, data)
+  ii <- diceR:::ivi_table(finalR, data)
 
   # Separate algorithms into those from clusterCrit (main), and (others)
-  cr <- consensus_rank(ii, n = n)
+  cr <- diceR:::consensus_rank(ii, n = 5)
   top <- cr$top.list
   ii <- ii[match(top, ii$Algorithms), ]
   finalR <- finalR[, top]
-  saveRDS(ii, "evaluate/ii.rds")
-  saveRDS(finalR, "evaluate/all_clusts.rds")
 
-  # Add CC and Pr summaries to Final output
-  Final <- finalR %>%
-    dplyr::select(top[seq_len(n)]) %>%
-    cbind(apply(., 1, function(x) {
-      CC <- names(which.max(table(x)))
-      Pr <- table(x)[CC] / length(x)
-      list(CC = as.integer(CC), Pr = Pr)
-    }) %>%
-      dplyr::bind_rows())
-  saveRDS(Final, "evaluate/FinalR.rds")
+  saveRDS(finalR, paste0(ddir, "/all_clusts_", alldat[i], ".rds"))
+  saveRDS(ii, paste0(ddir, "/ii_", alldat[i], ".rds"))
 }
-
-# Save internal indices, and final clustering summary object
-pl_evaluate(cdat, nk = 4)
