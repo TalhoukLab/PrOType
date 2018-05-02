@@ -54,7 +54,7 @@
 #fi
 
 # algorithms, consensus and modulus parameters
-algs=(NALG DALG OALG)
+algs=(nmf dist other)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 c=100 # use for determining splitting criterion (min 100 reps required)
 
