@@ -1,26 +1,34 @@
 library(diceR)
+library(magrittr)
 
-#' Parallel consensus functions
-pl_confun <- function(nk, cons.funs = c("kmodes", "majority", "CSPA", "LCE"),
-                      sim.mat = c("cts", "srs", "asrs")) {
-  Ecomp <- readRDS(fs::dir_ls("merged", regexp = "merged/Ecomp.rds"))
-  E <- readRDS(fs::dir_ls("merged", regexp = "merged/E.rds"))
+# inputs: ndat, cons.funs, k, dir
 
-  fs::dir_create("consensus")
-  purrr::walk(cons.funs, ~ {
-    purrr::map(sim.mat, function(sm) {
-      consensus <- switch(
-        .,
-        kmodes = k_modes(Ecomp),
-        majority = majority_voting(Ecomp),
-        CSPA = CSPA(E, nk),
-        LCE = LCE(Ecomp, k = nk, sim.mat = sm)
-      )
-      fn <- ifelse(. == "LCE", paste0(., sm), .)
-      saveRDS(consensus, paste0("consensus/cons_", fn, ".rds"))
-    })
-  })
+hc <- function(x, k, method = "average") {
+  as.integer(stats::cutree(stats::hclust(stats::dist(x), method = method), k))
 }
 
-# Save consensus function clusterings
-pl_confun()
+# Read in completed E and consensus matrices
+Ecomp <- readRDS(file.path(dir, paste0("Ecomp_", ndat, ".rds")))
+CM <- readRDS(file.path(dir, paste0("Final_CM_", ndat, ".rds")))
+
+# Obtain HC from each algorithm and relabel for LCE
+cl.mat <- purrr::map(CM, hc, k = 4) %>%
+  lapply(relabel_class, ref.cl = .[[1]]) %>%
+  data.frame() %>%
+  as.matrix()
+
+# Consensus Function
+Consensus <- switch(
+  cons.funs,
+  CSPA = CM %>%
+    Reduce(`+`, .) %>%
+    magrittr::divide_by(length(CM)) %>%
+    hc(k = 4),
+  kmodes = k_modes(Ecomp),
+  majority = majority_voting(Ecomp),
+  LCEcts = hc(cts(cl.mat, dc = 0.8), k = 4),
+  LCEsrs = hc(srs(cl.mat, dc = 0.8, R = 10), k = 4),
+  LCEasrs = hc(asrs(cl.mat, dc = 0.8), k = 4)
+)
+
+saveRDS(Consensus, paste0(dir, "/cons_", cons.funs, "_", ndat, ".rds"))
