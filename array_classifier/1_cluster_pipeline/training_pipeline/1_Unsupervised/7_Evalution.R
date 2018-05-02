@@ -40,7 +40,7 @@ for (i in seq_along(alldat)) {
   # Cluster evaluate at this point
   ii <- diceR:::ivi_table(finalR, data)
 
-  # Separate algorithms into those from clusterCrit (main), and (others)
+  # Rank aggregate
   cr <- diceR:::consensus_rank(ii, n = 5)
   top <- cr$top.list
   ii <- ii[match(top, ii$Algorithms), ]
