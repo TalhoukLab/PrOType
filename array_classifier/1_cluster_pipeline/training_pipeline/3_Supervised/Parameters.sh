@@ -8,7 +8,6 @@ dataSet="ov.afc2_cbt"
 
 # Supervised parameters
 reps=100
-IsHousekeepingNormalized="TRUE"
 normalizeBy="None"
 threshold="0.0"
 minVar="0.0"

@@ -32,12 +32,6 @@
 #	exit 1
 #fi
 #
-## specify the output directory
-#if [ "$IsHousekeepingNormalized" = "" ]
-#then echo "IsHousekeepingNormalized must be specified as TRUE or FALSE"
-#	exit 1
-#fi
-#
 ## specify the normalization method
 #if [ "$normalizeBy" = "" ]
 #then echo "Normalization method must be specified"
@@ -57,7 +51,7 @@
 #fi
 #
 ## specify R path to place in $PATH
-#if [ "$RPath" = "" ]; 
+#if [ "$RPath" = "" ];
 #then echo "Path to R directory must be specified"
 #fi
 
@@ -70,43 +64,20 @@ rm -rf $workDir$dataSet'/sh_file/train'
 mkdir -p $workDir$dataSet'/R_file/train'
 mkdir -p $workDir$dataSet'/sh_file/train'
 
-if [ "$IsHousekeepingNormalized" = "TRUE" ];
+if [ "$normalizeBy" = "Genes" ];
 then
-	 
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
-		fname='Model-hc-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
-		fname='Model-hc-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
-		fname='Model-hc'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified"
-	fi
-elif [ "$IsHousekeepingNormalized" = "FALSE" ];
+	mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
+	fname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ];
 then
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-genes_'$dataSet
-		fname='Model-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-samples_'$dataSet
-		fname='Model-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model_'$dataSet
-		fname='Model'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified."
-	fi
+	mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
+	fname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ];
+then
+	mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
+	fname='Model-hc'
 else
-	echo "IsHousekeepingNormalized must be a 'TRUE' or 'FALSE'."
+	echo "A normalization of type Genes, Samples or None must be specified"
 fi
 
 # create R and sh scripts
@@ -122,17 +93,16 @@ for i in "${algs[@]}"; do
 		touch $R_train
 		echo 'dataSet <- "'$dataSet'"' >> $R_train
 		echo 'reps <- '$s >> $R_train
-		echo 'algs <- "'$i'"' >> $R_train	
+		echo 'algs <- "'$i'"' >> $R_train
 		echo 'inDir <- "'$inputDir$dataSet'"' >> $R_train
 		echo 'outDir <- "'$outputDir$dataSet'"' >> $R_train
-		echo 'IsHousekeepingNormalized <- '$IsHousekeepingNormalized >> $R_train
 		echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
 		echo 'minVar <- '$minVar >> $R_train
 		echo 'normType <- "'$normType'"' >> $R_train
 		echo 'fname <- "'$fname'"' >> $R_train
 		echo 'threshold <- '$threshold >> $R_train
 		echo 'source("'$workDir'3_Supervised/9_model_train.R")' >> $R_train
-		echo 'train_supervised(dataSet, algs, reps, inDir, outDir, IsHousekeepingNormalized, normalizeBy, minVar, threshold, normType, fname)' >> $R_train
+		echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname)' >> $R_train
 
 		# contents of sh file
 		touch $sh_train

@@ -17,16 +17,11 @@
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
-                             is.housekeeping.normalized = FALSE,
                              normalize.by = "None", min.var = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model") {
   # import training data
-  if (!is.housekeeping.normalized) {
-    npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp_", dataSet, ".rds"))
-  } else {
-    npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
-  }
+  npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
 
   class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
   class.train <- class[, 1]
