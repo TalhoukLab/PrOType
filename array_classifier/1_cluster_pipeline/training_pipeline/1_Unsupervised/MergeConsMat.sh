@@ -31,7 +31,7 @@
 #fi
 
 # specify algorithm batches
-algs=(nmfbrunet nmflee distalgs rest)
+algs=(nmf dist other)
 
 # specify minimum number of reps required for merge.
 # the modulus of the dividend (reps) and divisor (c) must be greater or equal to zero.

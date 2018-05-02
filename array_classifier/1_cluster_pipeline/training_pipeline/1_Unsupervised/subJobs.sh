@@ -31,7 +31,7 @@
 #fi
 
 # algorithms to execute
-algs=(nmfbrunet nmflee distalgs rest)
+algs=(nmf dist other)
 
 
 ##################################################
