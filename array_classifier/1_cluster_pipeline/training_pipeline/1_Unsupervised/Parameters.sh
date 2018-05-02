@@ -4,7 +4,6 @@
 user="djohnson"
 
 # data information
-type="affy"
 dataSet="ov.afc2_cbt"
 
 # Unsupervised parameters
