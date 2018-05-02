@@ -38,7 +38,6 @@ follows:
 3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line 
           of the server if you are uncertain.
-    * **type**: specify the platform type of the gene expression data you require (affy or agil)
     * **dataSet**: specify the name of the dataset you are calling
     * **reps**: number of bootstrap replications to run for each algorithm in the ensemble. (>=100)
     * **k**: the number of clusters (subtypes) you aim to identify (default to 4)
@@ -68,9 +67,7 @@ This step will map the genes of your data to Nanostring in preparation for cross
 3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line 
           of the server if you are uncertain.
-    * **type**: specify the platform type of the gene expression data you require (affy or agil)
     * **dataSet**: specify the name of the dataset you are calling
-    * **housekeepingNormalize**: "TRUE" performs normalization with respect to the housekeeping genes, otherwise housekeeping genes are simply dropped.
     * **workDir**: your working directory (path where this pipeline exists)
     * **outputDir**: the output directory (path where pipeline outputs will be stored)
     * **inputDir**: path of the raw input data used for clustering
@@ -90,10 +87,8 @@ The supervised analysis performs an ensemble classification scheme which perform
 2. Open `Parameters.sh` with your favourite text editor.
 3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line of the server if you are uncertain.
-    * type: specify the platform type of the gene expression data you require (affy or agil)
     * **dataSet**: specify the name of the dataset you are calling
     * **reps**: number of bootstrap resamples to perform per algorithm
-    * **IsHousekeepingNormalized**: "TRUE" indicates you are using housekeeping normalized data for your analysis. The normalization/no-normalization is decided during the gene mapping section.
     * **normalizeBy**: The type of normalization to perform on the data set. No normalization is recommended. See the package `splendid` for further details.
     * **minVar**: The minimum variance a gene should have across samples. Genes with variance less than `minVar` are dropped.
     * **threshold**: Predicted labels receive a class of "unclassified" whenever the largest predicted probability of a sample is less than the specified threshold. See implementation in `splendid:::class_threshold`.
@@ -120,7 +115,6 @@ Internal validation will return a summary of the results for the supervised lear
 2. Open `Parameters.sh` with your favourite text editor.
 3. Specify the parameters specific to your system and purpose.
     * **user**: enter your username for your system. Type `whoami` in the command line of the server if you are uncertain.
-    * **type**: specify the platform type of the gene expression data you require (affy or agil)
     * **dataSet**: specify a list of data sets separated by a space. i.e `dataSet=("ov.afc2_xpn ov.afc1_xpn")`
     * **top**: select the top N number of algorithms you wish to return.
     * **workDir**: your working directory (path where this pipeline exists)
