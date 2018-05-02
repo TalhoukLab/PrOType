@@ -25,19 +25,13 @@
 #then echo "Top needs to be a positive integer"
 #	exit 1
 #fi
-
-# specify the output directory
-#if [ "$IsHousekeepingNormalized" = "" ]
-#then echo "IsHousekeepingNormalized must be specified as TRUE or FALSE"
-#        exit 1
-#fi
-
+#
 # specify the normalization method
 #if [ "$normalizeBy" = "" ]
 #then echo "Normalization method must be specified"
 #        exit 1
 #fi
-
+#
 # specify R path to place in $PATH
 #if [ "$RPath" = "" ];
 #then echo "Path to R directory must be specified"
@@ -45,7 +39,7 @@
 
 
 # *************************************************************************
-# Step 1: 
+# Step 1:
 # *************************************************************************
 
 # extract data set vector
@@ -55,7 +49,7 @@ data_sets=${dset// /'"','"'}
 # create R script
 mkdir $workDir'temp'
 Rname=$workDir'temp/CIsupLearn_temp.R'
-	
+
 touch $Rname
 echo 'outDir <- "'$outputDir'"' > $Rname
 echo 'inDir <- "'$inputDir'"' >> $Rname

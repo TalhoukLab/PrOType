@@ -14,12 +14,6 @@
 #	exit 1
 #fi
 #
-## specify the output directory
-#if [ "$IsHousekeepingNormalized" = "" ]
-#then echo "IsHousekeepingNormalized must be specified as TRUE or FALSE"
-#        exit 1
-#fi
-#
 ## specify the normalization method
 #if [ "$normalizeBy" = "" ]
 #then echo "Normalization method must be specified"
@@ -37,39 +31,18 @@
 # *************************************************************************
 
 # extract correct Model directories
-if [ "$IsHousekeepingNormalized" = "TRUE" ];
+if [ "$normalizeBy" = "Genes" ];
 then
-	 
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		fname='Model-hc-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		fname='Model-hc-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		fname='Model-hc'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified"
-	fi
-elif [ "$IsHousekeepingNormalized" = "FALSE" ];
+	fname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ];
 then
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		fname='Model-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		fname='Model-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		fname='Model'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified."
-	fi
+	fname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ];
+then
+	fname='Model-hc'
 else
-	echo "IsHousekeepingNormalized must be a 'TRUE' or 'FALSE'."
+	echo "A normalization of type Genes, Samples or None must be specified"
 fi
-
 
 # extract data set vector
 dset=$dataSet
@@ -78,7 +51,7 @@ data_sets=${dset// /'"','"'}
 # create R script
 mkdir -p $workDir'temp'
 Rname=$workDir'temp/train_eval.R'
-	
+
 touch $Rname
 echo 'fdir <- "'$outputDir'"' > $Rname
 echo 'ndat <- c("'$data_sets'")' >> $Rname
