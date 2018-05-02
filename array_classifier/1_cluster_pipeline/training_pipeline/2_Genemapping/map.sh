@@ -12,12 +12,6 @@
 #	exit 1
 #fi
 #
-## specify affy or agil type
-#if [ "$type" = "" ]
-#then echo "Data Set Cannot Be Empty"
-#	exit 1
-#fi
-#
 ## specify the working directory
 #if [ "$workDir" = "" ]
 #then echo "Working directory must be specified"
@@ -28,12 +22,6 @@
 #if [ "$outputDir" = "" ]
 #then echo "Output directory must be specified"
 #	exit 1
-#fi
-#
-## normalize wrt housekeeping genes or not
-#if [ "$housekeepingNormalize" = "" ]; then
-#	$housekeepingNormalize="TRUE"
-#	echo "housekeepingNormalize has been set to TRUE by default"
 #fi
 #
 ## specify R path to place in $PATH
@@ -52,15 +40,11 @@ touch $R_map
 echo "source('"$workDir"2_Genemapping/GeneMapping.R')" > $R_map
 echo "tdat <- readr::read_rds('"$outputDir$dataSet"/data_pr_"$dataSet"/tdat_"$dataSet".rds')" >> $R_map
 echo "x <- data.frame(t(tdat))" >> $R_map
-echo "type <- '"$type"'" >> $R_map
 echo "dataSet <- '"$dataSet"'" >> $R_map
 echo "inDir <- '"$workDir"2_Genemapping/'" >> $R_map
 echo "outDir <- '"$outputDir"'" >> $R_map
-echo "housekeeping.normalize = '"$housekeepingNormalize"'" >> $R_map
-echo "map_to_nano(x, type, dataSet, inDir, outDir, housekeeping.normalize)" >> $R_map
+echo "map_to_nano(x, dataSet, inDir, outDir)" >> $R_map
 
 # Run Script
 export PATH=$RPath:$PATH
 Rscript $R_map
-
-

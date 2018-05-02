@@ -4,11 +4,7 @@
 user="djohnson"
 
 # data information
-type="affy"
 dataSet="ov.afc2_cbt"
-
-# Mapping Parameters
-housekeepingNormalize="TRUE"
 
 # directory inputs
 workDir="/share/lustre/backup/ovcare/HGSC_Classifier/final_pipeline/"
