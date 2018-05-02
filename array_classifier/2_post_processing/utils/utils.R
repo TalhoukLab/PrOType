@@ -15,13 +15,11 @@ source(here("assets/utils.R"))
 #     is.test.set: required to specify format if test set should be
 #                  returned.
 #********************************************************************
-import_study <- function(dir = "data", study = "ov.afc1_cbt",
-                         hc.normalize = TRUE) {
+import_study <- function(dir = "data", study = "ov.afc1_cbt") {
   subdir <- paste0("data_pr_", study) # subdirectory
-  hc <- ifelse(hc.normalize, "-hcNorm", "") # specify hc normalized npcp or not
 
   # import the npcp and diceR labels
-  dat <- file.path(dir, subdir, paste0("npcp", hc, "_", study, ".rds")) %>%
+  dat <- file.path(dir, subdir, paste0("npcp-hcNorm_", study, ".rds")) %>%
     readr::read_rds() %>%
     `rownames<-`(stringr::str_sub(rownames(.), end = -8))
 
