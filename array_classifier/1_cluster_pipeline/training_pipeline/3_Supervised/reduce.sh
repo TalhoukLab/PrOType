@@ -20,12 +20,6 @@
 #	exit 1
 #fi
 #
-## specify the output directory
-#if [ "$IsHousekeepingNormalized" = "" ]
-#then echo "IsHousekeepingNormalized must be specified as TRUE or FALSE"
-#	exit 1
-#fi
-#
 ## specify the normalization method
 #if [ "$normalizeBy" = "" ]
 #then echo "Normalization method must be specified"
@@ -33,7 +27,7 @@
 #fi
 #
 ## specify R path to place in $PATH
-#if [ "$RPath" = "" ]; 
+#if [ "$RPath" = "" ];
 #then echo "Path to R directory must be specified"
 #fi
 
@@ -44,43 +38,20 @@ mkdir -p $workDir$dataSet'/R_file/reduce'
 mkdir -p $workDir$dataSet'/sh_file/reduce'
 
 # extract correct Model directories
-if [ "$IsHousekeepingNormalized" = "TRUE" ];
+if [ "$normalizeBy" = "Genes" ];
 then
-	 
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
-		fname='Model-hc-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
-		fname='Model-hc-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
-		fname='Model-hc'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified"
-	fi
-elif [ "$IsHousekeepingNormalized" = "FALSE" ];
+	mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
+	fname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ];
 then
-	if [ "$normalizeBy" = "Genes" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-genes_'$dataSet
-		fname='Model-genes'
-	elif [ "$normalizeBy" = "Samples" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model-samples_'$dataSet
-		fname='Model-samples'
-	elif [ "$normalizeBy" = "None" ];
-	then
-		mkdir -p $outputDir$dataSet'/Model_'$dataSet
-		fname='Model'
-	else
-		echo "A normalization of type Genes, Samples or None must be specified."
-	fi
+	mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
+	fname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ];
+then
+	mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
+	fname='Model-hc'
 else
-	echo "IsHousekeepingNormalized must be a 'TRUE' or 'FALSE'."
+	echo "A normalization of type Genes, Samples or None must be specified"
 fi
 
 # specify algs
