@@ -28,10 +28,11 @@ rm -rf $workDir$dataSet'/R_file/prep'
 rm -rf $workDir$dataSet'/sh_file/prep'
 
 echo "Creating folders"
+mkdir -p $workDir$dataSet
+mkdir -p $workDir$dataSet'/R_file'
 mkdir -p $workDir$dataSet'/R_file/prep'
-mkdir -p $workDir$dataSet'/R_file/clust'
+mkdir -p $workDir$dataSet'/sh_file'
 mkdir -p $workDir$dataSet'/sh_file/prep'
-mkdir -p $workDir$dataSet'/sh_file/clust'
 mkdir -p $outputDir$dataSet
 mkdir -p $outputDir$dataSet'/data_pr_'$dataSet
 

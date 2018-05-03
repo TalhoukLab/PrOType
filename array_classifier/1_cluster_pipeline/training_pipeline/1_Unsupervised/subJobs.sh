@@ -41,6 +41,7 @@ algs=(nmf dist other)
 for s in `seq 1 $reps`; do
 	for i in "${algs[@]}"; do
 		shell_file=$workDir$dataSet/sh_file/clust/$i$s.sh
+		echo "Using: $shell_file"
 		if [ $i == rest ]
 		  then
 		     qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shell_file

@@ -64,6 +64,7 @@ c=100 # use for determining splitting criterion (min 100 reps required)
 ########## Create Directory Structure  ###########
 ##################################################
 
+echo "Removing folder"
 rm -rf $workDir$dataSet'/R_file/clust'
 rm -rf $workDir$dataSet'/R_file/merge'
 rm -rf $workDir$dataSet'/R_file/consensus'
@@ -75,6 +76,7 @@ mkdir -p $outputDir$dataSet'/rds_out_'$dataSet
 mkdir -p $outputDir$dataSet'/con_mat_'$dataSet
 mkdir -p $outputDir$dataSet'/imputed_clust_'$dataSet
 
+echo "Creating folders"
 mkdir -p $workDir$dataSet'/R_file/clust'
 mkdir -p $workDir$dataSet'/R_file/merge'
 mkdir -p $workDir$dataSet'/R_file/eval'
@@ -102,6 +104,8 @@ for i in "${algs[@]}"; do
 		# File names for R script, rds output file, shell job script
 		R_clust=$workDir$dataSet/R_file/clust/$i$s.R
 		sh_clust=$workDir$dataSet/sh_file/clust/$i$s.sh
+		
+		echo "Creating: {$R_clust}: {$sh_clust}"
 
 		# Content of R file
 		touch $R_clust
