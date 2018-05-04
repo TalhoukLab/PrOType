@@ -34,5 +34,9 @@ R_merge_final_clust=$workDir$dataSet/R_file/merge/Merge_final_clust.R
 R_merge_final_consmat=$workDir$dataSet/R_file/merge/Merge_final_consmat.R
 
 # execute R scripts
+echo "merge_final_clust"
+echo $R_merge_final_clust
 Rscript $R_merge_final_clust
+echo "merge_final_consmat"
+echo $R_merge_final_consmat
 Rscript $R_merge_final_consmat

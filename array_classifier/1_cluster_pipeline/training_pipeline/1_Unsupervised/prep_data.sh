@@ -52,6 +52,7 @@ echo 'source("'$workDir'1_Unsupervised/0_read_data.R")'>>$Rname
 
 touch $shname
 echo '#!/bin/sh'>>$shname
+echo 'echo "Running shell Script"'>>$shname
 echo 'export PATH=/share/data/apps/R/R-3.2.5/bin:$PATH'>>$shname
 echo 'Rscript' $Rname>>$shname
 
