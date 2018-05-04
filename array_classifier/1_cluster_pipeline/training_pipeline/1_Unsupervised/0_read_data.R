@@ -7,6 +7,10 @@ library(tidyverse)
 
 # Load data
 fname <- paste0(dpath, ndat, ".RData")
+if (!file.exists(fname)) {
+  cat("ERROR: file not found: ", fname)
+  quit(status=1)
+}
 tdat <- t(get(load(fname)))
 
 # Center and scale
@@ -18,5 +22,9 @@ cdat <- switch(
 )
 
 # Save as RDS objects
+if (!dir.exists(datadir)) {
+  cat("ERROR: directory does not exist: ", datadir)
+  quit(status=1)
+}
 saveRDS(tdat, paste0(datadir, "/tdat_", ndat, ".rds"))
 saveRDS(cdat, paste0(datadir, "/cdat_", ndat, ".rds"))

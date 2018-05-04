@@ -1,18 +1,18 @@
 #!/bin/sh
 
 # user information
-user="djohnson"
+user="mpaletta"
 
 # data information
-dataSet="ov.afc2_cbt"
+dataSet="ov.afc1_cbt"
 
 # Unsupervised parameters
 reps=100
 k=4
 
 # directory inputs
-workDir="/share/lustre/backup/ovcare/HGSC_Classifier/final_pipeline/"
-outputDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/"
-inputDir="/share/lustre/backup/ovcare/HGSC_Classifier/raw_data/"
-logDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/logs/"
-RPath="/shahlab/djohnson/software/R-3.4.1/builddir/bin"
+workDir=~/"Projects/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
+outputDir="/share/scratch/mpaletta_temp/outputs/"
+inputDir="/share/lustre/mpaletta/data/raw_data/"
+logDir=~/"logs/"
+RPath="/share/data/apps/R/R-3.2.5/bin"

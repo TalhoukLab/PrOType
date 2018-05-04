@@ -54,7 +54,7 @@
 #fi
 
 # algorithms, consensus and modulus parameters
-algs=(nmf dist other)
+algs=(nmfbrunet nmflee distalgs rest)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 c=100 # use for determining splitting criterion (min 100 reps required)
 
@@ -64,6 +64,7 @@ c=100 # use for determining splitting criterion (min 100 reps required)
 ########## Create Directory Structure  ###########
 ##################################################
 
+echo "Removing folder"
 rm -rf $workDir$dataSet'/R_file/clust'
 rm -rf $workDir$dataSet'/R_file/merge'
 rm -rf $workDir$dataSet'/R_file/consensus'
@@ -75,6 +76,7 @@ mkdir -p $outputDir$dataSet'/rds_out_'$dataSet
 mkdir -p $outputDir$dataSet'/con_mat_'$dataSet
 mkdir -p $outputDir$dataSet'/imputed_clust_'$dataSet
 
+echo "Creating folders"
 mkdir -p $workDir$dataSet'/R_file/clust'
 mkdir -p $workDir$dataSet'/R_file/merge'
 mkdir -p $workDir$dataSet'/R_file/eval'
@@ -102,7 +104,30 @@ for i in "${algs[@]}"; do
 		# File names for R script, rds output file, shell job script
 		R_clust=$workDir$dataSet/R_file/clust/$i$s.R
 		sh_clust=$workDir$dataSet/sh_file/clust/$i$s.sh
+		
+		echo "Creating: {$R_clust}: {$sh_clust}"
+		
+		if (!file.exists("'$workDir'1_Unsupervised/1_clust_data.R")) {
+			cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/1_clust_data.R")
+			quit(status=1)
+		}
 
+		if (!file.exists("'$workDir'1_Unsupervised/2_impute_missing.R")) {
+                        cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/2_impute_missing.R")
+                        quit(status=1)
+                }
+
+		if (!file.exists("'$workDir'1_Unsupervised/3_con_mat.R")) {
+                        cat("ERROR: File not found, check 'workDir' in Parameters.sh: ", "'$workDir'1_Unsupervised/3_con_mat.R")
+                        quit(status=1)
+                }
+
+		if (!dir.exists("'$outputDir$dataSet'/data_pr_'$dataSet'") {
+                        cat("ERROR: Directory not found, check 'outputDir' and 'dataSet' in Parameters.sh: ", "'$outputDir$dataSet'/data_pr_'$dataSet'")
+                        quit(status=1)
+                }
+		
+		
 		# Content of R file
 		touch $R_clust
 		echo 's<-'$s >> $R_clust
@@ -135,7 +160,12 @@ for i in "${algs[@]}"; do
 			# file names
 			R_merge=$workDir$dataSet/R_file/merge/Merge_$i$s.R
 			sh_merge=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
-
+			
+			if (!file.exists("'$workDir'1_Unsupervised/5_merge_consmat.R")) {
+                        	cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/5_merge_consmat.R")
+                        	quit(status=1)
+                	}
+			
 			# Content of R file
 			touch $R_merge
 			echo 'ndat<- "'$dataSet'"' >> $R_merge
