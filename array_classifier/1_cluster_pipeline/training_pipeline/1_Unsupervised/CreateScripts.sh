@@ -107,25 +107,25 @@ for i in "${algs[@]}"; do
 		
 		echo "Creating: {$R_clust}: {$sh_clust}"
 		
-		if (!file.exists("'$workDir'1_Unsupervised/1_clust_data.R")) {
-			cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/1_clust_data.R")
-			quit(status=1)
-		}
+		if [ ! -f "${workDir}1_Unsupervised/1_clust_data.R" ]; then
+			echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/1_clust_data.R"
+			exit 1
+		fi
 
-		if (!file.exists("'$workDir'1_Unsupervised/2_impute_missing.R")) {
-                        cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/2_impute_missing.R")
-                        quit(status=1)
-                }
+		if [ ! -f "${workDir}1_Unsupervised/2_impute_missing.R" ]; then
+                        echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/2_impute_missing.R"
+                        exit 1
+                fi
 
-		if (!file.exists("'$workDir'1_Unsupervised/3_con_mat.R")) {
-                        cat("ERROR: File not found, check 'workDir' in Parameters.sh: ", "'$workDir'1_Unsupervised/3_con_mat.R")
-                        quit(status=1)
-                }
+		if [ ! -f "${workDir}1_Unsupervised/3_con_mat.R" ]; then
+                        echo "ERROR: File not found, check 'workDir' in Parameters.sh: ${workDir}1_Unsupervised/3_con_mat.R"
+                        exit 1
+                fi
 
-		if (!dir.exists("'$outputDir$dataSet'/data_pr_'$dataSet'") {
-                        cat("ERROR: Directory not found, check 'outputDir' and 'dataSet' in Parameters.sh: ", "'$outputDir$dataSet'/data_pr_'$dataSet'")
-                        quit(status=1)
-                }
+		if [ ! -d "${outputDir}${dataSet}/data_pr_${dataSet}" ]; then
+                        echo "ERROR: Directory not found, check 'outputDir' and 'dataSet' in Parameters.sh: ${outputDir}${dataSet}/data_pr_${dataSet}"
+                        exit 1
+                fi
 		
 		# Content of R file
 		touch $R_clust
@@ -160,10 +160,10 @@ for i in "${algs[@]}"; do
 			R_merge=$workDir$dataSet/R_file/merge/Merge_$i$s.R
 			sh_merge=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
 			
-			if (!file.exists("'$workDir'1_Unsupervised/5_merge_consmat.R")) {
-                        	cat("ERROR: File not found, check 'workDir': ", "'$workDir'1_Unsupervised/5_merge_consmat.R")
-                        	quit(status=1)
-                	}
+			if [ ! -f "${workDir}1_Unsupervised/5_merge_consmat.R" ]; then
+                        	echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/5_merge_consmat.R"
+                        	exit 1
+                	fi
 			
 			# Content of R file
 			touch $R_merge

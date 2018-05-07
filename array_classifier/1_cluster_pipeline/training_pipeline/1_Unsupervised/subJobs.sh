@@ -51,5 +51,5 @@ for s in `seq 1 $reps`; do
 	done
 done
 
-echo "Finished Submitting files.  Check progress with `qstat -u $user`"
-echo "The logs can be found in `$logDir`"
+echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
+echo "The logs can be found in \"${logDir}\""
