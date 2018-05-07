@@ -10,7 +10,7 @@ multMerge <- function(algs, fnames, newdir) {
   # Get the seeds
   cat("Getting seeds\n")
   temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
-  seeds <- as.numeric(purrr::map_chr(temp, "[", 1))
+  seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
   error <- 0
   cat("Merging Seeds\n")
   # Merge the seeds within algorithm when all have completed
@@ -49,7 +49,7 @@ E_knn <- lapply(algs, multMerge, fnames = fnames, newdir = newdir) %>%
 saveRDS(E_knn, file = paste0(dir, "/data_pr_", ndat, "/E_knn_", ndat, ".rds"))
 
 # Completed clustering
-cat("Completing Clustering")
+cat("Completing Clustering\n")
 cdat <- readRDS(paste0(dir, "/data_pr_", ndat, "/cdat_", ndat, ".rds"))
 Ecomp <- diceR::impute_missing(E_knn, data = cdat, nk = 4)
 saveRDS(Ecomp, file = paste0(dir, "/data_pr_", ndat, "/Ecomp_", ndat, ".rds"))
