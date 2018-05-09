@@ -4,19 +4,19 @@
 library(magrittr)
 
 multMerge <- function(algs, fnames, newdir) {
-  cat(algs, fnames, newdir, reps)
+  #cat(algs, fnames, newdir, reps)
   # Separate the algorithms
   algF <- unique(grep(algs, fnames, value = TRUE))
   # Get the seeds
   cat("Getting seeds\n")
   temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
-  seeds <- as.numeric(purrr::map_chr(temp, "[", 1))
+  seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
   error <- 0
   cat("Merging Seeds\n")
   # Merge the seeds within algorithm when all have completed
   if (!all(seq_len(reps) %in% seeds)) {
     cat(paste(algs, "failed:"))
-    cat(which(!(seq_len(reps) %in% seeds)))
+    cat(which(!(seq_len(reps) %in% seeds)), "\n")
     error <- 1
   }
   # Merge rds_out
@@ -28,7 +28,7 @@ multMerge <- function(algs, fnames, newdir) {
 
 # Merge the raw clustering
 cat("Merging raw clustering\n")
-fnames <- list.files(path = paste0(dir, "/rds_out", ndat, "/")) %>%
+fnames <- list.files(path = paste0(dir, "/rds_out_", ndat, "/")) %>%
   gtools::mixedsort()
 newdir <- paste0(dir, "/rds_out_", ndat, "/")
 

@@ -46,7 +46,7 @@ for s in `seq $c $c $reps`; do
 	for i in "${algs[@]}"; do
 		# execute shell_file to cluster
 		shell_file=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
-		qsub -V -p -1 -l mem_free=25G -l mem_token=20G -l h_vmem=35G -e $logDir -o $logDir -q all.q $shell_file
+		qsub -V -p -1 -l mem_free=20G -l mem_token=20G -l h_vmem=30G -e $logDir -o $logDir -q all.q $shell_file
 	done
 done
 

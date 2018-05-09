@@ -7,7 +7,7 @@ user="mpaletta"
 dataSet="ov.afc1_cbt"
 
 # Unsupervised parameters
-reps=100
+reps=200
 k=4
 
 # directory inputs
