@@ -16,14 +16,27 @@ multMerge <- function(algs, fnames, newdir) {
   # Merge the seeds within algorithm when all have completed
   if (!all(seq_len(reps) %in% seeds)) {
     cat(paste(algs, "failed:"))
-    cat(which(!(seq_len(reps) %in% seeds)), "\n")
+    fails <- which(!(seq_len(reps) %in% seeds))
+    cat(fails, "\n")
     error <- 1
   }
   # Merge rds_out
   cat("Merge rds out\n")
-  lalgo <- lapply(paste0(newdir, algF), readRDS) %>% abind::abind(along = 2)
-  dimnames(lalgo)[[2]] <- paste0("R", seeds)
-  lalgo
+  # Combine reps that succeeded
+  lalgo <- lapply(paste0(newdir, algF), readRDS) %>%
+    purrr::set_names(paste0("R", seeds)) %>%
+    abind::abind(along = 2)
+  # Create dummy array for failed reps
+  fail_reps <- array(
+    data = NA_real_,
+    dim = c(nrow(lalgo), length(fails), 1, 1),
+    dimnames = list(NULL, paste0("R", fails), NULL, NULL)
+  )
+  # Merge to make a filled array with `reps` columns
+  lalgo_filled <- list(lalgo, fail_reps) %>%
+    abind::abind(along = 2) %>%
+    `[`(, order(colnames(.)), 1, 1, drop = FALSE)
+  lalgo_filled
 }
 
 # Merge the raw clustering
