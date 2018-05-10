@@ -12,6 +12,7 @@ multMerge <- function(algs, fnames, newdir) {
   temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
   seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
   error <- 0
+  fails <- 0
   cat("Merging Seeds\n")
   # Merge the seeds within algorithm when all have completed
   if (!all(seq_len(reps) %in% seeds)) {
