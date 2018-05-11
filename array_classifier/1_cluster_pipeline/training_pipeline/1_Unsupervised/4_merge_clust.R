@@ -30,13 +30,13 @@ multMerge <- function(algs, fnames, newdir) {
   # Create dummy array for failed reps
   fail_reps <- array(
     data = NA_real_,
-    dim = c(nrow(lalgo), length(fails), 1, 1),
+    dim = replace(dim(lalgo), 2, length(fails)),
     dimnames = list(NULL, paste0("R", fails), NULL, NULL)
   )
   # Merge to make a filled array with `reps` columns
   lalgo_filled <- list(lalgo, fail_reps) %>%
     abind::abind(along = 2) %>%
-    `[`(, order(colnames(.)), 1, 1, drop = FALSE)
+    `[`(, order(colnames(.)), , 1, drop = FALSE)
   lalgo_filled
 }
 
