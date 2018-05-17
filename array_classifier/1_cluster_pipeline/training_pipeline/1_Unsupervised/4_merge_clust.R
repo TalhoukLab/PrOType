@@ -3,6 +3,8 @@
 
 library(magrittr)
 
+
+
 multMerge <- function(algs, fnames, newdir) {
   #cat(algs, fnames, newdir, reps)
   # Separate the algorithms
@@ -12,7 +14,7 @@ multMerge <- function(algs, fnames, newdir) {
   temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
   seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
   error <- 0
-  fails <- 0
+  fails <- NULL
   cat("Merging Seeds\n")
   # Merge the seeds within algorithm when all have completed
   if (!all(seq_len(reps) %in% seeds)) {
@@ -25,8 +27,9 @@ multMerge <- function(algs, fnames, newdir) {
   cat("Merge rds out\n")
   # Combine reps that succeeded
   lalgo <- lapply(paste0(newdir, algF), readRDS) %>%
-    purrr::set_names(paste0("R", seeds)) %>%
     abind::abind(along = 2)
+  dimnames(lalgo)[[2]]<-paste0("R",seeds)
+
   # Create dummy array for failed reps
   fail_reps <- array(
     data = NA_real_,
