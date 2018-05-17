@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################################
 ############# Input Paremeters for Run ###########
@@ -30,9 +30,6 @@
 #		 exit 1
 #fi
 
-# algorithms to execute
-algs=(nmfbrunet nmflee distalgs rest)
-
 
 ##################################################
 ############# Submit jobs to cluster #############
@@ -41,15 +38,27 @@ algs=(nmfbrunet nmflee distalgs rest)
 for s in `seq 1 $reps`; do
 	for i in "${algs[@]}"; do
 		shell_file=$workDir$dataSet/sh_file/clust/$i$s.sh
-		echo "Using: $shell_file"
-		if [ $i == rest ]
-		  then
-		     qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shell_file
-		  else
-		     qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shell_file
-		fi
+		if command -v qsub &>/dev/null; then
+		    echo "Using: $shell_file"
+
+            if [ $i == rest ]
+		    then
+		        qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shell_file
+		    else
+		        qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shell_file
+		    fi
+		else
+		    chmod +x $shell_file
+        fi
 	done
 done
+
+
+if command -v qsub &>/dev/null; then
+    echo "skipping"
+else
+    python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step clust
+fi
 
 echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
 echo "The logs can be found in \"${logDir}\""
