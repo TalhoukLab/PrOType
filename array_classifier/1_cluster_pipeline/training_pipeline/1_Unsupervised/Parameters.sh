@@ -27,3 +27,4 @@ RPath="/usr/bin"
 algs=(distalgs rest)
 
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
+referenceClass="majority"

@@ -214,7 +214,7 @@ sup_plots <- function(plot.title, dir = "data", threshold = TRUE,
 
 #********************************************************************
 # Plot evaluation measures by class and overall.
-#   eval.dir: path to evaluation list
+#   eval.data_directory: path to evaluation list
 #********************************************************************
 plot_evals_noCBT <- function(plot.title, dir,
                              algs = c("mlr_ridge", "mlr_lasso", "adaboost", "rf"),

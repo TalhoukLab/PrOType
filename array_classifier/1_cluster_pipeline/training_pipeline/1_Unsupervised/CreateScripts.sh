@@ -165,7 +165,7 @@ for i in ${algs[@]}; do
 			# Content of R file
 			touch $R_merge
 			echo 'ndat<- "'$dataSet'"' >> $R_merge
-			echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge
+			echo 'data_directory <- "'$outputDir$dataSet'"' >> $R_merge
 			echo 'algs<- "'$i'"' >> $R_merge
 			echo 'c <- '$c >> $R_merge
 			echo 'r <- '$r >> $R_merge
@@ -200,7 +200,7 @@ R_merge_final_consmat=$workDir$dataSet/R_file/merge/Merge_final_consmat.R
 # Create R scripts
 touch $R_merge_final_clust
 echo 'ndat<- "'$dataSet'"' >> $R_merge_final_clust
-echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_clust
+echo 'data_directory <- "'$outputDir$dataSet'"' >> $R_merge_final_clust
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
 echo 'reps<- '$reps >> $R_merge_final_clust
 echo 'source("'$workDir'1_Unsupervised/4_merge_clust.R")' >> $R_merge_final_clust
@@ -208,7 +208,7 @@ echo 'source("'$workDir'1_Unsupervised/4_merge_clust.R")' >> $R_merge_final_clus
 # Create sh scirpts
 touch $R_merge_final_consmat
 echo 'ndat<- "'$dataSet'"' >> $R_merge_final_consmat
-echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_consmat
+echo 'data_directory <- "'$outputDir$dataSet'"' >> $R_merge_final_consmat
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
 echo 'merge <- "complete"' >> $R_merge_final_consmat
 echo 'source("'$workDir'1_Unsupervised/5_merge_consmat.R")' >> $R_merge_final_consmat
@@ -229,7 +229,7 @@ for l in "${cons[@]}"; do
 	echo 'ndat<- "'$dataSet'"'>>$R_cons
 	echo 'cons.funs<-"'$l'"'>>$R_cons
 	echo 'k<- 3'>>$R_cons
-	echo 'dir <-"'$outputDir$dataSet'/data_pr_'$dataSet'"'>>$R_cons
+	echo 'data_directory <-"'$outputDir$dataSet'/data_pr_'$dataSet'"'>>$R_cons
 	echo 'source("'$workDir'1_Unsupervised/6_con_fun.R")'>>$R_cons
 
 	# create sh scripts
@@ -251,6 +251,7 @@ R_eval=$workDir$dataSet/R_file/eval/eval_run.R
 touch $R_eval
 echo "fdir <- '"$outputDir"'" > $R_eval
 echo "dat <- '"$dataSet"'" >> $R_eval
+echo "referenceClass <- '"$referenceClass"'" >> $R_eval
 echo "source('"$workDir"1_Unsupervised/7_Evalution.R')" >> $R_eval
 
 

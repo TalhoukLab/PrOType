@@ -11,7 +11,7 @@
 #' @return a data frame containing median and 95% confidence interval
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 reduce_supervised <- function(dataSet, alg, outDir, fname = "Model") {
-  # Store dir path
+  # Store data_directory path
   dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet, "/")
 
   # grep files in directory matching pattern
