@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . 1_Unsupervised/Parameters.sh
 

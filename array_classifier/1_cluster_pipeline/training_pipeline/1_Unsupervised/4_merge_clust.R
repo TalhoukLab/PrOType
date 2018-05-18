@@ -12,7 +12,6 @@ multMerge <- function(algs, fnames, newdir) {
   temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
   seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
   error <- 0
-  fails <- 0
   cat("Merging Seeds\n")
   # Combine reps that succeeded
   lalgo <- lapply(paste0(newdir, algF), readRDS) %>%

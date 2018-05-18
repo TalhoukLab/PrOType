@@ -1,3 +1,4 @@
+.idea/
 array_classifier/1_cluster_pipeline/training_pipeline/ov.afc1_cbt/
 .Rproj.user
 .Rhistory
@@ -5,3 +6,4 @@ array_classifier/1_cluster_pipeline/training_pipeline/ov.afc1_cbt/
 .Ruserdata
 .DS_Store
 nanostring
+/array_classifier/2_post_processing/data/

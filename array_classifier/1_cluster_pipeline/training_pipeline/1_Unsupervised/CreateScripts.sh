@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################################
 ############# Input Paremeters for Run ###########
@@ -54,9 +54,6 @@
 #fi
 
 # algorithms, consensus and modulus parameters
-algs=(nmfbrunet nmflee distalgs rest)
-cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
-c=100 # use for determining splitting criterion (min 100 reps required)
 
 
 
@@ -92,7 +89,7 @@ mkdir -p $logDir
 ############ Create R & Shell Scripts  ###########
 ##################################################
 
-for i in "${algs[@]}"; do
+for i in ${algs[@]}; do
 
 	r=0 # parameter required for partial merge
 
@@ -152,7 +149,7 @@ for i in "${algs[@]}"; do
 
 		# Create code to merge files
 		# ONLY WORKS for reps > c ==> modulus=0
-		if (($s%$c == 0 )); then
+		if (($s % $c == 0 )); then
 
 			r=$((r+1))
 
@@ -181,8 +178,11 @@ for i in "${algs[@]}"; do
 			touch $sh_merge
 			echo '#!/bin/sh' >> $sh_merge
 			echo 'export PATH='$RPath':$PATH' >> $sh_merge
-			echo 'echo $PATH' >> $sh_merge
 			echo 'Rscript' $R_merge >> $sh_merge
+
+			chmod +x $sh_merge
+		else
+		    echo "Skipping Merge Files"
 		fi
 	done
 
@@ -237,6 +237,8 @@ for l in "${cons[@]}"; do
 	echo '#!/bin/sh'>>$sh_cons
 	echo 'export PATH='$RPath':$PATH'>>$sh_cons
 	echo 'Rscript' $R_cons>>$sh_cons
+
+	chmod +x $sh_cons
 done
 
 

@@ -23,6 +23,8 @@ for (i in seq_along(alldat)) {
     lapply(diceR::relabel_class, ref.cl = .[[1]]) %>%
     data.frame()
 
+  cat(paste0(ddir, "/cons_CSPA_", alldat[i], ".rds"), "\n")
+
   final <- data.frame(
     CSPA = readRDS(paste0(ddir, "/cons_CSPA_", alldat[i], ".rds")),
     kmodes = readRDS(paste0(ddir, "/cons_kmodes_", alldat[i], ".rds")),
@@ -33,19 +35,24 @@ for (i in seq_along(alldat)) {
     cl.mat
   )
 
+  cat("Relabeling elements\n")
   # relabel the elements of the data frame
   finalR <- final
   finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, "majority"])
 
+  cat("Evaluating clustering\n")
   # Cluster evaluate at this point
   ii <- diceR:::ivi_table(finalR, data)
 
+
+  cat("Ranking aggregates\n")
   # Rank aggregate
   cr <- diceR:::consensus_rank(ii, n = 5)
   top <- cr$top.list
   ii <- ii[match(top, ii$Algorithms), ]
   finalR <- finalR[, top]
 
+  cat("Saving RDS\n")
   saveRDS(finalR, paste0(ddir, "/all_clusts_", alldat[i], ".rds"))
   saveRDS(ii, paste0(ddir, "/ii_", alldat[i], ".rds"))
 }

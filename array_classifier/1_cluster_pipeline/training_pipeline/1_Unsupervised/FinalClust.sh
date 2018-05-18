@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################################
 ############# Input Paremeters for Run ###########
@@ -32,7 +32,7 @@
 ##################################################
 ########## Execute R scripts for merge ###########
 ##################################################
-export PATH=$RPath:$PATH
+#export PATH=$RPath:$PATH
 
 R_eval=$workDir$dataSet/R_file/eval/eval_run.R
 

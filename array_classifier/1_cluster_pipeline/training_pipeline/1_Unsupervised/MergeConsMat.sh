@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################################
 ############# Input Paremeters for Run ###########
@@ -30,9 +30,6 @@
 #		 exit 1
 #fi
 
-# specify algorithm batches
-algs=(nmfbrunet nmflee distalgs rest)
-
 # specify minimum number of reps required for merge.
 # the modulus of the dividend (reps) and divisor (c) must be greater or equal to zero.
 c=100
@@ -44,11 +41,22 @@ c=100
 
 for s in `seq $c $c $reps`; do
 	for i in "${algs[@]}"; do
-		# execute shell_file to cluster
-		shell_file=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
-		qsub -V -p -1 -l mem_free=20G -l mem_token=20G -l h_vmem=30G -e $logDir -o $logDir -q all.q $shell_file
+	    shell_file=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
+	    echo "Using: $shell_file"
+	    if command -v qsub &>/dev/null; then
+            # execute shell_file to cluster
+            qsub -V -p -1 -l mem_free=20G -l mem_token=20G -l h_vmem=30G -e $logDir -o $logDir -q all.q $shell_file
+		else
+            echo "Submitting Locally"
+            chmod +x $shell_file
+		fi
 	done
 done
 
+if command -v qsub &>/dev/null; then
+    echo "Using Shell"
+else
+  python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step merge
+fi
 # complete
 echo 'Submitted merge files to the queue!'
