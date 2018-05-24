@@ -5,6 +5,7 @@ hc <- function(x, k, method = "average") {
   as.integer(stats::cutree(stats::hclust(stats::dist(x), method = method), k))
 }
 
+
 ivi_table <- function(cl.df, data) {
   ndata <- apply(data, 2, function(x) as.numeric(as.character(x)))
   data.frame(
@@ -14,7 +15,7 @@ ivi_table <- function(cl.df, data) {
       traj = ndata,
       crit = c("Calinski_Harabasz", "Dunn", "PBM", "Tau", "Gamma", "C_index",
                "Davies_Bouldin", "McClain_Rao", "SD_Dis", "Ray_Turi", "G_plus",
-               "Silhouette", "S_Dbw")) %>% as.data.frame %>% t(.),
+               "Silhouette", "S_Dbw")),
     Compactness = cl.df %>% purrr::map_dbl(compactness, data = data),
     Connectivity = cl.df %>% purrr::map_dbl(
       ~ clValid::connectivity(Data = ndata, clusters = .))
@@ -91,11 +92,11 @@ finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, referenceClas
 cat("Evaluating clustering\n")
 # Cluster evaluate at this point
 ii <- ivi_table(finalR, cdat)
-
+ii <- list(ii)[[1]]
 
 cat("Ranking aggregates\n")
 # Rank aggregate
-cr <- consensus_rank(ii, n = 5)
+cr <- diceR:::consensus_rank(ii, n = 5)
 top <- cr$top.list
 ii <- ii[match(top, ii$Algorithms), ]
 finalR <- finalR[, top]
@@ -103,3 +104,4 @@ finalR <- finalR[, top]
 cat("Saving RDS\n")
 saveRDS(finalR, paste0(ddir, "/all_clusts_", dataset, ".rds"))
 saveRDS(ii, paste0(ddir, "/ii_", dataset, ".rds"))
+print(readRDS(paste0(ddir, "/ii_", dataset, ".rds")))

@@ -1,15 +1,15 @@
 library(diceR)
 library(magrittr)
 
-# inputs: ndat, cons.funs, k, data_directory
+# inputs: ndat, cons.funs, k, dir
 
 hc <- function(x, k, method = "average") {
   as.integer(stats::cutree(stats::hclust(stats::dist(x), method = method), k))
 }
 
 # Read in completed E and consensus matrices
-Ecomp <- readRDS(file.path(data_directory, paste0("Ecomp_", ndat, ".rds")))
-CM <- readRDS(file.path(data_directory, paste0("Final_CM_", ndat, ".rds")))
+Ecomp <- readRDS(file.path(dir, paste0("Ecomp_", ndat, ".rds")))
+CM <- readRDS(file.path(dir, paste0("Final_CM_", ndat, ".rds")))
 
 # Obtain HC from each algorithm and relabel for LCE
 cl.mat <- purrr::map(CM, hc, k = 4) %>%
@@ -31,4 +31,4 @@ Consensus <- switch(
   LCEasrs = hc(asrs(cl.mat, dc = 0.8), k = 4)
 )
 
-saveRDS(Consensus, paste0(data_directory, "/cons_", cons.funs, "_", ndat, ".rds"))
+saveRDS(Consensus, paste0(dir, "/cons_", cons.funs, "_", ndat, ".rds"))
