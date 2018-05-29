@@ -10,3 +10,4 @@ array_classifier/1_cluster_pipeline/training_pipeline/ov.afc1_cbt/
 nanostring
 array_classifier/2_post_processing/data/
 array_classifier/2_post_processing/outputs/
+packrat/lib*/
