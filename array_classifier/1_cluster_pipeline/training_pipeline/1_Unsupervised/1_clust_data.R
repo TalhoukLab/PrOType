@@ -6,7 +6,6 @@ library(diceR)
 k <- 4
 r <- 1
 
-cat(s)
 ssclust <- switch(algs,
 nmfbrunet = {
         consensus_cluster(data = cdat, nk = k, reps = r,

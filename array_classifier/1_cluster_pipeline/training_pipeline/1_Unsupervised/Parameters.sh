@@ -6,10 +6,10 @@
 user="mpaletta"
 
 # data information
-dataSet="ov.afc1_cbt_sample"
+dataSet="ov.afc1_cbt"
 
 # Unsupervised parameters
-reps=5
+reps=6
 k=4
 c=1 # use for determining splitting criterion (min 100 reps required)
 
@@ -23,8 +23,8 @@ RPath="/usr/bin"
 
 
 # Developer params
-#algs=(nmfbrunet nmflee distalgs rest)
-algs=(distalgs rest)
+algs=(nmfbrunet nmflee distalgs rest)
+#algs=(distalgs rest)
 
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 referenceClass="majority"

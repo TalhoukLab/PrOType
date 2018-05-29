@@ -9,6 +9,9 @@ def run_process(script):
 
 
 def run_all_processes(num_parallel, scripts):
+    from random import shuffle
+    shuffle(scripts)
+
     pool = Pool(num_parallel)
     pool.map(run_process, scripts)
 
