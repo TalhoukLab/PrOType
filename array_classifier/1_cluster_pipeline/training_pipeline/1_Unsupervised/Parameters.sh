@@ -6,10 +6,10 @@
 user="mpaletta"
 
 # data information
-dataSet="ov.afc1_cbt"
+dataSet="ov.afc1_cbt_sample"
 
 # Unsupervised parameters
-reps=6
+reps=5
 k=4
 c=1 # use for determining splitting criterion (min 100 reps required)
 

@@ -42,7 +42,8 @@ multMerge <- function(algs, fnames, newdir) {
 
 # Merge the raw clustering
 cat("Merging raw clustering\n")
-fnames <- list.files(path = paste0(dir, "/rds_out_", ndat, "/")) %>%
+regex_str <- paste(algs, regexpr(seq_len(reps)), ndat, sep = "|")
+fnames <- list.files(path = paste0(dir, "/rds_out_", ndat, "/"), pattern = regex_str) %>%
   gtools::mixedsort()
 newdir <- paste0(dir, "/rds_out_", ndat, "/")
 
