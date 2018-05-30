@@ -28,7 +28,7 @@ nmfbrunet = {
     },
     rest = {
         consensus_cluster(data = cdat, nk = k, reps = r,
-        algorithms = c("block", "sc"), #,"ap"), #,"gmm"),
+        algorithms = c("block"), #,"ap"), #,"gmm"),
         prep.data = "none", seed.data = s,
         file.name = paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat))
     }

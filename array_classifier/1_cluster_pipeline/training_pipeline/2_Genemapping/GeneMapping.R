@@ -10,6 +10,8 @@
 #' @return a data frame with nanostring probe as feature and same number of
 #'   sample as X
 #' @author Last updated on 27/10/2017 by Dustin Johnson. Edited by Derek Chiu.
+library(magrittr)
+
 map_to_nano <- function(x, dataSet, inDir, outDir) {
     # Perform mapping according to affy
     # Join mapping table with data table and take median of any repeat probe IDs

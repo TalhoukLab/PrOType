@@ -1,7 +1,9 @@
 # Makefile to test parallel pipeline
 
+all: files clustQ CMmergeQ merge ConFun FinalClust map
+
 # Prepare data (pre-processing and filtering)
-prep_data:	
+prep_data:
 	./1_Unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for pipeline
@@ -9,14 +11,14 @@ files:	prep_data
 	./1_Unsupervised/CreateScripts.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Running consensus clustering on the queue
-clustQ:	
+clustQ:
 	./1_Unsupervised/subJobs.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Merge consensus matrices on the queue (not used)
-CMmergeQ:	
+CMmergeQ:
 	./1_Unsupervised/MergeConsMat.sh $(filter-out $@,$(MAKECMDGOALS))
 
-merge: 
+merge:
 	./1_Unsupervised/MergeFinal.sh $(filter-out $@,$(MAKECMDGOALS))
 
 ConFun:
@@ -29,13 +31,13 @@ map:
 	./2_Genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for SL pipeline
-SLfiles:	
+SLfiles:
 	./3_Supervised/CreateSLScripts.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Run scripts to train models
-SLtrain:	
+SLtrain:
 	./3_Supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
-		
+
 SLreduce:
 	./3_Supervised/reduce.sh $(filter-out $@,$(MAKECMDGOALS))
 

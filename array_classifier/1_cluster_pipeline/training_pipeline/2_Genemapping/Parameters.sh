@@ -4,11 +4,11 @@
 user="djohnson"
 
 # data information
-dataSet="ov.afc2_cbt"
+dataSet="ov.afc1_cbt_sample"
 
 # directory inputs
-workDir="/share/lustre/backup/ovcare/HGSC_Classifier/final_pipeline/"
-outputDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/"
-inputDir="/share/lustre/backup/ovcare/HGSC_Classifier/raw_data/"
-logDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/logs/"
-RPath="/shahlab/djohnson/software/R-3.4.1/builddir/bin"
+workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
+outputDir="/outputs/"
+inputDir="/PrOType/array_classifier/1_cluster_pipeline/raw_data/raw_data/"
+logDir="/logs/"
+RPath="/usr/bin"
