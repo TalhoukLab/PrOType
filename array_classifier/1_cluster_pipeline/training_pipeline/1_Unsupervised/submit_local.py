@@ -46,7 +46,7 @@ if __name__ == "__main__":
                 "required": True
             },
             "step": {
-                "choices": ["clust", "consensus", "merge", "prep"],
+                "choices": ["clust", "consensus", "merge", "prep", "train"],
                 "help": "Which stage we're on...",
                 "required": True
             }

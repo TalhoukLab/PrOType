@@ -1,21 +1,21 @@
-#!/bin/sh
+#!/bin/bash
 
 # user information
-user="djohnson"
+user="mpaletta"
 
 # data information
-dataSet="ov.afc2_cbt"
+dataSet="ov.afc1_cbt"
 
 # Supervised parameters
-reps=100
+reps=5 # 100
 normalizeBy="None"
 threshold="0.0"
 minVar="0.0"
 normType="conventional"
 
 # directory inputs
-workDir="/share/lustre/backup/ovcare/HGSC_Classifier/final_pipeline/"
-outputDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/"
-inputDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/" # notice same as outputDir
-logDir="/share/lustre/backup/ovcare/HGSC_Classifier/outputs/logs/"
-RPath="/shahlab/djohnson/software/R-3.4.1/builddir/bin"
+workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
+outputDir="/outputs/"
+inputDir="/outputs/"
+logDir="/logs/"
+RPath="/usr/bin"

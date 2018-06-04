@@ -20,7 +20,8 @@ map_to_nano <- function(x, dataSet, inDir, outDir) {
       dplyr::select(-index) %>%
       magrittr::set_names(c("nanoID", "affy.probe", "symbol", "symbol.single", "nanostring.probeID", "housekeeping")) %>%
       dplyr::mutate(nanoID = as.factor(nanoID)) %>%
-      dplyr::inner_join(data.frame(affy.probe = stringr::word(rownames(x), 1, sep = "\\|"), x), by = "affy.probe")
+      dplyr::inner_join(data.frame(affy.probe = stringr::word(rownames(x), 1, sep = "\\|"), x, stringsAsFactors = FALSE),
+                        by = "affy.probe")
 
     dat.mapped <- df %>%
       dplyr::filter(is.na(housekeeping)) %>%
@@ -36,9 +37,9 @@ map_to_nano <- function(x, dataSet, inDir, outDir) {
     # extract housekeeping from table
     housekeeping <- dat %>%
       dplyr::filter(housekeeping == 1) %>%
-      dplyr::select(-c(housekeeping, nanostring.probeID)) %>%
-      colMeans() %>%
-      data.frame(HCmean = .)
+      dplyr::select(-c(housekeeping, nanostring.probeID)) #%>%
+      # colMeans(na.rm = TRUE) %>%
+      # data.frame(HCmean = .)
 
     # normalize wrt mean of housekeeping and return npcp
     dat.clean <- dat %>%

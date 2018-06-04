@@ -16,26 +16,39 @@
 #'   "robust", "tsne", or "largevis". See ?diceR::prepare_data for details.
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
+
+library(magrittr)
+
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", min.var = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model") {
+  cat("Reading training data\n")
   # import training data
   npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
 
   class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
   class.train <- class[, 1]
 
+  cat("Normalizing data\n")
   # normalization
   if (normalize.by == "None") {
+    cat("Normalizing None\n")
+    str(npcp)
+    str(apply(npcp, 2, stats::sd, na.rm = TRUE))
     data.train <- npcp %>%
-      diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
+      magrittr::extract(,  apply(., 2, stats::sd, na.rm = TRUE) > minVar) %>%
+      # magrittr::extract(stats::complete.cases(.),
+      #                   apply(., 2, stats::sd, na.rm = TRUE) > minVar) %>%
+      # diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
       as.data.frame()
   } else if (normalize.by == "Genes") {
+    cat("Normalizing Genes\n")
     data.train <- npcp %>%
       diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
       as.data.frame()
   } else if (normalize.by == "Samples") {
+    cat("Normalizing Samples\n")
     data.train <- npcp %>%
       t() %>%
       diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
@@ -43,6 +56,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
       as.data.frame()
   }
 
+  cat("Running training algorithms\n")
   # train algorithms
   reps <- as.integer(reps)
   sm_args <- list(data = data.train, class = class.train, n = 1, seed = reps, threshold = threshold)
@@ -69,6 +83,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                            algorithms = "svm", rfe = TRUE)
   )
 
+  cat("Saving output\n")
   # write to file
   readr::write_rds(sm, paste0(outDir, "/", fname, "_", dataSet, " / c1_", algs, reps, "_", dataSet, ".rds"))
 }

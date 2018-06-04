@@ -6,7 +6,7 @@
 user="mpaletta"
 
 # data information
-dataSet="ov.afc1_cbt_sample"
+dataSet="ov.afc1_cbt"
 
 # Unsupervised parameters
 reps=5

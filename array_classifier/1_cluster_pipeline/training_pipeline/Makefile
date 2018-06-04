@@ -1,6 +1,6 @@
 # Makefile to test parallel pipeline
 
-all: files clustQ CMmergeQ merge ConFun FinalClust map
+all: files clustQ CMmergeQ merge ConFun FinalClust map SLfiles SLtrain
 
 # Prepare data (pre-processing and filtering)
 prep_data:

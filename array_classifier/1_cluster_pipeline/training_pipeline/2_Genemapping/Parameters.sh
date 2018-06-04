@@ -1,10 +1,10 @@
 #!/bin/sh
 
 # user information
-user="djohnson"
+user="mpaletta"
 
 # data information
-dataSet="ov.afc1_cbt_sample"
+dataSet="ov.afc1_cbt"
 
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
