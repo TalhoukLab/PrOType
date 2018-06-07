@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . 4_IVSummary/Parameters.sh
 
@@ -53,10 +53,10 @@ for i in $dataSet; do
 	# create scripts and directories
 	mkdir -p $workDir$i'/R_file/iv_summary'
 	mkdir -p $workDir$i'/sh_file/iv_summary'
-	
+
 	Rname=$workDir$i'/R_file/iv_summary/iv.R'
 	shname=$workDir$i'/sh_file/iv_summary/iv.sh'
-	
+
 	touch $Rname
 	echo 'fdir <- "'$inputDir$i'"' > $Rname
 	echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds"' >> $Rname
@@ -66,12 +66,22 @@ for i in $dataSet; do
 	echo '#!/bin/bash' > $shname
 	echo 'export PATH='$RPath':$PATH' >> $shname
 	echo 'Rscript' $Rname >> $shname
-	chmod 755 $shname
+	chmod +x $shname
 
 	# execute shell script to queue
-	qsubJobArray+=($(qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname))
-	
+  if command -v qsub &>/dev/null; then
+		  echo "Using: $shname"
+	    qsubJobArray+=($(qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname))
+  else
+      echo "Making File"
+  fi
 done
+
+if command -v qsub &>/dev/null; then
+    echo "skipping"
+else
+    python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step iv_summary
+fi
 
 
 # *************************************************************************
@@ -87,12 +97,18 @@ containsElement () {
 }
 
 test=0
+if command -v qsub &>/dev/null; then
+  test=0
+else
+  test=1
+fi
+
 while [ $test == 0 ]; do
 	tempf=$temp'qstat_temp.txt'
 	touch $tempf
 	qstat -u $user | awk '{print $1}' > $tempf
 	IFS=$'\r\n' GLOBIGNORE='*' command eval  'qstatJobArray=($(cat '$tempf'))'
-	
+
 	for i in `seq 1 ${#qsubJobArray[@]}`; do
 		containsElement "${qsubJobArray[${i}]}" "${qstatJobArray[@]}"
 		test=$?
@@ -108,8 +124,8 @@ while [ $test == 0 ]; do
 		echo "jobs completed! Combining all IV tables..."
 	fi
 done
-	
-	
+
+
 # *************************************************************************
 # Step 3: combine all IV tables into one
 # *************************************************************************

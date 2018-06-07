@@ -19,4 +19,4 @@ withCallingHandlers(install.packages("diceR", repos="http://cran.stat.sfu.ca"), 
 #                     warning = function(w) stop(w))
 # }
 
-#devtools::install_github("AlineTalhouk/diceR")
+devtools::install_github("AlineTalhouk/splendid")

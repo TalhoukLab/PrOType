@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . 4_IVSummary/Parameters.sh
 
@@ -47,6 +47,7 @@ fi
 # extract data set vector
 dset=$dataSet
 data_sets=${dset// /'"','"'}
+#data_sets=$dset
 
 # create R script
 mkdir -p $workDir'temp'

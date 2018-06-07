@@ -126,6 +126,7 @@ for i in ${algs[@]}; do
 
 		# Content of R file
 		touch $R_clust
+		echo 'k<-'$k >> $R_clust
 		echo 's<-'$s >> $R_clust
 		echo 'algs<- "'$i'"' >> $R_clust
 		echo 'pr<- "cs"' >> $R_clust
@@ -203,6 +204,7 @@ echo 'ndat<- "'$dataSet'"' >> $R_merge_final_clust
 echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_clust
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
 echo 'reps<- '$reps >> $R_merge_final_clust
+echo 'k<-'$k >> $R_merge_final_clust
 echo 'source("'$workDir'1_Unsupervised/4_merge_clust.R")' >> $R_merge_final_clust
 
 # Create sh scirpts

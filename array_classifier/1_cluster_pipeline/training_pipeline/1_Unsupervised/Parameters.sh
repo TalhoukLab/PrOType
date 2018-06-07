@@ -9,9 +9,9 @@ user="mpaletta"
 dataSet="ov.afc1_cbt"
 
 # Unsupervised parameters
-reps=1000
+reps=5
 k=4
-c=100 # use for determining splitting criterion (min 100 reps required)
+c=1 # use for determining splitting criterion (min 100 reps required)
 
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"

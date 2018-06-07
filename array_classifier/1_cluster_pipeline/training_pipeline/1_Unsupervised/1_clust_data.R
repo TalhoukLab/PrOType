@@ -2,9 +2,7 @@
 # input variable algs, seed (s)
 
 library(diceR)
-
-k <- 4
-r <- 1
+r<-1
 
 ssclust <- switch(algs,
 nmfbrunet = {

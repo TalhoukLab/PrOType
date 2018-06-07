@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 . 4_IVSummary/Parameters.sh
 
@@ -47,7 +47,7 @@ dset=$dataSet
 data_sets=${dset// /'"','"'}
 
 # create R script
-mkdir $workDir'temp'
+mkdir -p $workDir'temp'
 Rname=$workDir'temp/CIsupLearn_temp.R'
 
 touch $Rname

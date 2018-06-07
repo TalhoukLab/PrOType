@@ -37,9 +37,11 @@ map_to_nano <- function(x, dataSet, inDir, outDir) {
     # extract housekeeping from table
     housekeeping <- dat %>%
       dplyr::filter(housekeeping == 1) %>%
-      dplyr::select(-c(housekeeping, nanostring.probeID)) #%>%
-      # colMeans(na.rm = TRUE) %>%
-      # data.frame(HCmean = .)
+      dplyr::select(-c(housekeeping, nanostring.probeID)) %>%
+      colMeans(na.rm = TRUE) %>%
+      data.frame(HCmean = .)
+
+    print(dim(housekeeping))
 
     # normalize wrt mean of housekeeping and return npcp
     dat.clean <- dat %>%

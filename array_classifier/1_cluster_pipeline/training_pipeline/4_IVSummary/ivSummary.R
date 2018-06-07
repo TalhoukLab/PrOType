@@ -1,4 +1,6 @@
 # create internal validation table
+library(magrittr)
+
 df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
   grep("Model", ., value = TRUE) %>%
   purrr::map(~ readRDS(paste0(fdir, "/", .))) %>%
