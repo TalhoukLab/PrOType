@@ -1,4 +1,5 @@
 # command line arguments
+library(magrittr)
 args <- commandArgs(trailingOnly = TRUE)
 
 list.files(args[1], recursive = TRUE, pattern = "iv_summary_ov*") %>%
