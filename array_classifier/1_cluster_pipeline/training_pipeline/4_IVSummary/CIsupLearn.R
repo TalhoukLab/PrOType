@@ -25,22 +25,24 @@ create_ci <- function(df) {
 }
 
 # Sort best
-sort_best <- function(train_eval, top = 5){
+sort_best <- function(train_eval, top = 5) {
   cat("Sorting best\n")
-  dput(train_eval, file = "/PrOType/IV)_Sort_bestTrainEval.dput")
-  str(train_eval, max.level = 1)
-  te <- purrr::map(train_eval, ~ {
-    as.data.frame(.) %>%
-      dplyr::mutate(logloss = -logloss) %>%
-      t() %>%
-      magrittr::extract(, 1)
-  }) %>%
-    data.frame()
+  te <- train_eval %>%
+    `[`(grep("evals", names(.))) %>%
+    purrr::set_names(paste0(names(.), seq_along(.))) %>%
+    purrr::map(~ {
+      do.call(cbind, .) %>%
+        t() %>%
+        as.data.frame() %>%
+        dplyr::mutate(logloss = -logloss) %>%
+        `colnames<-`(gsub("\\.X", "\\.", colnames(.))) %>%
+        t() %>%
+        magrittr::extract(, which.max(.["logloss", ])) # Choose best logloss
+    }) %>%
+    as.data.frame()
   algsfull <- colnames(te)
   df <- te %>%
-    apply(1, function(x)
-      algsfull[order(rank(-x, ties.method = "random"))]
-    ) %>%
+    apply(1, function(x) algsfull[order(rank(-x, ties.method = "random"))]) %>%
     t() %>%
     RankAggreg::RankAggreg(., ncol(.), method = "GA",
                            verbose = FALSE, maxIter = 2000)
