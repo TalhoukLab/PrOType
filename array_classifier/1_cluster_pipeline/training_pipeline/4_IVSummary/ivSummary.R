@@ -11,34 +11,25 @@ df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
       basename()
   ) %>%
   purrr::modify_depth(2, ~ {
-    cat("Modifying Depth\n")
     data.frame(measure = rownames(t(.)), t(.)) %>%
       purrr::set_names(c("measure", "percentile_50", "percentile_5", "percentile_95"))
   }) %>%
-  purrr::imap(~ {
-    cat("iMap\n")
-    readr::write_rds(list("y"=.y, "x"=.x), "ivSummary.rds", compress = "xz", compression = 9L)
-    purrr::modify_depth(.x, 1, ~ data.frame(normalization = .y, .x))
-  }) #%>%
-  # purrr::modify_depth(1, ~ purrr::imap(~ data.frame(mod = .y, .x))) %>%
-  # purrr::map(~ data.table::rbindlist(.)) %>%
-  # data.table::rbindlist() %>%
-  # tibble::as_tibble() %>%
-  # dplyr::mutate(
-  #   batch_correction = purrr::map(
-  #     strsplit(as.character(normalization), split = "_"), ~ .[3]) %>%
-  #     unlist() %>%
-  #     as.factor(),
-  #   normalization = purrr::map(
-  #     strsplit(as.character(normalization), split = "_"), ~ .[1]) %>%
-  #     substr(start = 7, stop = nchar(.)) %>%
-  #     unlist() %>%
-  #     as.factor()
-  # ) %>%
-  # dplyr::mutate(
-  #   normalization = ifelse(normalization == "", "None", as.character(normalization)) %>%
-  #     as.factor()
-  # )
+  purrr::imap(~ purrr::map(.x, function(x)
+    data.frame(normalization = .y, x, stringsAsFactors = FALSE))) %>%
+  purrr::map(function(x)
+    purrr::imap(x, ~ data.frame(mod = .y, .x, stringsAsFactors = FALSE))) %>%
+  purrr::map_df(dplyr::bind_rows) %>%
+  tibble::as_tibble() %>%
+  dplyr::mutate(
+    batch_correction = purrr::map_chr(
+      strsplit(normalization, split = "_"), ~ .[3]) %>%
+      as.factor(),
+    normalization = purrr::map_chr(
+      strsplit(normalization, split = "_"), ~ .[1]) %>%
+      substr(start = 7, stop = nchar(.)) %>%
+      ifelse(. == "", "None", .) %>%
+      as.factor()
+  )
 
 # write results to file
 readr::write_rds(df, sdir)
