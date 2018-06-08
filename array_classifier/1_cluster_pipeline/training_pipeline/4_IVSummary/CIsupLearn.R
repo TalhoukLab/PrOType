@@ -29,7 +29,6 @@ sort_best <- function(train_eval, top = 5) {
   cat("Sorting best\n")
   te <- train_eval %>%
     `[`(grep("evals", names(.))) %>%
-    purrr::set_names(paste0(names(.), seq_along(.))) %>%
     purrr::map(~ {
       do.call(cbind, .) %>%
         t() %>%
@@ -83,16 +82,36 @@ final <- fdat %>%
   purrr::map(~ {
     FinalR_lab <- readRDS(paste0(inDir, ., "/data_pr_", ., "/all_clusts_", ., ".rds"))
     train_eval <- readRDS(paste0(inDir, ., "/data_pr_", ., "/train_eval_", ., ".rds"))
+    te_names <- names(train_eval)
+    train_eval <- train_eval %>%
+      purrr::set_names(paste0(te_names,
+                              rep(seq_len(unique(table(te_names))),
+                                  each = dplyr::n_distinct(te_names))))
     bests <- sort_best(train_eval, top = top)
     ci <- train_eval %>%
+      `[`(grep("evals", names(.))) %>%
       purrr::map(~ {
-        data.frame(.) %>%
+        do.call(cbind, .) %>%
           t() %>%
-          create_ci()
+          as.data.frame() %>%
+          dplyr::mutate(logloss = -logloss) %>%
+          `colnames<-`(gsub("\\.X", "\\.", colnames(.))) %>%
+          t() %>%
+          magrittr::extract(, which.max(.["logloss", ])) # Choose best logloss
       }) %>%
-      data.frame() %>%
-      magrittr::set_names(names(train_eval))
-    ci[, colnames(bests$res)]
+      purrr::map(quantile, probs = c(0.05, 0.5, 0.95)) %>%
+      do.call(rbind, .) %>%
+      create_ci() %>%
+      t()
+    # ci <- train_eval %>%
+    #   purrr::map(~ {
+    #     data.frame(.) %>%
+    #       t() %>%
+    #       create_ci()
+    #   }) %>%
+    #   data.frame() %>%
+    #   magrittr::set_names(names(train_eval))
+    ci[, colnames(bests$res)] # CI across evaluation metrics?
   }) %>%
   magrittr::set_names(fdat)
 
