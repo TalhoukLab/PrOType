@@ -103,14 +103,6 @@ final <- fdat %>%
       do.call(rbind, .) %>%
       create_ci() %>%
       t()
-    # ci <- train_eval %>%
-    #   purrr::map(~ {
-    #     data.frame(.) %>%
-    #       t() %>%
-    #       create_ci()
-    #   }) %>%
-    #   data.frame() %>%
-    #   magrittr::set_names(names(train_eval))
     ci[, colnames(bests$res)] # CI across evaluation metrics?
   }) %>%
   magrittr::set_names(fdat)
