@@ -18,6 +18,7 @@ purrr::walk2(all.dat, be, ~ {
   purrr::walk(algs, function(a) {
     cat("Walking: ", a, "\n")
     print(dim(.x))
+    .x <- t(.x)
     fit <- splendid::classification(
       data = make.names(.x[, -1]),
       class = .x[, 1],

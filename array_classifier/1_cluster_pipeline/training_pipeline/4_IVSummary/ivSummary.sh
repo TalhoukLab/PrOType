@@ -74,14 +74,9 @@ for i in $dataSet; do
 	    qsubJobArray+=($(qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname))
   else
       echo "Making File"
+      bash +x $shname
   fi
 done
-
-if command -v qsub &>/dev/null; then
-    echo "skipping"
-else
-    python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step iv_summary
-fi
 
 
 # *************************************************************************

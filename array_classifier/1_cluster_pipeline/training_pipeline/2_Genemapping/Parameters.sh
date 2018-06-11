@@ -4,7 +4,7 @@
 user="mpaletta"
 
 # data information
-dataSet="ov.afc1_cbt"
+dataSet="ov.afc1_xpn"
 
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"

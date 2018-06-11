@@ -1,6 +1,7 @@
 # create internal validation table
 library(magrittr)
 
+str(list.files(fdir, recursive = TRUE, pattern = "*_train_*"))
 df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
   grep("Model", ., value = TRUE) %>%
   purrr::map(~ readRDS(paste0(fdir, "/", .))) %>%
@@ -14,10 +15,12 @@ df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
     data.frame(measure = rownames(t(.)), t(.)) %>%
       purrr::set_names(c("measure", "percentile_50", "percentile_5", "percentile_95"))
   }) %>%
-  purrr::imap(~ purrr::map(.x, function(x)
-    data.frame(normalization = .y, x, stringsAsFactors = FALSE))) %>%
-  purrr::map(function(x)
-    purrr::imap(x, ~ data.frame(mod = .y, .x, stringsAsFactors = FALSE))) %>%
+  purrr::imap(~ purrr::map(.x, function(x) {
+      data.frame(normalization = .y, x, stringsAsFactors = FALSE)
+    })) %>%
+  purrr::map(function(x) {
+      purrr::imap(x, ~ data.frame(mod = .y, .x, stringsAsFactors = FALSE))
+    }) %>%
   purrr::map_df(dplyr::bind_rows) %>%
   tibble::as_tibble() %>%
   dplyr::mutate(

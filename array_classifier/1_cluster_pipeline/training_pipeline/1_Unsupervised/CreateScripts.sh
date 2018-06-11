@@ -158,8 +158,8 @@ for i in ${algs[@]}; do
 			R_merge=$workDir$dataSet/R_file/merge/Merge_$i$s.R
 			sh_merge=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
 
-			if [ ! -f "${workDir}1_Unsupervised/5_merge_consmat.R" ]; then
-                        	echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/5_merge_consmat.R"
+			if [ ! -f "${workDir}1_Unsupervised/4_merge_partial_consmat.R" ]; then
+                        	echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/4_merge_partial_consmat.R"
                         	exit 1
                 	fi
 
@@ -170,10 +170,9 @@ for i in ${algs[@]}; do
 			echo 'algs<- "'$i'"' >> $R_merge
 			echo 'c <- '$c >> $R_merge
 			echo 'r <- '$r >> $R_merge
-			echo 'merge <- "partial"' >> $R_merge
 			echo 'reps <- '$reps >> $R_merge
 			echo 'k <- '$k >> $R_merge
-			echo 'source("'$workDir'1_Unsupervised/5_merge_consmat.R")' >> $R_merge
+			echo 'source("'$workDir'1_Unsupervised/4_merge_partial_consmat.R")' >> $R_merge
 
 			# Content of sh file
 			touch $sh_merge
@@ -205,15 +204,14 @@ echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_clust
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
 echo 'reps<- '$reps >> $R_merge_final_clust
 echo 'k<-'$k >> $R_merge_final_clust
-echo 'source("'$workDir'1_Unsupervised/4_merge_clust.R")' >> $R_merge_final_clust
+echo 'source("'$workDir'1_Unsupervised/5_merge_clust.R")' >> $R_merge_final_clust
 
 # Create sh scirpts
 touch $R_merge_final_consmat
 echo 'ndat<- "'$dataSet'"' >> $R_merge_final_consmat
 echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_consmat
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
-echo 'merge <- "complete"' >> $R_merge_final_consmat
-echo 'source("'$workDir'1_Unsupervised/5_merge_consmat.R")' >> $R_merge_final_consmat
+echo 'source("'$workDir'1_Unsupervised/6_merge_complete_consmat.R")' >> $R_merge_final_consmat
 
 
 #************************************************
@@ -232,7 +230,7 @@ for l in "${cons[@]}"; do
 	echo 'cons.funs<-"'$l'"'>>$R_cons
 	echo 'k<- 3'>>$R_cons
 	echo 'dir <-"'$outputDir$dataSet'/data_pr_'$dataSet'"'>>$R_cons
-	echo 'source("'$workDir'1_Unsupervised/6_con_fun.R")'>>$R_cons
+	echo 'source("'$workDir'1_Unsupervised/7_con_fun.R")'>>$R_cons
 
 	# create sh scripts
 	touch $sh_cons
@@ -254,7 +252,7 @@ touch $R_eval
 echo "fdir <- '"$outputDir"'" > $R_eval
 echo "dat <- '"$dataSet"'" >> $R_eval
 echo "referenceClass <- '"$referenceClass"'" >> $R_eval
-echo "source('"$workDir"1_Unsupervised/7_Evalution.R')" >> $R_eval
+echo "source('"$workDir"1_Unsupervised/8_Evalution.R')" >> $R_eval
 
 
 # Complete
