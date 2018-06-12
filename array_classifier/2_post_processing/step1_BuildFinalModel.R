@@ -19,8 +19,10 @@ purrr::walk2(all.dat, be, ~ {
     cat("Walking: ", a, "\n")
     print(dim(.x))
     .x <- t(.x)
+    colnames(.x) <- make.names(colnames(.x))
     fit <- splendid::classification(
-      data = make.names(.x[, -1]),
+      data = .x[, -1],
+      # data = make.names(.x[, -1]),
       class = .x[, 1],
       algorithms = a,
       standardize = FALSE
