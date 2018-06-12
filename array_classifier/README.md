@@ -49,12 +49,12 @@ follows:
 4. Once parameters have been specified, return to working directory (`cd ..`).
 5. Run unsupervised analysis sequentially, ensuring each step is completed before continuing.
     1. `make files`
-    2. `make clustQ`
-    3. `make CMmergeQ`
+    2. `make cluster`
+    3. `make CMmerge`
     4. `make merge`
     5. `make ConFun`
     6. `make FinalClust`
-6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`, where `nameOfStudy` is of course, the name of the study.
+6. Examine results in output folder. Final results are stored in `data_pr_<name_of_study>`, where `<name_of_study>` is of course, the name of the study.
 
 ---
 
@@ -74,8 +74,8 @@ This step will map the genes of your data to Nanostring in preparation for cross
     * **logDir**: path of your log files
     * **RPath**: path of your R executable
 4. Once parameters have been specified, return to working directory (`cd ..`).
-5. Run `make map`
-6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`. 
+5. Run `make Genemapping`
+6. Examine results in output folder. Final results are stored in `data_pr_<name_of_study>`.
 
 ---
 
@@ -100,11 +100,10 @@ The supervised analysis performs an ensemble classification scheme which perform
     * **RPath**: path of your R executable
 4. Once parameters have been specified, return to working directory (`cd ..`).
 5. Run supervised analysis sequentially, ensuring each step is completed before continuing.
-    1. `make SLfiles`
-    2. `make SLtrain`
-    3. `make SLreduce`
-6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`. 
-  
+    1. `make SLtrain`
+    2. `make SLreduce`
+6. Examine results in output folder. Final results are stored in `data_pr_<name_of_study>`.
+
 ---
 
 ### 4. Internal Validation Summary
@@ -127,7 +126,7 @@ Internal validation will return a summary of the results for the supervised lear
     1. `make trainEval`
     2. `make supLearn`: returns ranked order of the top N models with bootstrap confidence intervals
     3. `IVsummary`: returns an R data.frame containing all evaluation metrics and models for simple analysis for the user.
-6. Examine results in output folder. Final results are stored in `data_pr_nameOfStudy`. 
+6. Examine results in output folder. Final results are stored in `data_pr_<name_of_study>`.
 
 
 ---
