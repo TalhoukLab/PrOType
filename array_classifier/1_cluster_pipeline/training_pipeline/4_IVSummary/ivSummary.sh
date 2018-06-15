@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. 4_IVSummary/Parameters.sh
+. ./Parameters.sh
 
 ## specify the working directory
 #if [ "$user" = "" ]
@@ -58,7 +58,7 @@ for i in $dataSet; do
 	shname=$workDir$i'/sh_file/iv_summary/iv.sh'
 
 	touch $Rname
-	echo 'fdir <- "'$inputDir$i'"' > $Rname
+	echo 'fdir <- "'$outputDir$i'"' > $Rname
 	echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds"' >> $Rname
 	echo 'source("'$workDir'4_IVSummary/ivSummary.R")' >> $Rname
 

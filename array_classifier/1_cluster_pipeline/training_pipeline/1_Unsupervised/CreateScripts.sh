@@ -4,7 +4,7 @@
 ############# Input Paremeters for Run ###########
 ##################################################
 
-. 1_Unsupervised/Parameters.sh
+. ./Parameters.sh
 
 ## specify data set to use
 #if [ "$dataSet" = "" ]
@@ -143,6 +143,8 @@ for i in ${algs[@]}; do
 		echo '#!/bin/sh' >> $sh_clust
 		echo 'export PATH='$RPath':$PATH' >> $sh_clust
 		echo 'Rscript' $R_clust >> $sh_clust
+
+		chmod +x $sh_clust
 
 		#************************************************
 		#*********** create merge scripts ***************

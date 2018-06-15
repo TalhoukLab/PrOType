@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. 1_Unsupervised/Parameters.sh
+. ./Parameters.sh
 
 ##Get the data for this run
 #if [ "$dataSet" = "" ]

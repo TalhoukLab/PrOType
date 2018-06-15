@@ -30,6 +30,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
   class.train <- class[, 1]
+  data.train <- NULL
 
   cat("Normalizing data:", algs, "-", reps, "\n")
   # normalization
@@ -40,7 +41,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
       as.data.frame()
   } else if (normalize.by == "Genes") {
     cat("Normalizing Genes:", algs, "-", reps, "\n")
-    data.train <- npcp #%>%
+    data.train <- npcp %>%
       diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
       as.data.frame()
   } else if (normalize.by == "Samples") {

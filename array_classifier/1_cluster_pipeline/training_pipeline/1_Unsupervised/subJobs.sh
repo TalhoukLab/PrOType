@@ -4,8 +4,7 @@
 ############# Input Paremeters for Run ###########
 ##################################################
 
-. 1_Unsupervised/Parameters.sh
-
+. Parameters.sh
 ## Get the data for this run
 #if [ "$dataSet" = "" ]
 #then echo "Data set cannot be empty"
@@ -52,10 +51,10 @@ for s in `seq 1 $reps`; do
 	done
 done
 
-
 if command -v qsub &>/dev/null; then
     ./assets/submit_queue.sh
 else
+    chmod +x $workDir/1_Unsupervised/submit_local.py
     python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step clust
 fi
 

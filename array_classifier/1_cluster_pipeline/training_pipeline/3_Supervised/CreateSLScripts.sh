@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. 3_Supervised/Parameters.sh
+. ./Parameters.sh
 
 ## specify data set to use
 #if [ "$dataSet" = "" ]
@@ -83,7 +83,7 @@ fi
 # create R and sh scripts
 for i in "${algs[@]}"; do
 
-	for s in `seq 1 $reps`; do
+	for s in `seq 1 $supervised_reps`; do
 
 		#File names for R script, rds output file, shell job script
 		R_train=$workDir$dataSet/R_file/train/$i$s.R
@@ -94,7 +94,7 @@ for i in "${algs[@]}"; do
 		echo 'dataSet <- "'$dataSet'"' >> $R_train
 		echo 'reps <- '$s >> $R_train
 		echo 'algs <- "'$i'"' >> $R_train
-		echo 'inDir <- "'$inputDir$dataSet'"' >> $R_train
+		echo 'inDir <- "'$outputDir$dataSet'"' >> $R_train
 		echo 'outDir <- "'$outputDir$dataSet'"' >> $R_train
 		echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
 		echo 'minVar <- '$minVar >> $R_train

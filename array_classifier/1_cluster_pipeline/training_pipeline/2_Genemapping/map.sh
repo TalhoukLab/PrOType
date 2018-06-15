@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
 ##################################################
 ############# Input Paremeters for Run ###########
 ##################################################
 
-. 2_Genemapping/Parameters.sh
+. ./Parameters.sh
 
 ## specify data set to use
 #if [ "$dataSet" = "" ]

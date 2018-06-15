@@ -36,30 +36,30 @@ FinalClust:
 	./array_classifier/1_cluster_pipeline/training_pipeline/1_Unsupervised/FinalClust.sh $(filter-out $@,$(MAKECMDGOALS))
 
 map:
-	./array_classifier/2_Genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/2_Genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for SL pipeline
 SLfiles:
-	./array_classifier/3_Supervised/CreateSLScripts.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/3_Supervised/CreateSLScripts.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Run scripts to train models
 SLtrain: SLfiles
-	./array_classifier/3_Supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/3_Supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
 
 SLreduce:
-	./array_classifier/3_Supervised/reduce.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/3_Supervised/reduce.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 trainEval:
-	./array_classifier/4_IVSummary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/4_IVSummary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 supLearn:
-	./array_classifier/4_IVSummary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/4_IVSummary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 IVsummary:
-	./array_classifier/4_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./array_classifier/1_cluster_pipeline/training_pipeline/4_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 %:
 		@:

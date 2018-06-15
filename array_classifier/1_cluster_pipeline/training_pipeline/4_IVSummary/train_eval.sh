@@ -1,6 +1,6 @@
 #!/bin/bash
 
-. 4_IVSummary/Parameters.sh
+. ./Parameters.sh
 
 ## specify the working directory
 #if [ "$workDir" = "" ]

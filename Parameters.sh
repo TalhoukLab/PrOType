@@ -3,7 +3,7 @@
 # User Params
 
 # user information
-user="mpaletta"
+user="$(whoami)"
 
 # data information
 dataSet="ov.afc1_xpn"
@@ -13,10 +13,17 @@ reps=5
 k=4
 c=1 # use for determining splitting criterion (min 100 reps required)
 
+# Supervised parameters
+supervised_reps=5 # 100
+normalizeBy="None"
+threshold="0.0"
+minVar="0.0"
+normType="conventional"
+
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
 outputDir="/outputs/"
-inputDir="/PrOType/array_classifier/1_cluster_pipeline/raw_data/raw_data/"
+inputDir="/PrOType/raw_data/"
 logDir="/logs/"
 RPath="/usr/bin"
 
