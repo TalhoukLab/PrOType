@@ -3,14 +3,16 @@
 ###############################################################
 
 library(here)
+library(magrittr)
+
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 set.seed(2017)
-preds_dir <- "outputs/predictions"
-evals_dir <- "outputs/evals"
+preds_dir <- paste0(output_dir, "predictions")
+evals_dir <- paste0(output_dir, "evals")
 
 # import cut 1 fits
-fit.c1 <- readr::read_rds("outputs/fits/all_fits.rds")
+fit.c1 <- readr::read_rds(paste0(output_dir, "fits/all_fits.rds"))
 
 # import overlapping data
 map <- get_mapping() %>%

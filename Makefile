@@ -10,6 +10,7 @@ Supervised: SLtrain SLreduce trainEval
 IVSummary: trainEval supLearn IVsummary
 
 
+# ------------- PART 1 ----------------
 # Prepare data (pre-processing and filtering)
 prep_data:
 	./array_classifier/1_cluster_pipeline/training_pipeline/1_Unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
@@ -60,6 +61,11 @@ supLearn:
 # return internal validation summary
 IVsummary:
 	./array_classifier/1_cluster_pipeline/training_pipeline/4_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# ----------- PART 2 -------------
+post_processing:
+	./array_classifier/2_post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
 
 %:
 		@:

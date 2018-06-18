@@ -3,18 +3,17 @@
 ###############################################################
 
 library(here)
+library(magrittr)
+
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
-# batch effects and algorithms
-be <- purrr::set_names(c("ov.afc1_cbt", "ov.afc1_xpn"))
-algs <- purrr::set_names(c("adaboost", "rf", "mlr_ridge", "mlr_lasso"))
 
 # import training data
-all.dat <- purrr::map(be, import_study, dir = "data")
-save_dir <- "outputs/fits"
+all.dat <- purrr::map(datasets, import_study, dir = "data")
+save_dir <- file.path(paste0(output_dir, "fits"))
 
 # fit algo
-purrr::walk2(all.dat, be, ~ {
+purrr::walk2(all.dat, datasets, ~ {
   purrr::walk(algs, function(a) {
     cat("Walking: ", a, "\n")
     print(dim(.x))
@@ -35,7 +34,7 @@ purrr::walk2(all.dat, be, ~ {
 
 # build list of all fits
 cat("Reading files")
-fit.c1 <- purrr::map(be, function(b) {
+fit.c1 <- purrr::map(datasets, function(b) {
   purrr::map(algs, function(a) {
     readr::read_rds(file.path(save_dir, paste0(b, "_", a, ".rds")))
   })

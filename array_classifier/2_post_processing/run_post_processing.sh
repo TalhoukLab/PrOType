@@ -1,0 +1,31 @@
+#!/bin/bash
+
+. ./Parameters.sh
+
+mkdir -p $workDir$dataSet/post_processing
+
+
+Rname=$workDir$dataSet/post_processing/post_processing.R
+rm -f $Rname
+
+for dataset in ${dataSets[@]}; do
+    cp -r $outputDir$dataset/data_pr_$dataset/ $outputDir/iv_summaries/data_pr_$dataset/
+done
+
+touch $Rname
+echo 'for (dataset in unlist(strsplit("'${dataSets[*]}'", " "))) {' >> $Rname
+    echo 'cat("Starting Part 1\n")' >> $Rname
+    echo 'cat(dataset, "\n")' >> $Rname
+    echo 'output_dir <- "'$outputDir'/iv_summaries"' >> $Rname
+    echo 'source("array_classifier/2_post_processing/step0_InternalValidation.R")' >> $Rname
+echo '}' >> $Rname
+
+echo 'datasets <- c('${dataSets// /'"','"'}')' >> $Rname
+echo 'algorithms <- c('${algs// /'"','"'}')' >> $Rname
+echo 'output_dir <- ="'$outputDir'"' >> $Rname
+echo 'cat("Starting Part 2\n")' >> $Rname
+echo 'source("array_classifier/2_post_processing/step1_BuildFinalModel.R")' >> $Rname
+echo 'cat("Starting Part 3\n")' >> $Rname
+echo 'source("array_classifier/2_post_processing/step2_ArrayValidation.R")' >> $Rname
+
+Rscript $Rname
