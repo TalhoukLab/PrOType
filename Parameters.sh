@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # data information
-dataSet="ov.afc1_xpn"
+dataSet="ov.afc1_cbt"
 dataSets=(ov.afc1_xpn ov.afc1_cbt)
 shouldCompute=TRUE
 

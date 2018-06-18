@@ -28,15 +28,17 @@
 ########## Execute R scripts for merge ###########
 ##################################################
 export PATH=$RPath:$PATH
+for dataset in "${dataSets[@]}"; do
 
-# get R scripts
-R_merge_final_clust=$workDir$dataSet/R_file/merge/Merge_final_clust.R
-R_merge_final_consmat=$workDir$dataSet/R_file/merge/Merge_final_consmat.R
+    # get R scripts
+    R_merge_final_clust=$workDir$dataset/R_file/merge/Merge_final_clust.R
+    R_merge_final_consmat=$workDir$dataset/R_file/merge/Merge_final_consmat.R
 
-# execute R scripts
-echo "merge_final_clust"
-echo $R_merge_final_clust
-Rscript $R_merge_final_clust
-echo "merge_final_consmat"
-echo $R_merge_final_consmat
-Rscript $R_merge_final_consmat
+    # execute R scripts
+    echo "merge_final_clust"
+    echo $R_merge_final_clust
+    Rscript $R_merge_final_clust
+    echo "merge_final_consmat"
+    echo $R_merge_final_consmat
+    Rscript $R_merge_final_consmat
+done

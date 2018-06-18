@@ -33,8 +33,10 @@
 ########## Execute R scripts for merge ###########
 ##################################################
 #export PATH=$RPath:$PATH
+for dataset in "${dataSets[@]}"; do
 
-R_eval=$workDir$dataSet/R_file/eval/eval_run.R
+    R_eval=$workDir$dataset/R_file/eval/eval_run.R
 
-# execute R scripts
-Rscript $R_eval
+    # execute R scripts
+    Rscript $R_eval
+done

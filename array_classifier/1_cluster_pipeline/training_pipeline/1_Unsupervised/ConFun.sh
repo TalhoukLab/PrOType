@@ -31,21 +31,22 @@ cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 ##################################################
 ############ Execute jobs on cluster #############
 ##################################################
+for dataset in "${dataSets[@]}"; do
+    for i in "${cons[@]}"; do
+        # execute shell_file to cluster node
+        shell_file=$workDir$dataset/sh_file/consensus/Create_$i.sh
+        if command -v qsub &>/dev/null; then
+            echo "Submitting to queue"
+            qsub -V -p -1 -l mem_free=25G -l mem_token=25G -l h_vmem=35G -e $logDir -o $logDir -q all.q $shell_file
+        fi
+    done
 
-for i in "${cons[@]}"; do
-	# execute shell_file to cluster node
-	shell_file=$workDir$dataSet/sh_file/consensus/Create_$i.sh
-	if command -v qsub &>/dev/null; then
-        echo "Submitting to queue"
-        qsub -V -p -1 -l mem_free=25G -l mem_token=25G -l h_vmem=35G -e $logDir -o $logDir -q all.q $shell_file
+    if command -v qsub &>/dev/null; then
+        echo "Using Shell"
+    else
+      python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step consensus
     fi
 done
-
-if command -v qsub &>/dev/null; then
-    echo "Using Shell"
-else
-  python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step consensus
-fi
 
 # complete
 echo 'Submitted merge files to the queue!'

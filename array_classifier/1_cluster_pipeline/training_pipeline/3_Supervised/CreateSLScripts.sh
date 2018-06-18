@@ -81,34 +81,36 @@ else
 fi
 
 # create R and sh scripts
-for i in "${algs[@]}"; do
-	for s in `seq 1 $supervised_reps`; do
-	    for t in "${threshold[@]}"; do
-		    #File names for R script, rds output file, shell job script
-		    R_train=$workDir$dataSet/R_file/train/$i$s$t.R
-		    sh_train=$workDir$dataSet/sh_file/train/$i$s$t.sh
+for dataset in "${dataSets[@]}"; do
+    for i in "${algs[@]}"; do
+        for s in `seq 1 $supervised_reps`; do
+            for t in "${threshold[@]}"; do
+                #File names for R script, rds output file, shell job script
+                R_train=$workDir$dataset/R_file/train/$i$s$t.R
+                sh_train=$workDir$dataset/sh_file/train/$i$s$t.sh
 
-		    #Content of R file
-		    touch $R_train
-            echo 'dataSet <- "'$dataSet'"' >> $R_train
-            echo 'reps <- '$s >> $R_train
-            echo 'algs <- "'$i'"' >> $R_train
-            echo 'inDir <- "'$outputDir$dataSet'"' >> $R_train
-            echo 'outDir <- "'$outputDir$dataSet'"' >> $R_train
-            echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
-            echo 'minVar <- '$minVar >> $R_train
-            echo 'normType <- "'$normType'"' >> $R_train
-            echo 'fname <- "'$fname'"' >> $R_train
-            echo 'threshold <- '$t >> $R_train
-            echo 'shouldCompute <- '$shouldCompute >> $R_train
-            echo 'source("'$workDir'3_Supervised/9_model_train.R")' >> $R_train
-            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_train
+                #Content of R file
+                touch $R_train
+                echo 'dataSet <- "'$dataset'"' >> $R_train
+                echo 'reps <- '$s >> $R_train
+                echo 'algs <- "'$i'"' >> $R_train
+                echo 'inDir <- "'$outputDir$dataset'"' >> $R_train
+                echo 'outDir <- "'$outputDir$dataset'"' >> $R_train
+                echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
+                echo 'minVar <- '$minVar >> $R_train
+                echo 'normType <- "'$normType'"' >> $R_train
+                echo 'fname <- "'$fname'"' >> $R_train
+                echo 'threshold <- '$t >> $R_train
+                echo 'shouldCompute <- '$shouldCompute >> $R_train
+                echo 'source("'$workDir'3_Supervised/9_model_train.R")' >> $R_train
+                echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_train
 
-            # contents of sh file
-            touch $sh_train
-            echo '#!/bin/sh' >> $sh_train
-            echo 'export PATH='$RPath':$PATH' >> $sh_train
-            echo 'Rscript' $R_train >> $sh_train
+                # contents of sh file
+                touch $sh_train
+                echo '#!/bin/sh' >> $sh_train
+                echo 'export PATH='$RPath':$PATH' >> $sh_train
+                echo 'Rscript' $R_train >> $sh_train
+            done
         done
-	done
+    done
 done

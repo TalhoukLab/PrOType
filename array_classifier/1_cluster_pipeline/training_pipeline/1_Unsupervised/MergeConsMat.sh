@@ -38,25 +38,26 @@ c=100
 ##################################################
 ############# Submit jobs to cluster #############
 ##################################################
+for dataset in "${dataSets[@]}"; do
+    for s in `seq $c $c $reps`; do
+        for i in "${algs[@]}"; do
+            shell_file=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
+            echo "Using: $shell_file"
+            if command -v qsub &>/dev/null; then
+                # execute shell_file to cluster
+                qsub -V -p -1 -l mem_free=20G -l mem_token=20G -l h_vmem=30G -e $logDir -o $logDir -q all.q $shell_file
+            else
+                echo "Submitting Locally"
+                chmod +x $shell_file
+            fi
+        done
+    done
 
-for s in `seq $c $c $reps`; do
-	for i in "${algs[@]}"; do
-	    shell_file=$workDir$dataSet/sh_file/merge/Merge_$i$s.sh
-	    echo "Using: $shell_file"
-	    if command -v qsub &>/dev/null; then
-            # execute shell_file to cluster
-            qsub -V -p -1 -l mem_free=20G -l mem_token=20G -l h_vmem=30G -e $logDir -o $logDir -q all.q $shell_file
-		else
-            echo "Submitting Locally"
-            chmod +x $shell_file
-		fi
-	done
+    if command -v qsub &>/dev/null; then
+        echo "Using Shell"
+    else
+      python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step merge
+    fi
+    # complete
+    echo 'Submitted merge files to the queue!'
 done
-
-if command -v qsub &>/dev/null; then
-    echo "Using Shell"
-else
-  python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataSet --step merge
-fi
-# complete
-echo 'Submitted merge files to the queue!'
