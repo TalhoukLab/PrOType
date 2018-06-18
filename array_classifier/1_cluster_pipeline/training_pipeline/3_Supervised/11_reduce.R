@@ -16,6 +16,8 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model") {
   # Store data_directory path
   dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet, "/")
 
+  outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, ".rds")
+
   # grep files in directory matching pattern
   files.in <- grep(
     pattern = paste("c1", alg, sep = "_"),
@@ -34,5 +36,5 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model") {
     purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
 
   # write to file
-  readr::write_rds(reduced, paste0(dirpath, alg, "_train_eval_", dataSet, ".rds"))
+  readr::write_rds(reduced, outputFile)
 }

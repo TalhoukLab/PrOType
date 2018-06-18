@@ -100,8 +100,9 @@ for i in "${algs[@]}"; do
             echo 'normType <- "'$normType'"' >> $R_train
             echo 'fname <- "'$fname'"' >> $R_train
             echo 'threshold <- '$t >> $R_train
+            echo 'shouldCompute <- '$shouldCompute >> $R_train
             echo 'source("'$workDir'3_Supervised/9_model_train.R")' >> $R_train
-            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname)' >> $R_train
+            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_train
 
             # contents of sh file
             touch $sh_train

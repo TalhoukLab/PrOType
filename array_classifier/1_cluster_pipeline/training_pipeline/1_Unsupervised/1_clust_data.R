@@ -4,30 +4,39 @@
 library(diceR)
 r<-1
 
+outputFile <- paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat)
+
+cat("Checking previous Input\n")
+
+if (file.exists(outputFile) && !shouldCompute) {
+      cat("File already exists, skipping.\n")
+      return
+}
+
 ssclust <- switch(algs,
 nmfbrunet = {
         consensus_cluster(data = cdat, nk = k, reps = r,
         algorithms = "nmf", nmf.method = "brunet",
         prep.data = "none", seed.data = s,
-        file.name = paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat))
+        file.name = outputFile)
     },
     nmflee = {
         consensus_cluster(data = cdat, nk = k, reps = r,
         algorithms = "nmf", nmf.method = "lee",
         prep.data = "none", seed.data = s,
-        file.name = paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat))
+        file.name = outputFile)
     },
     distalgs = {
         consensus_cluster(data = cdat, nk = k, reps = r,
         algorithms = c("km", "pam"),
         distance = c("eucl", "spear", "manh"),
         prep.data = "none", seed.data = s,
-        file.name = paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat))
+        file.name = outputFile)
     },
     rest = {
         consensus_cluster(data = cdat, nk = k, reps = r,
         algorithms = c("block"), #,"ap"), #,"gmm"),
         prep.data = "none", seed.data = s,
-        file.name = paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat))
+        file.name = outputFile)
     }
 )

@@ -134,6 +134,7 @@ for i in ${algs[@]}; do
 		echo 'ndat<- "'$dataSet'"' >> $R_clust
 		echo 'datadir<- "'$outputDir$dataSet'/data_pr_'$dataSet'"' >> $R_clust
 		echo 'cdat<- readRDS(paste0(datadir,"/cdat_","'$dataSet'",".rds"))' >> $R_clust
+		echo 'shouldCompute <- '$shouldCompute >> $R_clust
 		echo 'source("'$workDir'1_Unsupervised/1_clust_data.R")' >> $R_clust
 		echo 'source("'$workDir'1_Unsupervised/2_impute_missing.R")' >> $R_clust
 		echo 'source("'$workDir'1_Unsupervised/3_con_mat.R")' >> $R_clust
@@ -174,6 +175,7 @@ for i in ${algs[@]}; do
 			echo 'r <- '$r >> $R_merge
 			echo 'reps <- '$reps >> $R_merge
 			echo 'k <- '$k >> $R_merge
+			echo 'shouldCompute <- '$shouldCompute >> $R_merge
 			echo 'source("'$workDir'1_Unsupervised/4_merge_partial_consmat.R")' >> $R_merge
 
 			# Content of sh file
@@ -206,6 +208,7 @@ echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_clust
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
 echo 'reps<- '$reps >> $R_merge_final_clust
 echo 'k<-'$k >> $R_merge_final_clust
+echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_clust
 echo 'source("'$workDir'1_Unsupervised/5_merge_clust.R")' >> $R_merge_final_clust
 
 # Create sh scirpts
@@ -213,6 +216,7 @@ touch $R_merge_final_consmat
 echo 'ndat<- "'$dataSet'"' >> $R_merge_final_consmat
 echo 'dir <- "'$outputDir$dataSet'"' >> $R_merge_final_consmat
 echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
+echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_consmat
 echo 'source("'$workDir'1_Unsupervised/6_merge_complete_consmat.R")' >> $R_merge_final_consmat
 
 
@@ -232,6 +236,7 @@ for l in "${cons[@]}"; do
 	echo 'cons.funs<-"'$l'"'>>$R_cons
 	echo 'k<- 3'>>$R_cons
 	echo 'dir <-"'$outputDir$dataSet'/data_pr_'$dataSet'"'>>$R_cons
+	echo 'shouldCompute <- '$shouldCompute >> $R_cons
 	echo 'source("'$workDir'1_Unsupervised/7_con_fun.R")'>>$R_cons
 
 	# create sh scripts
@@ -254,8 +259,8 @@ touch $R_eval
 echo "fdir <- '"$outputDir"'" > $R_eval
 echo "dat <- '"$dataSet"'" >> $R_eval
 echo "referenceClass <- '"$referenceClass"'" >> $R_eval
+echo 'shouldCompute <- '$shouldCompute >> $R_eval
 echo "source('"$workDir"1_Unsupervised/8_Evalution.R')" >> $R_eval
-
 
 # Complete
 echo 'File creation complete..'

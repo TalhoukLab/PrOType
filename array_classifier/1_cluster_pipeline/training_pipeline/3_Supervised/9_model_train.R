@@ -23,7 +23,19 @@ library(splendid)
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
-                             fname = "Model") {
+                             fname = "Model", shouldCompute = FALSE) {
+  cat("Checking previous input\n")
+  if (threshold == 0.0) {
+        outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds")
+  } else {
+        outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, "_threshold.rds")
+  }
+
+  if (file.exists(outputFile) && !shouldCompute) {
+      cat("File already exists, skipping.\n")
+      return
+  }
+
   cat("Reading training data:", algs, "-", reps, "\n")
   # import training data
   npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
@@ -82,5 +94,5 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cat("Saving output:", algs, "-", reps, "\n")
   # write to file
-  readr::write_rds(sm, paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds"))
+  readr::write_rds(sm, outputFile)
 }
