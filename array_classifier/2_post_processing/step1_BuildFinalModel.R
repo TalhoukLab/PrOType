@@ -21,7 +21,6 @@ purrr::walk2(all.dat, datasets, ~ {
     colnames(.x) <- make.names(colnames(.x))
     fit <- splendid::classification(
       data = .x[, -1],
-      # data = make.names(.x[, -1]),
       class = .x[, 1],
       algorithms = a,
       standardize = FALSE
