@@ -9,6 +9,7 @@ Supervised: SLtrain SLreduce trainEval
 
 IVSummary: trainEval supLearn IVsummary
 
+clustering: Unsupervised Genemapping Supervised IVSummary
 
 # ------------- PART 1 ----------------
 # Prepare data (pre-processing and filtering)
