@@ -44,19 +44,21 @@ else
 	echo "A normalization of type Genes, Samples or None must be specified"
 fi
 
-# extract data set vector
-dset=$dataSet
-data_sets=${dset// /'"','"'}
-#data_sets=$dset
+for dataset in "${dataSets[@]}"; do
+    # extract data set vector
+    dset=$dataset
+    data_sets=${dset// /'"','"'}
+    #data_sets=$dset
 
-# create R script
-mkdir -p $workDir'temp'
-Rname=$workDir'temp/train_eval.R'
+    # create R script
+    mkdir -p $workDir'temp'
+    Rname=$workDir'temp/train_eval.R'
 
-touch $Rname
-echo 'fdir <- "'$outputDir'"' > $Rname
-echo 'ndat <- c("'$data_sets'")' >> $Rname
-echo 'mname <- "'$fname'"' >> $Rname
-echo 'source("'$workDir'4_IVSummary/train_eval.R")' >> $Rname
+    touch $Rname
+    echo 'fdir <- "'$outputDir'"' > $Rname
+    echo 'ndat <- c("'$data_sets'")' >> $Rname
+    echo 'mname <- "'$fname'"' >> $Rname
+    echo 'source("'$workDir'4_IVSummary/train_eval.R")' >> $Rname
 
-Rscript $Rname
+    Rscript $Rname
+done

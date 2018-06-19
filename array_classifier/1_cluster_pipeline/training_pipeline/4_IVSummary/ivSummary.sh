@@ -43,7 +43,7 @@
 # *************************************************************************
 qsubJobArray=()
 
-for i in "$dataSets[@]"; do
+for i in "${dataSets[@]}"; do
 	# check if data set was specified
 	if [ "$i" = "" ]; then
 		echo "Data set must be specified."
@@ -127,7 +127,7 @@ done
 ivSummary=$outputDir'/iv_summary'
 mkdir -p $ivSummary
 
-for i in "$dataSets[@]"; do
+for i in "${dataSets[@]}"; do
 	cp $outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds' $ivSummary
 done
 
