@@ -58,30 +58,31 @@
 # specify algorithms
 algs=(first second third fourth) #ldaRfe qdaRfe rfRfe lassoRfe)
 
-# build directories
-rm -rf $workDir$dataSet'/R_file/train'
-rm -rf $workDir$dataSet'/sh_file/train'
-mkdir -p $workDir$dataSet'/R_file/train'
-mkdir -p $workDir$dataSet'/sh_file/train'
-
-if [ "$normalizeBy" = "Genes" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
-	fname='Model-hc-genes'
-elif [ "$normalizeBy" = "Samples" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
-	fname='Model-hc-samples'
-elif [ "$normalizeBy" = "None" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
-	fname='Model-hc'
-else
-	echo "A normalization of type Genes, Samples or None must be specified"
-fi
-
 # create R and sh scripts
 for dataset in "${dataSets[@]}"; do
+
+    # build directories
+    rm -rf $workDir$dataset'/R_file/train'
+    rm -rf $workDir$dataset'/sh_file/train'
+    mkdir -p $workDir$dataset'/R_file/train'
+    mkdir -p $workDir$dataset'/sh_file/train'
+
+    if [ "$normalizeBy" = "Genes" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc-genes_'$dataset
+        fname='Model-hc-genes'
+    elif [ "$normalizeBy" = "Samples" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc-samples_'$dataset
+        fname='Model-hc-samples'
+    elif [ "$normalizeBy" = "None" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc_'$dataset
+        fname='Model-hc'
+    else
+        echo "A normalization of type Genes, Samples or None must be specified"
+    fi
+
     for i in "${algs[@]}"; do
         for s in `seq 1 $supervised_reps`; do
             for t in "${threshold[@]}"; do

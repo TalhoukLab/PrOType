@@ -9,7 +9,7 @@ library(tidyverse)
 fname <- paste0(dpath, ndat, ".RData")
 if (!file.exists(fname)) {
   cat("ERROR: file not found:", fname)
-  quit(status=1)
+  stop(0)
 }
 tdat <- t(get(load(fname)))
 

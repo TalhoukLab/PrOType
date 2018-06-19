@@ -12,18 +12,32 @@
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 
 library(magrittr)
-reduce_supervised <- function(dataSet, alg, outDir, fname = "Model") {
+reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
   # Store data_directory path
   dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet, "/")
 
-  outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, ".rds")
+  if (threshold > 0.0) {
+    outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, "_threshold.rds")
 
-  # grep files in directory matching pattern
-  files.in <- grep(
-    pattern = paste("c1", alg, sep = "_"),
-    x = list.files(dirpath),
-    value = TRUE
-  )
+    # grep files in directory matching pattern
+    files.in <- grep(
+      pattern = paste0("c1_(first|second|third|fourth)[0-9]+_", dataSet, "_threshold.rds"),
+      x = list.files(dirpath),
+     value = TRUE
+    )
+  } else {
+    outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, ".rds")
+
+    # grep files in directory matching pattern
+    files.in <- grep(
+      pattern = paste0("c1_(first|second|third|fourth)[0-9]+_,", dataSet, ".rds"),
+      x = list.files(dirpath),
+      value = TRUE
+    )
+  }
+
+
+
 
   # import data into memory
   files.read <- paste0(dirpath, files.in) %>%

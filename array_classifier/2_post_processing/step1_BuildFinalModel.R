@@ -17,13 +17,14 @@ purrr::walk2(all.dat, datasets, ~ {
   purrr::walk(algs, function(a) {
     cat("Walking: ", a, "\n")
     print(dim(.x))
-    .x <- t(.x)
+    # .x <- t(.x)
     colnames(.x) <- make.names(colnames(.x))
     fit <- splendid::classification(
       data = .x[, -1],
       class = .x[, 1],
       algorithms = a,
-      standardize = FALSE
+      standardize = FALSE,
+      trees = 15
     )
     cat("Saving to:", file.path(save_dir, paste0(.y, "_", a, ".rds")), "\n")
     readr::write_rds(fit, file.path(save_dir, paste0(.y, "_", a, ".rds")))

@@ -17,24 +17,26 @@
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
 
-library(magrittr)
-library(splendid)
-
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model", shouldCompute = FALSE) {
-  cat("Checking previous input\n")
   if (threshold == 0.0) {
         outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds")
   } else {
         outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, "_threshold.rds")
   }
 
+  cat("Checking previous input:", outputFile, "\n")
+
+
   if (file.exists(outputFile) && !shouldCompute) {
       cat("File already exists, skipping.\n")
-      return
+      quit(0)
   }
+
+  library(magrittr)
+  library(splendid)
 
   cat("Reading training data:", algs, "-", reps, "\n")
   # import training data

@@ -60,25 +60,27 @@ algs=(first second third fourth) # rfRfe ldaRfe)
 # create R and sh scripts
 for dataset in "${dataSets[@]}"; do
     for i in "${algs[@]}"; do
+        for t in "${threshold[@]}"; do
+            Rname=$workDir$dataset/R_file/reduce/reduce_$i.R
+            shname=$workDir$dataset/sh_file/reduce/reduce_$i.sh
 
-        Rname=$workDir$dataset/R_file/reduce/reduce_$i.R
-        shname=$workDir$dataset/sh_file/reduce/reduce_$i.sh
+            #Content of R file
+            touch $Rname
+            echo 'outDir <- "'$outputDir'"'>>$Rname
+            echo 'dataSet <- "'$dataset'"'>>$Rname
+            echo 'alg <- "'$i'"' >> $Rname
+            echo 'fname <- "'$fname'"' >> $Rname
+            echo 'threshold <- "'$t'"' >> $Rname
+            echo 'source("'$workDir'3_Supervised/11_reduce.R")' >> $Rname
+            echo 'reduce_supervised(dataSet, alg, outDir, fname, threshold)' >> $Rname
 
-        #Content of R file
-        touch $Rname
-        echo 'outDir <- "'$outputDir'"'>>$Rname
-        echo 'dataSet <- "'$dataset'"'>>$Rname
-        echo 'alg <- "'$i'"' >> $Rname
-        echo 'fname <- "'$fname'"' >> $Rname
-        echo 'source("'$workDir'3_Supervised/11_reduce.R")' >> $Rname
-        echo 'reduce_supervised(dataSet, alg, outDir, fname)' >> $Rname
-
-        # Content of shell script
-        touch $shname
-        echo '#!/bin/bash' >> $shname
-        echo 'export PATH='$RPath':$PATH' >> $shname
-        echo 'Rscript' $Rname >> $shname
-        chmod 755 $shname
-        $shname
+            # Content of shell script
+            touch $shname
+            echo '#!/bin/bash' >> $shname
+            echo 'export PATH='$RPath':$PATH' >> $shname
+            echo 'Rscript' $Rname >> $shname
+            chmod 755 $shname
+            $shname
+        done
     done
 done

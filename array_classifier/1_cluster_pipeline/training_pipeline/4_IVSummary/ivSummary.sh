@@ -62,6 +62,10 @@ for i in "${dataSets[@]}"; do
 	echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds"' >> $Rname
 	echo 'source("'$workDir'4_IVSummary/ivSummary.R")' >> $Rname
 
+    echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'_threshold.rds"' >> $Rname
+	echo 'source("'$workDir'4_IVSummary/ivSummary.R")' >> $Rname
+
+
 	touch $shname
 	echo '#!/bin/bash' > $shname
 	echo 'export PATH='$RPath':$PATH' >> $shname
@@ -128,7 +132,7 @@ ivSummary=$outputDir'/iv_summary'
 mkdir -p $ivSummary
 
 for i in "${dataSets[@]}"; do
-	cp $outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds' $ivSummary
+	cp -r $outputDir$i'/data_pr_'$i $ivSummary
 done
 
 # build R script

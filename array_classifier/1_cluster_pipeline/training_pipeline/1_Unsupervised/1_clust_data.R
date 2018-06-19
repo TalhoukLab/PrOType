@@ -1,16 +1,16 @@
 # input fixed cdat,sfdir,r,k
 # input variable algs, seed (s)
 
-library(diceR)
-r<-1
-
 outputFile <- paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat)
 
 cat("Checking previous Input\n")
 if (file.exists(paste0(outputFile, ".rds")) && !shouldCompute) {
       cat("File already exists, skipping.\n")
-      return
+      quit(0)
 }
+
+library(diceR)
+r<-1
 
 ssclust <- switch(algs,
 nmfbrunet = {
