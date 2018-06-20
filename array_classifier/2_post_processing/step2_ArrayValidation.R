@@ -4,6 +4,7 @@
 
 library(here)
 library(magrittr)
+library(glmnet)
 
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
@@ -15,11 +16,12 @@ evals_dir <- paste0(output_dir, "evals")
 fit.c1 <- readr::read_rds(paste0(output_dir, "fits/all_fits.rds"))
 
 # import overlapping data
-map <- get_mapping() %>%
+map <- get_mapping("/PrOType/array_classifier/2_post_processing/data/") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
-overlap.array <- import_array(map = map)
+overlap.array <- import_array(dir= "/PrOType/array_classifier/2_post_processing/data/", map = map)
 
 # predict overlap array
+cat("Predicting overlap array\n")
 pred.overlap.array <- fit.c1 %>%
   purrr::imap(~ {
     purrr::imap(.x, function(z, k) {
@@ -35,12 +37,14 @@ readr::write_rds(pred.overlap.array,
                  file.path(preds_dir, "pred_overlap_array.rds"))
 
 # evaluate overlap results
+cat("Evaluating overlap results\n")
 eval.overlap <- pred.overlap.array %>%
   purrr::modify_depth(2, evaluate_array) %>%
   purrr::map(purrr::transpose) %>%
   purrr::transpose()
 
 # create naming list structure
+cat("Creating naming list structure\n")
 names.ls <- eval.overlap %>%
   purrr::map(~ {
     purrr::imap(., function(y, z) {
@@ -51,6 +55,7 @@ names.ls <- eval.overlap %>%
   })
 
 # name overlapping evaluation results list
+cat("Naming overlapping evaluation results list\n")
 evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
   purrr::pmap(~ {
     named <- purrr::set_names(purrr::flatten(..1), ..2)
@@ -59,10 +64,13 @@ evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
   })
 
 # visualize evaluation results
+cat("Visualizing evaluation results\n")
 eval.plots <- names(evals.all) %>%
   purrr::map(~ plot_evals_noCBT(
+    output_dir = output_dir,
     dir = file.path(evals_dir, paste0(., ".rds")),
     plot.title = gsub("_", " ", .),
+    algs = algs,
     save = TRUE,
     print = FALSE
   ))

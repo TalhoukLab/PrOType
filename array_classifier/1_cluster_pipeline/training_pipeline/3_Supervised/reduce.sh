@@ -67,7 +67,7 @@ for dataset in "${dataSets[@]}"; do
             #Content of R file
             touch $Rname
             echo 'outDir <- "'$outputDir'"'>>$Rname
-            echo 'dataSet <- "'$dataset'"'>>$Rname
+            echo 'dataSet <- "'${dataset// /'"','"'}'"'>>$Rname
             echo 'alg <- "'$i'"' >> $Rname
             echo 'fname <- "'$fname'"' >> $Rname
             echo 'threshold <- "'$t'"' >> $Rname

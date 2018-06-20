@@ -3,8 +3,9 @@
 # data information
 #dataSet="ov.afc1_cbt"
 #dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
-dataSets=(ov.afc1_xpn ov.afc1_cbt)
-shouldCompute=FALSE
+#dataSets=(ov.afc1_xpn ov.afc1_cbt)
+dataSets=(ov.afc1_xpn)
+shouldCompute=TRUE
 
 # Unsupervised parameters
 reps=5
@@ -28,5 +29,6 @@ logDir="/logs/"
 algs=(nmfbrunet nmflee distalgs rest)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 referenceClass="majority"
+classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
 user="$(whoami)"
 RPath="$(which R)"

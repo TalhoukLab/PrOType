@@ -4,6 +4,7 @@
 suppressPackageStartupMessages({
   library(tidyverse)
   library(here)
+  library(magrittr)
 })
 
 source(here("assets/utils.R"))
@@ -68,10 +69,14 @@ get_overlap <- function(array, pred, map) {
 #********************************************************************
 # Return list of evaluation measures. Output is required for ploting.
 #********************************************************************
-evaluate_array <- function(x) {
+evaluate_array <- function(data) {
+  y <- data$array
+  x <- factor(make.names(data$published))
+
+  cat("Calling splendid\n")
   published_vs_array <- list(
-    splendid::evaluation(x$published, x$array),
-    caret::confusionMatrix(x$array, x$published)
+    splendid::evaluation(x, y),
+    caret::confusionMatrix(y, x)
   )
   tibble::lst(published_vs_array)
 }
@@ -216,37 +221,45 @@ sup_plots <- function(plot.title, dir = "data", threshold = TRUE,
 # Plot evaluation measures by class and overall.
 #   eval.data_directory: path to evaluation list
 #********************************************************************
-plot_evals_noCBT <- function(plot.title, dir,
+plot_evals_noCBT <- function(plot.title, dir, output_dir,
                              algs = c("mlr_ridge", "mlr_lasso", "adaboost", "rf"),
                              print = TRUE, save = TRUE, col.cust = NULL,
                              y.lim.class = c(0.1, 1), y.lim.all = c(0.25, 1)) {
   # import eval list
   evals <- readr::read_rds(dir)
+  str(evals)
 
   # do some preprocessing on the eval list
+  cat("Processing eval list\n")
   evals.extract <- evals %>%
     purrr::map(purrr::flatten) %>%
     purrr::map(~ data.frame(cs = .$cs) %>%
                  tibble::rownames_to_column("measure"))
 
   # grab the names of the list
+  cat("Getting names\n")
   names.list <- names(evals.extract)
 
   # prepare eval list for plotting
+  cat("Preparing for plotting\n")
   evals.prep <- purrr::map2_df(names.list, evals.extract,
-                               ~ .y %>% data.frame(alg = .x, .)) %>%
-    dplyr::mutate_at(c("alg", "measure"), as.factor) %>%
-    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
-    tidyr::separate(alg, c("batch_correction", "mod"), sep = "\\.") %>%
-    dplyr::mutate_at(c("measure", "class", "batch_correction", "mod"),
-                     as.factor) %>%
-    dplyr::mutate(mod = factor(mod, levels = rev(levels(mod)))) %>% # reverse
-    dplyr::select(-cs, value = cs) %>% # move to end and rename
-    dplyr::filter(batch_correction == "xpn") %>%
-    dplyr::mutate(bcm = interaction(batch_correction, mod))
+                               ~ .y %>% data.frame(alg = .x, .)) #%>%
+    # dplyr::mutate_at(c("alg", "measure"), as.factor) %>%
+    # tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    # tidyr::separate(alg, c("batch_correction", "mod"), sep = "\\.") %>%
+    # dplyr::mutate_at(c("measure", "class", "batch_correction", "mod"),
+    #                  as.factor) %>%
+    # dplyr::mutate(mod = factor(mod, levels = rev(levels(mod)))) %>% # reverse
+    # dplyr::select(-cs, value = cs) %>% # move to end and rename
+    # dplyr::filter(batch_correction == "xpn") %>%
+    # dplyr::mutate(bcm = interaction(batch_correction, mod))
+  str(evals.prep)
 
   # prepare eval list for plotting overall evaluation measures
+  cat("Preparing for plotting overall evaluation measures")
+  # str(evals)
   overall.prep <- evals %>%
+    purrr::map(1) %>%
     purrr::map(`[`, c("accuracy", "auc", "macro_f1")) %>%
     purrr::map(as.data.frame) %>%
     purrr::map2_df(., names.list, ~ data.frame(mod = .y, .x)) %>%
@@ -258,6 +271,7 @@ plot_evals_noCBT <- function(plot.title, dir,
     dplyr::filter(batch_correction == "xpn")
 
   # store common ggplot layers
+  cat("Storing ggplot layers\n")
   gglayers <- list(
     ggplot2::aes(y = value, colour = bcm, group = bcm),
     ggplot2::geom_point(position = ggplot2::position_dodge(width = 0.5),
@@ -293,9 +307,10 @@ plot_evals_noCBT <- function(plot.title, dir,
     ggplot2::ylim(y.lim.all) +
     gglayers
 
+  cat("before save\n")
   # save plots
   if (save) {
-    fn <- file.path("outputs/plots", gsub(" ", "", plot.title))
+    fn <- file.path(output_dir, "/plots", gsub(" ", "", plot.title))
     ggplot2::ggsave(p1, filename = paste0(fn, "_byclass.png"))
     ggplot2::ggsave(p2, filename = paste0(fn, "_overall.png"))
   }

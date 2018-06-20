@@ -32,7 +32,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   if (file.exists(outputFile) && !shouldCompute) {
       cat("File already exists, skipping.\n")
-      quit(0)
+      quit(status = 0)
   }
 
   library(magrittr)
@@ -50,9 +50,9 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   # normalization
   if (normalize.by == "None") {
     cat("Normalizing None:", algs, "-", reps, "\n")
-    data.train <- npcp %>%
-      diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
-      as.data.frame()
+    data.train <- npcp #%>%
+    #   diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
+    #   as.data.frame()
   } else if (normalize.by == "Genes") {
     cat("Normalizing Genes:", algs, "-", reps, "\n")
     data.train <- npcp %>%
