@@ -30,6 +30,7 @@ get_nstring_overlap <- function(dir = "data", map) {
 # nanostring and array in addition to published labels.
 #********************************************************************
 combine <- function(mapped.dat, nstring.overlap, nstring.pred) {
+  mapped.dat$published <- factor(make.names(mapped.dat$published))
   overlap <- nstring.overlap %>%
     tibble::rownames_to_column("ottaID") %>%
     dplyr::transmute(ottaID, nstring = nstring.pred) %>%
@@ -98,6 +99,7 @@ load_nanostring <- function(dir = "data", genes) {
   # format gene data for extraction from nstring
   npcp <- data.frame(t(genes))
   colnames(npcp) <- genes
+  genes <- make.names(genes)
 
   # nanostring data filenames
   batches <- file.path(dir, c(
@@ -109,17 +111,19 @@ load_nanostring <- function(dir = "data", genes) {
 
   # import batch 1-4 nanostring and combine into list
   test.dat <- batches %>%
-    purrr::imap(~ dplyr::mutate(readr::read_csv(.x), batch = .y))
+    purrr::imap(~ dplyr::mutate(readr::read_csv(.x, col_types = readr::cols()), batch = .y)) %>%
+    purrr::map(~ magrittr::set_colnames(., make.names(colnames(.))))
 
   # extract intersecting genes
   matched <- test.dat %>%
-    purrr::map_df(`[`, c("OTTA ID", genes, "batch")) %>%
+    purrr::map_df(`[`, c("OTTA.ID", genes, "batch")) %>%
     as.data.frame() %>%
     na.omit() %>%
     `rownames<-`(NULL) %>%
-    tibble::column_to_rownames("OTTA ID") %>%
+    tibble::column_to_rownames("OTTA.ID") %>%
     data.table::setattr("batch", .$batch) %>%
     dplyr::select(-batch)
+  str(matched)
   matched
 }
 

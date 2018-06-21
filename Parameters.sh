@@ -3,8 +3,8 @@
 # data information
 #dataSet="ov.afc1_cbt"
 #dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
-#dataSets=(ov.afc1_xpn ov.afc1_cbt)
-dataSets=(ov.afc1_xpn)
+dataSets=(ov.afc1_xpn ov.afc1_cbt)
+#dataSets=(ov.afc1_xpn)
 shouldCompute=TRUE
 
 # Unsupervised parameters

@@ -1,6 +1,7 @@
 # Makefile to test parallel pipeline
-all: Unsupervised Genemapping Supervised IVSummary
+all: clustering post_processing nanostring
 
+# ------------- PART 1 ----------------
 Unsupervised: files cluster CMmerge merge ConFun FinalClust
 
 Genemapping: map
@@ -11,7 +12,6 @@ IVSummary: trainEval supLearn IVsummary
 
 clustering: Unsupervised Genemapping Supervised IVSummary
 
-# ------------- PART 1 ----------------
 # Prepare data (pre-processing and filtering)
 prep_data:
 	./array_classifier/1_cluster_pipeline/training_pipeline/1_Unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
@@ -67,6 +67,9 @@ IVsummary:
 # ----------- PART 2 -------------
 post_processing:
 	./array_classifier/2_post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+
+nanostring:
+	./nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
 
 %:
 		@:

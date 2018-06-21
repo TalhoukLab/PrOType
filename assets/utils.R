@@ -18,7 +18,7 @@ build_mapping <- function(train.set) {
 get_mapping <- function(dir = "data") {
   # TCGA overlap
   tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
-    readr::read_csv() %>%
+    readr::read_csv(col_types = readr::cols()) %>%
     dplyr::select(
       sampleID = TCGA,
       ottaID = `OTTA-ID`,
@@ -27,7 +27,7 @@ get_mapping <- function(dir = "data") {
 
   # GSE overlap
   gse.mapped <- file.path(dir, "GSE9891_sampleIDs_OTTA-Mapped.csv") %>%
-    readr::read_csv() %>%
+    readr::read_csv(col_types = readr::cols()) %>%
     dplyr::select(
       sampleID = GSE9891,
       ottaID = `OTTA ID`,
