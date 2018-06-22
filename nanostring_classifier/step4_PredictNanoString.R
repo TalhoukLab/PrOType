@@ -12,7 +12,7 @@ Van_mod <- readr::read_rds(paste0(output_dir, "/fits/", dataset, "_adaboost.rds"
 genes <- Van_mod$names
 
 # load nanostring data
-nsdat <- load_nanostring(dir = "/PrOType/array_classifier/2_post_processing/data/", genes)
+nsdat <- load_nanostring(dir = "array_classifier/2_post_processing/data/", genes)
 
 # predict nanostring data
 cat("predicting nanostring data\n")

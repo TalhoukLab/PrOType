@@ -9,9 +9,9 @@ source(here("array_classifier/2_post_processing/utils/utils.R"))
 # Common arguments
 cat("Outputfile:", output_dir, "\n")
 
-plot_args <- list(dir = "/PrOType/array_classifier/2_post_processing/data/", print = FALSE, save = FALSE)
+plot_args <- list(dir = "array_classifier/2_post_processing/data/", print = FALSE, save = FALSE)
 save_args <- list(width = 16, height = 9)
-save_dir <- file.path(paste0("/PrOType/array_classifier/2_post_processing/outputs/", "plots"))
+save_dir <- file.path(paste0("array_classifier/2_post_processing/outputs/", "plots"))
 ranked_fn <- file.path(save_dir, c("ranked_algorithms_noThreshold.png",
                                    "ranked_algorithms_threshold.png"))
 top2_fn <- file.path(save_dir, c("top2_algorithms_byClass_noThreshold.png",

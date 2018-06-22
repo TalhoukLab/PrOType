@@ -11,8 +11,8 @@ set.seed(2017)
 fit.c1 <- readr::read_rds(paste0(output_dir, "/fits/ov.afc1_cbt_adaboost.rds"))
 
 # import overlapping data
-map <- get_mapping(dir = "/PrOType/array_classifier/2_post_processing/data/")
-overlap.nstring <- get_nstring_overlap(dir = "/PrOType/array_classifier/2_post_processing/data/", map = map)
+map <- get_mapping(dir = "array_classifier/2_post_processing/data/")
+overlap.nstring <- get_nstring_overlap(dir = "array_classifier/2_post_processing/data/", map = map)
 
 # predict overlap nstring
 pred.overlap.nstring <- predict_overlap(fit.c1, overlap.nstring)

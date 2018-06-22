@@ -16,9 +16,9 @@ evals_dir <- paste0(output_dir, "evals")
 fit.c1 <- readr::read_rds(paste0(output_dir, "fits/all_fits.rds"))
 
 # import overlapping data
-map <- get_mapping("/PrOType/array_classifier/2_post_processing/data/") %>%
+map <- get_mapping("array_classifier/2_post_processing/data/") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
-overlap.array <- import_array(dir= "/PrOType/array_classifier/2_post_processing/data/", map = map)
+overlap.array <- import_array(dir= "array_classifier/2_post_processing/data/", map = map)
 
 # predict overlap array
 cat("Predicting overlap array\n")

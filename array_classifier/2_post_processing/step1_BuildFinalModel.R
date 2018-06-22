@@ -9,7 +9,7 @@ source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 
 # import training data
-all.dat <- purrr::map(datasets, import_study, dir = "/PrOType/array_classifier/2_post_processing/data/")
+all.dat <- purrr::map(datasets, import_study, dir = "array_classifier/2_post_processing/data/")
 save_dir <- file.path(paste0(output_dir, "fits"))
 
 # fit algo

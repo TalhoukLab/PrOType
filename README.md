@@ -75,7 +75,6 @@ The tasks and their steps are as follows:
 - Nanostring Classification
 - Reduced GeneList
 - Final Nanostring Model
-- 
 
 ### Clustering
 
@@ -87,8 +86,6 @@ To run clustering, open the `Parameters.sh` file and edit the section for `Super
 
 To run post-processing, open the `Parameters.sh` file and edit the section for ` Data` parameters, assuming you didn't configure them for `Clustering`. Once that is setup the way you want it, run `make post_processing`.
 
+### Nanostring Classifier
 
-
-# New Section
-
-code block
+To run post-processing, open the `Parameters.sh` file and edit the section for ` Data` parameters, assuming you didn't configure them for `Post Processing`.  Once that is setup the way you want it, run `make nanostring`.

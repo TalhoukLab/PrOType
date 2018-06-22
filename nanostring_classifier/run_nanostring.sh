@@ -3,9 +3,9 @@
 . ./Parameters.sh
 for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir$dataset/nanostring
+    mkdir -p $workDir$dataset/R_file/nanostring
 
-    Rname=$workDir$dataset/nanostring/nanostring.R
+    Rname=$workDir$dataset/R_file/nanostring/nanostring.R
     rm -f $Rname
 
     #echo 'datasets <- unlist(strsplit("'"${dataSets[*]}"'", " "))' >> $Rname
