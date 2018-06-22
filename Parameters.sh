@@ -16,19 +16,16 @@ c=1 # use for determining splitting criterion (min 100 reps required)
 supervised_reps=5 # 100
 normalizeBy="None"
 threshold=(0.0 0.5)
-minVar="0.0"
+minVar=0.0
 normType="conventional"
 
-# directory inputs
-workDir="/PrOType/array_classifier/1_cluster_pipeline/training_pipeline/"
-outputDir="/outputs/"
-inputDir="/PrOType/raw_data/"
-logDir="/logs/"
+# IV Summary
+top=3
 
-# Developer params
-algs=(nmfbrunet nmflee distalgs rest)
-cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
-referenceClass="majority"
-classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
-user="$(whoami)"
-RPath="$(which R)"
+# directory inputs
+workDir=~/"PrOType/array_classifier/1_cluster_pipeline/"
+outputDir="/share/lustre/mpaletta/Projects/PrOType/outputs/"
+inputDir=~/"PrOType/raw_data/"
+logDir=~"/logs/"
+
+. ./assets/dev_params.sh

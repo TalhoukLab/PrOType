@@ -16,15 +16,12 @@ mkdir -p $outputDir/evals
 mkdir -p $outputDir/plots
 mkdir -p $outputDir/predictions
 
-
-touch $Rname
-echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' >> $Rname
+echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' > $Rname
     echo 'cat("Starting Part 0\n")' >> $Rname
     echo 'cat(dataset, "\n")' >> $Rname
     echo 'output_dir <- "'$outputDir'/iv_summary"' >> $Rname
     echo 'source("array_classifier/2_post_processing/step0_InternalValidation.R")' >> $Rname
 echo '}' >> $Rname
-
 echo 'datasets <- unlist(strsplit("'"${dataSets[*]}"'", " "))' >> $Rname
 echo 'algs <- purrr::set_names(unlist(strsplit("'"${classificationAlgs[*]}"'", " ")))' >> $Rname
 echo 'output_dir <- "'$outputDir'"' >> $Rname

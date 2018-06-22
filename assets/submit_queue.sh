@@ -12,9 +12,12 @@ for shname in $file_to_submit; do
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
 		  echo "Using: $shname"
-	        qsubJobArray+=($(qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname))
-    else
-        :
+		  qcmd="qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname"
+          qq=`$qcmd` # runs a qsub command
+          qt=`echo $qq | awk '{print $3}'`
+
+          jobid=${qt%%.*}
+          qsubJobArray+=($jobid)
     fi
 done
 
@@ -22,39 +25,17 @@ done
 # *************************************************************************
 # Step 2: wait until cluster jobs are complete until proceeding
 # *************************************************************************
-temp='/tmp/'
-
-containsElement () {
-	local e
-	for e in "${@:2}"; do [[ "$e" == "$1" ]] && return 0; done
-	return 1
-}
-
-test=0
+test=100
 if command -v qsub &>/dev/null; then
-  test=0
+  test=100
 else
-  test=1
+  test=0
 fi
 
-while [ $test == 0 ]; do
-	tempf=$temp'qstat_temp.txt'
-	touch $tempf
-	qstat -u $user | awk '{print $1}' > $tempf
-	IFS=$'\r\n' GLOBIGNORE='*' command eval  'qstatJobArray=($(cat '$tempf'))'
+while [[ $test > 0 ]]; do
+    echo "Checking Queue"
+    test=`qstat -u $user | awk '{print $1}' | wc -l`
 
-	for i in `seq 1 ${#qsubJobArray[@]}`; do
-		containsElement "${qsubJobArray[${i}]}" "${qstatJobArray[@]}"
-		test=$?
-		if [[ $test == 0 ]]; then
-			echo "Jobs are still running. Please wait..."
-			sleep 20s
-			break
-		fi
-	done
-	if [[ $test == 1 ]]; then
-		test=1
-		rm $tempf
-		echo "jobs completed!"
-	fi
+    echo "Waiting on: ${test} jobs to complete"
+    sleep 30s
 done

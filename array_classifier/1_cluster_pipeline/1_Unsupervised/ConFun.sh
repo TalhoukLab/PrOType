@@ -6,28 +6,8 @@
 
 . ./Parameters.sh
 
-## Get the data for this run
-#if [ "$dataSet" = "" ]
-#then echo "Data set cannot be empty"
-#		 exit 1
-#fi
-#
-## specify working directory
-#if [ "$workDir" = "" ]
-#then echo "Working directory must be specified"
-#		 exit 1
-#fi
-#
-## specify log directory
-#if [ "$logDir" = "" ]
-#then echo "Log directory must be specified"
-#		 exit 1
-#fi
-
 # specify consensus metrics to compute
-cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
-
-
+file_to_submit=()
 ##################################################
 ############ Execute jobs on cluster #############
 ##################################################
@@ -37,16 +17,22 @@ for dataset in "${dataSets[@]}"; do
         shell_file=$workDir$dataset/sh_file/consensus/Create_$i.sh
         if command -v qsub &>/dev/null; then
             echo "Submitting to queue"
-            qsub -V -p -1 -l mem_free=25G -l mem_token=25G -l h_vmem=35G -e $logDir -o $logDir -q all.q $shell_file
+            file_to_submit+=($shell_file)
         fi
+
+        chmod +x $shell_file
     done
 
     if command -v qsub &>/dev/null; then
-        echo "Using Shell"
+        :
     else
       python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step consensus
     fi
 done
 
-# complete
-echo 'Submitted merge files to the queue!'
+if command -v qsub &>/dev/null; then
+    ./assets/submit_queue.sh
+
+    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
+    echo "The logs can be found in \"${logDir}\""
+fi

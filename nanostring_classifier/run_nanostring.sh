@@ -6,10 +6,8 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir$dataset/R_file/nanostring
 
     Rname=$workDir$dataset/R_file/nanostring/nanostring.R
-    rm -f $Rname
 
-    #echo 'datasets <- unlist(strsplit("'"${dataSets[*]}"'", " "))' >> $Rname
-    echo 'output_dir <- "'$outputDir'"' >> $Rname
+    echo 'output_dir <- "'$outputDir'"' > $Rname
     echo 'dataset <- "'$dataset'"' >> $Rname
     echo 'cat("Starting Part 1\n")' >> $Rname
     echo 'source("nanostring_classifier/step3_ValidateNanoString.R")' >> $Rname
