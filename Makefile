@@ -1,5 +1,5 @@
 # Makefile to test parallel pipeline
-all: clustering post_processing nanostring
+all: clustering post_processing nanostring gene_selection
 
 # ------------- PART 1 ----------------
 Unsupervised: files cluster CMmerge merge ConFun FinalClust
@@ -70,6 +70,12 @@ post_processing:
 
 nanostring:
 	./nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# ----------- PART 4 -------------
+gene_selection:
+	./GeneSelection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
+
 
 %:
 		@:
