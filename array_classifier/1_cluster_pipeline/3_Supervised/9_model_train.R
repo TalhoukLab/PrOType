@@ -17,15 +17,15 @@
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
 
+
+library(magrittr)
+library(splendid)
+
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model", shouldCompute = FALSE) {
-  if (threshold == 0.0) {
-        outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds")
-  } else {
-        outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, "_threshold.rds")
-  }
+  outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds")
 
   cat("Checking previous input:", outputFile, "\n")
 
@@ -35,8 +35,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
       quit(status = 0)
   }
 
-  library(magrittr)
-  library(splendid)
 
   cat("Reading training data:", algs, "-", reps, "\n")
   # import training data
@@ -70,7 +68,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   cat("Running training algorithms:", algs, "-", reps, "\n")
   # train algorithms
   reps <- as.integer(reps)
-  sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed = reps, threshold = threshold)
+  sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, threshold = threshold)
   sm <- switch(
     algs,
     first = purrr::invoke(splendid::splendid_model, sm_args,

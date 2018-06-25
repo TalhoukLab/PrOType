@@ -2,7 +2,7 @@
 
 qsubJobArray=()
 
-for shname in $file_to_submit; do
+for shname in "${file_to_submit[@]}"; do
 	# check if data set was specified
 	if [ "$shname" = "" ]; then
 		echo "script set must be specified."
@@ -12,7 +12,7 @@ for shname in $file_to_submit; do
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
 		  echo "Using: $shname"
-		  qcmd="qsub -V -p -1 -l mem_free=1G -l mem_token=2G -l h_vmem=15G -e $logDir -o $logDir -q all.q $shname"
+		  qcmd="qsub -V -p -1 -l mem_free=1G -l mem_token=1G -l h_vmem=1G -e $logDir -o $logDir -q all.q $shname"
           qq=`$qcmd` # runs a qsub command
           qt=`echo $qq | awk '{print $3}'`
 

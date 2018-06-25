@@ -45,7 +45,7 @@ for dataset in "${dataSets[@]}"; do
 done
 
 if command -v qsub &>/dev/null; then
-    ./assets/submit_queue.sh
+    . ./assets/submit_queue.sh
 
     echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
     echo "The logs can be found in \"${logDir}\""
