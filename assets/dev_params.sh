@@ -36,7 +36,7 @@ if [ "$normalizeBy" = "" ]; then
 fi
 
 # specify the minimum variance
-if ! [[ $minVar -ge 0.0 ]]; then
+if ! [[ $minVar -ge 0 ]]; then
     echo "Minimum variance type must be greater than or equal to 0.0"
 	exit 1
 fi

@@ -5,12 +5,13 @@ from multiprocessing.dummy import Pool
 
 
 def run_process(script):
-    subprocess.call([script])
+    print(script)
+    subprocess.call([script], shell=True)
 
 
 def run_all_processes(num_parallel, scripts):
     from random import shuffle
-    shuffle(scripts)
+    #shuffle(scripts)
 
     pool = Pool(num_parallel)
     pool.map(run_process, scripts)
@@ -25,7 +26,7 @@ def get_files(root_path):
         # Iterate over each file.
         for file in files:
             if file.endswith(".sh"):
-                found_files.append(os.path.join(root, file))
+                found_files.append("bash " + os.path.join(root, file))
 
     print("Found: {0} files".format(len(found_files)))
     return found_files

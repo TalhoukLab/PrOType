@@ -9,6 +9,9 @@
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
 
+    mkdir -p $workDir$dataset/R_file/eval/
+    mkdir -p $workDir$dataset/sh_file/eval/
+
     R_eval=$workDir$dataset/R_file/eval/eval_run.R
     shell_file=$workDir$dataset/sh_file/eval/eval_run.sh
     # execute R scripts

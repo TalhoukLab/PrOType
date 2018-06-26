@@ -2,29 +2,29 @@
 
 . ./Parameters.sh
 
-# extract correct Model directories
-if [ "$normalizeBy" = "Genes" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc-genes_'$dataSet
-	fname='Model-hc-genes'
-elif [ "$normalizeBy" = "Samples" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc-samples_'$dataSet
-	fname='Model-hc-samples'
-elif [ "$normalizeBy" = "None" ];
-then
-	mkdir -p $outputDir$dataSet'/Model-hc_'$dataSet
-	fname='Model-hc'
-else
-	echo "A normalization of type Genes, Samples or None must be specified"
-fi
-
 # create R and sh scripts
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
+    # extract correct Model directories
+    if [ "$normalizeBy" = "Genes" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc-genes_'$dataset
+        fname='Model-hc-genes'
+    elif [ "$normalizeBy" = "Samples" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc-samples_'$dataset
+        fname='Model-hc-samples'
+    elif [ "$normalizeBy" = "None" ];
+    then
+        mkdir -p $outputDir$dataset'/Model-hc_'$dataset
+        fname='Model-hc'
+    else
+        echo "A normalization of type Genes, Samples or None must be specified"
+    fi
+
     for i in "${supervisedAlgs[@]}"; do
-        mkdir -p $workDir$dataSet'/R_file/reduce'
-        mkdir -p $workDir$dataSet'/sh_file/reduce'
+        mkdir -p $workDir$dataset/R_file/reduce
+        mkdir -p $workDir$dataset/sh_file/reduce
 
         Rname=$workDir$dataset/R_file/reduce/reduce_$i.R
         shell_file=$workDir$dataset/sh_file/reduce/reduce_$i.sh

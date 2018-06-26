@@ -1,3 +1,6 @@
+library(filelock)
+library(tools)
+
 # build mapping
 build_mapping <- function(train.set) {
   # label mapping
@@ -49,4 +52,31 @@ predict_overlap <- function(fit, new.data) {
     class = seq_len(nrow(new.data))
   ) %>%
     data.table::setattr("sampleID", rownames(new.data))
+}
+
+should_compute <- function(force_recompute, workdir, output_file) {
+  target_file <- file.path(workdir, "file_cache.rds")
+  has_changed <- FALSE
+  if (file.exists(target_file)) {
+    lck <- filelock::lock(target_file)
+    file_cache <- readRDS(target_file)
+    has_changed <- tools::md5sum(output_file) == file_cache[target_file]
+    lck <- filelock::unlock(target_file)
+  }
+  return(force_recompute || has_changed)
+}
+
+update_cache <- function(workdir, output_file) {
+  target_file <- file.path(workdir, "file_cache.rds")
+  if (file.exists(target_file)) {
+    lck <- filelock::lock(target_file)
+    file_cache <- readRDS(target_file)
+    file_cache[target_file] <- tools::md5sum(output_file)
+    writeRDS(file_cache, target_file)
+    lck <- filelock::unlock(target_file)
+  } else {
+    file_cache <- list()
+    file_cache[target_file] <- tools::md5sum(output_file)
+    writeRDS(file_cache, target_file)
+  }
 }

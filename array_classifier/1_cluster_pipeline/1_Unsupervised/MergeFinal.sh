@@ -17,9 +17,9 @@ for dataset in "${dataSets[@]}"; do
 
     shell_file=$workDir$dataset/sh_file/merge/merge_final.sh
 
-    echo "cat('merge_final_clust\n')" > $shell_file
+    echo "echo 'merge_final_clust'" > $shell_file
     echo "Rscript $R_merge_final_clust" >> $shell_file
-    echo "cat('merge_final_consmat\n')" >> $shell_file
+    echo "echo 'merge_final_consmat'" >> $shell_file
     echo "Rscript $R_merge_final_consmat" >> $shell_file
 
     chmod +x $shell_file
