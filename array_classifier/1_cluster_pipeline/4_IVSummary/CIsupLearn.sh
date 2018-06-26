@@ -8,10 +8,10 @@ for dataset in "${dataSets[@]}"; do
     data_sets=${dataset// /'"','"'}
 
     # create R script
-    mkdir -p $workDir/R_file/CIsuplearn
-    mkdir -p $workDir/sh_file/CIsuplearn
+    mkdir -p $workDir$dataset/R_file/CIsuplearn
+    mkdir -p $workDir$dataset/sh_file/CIsuplearn
 
-    Rname=$workDir$dataset'R_file/CIsuplearn/CIsupLearn.R'
+    Rname=$workDir$dataset/R_file/CIsuplearn/CIsupLearn.R
     shell_file=$workDir$dataset/sh_file/CIsuplearn/CIsupLearn.sh
 
     echo 'outDir <- "'$outputDir'"' > $Rname

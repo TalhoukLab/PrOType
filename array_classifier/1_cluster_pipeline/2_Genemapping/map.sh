@@ -11,7 +11,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir$dataset/R_file/map
     mkdir -p $workDir$dataset/sh_file/map
     
-    R_map=$workDir$dataset/R_file/map/map.R
+    Rname=$workDir$dataset/R_file/map/map.R
     shell_file=$workDir$dataset/sh_file/map/map.sh
 
     # create R script

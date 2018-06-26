@@ -21,24 +21,23 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold =
 
   # grep files in directory matching pattern
   files.in <- grep(
-    pattern = paste0("c1_(first|second|third|fourth)[0-9]+_", dataSet, ".rds"),
+    pattern = paste0("c1_", alg, "[0-9]+_", dataSet, ".rds"),
     x = list.files(dirpath),
     value = TRUE
   )
 
-
   # import data into memory
-  files.read <- paste0(dirpath, files.in) %>%
-    purrr::map(readr::read_rds) %>%
+  files.read <- purrr::map(files.in, ~ readRDS(paste0(dirpath, .)))
+
+  # extract evaluation measures
+  reduced <- files.read %>%
+    purrr::map(`[[`, "evals") %>%
     purrr::transpose()
 
-  # str(files.read, max.level = 1)
-
   # compute median + 95% confidence interval
-  reduced <- files.read$evals %>%
-    purrr::transpose() %>%
+  reduced_quantiles <- reduced %>%
     purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
-  #str(reduced, max.level = 2)
+
   # write to file
-  readr::write_rds(reduced, outputFile)
+  readr::write_rds(reduced_quantiles, outputFile)
 }

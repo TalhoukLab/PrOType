@@ -4,7 +4,7 @@
 #dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
 #dataSets=(ov.afc1_xpn ov.afc1_cbt)
 dataSets=(ov.afc1_cbt)
-shouldCompute=FALSE
+shouldCompute=TRUE
 
 # Unsupervised parameters
 reps=5

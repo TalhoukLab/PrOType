@@ -42,15 +42,14 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
   class.train <- class[, 1]
-  data.train <- NULL
 
   cat("Normalizing data:", algs, "-", reps, "\n")
   # normalization
   if (normalize.by == "None") {
     cat("Normalizing None:", algs, "-", reps, "\n")
-    data.train <- npcp #%>%
-    #   diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
-    #   as.data.frame()
+    data.train <- npcp %>%
+       diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
+       as.data.frame()
   } else if (normalize.by == "Genes") {
     cat("Normalizing Genes:", algs, "-", reps, "\n")
     data.train <- npcp %>%

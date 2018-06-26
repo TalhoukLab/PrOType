@@ -6,7 +6,7 @@ Unsupervised: files cluster CMmerge merge ConFun FinalClust
 
 Genemapping: map
 
-Supervised: SLtrain SLreduce trainEval
+Supervised: SLtrain SLreduce
 
 IVSummary: trainEval supLearn IVsummary
 
