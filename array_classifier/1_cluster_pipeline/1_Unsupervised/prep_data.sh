@@ -28,6 +28,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'ndat<- "'$dataset'"' >> $Rname
     echo 'datadir<- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $Rname
     echo 'dpath<- "'$inputDir'"' >> $Rname
+    echo 'packrat::off()' >> $Rname
     echo 'source("'$workDir'1_Unsupervised/0_read_data.R")' >> $Rname
 
     echo 'Rscript' $Rname > $shname

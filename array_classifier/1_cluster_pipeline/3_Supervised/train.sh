@@ -10,7 +10,7 @@ for dataset in "${dataSets[@]}"; do
             shell_file=$workDir$dataset/sh_file/train/$i$s.sh
             if command -v qsub &>/dev/null; then
                 # execute shell_file to cluster
-                echo "Using: $shell_file"
+                echo "Adding To Queue: $shell_file"
                 file_to_submit+=($shell_file)
             fi
 

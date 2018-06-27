@@ -11,7 +11,7 @@ for shname in "${file_to_submit[@]}"; do
 
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
-		  echo "Using: $shname"
+		  echo "Submitting To Queue ($user): $shname"
 		  qcmd="qsub -V -p -1 -l mem_free=1G -l mem_token=1G -l h_vmem=1G -e $logDir -o $logDir -q all.q $shname"
           qq=`$qcmd` # runs a qsub command
           qt=`echo $qq | awk '{print $3}'`
@@ -34,7 +34,7 @@ fi
 
 while [[ $test > 0 ]]; do
     echo "Checking Queue"
-    test=`qstat -u $user | awk '{print $1}' | wc -l`
+    test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
 
     echo "Waiting on: ${test} jobs to complete"
     sleep 30s

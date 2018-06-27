@@ -29,7 +29,7 @@ for i in "${dataSets[@]}"; do
 
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
-		echo "Using: $shname"
+		echo "Adding To Queue: $shname"
 	    file_to_submit+=($shname)
     else
         echo "Making File"

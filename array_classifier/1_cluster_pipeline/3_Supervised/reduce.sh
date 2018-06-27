@@ -45,7 +45,7 @@ for dataset in "${dataSets[@]}"; do
 
         if command -v qsub &>/dev/null; then
             # execute shell_file to cluster
-            echo "Using: $shell_file"
+            echo "Adding To Queue: $shell_file"
             file_to_submit+=($shell_file)
         else
             bash $shell_file

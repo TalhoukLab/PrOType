@@ -20,7 +20,7 @@ for dataset in "${dataSets[@]}"; do
     chmod +x $shell_file
 
     if command -v qsub &>/dev/null; then
-        echo "Using: $shell_file"
+        echo "Adding To Queue: $shell_file"
         file_to_submit+=($shell_file)
     else
         bash $shell_file

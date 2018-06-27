@@ -11,7 +11,7 @@ for dataset in "${dataSets[@]}"; do
         for i in "${algs[@]}"; do
             shell_file=$workDir$dataset/sh_file/clust/$i$s.sh
             if command -v qsub &>/dev/null; then
-                echo "Using: $shell_file"
+                echo "Adding To Queue: $shell_file"
                 file_to_submit+=($shell_file)
             fi
 

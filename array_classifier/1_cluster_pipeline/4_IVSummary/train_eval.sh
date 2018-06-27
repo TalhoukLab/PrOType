@@ -36,7 +36,7 @@ for dataset in "${dataSets[@]}"; do
     echo "Rscript $Rname" > $shell_file
 
     if command -v qsub &>/dev/null; then
-        echo "Using: $shell_file"
+        echo "Adding To Queue: $shell_file"
         file_to_submit+=($shell_file)
         chmod +x $shell_file
     else
