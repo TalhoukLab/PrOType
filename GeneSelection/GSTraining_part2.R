@@ -7,6 +7,7 @@ predOverlap <- 1
 predCut2 <- 1
 refineModel <- 1
 top_overall <- 60
+n_min <- 40
 alg <- "rf"
 
 # Load packages----
@@ -116,13 +117,13 @@ dev.off()
 
 # Train models with different number of genes----
 if (trainModel) {
-  cli::cat_line("Train Model with top 50-70 rf genes")
+  cli::cat_line("Train Model with top ", n_min, "-70 rf genes")
   x <- sl_data(train_dat)
   y <- sl_class(train_lab, x)
   genes <- get_genes(train_dat)
 
-  # Sequence from 50 to length(genes70) adding one gene at a time
-  ng <- seq(50, length(genes70), 1) %>% set_names(paste0("ng_", .))
+  # Sequence from n_min to length(genes70) adding one gene at a time
+  ng <- seq(n_min, length(genes70), 1) %>% set_names(paste0("ng_", .))
   rf_genes <- make.names(sumFreq$genes)
   l <- ng %>%
     map(head, x = rf_genes) %>%
@@ -173,7 +174,7 @@ if (predCut2) {
 
   pdf(file.path(plot_dir, "Accuracy_cut2.pdf"))
   plot(
-    seq(50, length(genes70), 1),
+    seq(n_min, length(genes70), 1),
     res_pred,
     ylim = c(0.9, 1),
     xlab = "Number of Genes",
@@ -196,7 +197,7 @@ if (predCut2) {
     data = byclass.res,
     group = "F1_score",
     main = "F1 Score by class\nby # of genes",
-    xbreaks = seq(50, length(genes70), 1),
+    xbreaks = seq(n_min, length(genes70), 1),
     ylim = c(0.8, 1),
     col_alg = c("red", "forestgreen", "darkslategray3", "darkviolet"),
     show_max = FALSE,

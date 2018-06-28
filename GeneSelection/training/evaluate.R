@@ -30,21 +30,27 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
     }) %>%
     purrr::map(~ t(data.frame(.)))
 
-  if ("lasso" %in% algs) {
-    cli::cat_line("Plotting lasso boxplot")
-    pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
-    boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso")
-  }
-  if ("rf" %in% algs) {
-    cli::cat_line("Plotting rf boxplot")
-    pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
-    boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest")
-  }
-
   if (producePlots) {
-    cli::cat_line("Producing loso plots")
     plot_dir <- mkdir(file.path(output_dir, "plots"))
 
+    if ("lasso" %in% algs) {
+      cli::cat_line("Plotting lasso boxplot")
+
+      pdf(file.path(plot_dir, "lasso_boxplot.pdf"))
+      pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
+      boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso")
+      dev.off()
+    }
+    if ("rf" %in% algs) {
+      cli::cat_line("Plotting rf boxplot")
+
+      pdf(file.path(plot_dir, "rf_boxplot.pdf"))
+      pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
+      boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest")
+      dev.off()
+    }
+
+    cli::cat_line("Producing loso plots")
     # Overall accuracy
     oacc <- l_train %>%
       purrr::map(function(alg) {
