@@ -10,12 +10,12 @@ ivi_table <- function(cl.df, data) {
   ndata <- apply(data, 2, function(x) as.numeric(as.character(x)))
   data.frame(
     Algorithms = colnames(cl.df),
-    cl.df %>% purrr::map_df(
+    cl.df %>% purrr::map(
       clusterCrit::intCriteria,
       traj = ndata,
       crit = c("Calinski_Harabasz", "Dunn", "PBM", "Tau", "Gamma", "C_index",
                "Davies_Bouldin", "McClain_Rao", "SD_Dis", "Ray_Turi", "G_plus",
-               "Silhouette", "S_Dbw")),
+               "Silhouette", "S_Dbw")) %>% do.call(rbind, .),
     Compactness = cl.df %>% purrr::map_dbl(compactness, data = data),
     Connectivity = cl.df %>% purrr::map_dbl(
       ~ clValid::connectivity(Data = ndata, clusters = .))

@@ -9,6 +9,8 @@ if (file.exists(paste0(outputFile, ".rds")) && !shouldCompute) {
       quit(status = 0)
 }
 
+cat(outputFile)
+
 library(diceR)
 r<-1
 

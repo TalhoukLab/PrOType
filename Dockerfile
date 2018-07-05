@@ -1,4 +1,4 @@
-FROM rocker/tidyverse:3.5.0
+FROM rocker/tidyverse:3.4.1
 RUN apt-get update -y && apt-get install -y git vim
 ADD install_packages.R /tmp/install_packages.R
 RUN Rscript /tmp/install_packages.R

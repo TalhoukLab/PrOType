@@ -1,4 +1,4 @@
-pkg_list <- c("tidyverse", "crayon", "here", "diceR", "filelock") # however you want to get this
+pkg_list <- c("tidyverse", "crayon", "here", "diceR") # however you want to get this
 
 if (compareVersion("3.5.0", as.character(getRversion())) == 1) {
   withCallingHandlers(install.packages("dplyr"), warning = function(w) stop(w))
