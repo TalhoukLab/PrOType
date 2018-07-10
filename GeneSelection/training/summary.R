@@ -1,0 +1,49 @@
+writeSummaryFreqs <- function(output_dir, train_dat, algs) {
+  cli::cat_rule("Calculating summary frequencies")
+  fnames <- list.files(
+    path = file.path(output_dir, "output/sumFreq"),
+    pattern = "[A-Z]{3}_sumFreq.csv",
+    full.names = TRUE
+  )
+  overall <- fnames %>%
+    purrr::map(read.csv, stringsAsFactors = FALSE, row.names = 1) %>%
+    purrr::map(~ magrittr::extract(., order(rownames(.)), )) %>%
+    Reduce(`+`, .) %>%
+    magrittr::divide_by(length(fnames)) %>%
+    tibble::rownames_to_column("genes")
+
+  cli::cat_line("Write overall summary")
+  readr::write_csv(overall,
+                   file.path(output_dir, "output/sumFreq/overallFreqs.csv"))
+
+  if ("lasso" %in% algs) {
+    fnames <- list.files(
+      path = file.path(output_dir, "output/training"),
+      pattern = "lasso",
+      full.names = TRUE
+    )
+    genes <- get_genes(train_dat)
+    overall_lasso <- fnames %>%
+      purrr::map(function(f) {
+        li <- f %>%
+          readRDS() %>%
+          purrr::pluck("models", "mlr_lasso") %>%
+          purrr::map(function(x) {
+            ndx <- x$glmnet.fit$lambda == x$lambda.1se
+            x %>%
+              purrr::pluck("glmnet.fit", "beta") %>%
+              purrr::map_df(~ ifelse(genes %in% names(which(.[, ndx] != 0)), 1, 0))
+          })
+        tmp <- Reduce(`+`, li) / length(li)
+        rownames(tmp) <- genes
+        tmp
+      }) %>%
+      Reduce(`+`, .) %>%
+      magrittr::divide_by(length(fnames)) %>%
+      tibble::rownames_to_column("genes")
+
+    cli::cat_line("Write overall lasso summary")
+    readr::write_csv(overall_lasso,
+                     file.path(output_dir, "output/sumFreq/overall_lasso_byclass.csv"))
+  }
+}
