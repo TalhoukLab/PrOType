@@ -79,14 +79,15 @@ site_names <- table(train_dat$site) %>% paste0(names(.), .)
 rf70 <- fnames %>%
   set_names(site_names) %>%
   map(~ read_csv(., col_types = cols()) %>%
-        arrange(desc(rfFreq)) %>%
+        arrange(desc(`rfFreq`)) %>%
         pull(genes) %>%
-        head(70))
+        head(70)
+  )
 
 # Load the average frequency across all studies
 sumFreq <- read.csv(file.path(output_dir, "output/sumFreq/overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
-  arrange(desc(rfFreq))
+  arrange(desc(`rfFreq`))
 
 # We consider the union of the genes across studies
 genes70 <- Reduce(union, rf70)

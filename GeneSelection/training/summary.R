@@ -7,7 +7,7 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
   )
   overall <- fnames %>%
     purrr::map(read.csv, stringsAsFactors = FALSE, row.names = 1) %>%
-    purrr::map(~ magrittr::extract(., order(rownames(.)), )) %>%
+    purrr::map(~ magrittr::extract(., order(rownames(.)), , drop = FALSE)) %>%
     Reduce(`+`, .) %>%
     magrittr::divide_by(length(fnames)) %>%
     tibble::rownames_to_column("genes")
