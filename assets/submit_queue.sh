@@ -36,6 +36,10 @@ while [[ $test > 0 ]]; do
     echo "Checking Queue"
     test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
 
-    echo "Waiting on: ${test} jobs to complete"
-    sleep 30s
+    if [[ $test > 0 ]]; then
+      echo "Waiting on: ${test} jobs to complete"
+      sleep 30s
+    else;
+      echo "All jobs completed."
+    fi
 done

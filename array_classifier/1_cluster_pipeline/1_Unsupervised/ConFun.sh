@@ -16,7 +16,7 @@ for dataset in "${dataSets[@]}"; do
         # execute shell_file to cluster node
         shell_file=$workDir$dataset/sh_file/consensus/Create_$i.sh
         if command -v qsub &>/dev/null; then
-            echo "Submitting to queue"
+            echo "Submitting to queue: $shell_file"
             file_to_submit+=($shell_file)
         fi
 
