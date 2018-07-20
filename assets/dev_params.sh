@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+contains() {
+    [[ $1 =~ (^|[[:space:]])$2($|[[:space:]]) ]] && return TRUE || return FALSE
+}
+
 
 # Developer params
 algs=(nmfbrunet nmflee distalgs rest)
@@ -73,5 +77,16 @@ fi
 
 if ! [[ $c -gt 0 ]]; then
     echo "c (# specify minimum number of reps required for merge.  the modulus of the dividend (reps) and divisor (c) must be greater or equal to zero."
+	exit 1
+fi
+
+
+if ! [[ contains $dataSets $trainSet ]]; then
+    echo "Your datasets must include your trainset."
+	exit 1
+fi
+
+if ! [[ contains $dataSets $testSet ]]; then
+    echo "Your datasets must include your testSet."
 	exit 1
 fi
