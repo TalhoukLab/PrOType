@@ -267,4 +267,24 @@ sup_plots <- function(dir, datasets,
 
 # TODO:// Should we be calling any of the functions in this file?
 
+# Heatmap on internal validitiy indices by algorithm
+algii_heatmap <- function(ii) {
+  # Heatmap: order algorithms by ranked ii, remove indices with NaN
+  hm <- ii %>%
+    tibble::column_to_rownames("Algorithms") %>%
+    magrittr::extract(match(diceR:::consensus_rank(ii, 5)$top.list, rownames(.)),
+                      purrr::map_lgl(., ~ all(!is.nan(.x))))
+
+  # Plot heatmap with annotated colours, column scaling, no further reordering
+  NMF::aheatmap(
+    hm,
+    annCol = data.frame(Criteria = c(rep("Maximized", 5),
+                                     rep("Minimized", ncol(hm) - 5))),
+    annColors = list(Criteria = stats::setNames(c("darkgreen", "deeppink4"),
+                                                c("Maximized", "Minimized"))),
+    Colv = NA, Rowv = NA, scale = "column", col = "PiYG",
+    main = "Ranked Algorithms on Internal Validity Indices"
+  )
+}
+
 
