@@ -55,51 +55,31 @@ pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
   text(sort(pvcaObj$dat), bp, labels = new_values, pos = 4, cex = 0.8)
 }
 
-# Inputs----
-ndatc1 <- "ov.afc1_xpn"
+tdat <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/tdat_", trainSet, ".rds"))
+final_clust_file <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/all_clusts_", trainSet, ".rds"))
 
-# outputDir <- "/Users/atalhouk/Repositories/NanoString/HGSCS/Results/"
-# InputDir <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/intermediate/outputs/"
+rownames(tdat) <- dropChar(rownames(tdat))
 
-outputDir <- "/Users/dchiu/Documents/Misc/Dustin/Results/"
-InputDir <- "/Users/dchiu/Documents/Misc/Dustin/data_complete/anonymized_data/data/"
-
-# Load Data----
-tdatc1 <- readRDS(paste0(InputDir, "data_pr_", ndatc1, "/tdat_", ndatc1, ".rds"))
-rownames(tdatc1) <- dropChar(rownames(tdatc1))
-
-FinalClustc1 <- data.frame(clust = readRDS(paste0(InputDir, "data_pr_", ndatc1, "/all_clusts_", ndatc1, ".rds"))[,"kmodes"],
-                           Label = rownames(tdatc1),
+FinalClust <- data.frame(clust = final_clust_file)[,"kmodes"],
+                           Label = rownames(tdat),
                            stringsAsFactors = FALSE)
 
-mapping <- build_mapping(ndatc1)
-FinalClustc1$clust <- mapping$labels[FinalClustc1$clust]
-
-# tdatc2 <- readRDS(paste0(InputDir,ndatc2,"/cdat_",ndatc2,".rds"))
-# rownames(tdatc2) <- rownames(tdatc2) %>% dropChar(.)
-
-# FinalClustc2 <- data.frame(clust=readRDS(paste0(InputDir,ndatc2,"/all_clusts_",ndatc2,".rds"))[,"kmodes"], Label=rownames(tdatc2), stringsAsFactors = FALSE)
-
-# mapping <- build_mapping(ndatc2)
-# FinalClustc2$clust <- mapping$labels[FinalClustc2$clust]
+mapping <- build_mapping(trainSet)
+FinalClust$clust <- mapping$labels[FinalClust$clust]
 
 # Load the cases and label the cuts
-cohorts.tmp <- read.csv(file.path(InputDir, "inclusion.csv"), stringsAsFactors = FALSE)
+cohorts.tmp <- read.csv(file.path(data_dir, "nstring", "inclusion.csv"), stringsAsFactors = FALSE)
+
 # Select cases included in post and pull out only useful info
 cohorts <- cohorts.tmp %>%
   filter(post == 1) %>%
-  # select(c(Label, StudyID, CohortLabel, Cut))
   select(c(Label, StudyID, CohortLabel)) %>%
   mutate(Label = gsub("\\.|\\+", "_", Label))
 
-
-if (dim(FinalClustc1)[1] != nrow(tdatc1)) {
+if (dim(FinalClust)[1] != nrow(tdat)) {
   stop("number of rows do not match in one of the datasets")
 }
-# if(dim(FinalClustc2)[1]!=nrow(tdatc2)){stop("number of rows do not match in one of the datasets")}
 
-# FinalClust <- rbind(FinalClustc1,FinalClustc2)
-FinalClust <- FinalClustc1
 cohorts <- dplyr::inner_join(FinalClust, cohorts, "Label")
 rownames(cohorts) <- cohorts$Label
 
@@ -107,41 +87,27 @@ rownames(cohorts) <- cohorts$Label
 # Assess the batch sources by fitting all "sources" as random effects including two-way interaction terms in the Mixed Model(depends on lme4 package) to selected principal components, which were obtained from the original data correlation matrix.
 #xpn "#7FA197"
 #cbt "#91B0A8"
+
 #Compute pvca Object
-pvcaObj <- CompSrcOfVar(cohorts, t(tdatc1), c("clust", "CohortLabel"), "#91B0A8", ndatc1)
-saveRDS(pvcaObj, file.path(outputDir, "pvcaObj.rds"))
+pvcaObj <- CompSrcOfVar(cohorts, t(tdat), c("clust", "CohortLabel"), "#91B0A8", trainSet)
+saveRDS(pvcaObj, file.path(outputDir, "evals", "pvcaObj.rds"))
 
-pdf(paste0(outputDir, "figures/", ndatc1, "_pvca.pdf"))
-pvca.plot(pvcaObj, "#91B0A8", ndatc1)
-dev.off()
-
-# pvcaObj <- CompSrcOfVar(subset(cohorts, Cut==1), t(tdatc1),c("clust","CohortLabel"), ndatc1,"#91B0A8")
-#
-# pdf(paste0(outputDir,"figures/",ndatc1,"_pvca.pdf"))
-# pvca.plot(pvcaObj,ndatc1,"#91B0A8")
-# dev.off()
-#
-# pvcaObj <- CompSrcOfVar(subset(cohorts, Cut==2), t(tdatc2),c("clust","CohortLabel"), ndatc1,"#91B0A8")
-#
-# pdf(paste0(outputDir,"figures/",ndatc2,"_pvca.pdf"))
-# pvca.plot(pvcaObj,ndatc2,"#91B0A8")
-# dev.off()
+pdf(file.path(outputDir, "figures", trainSet, "_pvca.pdf"))
+pvca.plot(pvcaObj, "#91B0A8", trainSet)
 
 # Compute PCA---
-pcaa <- prcomp(tdatc1)
-saveRDS(pcaa, file.path(outputDir, "pcaa.rds"), compress = "xz")
-# cohorts1 <- cohorts %>% filter(Cut==1)
-cohorts1 <- cohorts
-# dim(pcaa$x)
+pcaa <- prcomp(tdat)
+# TODO:// Is this file in the right place?
+saveRDS(pcaa, file.path(outputDir, "evals", "pcaa.rds"), compress = "xz")
 df <- data.frame(
-  batch1 = as.character(cohorts1$clust),
-  batch2 = as.character(cohorts1$CohortLabel),
+  batch1 = as.character(cohorts$clust),
+  batch2 = as.character(cohorts$CohortLabel),
   pcaa$x[, 1:3],
   stringsAsFactors = FALSE
 )
 
 p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch1)
-#htmlwidgets::saveWidget(p1, paste0(outputDir, "figures/", ndatc1, "_pcaClust.html"))
+#htmlwidgets::saveWidget(p1, paste0(outputDir, "figures/", trainSet, "_pcaClust.html"))
 
 p2 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch2)
-#htmlwidgets::saveWidget(p2, paste0(outputDir, "figures/", ndatc1, "_pcastudy.html"))
+#htmlwidgets::saveWidget(p2, paste0(outputDir, "figures/", trainSet, "_pcastudy.html"))

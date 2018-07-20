@@ -1,4 +1,3 @@
-rm(list = ls(all = TRUE))
 options(stringsAsFactors = FALSE)
 library(gplots)
 library(magrittr)
@@ -7,6 +6,7 @@ library(magrittr)
 tr <- function(X) {
   sum(diag(X))
 }
+
 matrix_loss <- function(Rh, R = NULL) {
   # Add check that it's a correlation matrix
   if (is.null(R)) {
@@ -19,33 +19,35 @@ matrix_loss <- function(Rh, R = NULL) {
 
 
 # Load data----
-intermediate <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/intermediate/"
 
-rfive.type <- read.csv(paste0(intermediate, "external/lasso_PAM100.csv"))
-rfour.type <- read.csv(paste0(intermediate, "external/verhaakGS.csv")) %>%
+rfive.type <- read.csv(file.path(data_dir, "external", "lasso_PAM100.csv"))
+rfour.type <- read.csv(file.path(data_dir, "external", "verhaakGS.csv")) %>%
   set_colnames(c("Gene.Name", "C4.DIF", "C2.IMM", "C1.MES", "C5.PRO"))
 
-(input.file.vec <- dir(paste0(intermediate, "centroid_data"),
-  full.names = T
-) %>%
-  grep("preds", ., value = TRUE))
-(input.file.name <- dir(paste0(intermediate, "centroid_data"),
-  full.names = F
-) %>%
+# TODO:// Where does the 'preds' come from?
+input.file.vec <- dir(file.path(outputDir, "evals"),
+  full.names = TRUE,
+  pattern = "centroid_data*.rds") %>%
+    grep("preds", ., value = TRUE)
+
+input.file.name <- dir(paste0(outputDir, "evals"),
+    full.names = FALSE,
+    pattern = "centroid_data*.rds"
+  ) %>%
   grep("preds", ., value = TRUE) %>%
   strsplit(., split = "[.]") %>%
   lapply(., "[", 1) %>%
-  unlist(.))
+  unlist(.)
 Rh <- NULL
 R <- NULL
 Loss <- NULL
 diagLoss <- NULL
-# Make and Save Plots----
-pdf("Outputs/plots/Cor_w_Sigs_c2.pdf")
 
-for (k in seq_along(input.file.vec)) {
-  tmp.file <- input.file.vec[k]
-  rAff.eb <- read.csv(tmp.file)
+# Make and Save Plots----
+pdf(file.path(outputDir, "plots", "Cor_w_Sigs_c2.pdf")
+
+for (input_file in input.file.vec) {
+  rAff.eb <- read.csv(input_file)
 
   common.gene5 <- intersect(rfive.type$X, rAff.eb$Gene)
   common.gene4 <- intersect(rfour.type$Gene.Name, rAff.eb$Gene)
@@ -69,7 +71,7 @@ for (k in seq_along(input.file.vec)) {
     c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
   ])
 
-  (type.cor.mtx4 <- cor(four.mtx, affy.mtx4, method = "pearson"))
+  type.cor.mtx4 <- cor(four.mtx, affy.mtx4, method = "pearson")
   heatmap.2(type.cor.mtx4,
     trace = "none", col = bluered(25),#Rowv = FALSE, Colv = FALSE,
     key = FALSE, dendrogram = "none",
@@ -82,12 +84,12 @@ for (k in seq_along(input.file.vec)) {
   Rh[[k]] <- type.cor.mtx4[, order(rownames(type.cor.mtx4))]
   Loss[[k]] <- matrix_loss(Rh[[k]])
   diagLoss[[k]] <- sum((diag(Rh[[k]]) - rep(1,ncol(Rh[[k]])))^2)
-  (type.cor.mtx5 <- cor(five.mtx, affy.mtx5, method = "pearson"))
+  type.cor.mtx5 <- cor(five.mtx, affy.mtx5, method = "pearson")
   heatmap.2(type.cor.mtx5,
     trace = "none", col = bluered(25),
     key = FALSE, dendrogram = "none",
     cellnote = format(round(type.cor.mtx5, 2)), notecol = "black",
-    main = paste(
+    main = paste0(
       input.file.name[k], "vs Chen \n", "N. of common genes:",
       length(common.gene5)
     ),
@@ -95,7 +97,6 @@ for (k in seq_along(input.file.vec)) {
   )
 }
 
-dev.off()
-
 matrix(unlist(Loss), ncol = 2, byrow = TRUE) %>% set_rownames(input.file.name)
+# TODO:// Should this be written anywhere?
 diagLoss
