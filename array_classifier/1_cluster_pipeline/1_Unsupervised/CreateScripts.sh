@@ -12,19 +12,18 @@ for dataset in "${dataSets[@]}"; do
     rm -r $workDir$dataset
 
 
-    mkdir -p $outputDir$dataset/rds_out_$dataset
-    mkdir -p $outputDir$dataset/con_mat_$dataset
-    mkdir -p $outputDir$dataset/imputed_clust_$dataset
+    mkdir -p "$outputDir$dataset/rds_out_$dataset"
+    mkdir -p "$outputDir$dataset/con_mat_$dataset"
+    mkdir -p "$outputDir$dataset/con_mat_merged_$dataset"
+    mkdir -p "$outputDir$dataset/imputed_clust_$dataset"
 
     echo "Creating folders"
-    mkdir -p $workDir$dataset/R_file/clust
-    mkdir -p $workDir$dataset/R_file/merge
-    mkdir -p $workDir$dataset/R_file/eval
-    mkdir -p $workDir$dataset/R_file/consensus
-    mkdir -p $workDir$dataset/sh_file/clust
-    mkdir -p $workDir$dataset/sh_file/merge
-    mkdir -p $workDir$dataset/sh_file/consensus
-    mkdir -p $logDir
+    mkdir -p "$workDir$dataset/R_file/merge"
+    mkdir -p "$workDir$dataset/R_file/eval"
+    mkdir -p "$workDir$dataset/R_file/consensus"
+    mkdir -p "$workDir$dataset/sh_file/merge"
+    mkdir -p "$workDir$dataset/sh_file/consensus"
+    mkdir -p "$logDir"
 
 
 
@@ -42,9 +41,8 @@ for dataset in "${dataSets[@]}"; do
             #************************************************
 
             # File names for R script, rds output file, shell job script
-
-            mkdir -p $workDir$dataset/R_file/clust
-            mkdir -p $workDir$dataset/sh_file/clust
+            mkdir -p "$workDir$dataset/R_file/clust"
+            mkdir -p "$workDir$dataset/sh_file/clust"
 
             R_clust=$workDir$dataset/R_file/clust/$i$s.R
             sh_clust=$workDir$dataset/sh_file/clust/$i$s.sh

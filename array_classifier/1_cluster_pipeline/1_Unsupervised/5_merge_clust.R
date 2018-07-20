@@ -68,5 +68,6 @@ cat("Completing Clustering\n")
 cdat <- readRDS(paste0(dir, "/data_pr_", ndat, "/cdat_", ndat, ".rds"))
 Ecomp <- diceR::impute_missing(E_knn, data = cdat, nk = k)
 saveRDS(Ecomp, file = paste0(dir, "/data_pr_", ndat, "/Ecomp_", ndat, ".rds"))
+cat("Completed Clustering\n")
 
 rm(fnames, newdir, E, E_knn, Ecomp)

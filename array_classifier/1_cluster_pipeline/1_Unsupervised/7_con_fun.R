@@ -1,5 +1,6 @@
 library(diceR)
 library(magrittr)
+library(Matrix)
 
 # inputs: ndat, cons.funs, k, dir
 

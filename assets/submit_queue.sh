@@ -12,7 +12,7 @@ for shname in "${file_to_submit[@]}"; do
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
 		  echo "Submitting To Queue ($user): $shname"
-		  qcmd="qsub -V -p -1 -l mem_free=1G -l mem_token=1G -l h_vmem=1G -e $logDir -o $logDir -q all.q $shname"
+		  qcmd="qsub -V -p -1 -l mem_free=4G -l mem_token=4G -l h_vmem=8G -e $logDir -o $logDir -q all.q $shname"
           qq=`$qcmd` # runs a qsub command
           qt=`echo $qq | awk '{print $3}'`
 
@@ -39,7 +39,7 @@ while [[ $test > 0 ]]; do
     if [[ $test > 0 ]]; then
       echo "Waiting on: ${test} jobs to complete"
       sleep 30s
-    else;
-      echo "All jobs completed."
+    else
+      echo "All jobs completed.";
     fi
 done
