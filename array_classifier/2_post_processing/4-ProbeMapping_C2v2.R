@@ -1,0 +1,84 @@
+# Code to compute cluster centroids based on DiceR and map probes to genes
+# Note that if tidyverse is loaded code will not run
+
+rm(list = ls(all = TRUE))
+library("hgug4112a.db")
+library("hgu133plus2.db")
+library(RColorBrewer)
+library(AnnotationDbi)
+library(magrittr)
+
+# Directories----
+intermediate <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/intermediate/"
+processed <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/processed/"
+output <- "/Users/atalhouk/Repositories/NanoString/HGSCS/Results/"
+v <- "outputs_Feb10_2018/"
+
+# Read in  ----
+# data
+fdat <- c("ov.afc2_xpn")
+ndat <- c("c2_xpn")
+dat_o <- purrr::map(fdat, function(x) { # read original data
+  readRDS(paste0(intermediate, v, x, "/cdat_", x, ".rds"))
+}) %>% magrittr::set_names(ndat)
+
+# obtain predictions
+clusts <- readRDS(paste0(intermediate, v, fdat, "/preds_", fdat, ".rds"))
+
+dat <- purrr::map2(clusts, dat_o, function(x, y) {
+  C1 <- x
+  d <- data.frame(C1, y)
+  t <- y %>% t(.) %>% data.frame(.)
+  t2 <- data.frame(rownames(y), C1)
+  t$Probe <- rownames(t)
+  d2 <- d %>%
+    reshape2::melt(., id = "C1") %>%
+    dplyr::group_by(variable, C1) %>%
+    dplyr::summarise(median = median(value)) %>%
+    reshape2::dcast(., variable ~ C1, median)
+  return(list(full = t, centroids = d2, clusts = t2))
+}) %>% purrr::transpose(.)
+
+
+
+# Probe mapping
+
+centroid_dat <- purrr::map(dat$centroids, function(x) {
+  ID <- trimws(substring(as.character(x$variable), 2, 50))
+  AFX_lab <- AnnotationDbi::select(
+    hgu133plus2.db, ID,
+    c("SYMBOL")
+  ) %>%
+    dplyr::filter(!is.na(SYMBOL)) %>%
+    dplyr::filter(!duplicated(PROBEID))
+  x$Gene <- AFX_lab$SYMBOL[match(ID, AFX_lab$PROBEID)]
+  return(x)
+})
+
+
+full_dat <- purrr::map(dat$full, function(x) {
+  AFX_lab <- AnnotationDbi::select(
+    hgu133plus2.db, x$Probe,
+    c("SYMBOL")
+  ) %>%
+    dplyr::filter(!is.na(SYMBOL)) %>%
+    dplyr::filter(!duplicated(PROBEID))
+  x$Gene <- AFX_lab$SYMBOL[match(x$Probe, AFX_lab$PROBEID)]
+  return(x)
+})
+
+
+# Write Full Data
+# dir.create(paste0(intermediate,"/full_data/"))
+purrr::map2(full_dat, names(full_dat), function(x, y) {
+  write.csv(x, paste0(intermediate, "full_data/", y, "_all.csv"))
+})
+
+purrr::map2(dat$clusts, names(dat$clusts), function(x, y) {
+  write.csv(x, paste0(intermediate, "full_data/", y, "-clusters.csv"))
+})
+
+# Write Centroid Data
+purrr::map2(centroid_dat, names(centroid_dat), function(x, y) {
+  write.csv(x, paste0(intermediate, "centroid_data/", y, ".csv"))
+})
