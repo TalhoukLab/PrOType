@@ -1,4 +1,6 @@
-# load libraries
+# ADD SVM
+
+# Load packages
 rm(list = ls(all = TRUE))
 library(magrittr)
 library(tidyverse)
@@ -10,72 +12,48 @@ output <- "/Users/atalhouk/Repositories/NanoString/HGSCS/Results/"
 v <- "outputs_Feb10_2018/"
 
 # Functions-----
-# Functions----
-buildMapping <- function(train.set)
-                         #********************************************************************
-                         # Builds mapping matrix from integer class to correct labels names
+
 #********************************************************************
-{
-  # label mapping
+# Builds mapping matrix from integer class to correct labels names
+#********************************************************************
+buildMapping <- function(train.set) {
   labs <- c(1, 2, 3, 4)
   if (train.set == "ov.afc1_xpn") {
-    map <- data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
+    data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
   } else {
     stop("Can only relabel C1 XPN")
   }
-
-  return(map)
 }
 
-# Load Data  ----
+# Load Data----
 seed <- read_rds(paste0(intermediate, v, "seed.rds"))
 
 # Training data
 trainSet <- "ov.afc1_xpn"
 map <- buildMapping(trainSet)
-npcp <- readRDS(paste0(
-  intermediate, v,
-  trainSet, "/npcp-hcNorm_", trainSet, ".rds"
-))
-colnames(npcp) <- make.names(colnames(npcp))
+npcp <- readRDS(paste0(intermediate, v,
+                       trainSet, "/npcp-hcNorm_", trainSet, ".rds")) %>%
+  set_colnames(make.names(colnames(.)))
 
-train <- cbind(npcp, lab = readRDS(paste0(
-  intermediate, v,
-  trainSet, "/all_clusts_",
-  trainSet, ".rds"
-))[, 1] %>%
+lab <- readRDS(paste0(intermediate, v,
+                      trainSet, "/all_clusts_", trainSet, ".rds")) %>%
+  magrittr::extract(, 1) %>%
   data.frame(labs = .) %>%
   dplyr::inner_join(map, by = "labs") %>%
-  .$labels)
+  dplyr::pull(labels)
 
 # Fitting Model
-
-set.seed(seed)
-fit_ada <- splendid::classification(npcp, class = train$lab, algorithms = "adaboost")
-
-set.seed(seed)
-fit_lasso <- splendid::classification(npcp, class = train$lab, algorithms = "mlr_lasso")
-
-set.seed(seed)
-fit_ridge <- splendid::classification(npcp, class = train$lab, algorithms = "mlr_ridge")
-
-set.seed(seed)
-fit_rf <- splendid::classification(npcp, class = train$lab, algorithms = "rf")
+algs <- c("adaboost", "mlr_lasso", "mlr_ridge", "rf", "svm")
+all_fits <- purrr::map(algs, splendid::classification, data = npcp_subset, class = lab_subset, seed_alg = seed)
 
 # Testing Data
-# Training data
 testSet <- "ov.afc2_xpn"
-npcp_test <- readRDS(paste0(
-  intermediate, v,
-  testSet, "/npcp-hcNorm_", testSet, ".rds"
-))
-colnames(npcp_test) <- make.names(colnames(npcp_test))
+npcp_test <- readRDS(paste0(intermediate, v,
+                            testSet, "/npcp-hcNorm_", testSet, ".rds")) %>%
+  set_colnames(make.names(colnames(.)))
 
-preds_ada <- splendid::prediction(fit_ada, data = npcp_test, class = NULL)
-preds_lasso <- splendid::prediction(fit_lasso, data = npcp_test, class = NULL)
-preds_ridge <- splendid::prediction(fit_ridge, data = npcp_test, class = NULL)
-preds_rf <- splendid::prediction(fit_rf, data = npcp_test, class = NULL)
-
-predsC2 <- data_frame(preds_ada, preds_lasso, preds_rf, preds_ridge)
-
+# Predicting Model
+predsC2 <- all_fits %>%
+  purrr::set_names(paste("preds", c("ada", "lasso", "ridge", "rf", "svm"), sep = "_")) %>%
+  purrr::map_dfc(splendid::prediction, data = npcp_test_subset, class = lab_subset)
 write_rds(predsC2, paste0(intermediate, v, testSet, "/preds_ov.afc2_xpn.rds"))
