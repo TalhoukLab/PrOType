@@ -55,17 +55,15 @@ pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
   text(sort(pvcaObj$dat), bp, labels = new_values, pos = 4, cex = 0.8)
 }
 
+mapping <- build_mapping(trainSet)
+
 tdat <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/tdat_", trainSet, ".rds"))
 final_clust_file <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/all_clusts_", trainSet, ".rds"))
 
 rownames(tdat) <- dropChar(rownames(tdat))
-
-FinalClust <- data.frame(clust = final_clust_file)[,"kmodes"],
-                           Label = rownames(tdat),
-                           stringsAsFactors = FALSE)
-
-mapping <- build_mapping(trainSet)
-FinalClust$clust <- mapping$labels[FinalClust$clust]
+FinalClust <- data.frame(clust = mapping$labels[final_clust_file[, "kmodes"]],
+                         Label = rownames(tdat),
+                         stringsAsFactors = FALSE)
 
 # Load the cases and label the cuts
 cohorts.tmp <- read.csv(file.path(data_dir, "nstring", "inclusion.csv"), stringsAsFactors = FALSE)
@@ -97,7 +95,6 @@ pvca.plot(pvcaObj, "#91B0A8", trainSet)
 
 # Compute PCA---
 pcaa <- prcomp(tdat)
-# TODO:// Is this file in the right place?
 saveRDS(pcaa, file.path(outputDir, "evals", "pcaa.rds"), compress = "xz")
 df <- data.frame(
   batch1 = as.character(cohorts$clust),
@@ -107,7 +104,7 @@ df <- data.frame(
 )
 
 p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch1)
-#htmlwidgets::saveWidget(p1, paste0(outputDir, "figures/", trainSet, "_pcaClust.html"))
+htmlwidgets::saveWidget(p1, paste0(outputDir, "figures/", trainSet, "_pcaClust.html"))
 
 p2 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch2)
-#htmlwidgets::saveWidget(p2, paste0(outputDir, "figures/", trainSet, "_pcastudy.html"))
+htmlwidgets::saveWidget(p2, paste0(outputDir, "figures/", trainSet, "_pcastudy.html"))
