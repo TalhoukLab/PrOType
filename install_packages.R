@@ -15,8 +15,5 @@ devtools::install_github("AlineTalhouk/splendid")
 source("https://bioconductor.org/biocLite.R")
 biocLite("pvca")
 biocLite("AnnotationDbi")
-
-
-devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/org.Hs.eg.db_3.6.0.tar.gz")
-devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz")
-devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/org.Hs.eg.db_3.6.0.tar.gz")
+biocLite("hgu133plus2.db")
+biocLite("hgug4112a.db")

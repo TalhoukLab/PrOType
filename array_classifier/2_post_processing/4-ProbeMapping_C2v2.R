@@ -13,7 +13,7 @@ library(magrittr)
 # Read in original data
 fdat <- testSet
 ndat <- gsub("ov.af", "", fdat)
-dat_o <- readRDS(file.path(outputDir, ., paste0("data_pr_", fdat), "cdat_", fdat, ".rds"))
+dat_o <- readRDS(file.path(outputDir, fdat, paste0("data_pr_", fdat), paste0("cdat_", fdat, ".rds")))
 
 # Obtain predictions
 clusts <- readRDS(file.path(outputDir, "predictions", paste0(fdat, ".rds")))
