@@ -1,3 +1,7 @@
+library(magrittr)
+library(purrr)
+source(here::here("array_classifier/2_post_processing/utils/utils.R"))
+
 
 # IV Plot Definitions -----------------------------------------------------
 
@@ -6,9 +10,9 @@
 #********************************************************************
 build_mapping <- function(train.set) {
   labs <- c(1, 2, 3, 4)
-  if (train.set == "ov.afc1_cbt") {
+  if (train.set %in% c("ov.afc1_cbt", "ov.afc2_cbt")) {
     map <- data.frame(labs, labels = c("C1-MES",	"C5-PRO",	"C4-DIF",	"C2-IMM"))
-  } else if (train.set == "ov.afc1_xpn") {
+  } else if (train.set %in% c("ov.afc1_xpn", "ov.afc2_xpn")) {
     map <- data.frame(labs, labels = c("C2-IMM",	"C4-DIF", "C5-PRO",	"C1-MES"))
   } else {
     print("No valid training set specified")
@@ -19,6 +23,7 @@ build_mapping <- function(train.set) {
 # import (threshold) iv summary data
 import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
                       threshold = TRUE) {
+
   # IV threshold filenames
   fn.iv.xpn <- file.path(dir, datasets[1],
                          paste0("data_pr_", datasets[1]),
@@ -26,6 +31,7 @@ import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
   fn.iv.cbt <- file.path(dir, datasets[2],
                          paste0("data_pr_", datasets[2]),
                          paste0("iv_summary_", datasets[2], "_threshold.rds"))
+
   if (!threshold) {
     # IV filenames
     fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
@@ -205,12 +211,15 @@ sup_plots <- function(plot.title, dir, datasets,
 # Heatmap on internal validitiy indices by algorithm
 algii_heatmap <- function(ii) {
   # Heatmap: order algorithms by ranked ii, remove indices with NaN
+  cli::cat_line("Computing Heatmap")
   hm <- ii %>%
+    magrittr::set_rownames(NULL) %>%
     tibble::column_to_rownames("Algorithms") %>%
     magrittr::extract(match(diceR:::consensus_rank(ii, 5)$top.list, rownames(.)),
                       purrr::map_lgl(., ~ all(!is.nan(.x))))
 
   # Plot heatmap with annotated colours, column scaling, no further reordering
+  cli::cat_line("Plotting Heatmap")
   NMF::aheatmap(
     hm,
     annCol = data.frame(Criteria = c(rep("Maximized", 5),
@@ -224,8 +233,7 @@ algii_heatmap <- function(ii) {
 
 # Produce internal validity plots -----------------------------------------
 
-data_dir <- file.path(dir, datasets, paste0("data_pr_", datasets))
-plot_args <- list(dir = data_dir, print = FALSE, save = FALSE)
+plot_args <- list(dir = outputDir, datasets = datasets, print = FALSE, save = FALSE)
 save_args <- list(width = 16, height = 9)
 ranked_fn <- file.path(outputDir, "plots",
                        c("ranked_algorithms_noThreshold.png",
@@ -260,6 +268,7 @@ purrr::iwalk(
   top.algs.no.threshold,
   ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
-
-hm <- readRDS(file.path(data_dir, paste0("ii_", dataset, ".rds")))
-algii_heatmap(hm)
+for (dataset in datasets) {
+  hm <- readRDS(file.path(outputDir, dataset, paste0("data_pr_", dataset), paste0("ii_", dataset, ".rds")))
+  algii_heatmap(hm)
+}
