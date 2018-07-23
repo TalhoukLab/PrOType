@@ -26,13 +26,11 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold =
     value = TRUE
   )
 
-  # import data into memory
-  files.read <- purrr::map(files.in, ~ readRDS(paste0(dirpath, .)))
+  # import data into memory, keeping only evaluations
+  files.read <- purrr::map(files.in, ~ readRDS(paste0(dirpath, .))[["evals"]])
 
-  # extract evaluation measures
-  reduced <- files.read %>%
-    purrr::map(`[[`, "evals") %>%
-    purrr::transpose()
+  # transpose evaluation measures to group by algorithm
+  reduced <- purrr::transpose(files.read)
 
   # compute median + 95% confidence interval
   reduced_quantiles <- reduced %>%
