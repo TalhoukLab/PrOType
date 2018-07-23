@@ -1,102 +1,90 @@
-options(stringsAsFactors = FALSE)
-library(gplots)
 library(magrittr)
 
-# Functions---
-tr <- function(X) {
-  sum(diag(X))
-}
-
+# Calculate entropy loss and quadratic loss of a matrix
 matrix_loss <- function(Rh, R = NULL) {
   # Add check that it's a correlation matrix
   if (is.null(R)) {
     R <- diag(nrow(Rh))
   }
-  entropy_loss <- tr(solve(R) %*% Rh) - log(det(solve(R) %*% Rh)) - nrow(Rh)
-  quadratic_loss <- tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
-  return(list(entropy = entropy_loss, quadratic = quadratic_loss))
+  entropy <- psych::tr(solve(R) %*% Rh) - log(det(solve(R) %*% Rh)) - nrow(Rh)
+  quadratic <- psych::tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
+  tibble::lst(entropy, quadratic)
 }
 
-
-# Load data----
-
-rfive.type <- read.csv(file.path(data_dir, "external", "lasso_PAM100.csv"))
-rfour.type <- read.csv(file.path(data_dir, "external", "verhaakGS.csv")) %>%
+# Load data
+rfive.type <- readr::read_csv(file.path(data_dir, "external", "lasso_PAM100.csv")) %>%
+  set_colnames(c("Gene.Name", colnames(.[-1])))
+rfour.type <- readr::read_csv(file.path(data_dir, "external", "verhaakGS.csv")) %>%
   set_colnames(c("Gene.Name", "C4.DIF", "C2.IMM", "C1.MES", "C5.PRO"))
 
-# TODO:// Where does the 'preds' come from?
-input.file.vec <- dir(file.path(outputDir, "evals"),
-  full.names = TRUE,
-  pattern = "centroid_data*.rds") %>%
-    grep("preds", ., value = TRUE)
+# Input file names
+input.file.vec <- list.files(
+  path = file.path(outputDir, "evals"),
+  pattern = "centroid_data_preds.*\\.csv",
+  full.names = TRUE
+)
+input.file.name <- tools::file_path_sans_ext(basename(input.file.vec))
 
-input.file.name <- dir(paste0(outputDir, "evals"),
-    full.names = FALSE,
-    pattern = "centroid_data*.rds"
-  ) %>%
-  grep("preds", ., value = TRUE) %>%
-  strsplit(., split = "[.]") %>%
-  lapply(., "[", 1) %>%
-  unlist(.)
-Rh <- NULL
-R <- NULL
-Loss <- NULL
-diagLoss <- NULL
+# Initiate Loss list and specify constant for affy labels
+Loss <- purrr::list_along(input.file.vec)
+affy.labs <- c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
 
 # Make and Save Plots----
-pdf(file.path(outputDir, "plots", "Cor_w_Sigs_c2.pdf")
+pdf(file.path(outputDir, "plots", "Cor_w_Sigs_c2.pdf"))
 
-for (input_file in input.file.vec) {
-  rAff.eb <- read.csv(input_file)
+for (k in seq_along(input.file.vec)) {
+  # Read input file
+  rAff.eb <- readr::read_csv(input.file.vec[k], col_types = readr::cols()) %>%
+    set_colnames(make.names(colnames(.)))
 
-  common.gene5 <- intersect(rfive.type$X, rAff.eb$Gene)
+  # Common genes
   common.gene4 <- intersect(rfour.type$Gene.Name, rAff.eb$Gene)
+  common.gene5 <- intersect(rfive.type$Gene.Name, rAff.eb$Gene)
 
   # Find the id of the common genes within each data set
   mch.Affy.idx4 <- match(common.gene4, rAff.eb$Gene)
   mch.Affy.idx5 <- match(common.gene5, rAff.eb$Gene)
   mch.fourT.idx <- match(common.gene4, rfour.type$Gene.Name)
-  mch.fiveT.idx <- match(common.gene5, rfive.type$X)
+  mch.fiveT.idx <- match(common.gene5, rfive.type$Gene.Name)
 
   # Remove the gene names and re-order them to match each other
-  four.mtx <- as.matrix(rfour.type[mch.fourT.idx, 2:5])
-  five.mtx <- as.matrix(rfive.type[mch.fiveT.idx, 2:6])
+  four.mtx <- as.matrix(rfour.type[mch.fourT.idx, -1])
+  five.mtx <- as.matrix(rfive.type[mch.fiveT.idx, -1])
+  affy.mtx4 <- as.matrix(rAff.eb[mch.Affy.idx4, affy.labs])
+  affy.mtx5 <- as.matrix(rAff.eb[mch.Affy.idx5, affy.labs])
 
-  affy.mtx4 <- as.matrix(rAff.eb[
-    mch.Affy.idx4,
-    c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
-  ])
-  affy.mtx5 <- as.matrix(rAff.eb[
-    mch.Affy.idx5,
-    c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
-  ])
-
+  # Correlation matrices and entropy/quadratic loss for mtx4
   type.cor.mtx4 <- cor(four.mtx, affy.mtx4, method = "pearson")
-  heatmap.2(type.cor.mtx4,
-    trace = "none", col = bluered(25),#Rowv = FALSE, Colv = FALSE,
-    key = FALSE, dendrogram = "none",
-    cellnote = format(round(type.cor.mtx4, 2)), notecol = "black",
-    main = paste(
-      input.file.name[k], "vs Verhaak \n", "N. of common genes:",
-      length(common.gene4)
-    ), margins = c(8, 8)
-  )
-  Rh[[k]] <- type.cor.mtx4[, order(rownames(type.cor.mtx4))]
-  Loss[[k]] <- matrix_loss(Rh[[k]])
-  diagLoss[[k]] <- sum((diag(Rh[[k]]) - rep(1,ncol(Rh[[k]])))^2)
   type.cor.mtx5 <- cor(five.mtx, affy.mtx5, method = "pearson")
-  heatmap.2(type.cor.mtx5,
-    trace = "none", col = bluered(25),
-    key = FALSE, dendrogram = "none",
-    cellnote = format(round(type.cor.mtx5, 2)), notecol = "black",
-    main = paste0(
-      input.file.name[k], "vs Chen \n", "N. of common genes:",
-      length(common.gene5)
-    ),
-    margins = c(8, 8)
-  )
-}
+  Loss[[k]] <- type.cor.mtx4 %>%
+    magrittr::extract(, order(rownames(.))) %>%
+    matrix_loss()
 
-matrix(unlist(Loss), ncol = 2, byrow = TRUE) %>% set_rownames(input.file.name)
-# TODO:// Should this be written anywhere?
-diagLoss
+  # Heatmaps
+  par(cex.main = 0.9)
+  # Common heatmap arguments
+  heatmap_args <- list(trace = "none", col = gplots::bluered(25), key = FALSE,
+                       dendrogram = "none", notecol = "black",
+                       margins = c(5, 5), cexRow = 0.9, cexCol = 0.9)
+  # Invoke heatmap on common and different arguments
+  purrr::invoke(
+    .f = gplots::heatmap.2, .x = heatmap_args,
+    x = type.cor.mtx4, cellnote = format(round(type.cor.mtx4, 2)),
+    main = paste(input.file.name[k], "vs Verhaak \nN. of common genes:",
+                 length(common.gene4))
+  )
+  purrr::invoke(
+    .f = gplots::heatmap.2, .x = heatmap_args,
+    x = type.cor.mtx5, cellnote = format(round(type.cor.mtx5, 2)),
+    main = paste(input.file.name[k], "vs Chen \nN. of common genes:",
+                 length(common.gene5))
+  )
+  par(cex.main = 1.2)
+}
+dev.off()
+
+# Save loss information
+Loss_df <- Loss %>%
+  do.call(rbind, .) %>%
+  set_rownames(input.file.name)
+saveRDS(Loss_df, file.path(outputDir, "evals", "Loss_df.rds"))
