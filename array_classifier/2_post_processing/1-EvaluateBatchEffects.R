@@ -57,8 +57,8 @@ pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
 
 mapping <- build_mapping(trainSet)
 
-tdat <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/tdat_", trainSet, ".rds"))
-final_clust_file <- readRDS(paste0(outputDir, trainSet, "data_pr_", trainSet, "/all_clusts_", trainSet, ".rds"))
+tdat <- readRDS(file.path(outputDir, trainSet, paste0("data_pr_", trainSet), paste0("tdat_", trainSet, ".rds")))
+final_clust_file <- readRDS(file.path(outputDir, trainSet, paste0("data_pr_", trainSet), paste0("all_clusts_", trainSet, ".rds")))
 
 rownames(tdat) <- dropChar(rownames(tdat))
 FinalClust <- data.frame(clust = mapping$labels[final_clust_file[, "kmodes"]],
@@ -90,7 +90,7 @@ rownames(cohorts) <- cohorts$Label
 pvcaObj <- CompSrcOfVar(cohorts, t(tdat), c("clust", "CohortLabel"), "#91B0A8", trainSet)
 saveRDS(pvcaObj, file.path(outputDir, "evals", "pvcaObj.rds"))
 
-pdf(file.path(outputDir, "figures", trainSet, "_pvca.pdf"))
+pdf(file.path(outputDir, "plots", paste0(trainSet, "_pvca.pdf")))
 pvca.plot(pvcaObj, "#91B0A8", trainSet)
 
 # Compute PCA---
@@ -104,7 +104,7 @@ df <- data.frame(
 )
 
 p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch1)
-htmlwidgets::saveWidget(p1, paste0(outputDir, "figures/", trainSet, "_pcaClust.html"))
+htmlwidgets::saveWidget(p1, file.path(outputDir, "plots", paste0(trainSet, "_pcaClust.html")))
 
 p2 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch2)
-htmlwidgets::saveWidget(p2, paste0(outputDir, "figures/", trainSet, "_pcastudy.html"))
+htmlwidgets::saveWidget(p2, file.path(outputDir, "plots", paste0(trainSet, "_pcastudy.html")))

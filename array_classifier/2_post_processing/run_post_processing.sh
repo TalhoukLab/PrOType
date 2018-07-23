@@ -8,7 +8,8 @@ Rname=$workDir$dataSet/R_file/post_processing/post_processing.R
 rm -f $Rname
 
 for dataset in "${dataSets[@]}"; do
-    cp -r $outputDir$dataset/data_pr_$dataset/ $outputDir/iv_summaries/data_pr_$dataset/
+    mkdir -p $outputDir/iv_summaries/data_pr_$dataset
+    cp -r "$outputDir$dataset/data_pr_$dataset/" "$outputDir/iv_summaries/data_pr_$dataset/"
 done
 
 mkdir -p $outputDir/fits
@@ -16,14 +17,23 @@ mkdir -p $outputDir/evals
 mkdir -p $outputDir/plots
 mkdir -p $outputDir/predictions
 
-echo 'trainSet <- "$trainSet"' > $Rname
-echo 'testSet <- "$testSet"' >> $Rname
-echo 'outputDir <- "$outputDir"' >> $Rname
+echo 'trainSet <- "'$trainSet'"' > $Rname
+echo 'testSet <- "'$testSet'"' >> $Rname
+echo 'outputDir <- "'$outputDir'"' >> $Rname
 echo 'data_dir <- "assets/data"' >> $Rname
-echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
+echo 'cli::cat_line("Starting step 1")' >> $Rname
+#echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
+
+echo 'cli::cat_line("Starting step 2")' >> $Rname
 echo 'source("array_classifier/2_post_processing/2-internal_validity_plots.R")' >> $Rname
+
+echo 'cli::cat_line("Starting step 3")' >> $Rname
 echo 'source("array_classifier/2_post_processing/3-predict_C2.R")' >> $Rname
+
+echo 'cli::cat_line("Starting step 4")' >> $Rname
 echo 'source("array_classifier/2_post_processing/4-ProbeMapping_C2v2.R")' >> $Rname
+
+echo 'cli::cat_line("Starting step 5")' >> $Rname
 echo 'source("array_classifier/2_post_processing/5-MappingSignatures.R")' >> $Rname
 
 # echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' > $Rname

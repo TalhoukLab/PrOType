@@ -16,7 +16,7 @@ buildMapping <- function(train.set) {
 }
 
 # Load Data  ----
-seed <- read_rds(paste0(data_dir, "seed.rds"))
+seed <- read_rds(file.path(data_dir, "seed.rds"))
 
 # Training data
 npcp_train <- readRDS(file.path(outputDir, trainSet,

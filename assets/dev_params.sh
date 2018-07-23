@@ -81,12 +81,12 @@ if ! [[ $c -gt 0 ]]; then
 fi
 
 
-if ! [[ contains $dataSets $trainSet ]]; then
-    echo "Your datasets must include your trainset."
-	exit 1
-fi
+# if ! [[ contains $dataSets $trainSet ]]; then
+#     echo "Your datasets must include your trainset."
+# 	exit 1
+# fi
 
-if ! [[ contains $dataSets $testSet ]]; then
-    echo "Your datasets must include your testSet."
-	exit 1
-fi
+# if ! [[ contains $dataSets $testSet ]]; then
+#     echo "Your datasets must include your testSet."
+# 	exit 1
+# fi
