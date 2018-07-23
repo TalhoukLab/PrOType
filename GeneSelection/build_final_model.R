@@ -1,0 +1,127 @@
+# Clear the deck----
+rm(list = ls())
+# Load packages----
+library(here)
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(magrittr)
+  library(splendid)
+  library(caret)
+  library(cli)
+})
+source(here("GeneSelection/scripts/utils.R"))
+GS_training_dir <- "GeneSelection/training"
+GS_training_files <- c(
+  "consensus.R",
+  "train.R",
+  "bootstrap.R",
+  "evaluate.R",
+  "summary.R",
+  "analysis.R"
+)
+walk(here(GS_training_dir, GS_training_files), source)
+# Parameters----
+n_genes <- 55
+alg <- "rf"
+grm <- "CTHRC1"
+
+# Load data----
+# Load the NanoString data and prediction labels
+nsdat <- load_nanostring()
+pred_labs <- load_prediction_labels(nsdat)
+preds_new <- pred_labs$preds_new
+
+# Define training set (cut1)
+train <- define_batch(preds_new, nsdat, batch = "b1")
+train_dat <- train$dat
+train_lab <- train$lab
+
+# Define overlap
+overlap <- define_overlap(preds_new , nsdat)
+overlap_dat <- overlap$dat
+overlap_lab <- overlap$lab
+
+# Define test 1 (cut2 excluding overlap)
+test1 <- define_batch(preds_new, nsdat, batch = "b2")
+test1_lab <- test1$lab
+test1_dat <- test1$dat
+
+# Define test 2 (cut3)
+test2 <- define_batch(preds_new, nsdat, batch = "b3")
+test2_lab <- test2$lab
+test2_dat <- test2$dat
+
+# Define test 3 (cut4)
+test3 <- define_batch(preds_new, nsdat, batch = "b4")
+test3_lab <- test3$lab
+test3_dat <- test3$dat
+
+# Build the final model----
+# Load the average frequency across all studies
+# sumFreq <- read.csv(file.path(output_dir, "output/sumFreq/overallFreqs.csv"),
+#                    stringsAsFactors = FALSE) %>%
+#  arrange(desc(`rfFreq`))
+sumFreq <- read.csv("/Users/atalhouk/Repositories/NanoString/HGSCS/Outputs/GeneSelection/overallFreqs2.csv",
+                    stringsAsFactors = FALSE) %>%
+  arrange(desc(`rfFreq`))
+
+cli::cat_line("Build the final model with top ", n_genes, "genes")
+x <- sl_data(train_dat)
+y <- sl_class(train_lab, x)
+genes <- get_genes(train_dat)
+rf_genes <- make.names(sumFreq$genes)
+final_glist <- head(rf_genes[!rf_genes %in% grm],n_genes) # Final gene list
+
+final_model <- splendid::classification(x[, final_glist], y, algorithms = alg, seed_alg = 2018)
+
+# Test on Overlapping Samples----
+cli::cat_line("Testing the final model on the ", nrow(overlap_dat), "overlapping samples")
+x.new <- sl_data(overlap_dat)
+y.new <- sl_class(overlap_lab, x.new)
+
+overlap_lab$prediction <- splendid::prediction(final_model, x.new[,final_glist],y.new)
+overlap_eval <- caret::confusionMatrix(overlap_lab$prediction, overlap_lab$Adaboost.xpn)
+
+# Test on Cut 2----
+cli::cat_line("Testing the final model on the ", nrow(test1_dat), " cut 2 samples")
+x.new <- sl_data(test1_dat)
+y.new <- sl_class(test1_lab, x.new)
+
+test1_lab$prediction <- splendid::prediction(final_model, x.new[,final_glist],y.new)
+test1_eval <- caret::confusionMatrix(test1_lab$prediction, test1_lab$Adaboost.xpn)
+
+# Test on Cut 3----
+cli::cat_line("Testing the final model on the ", nrow(test2_dat), " cut 3 samples")
+x.new <- sl_data(test2_dat)
+y.new <- sl_class(test2_lab, x.new)
+
+test2_lab$prediction <- splendid::prediction(final_model, x.new[,final_glist],y.new)
+test2_eval <- caret::confusionMatrix(test2_lab$prediction, test2_lab$Adaboost.xpn)
+
+# Test on Cut 4----
+cli::cat_line("Testing the final model on the ", nrow(test3_dat), " cut 4 samples")
+x.new <- sl_data(test3_dat)
+y.new <- sl_class(test3_lab, x.new)
+
+test3_lab$prediction <- splendid::prediction(final_model, x.new[,final_glist],y.new)
+test3_eval <- caret::confusionMatrix(test3_lab$prediction, test3_lab$Adaboost.xpn)
+
+# Predict all NanoString with Final Model----
+colnames(nsdat) <- make.names(colnames(nsdat))
+x.new <- sl_data(nsdat)
+
+preds_new <- preds_new %>% select(ottaID, Batch, Adaboost.xpn, TCGA.Predicted.Subtype, published) %>% mutate(consensus = ifelse(Adaboost.xpn == TCGA.Predicted.Subtype, as.character(Adaboost.xpn), "")) %>% set_colnames(c("ottaID","cut","all_array", "TCGA", "published", "consensus"))
+
+Final_Predictions <-  data.frame(
+  preds_new,
+  prediction = predict(final_model, x.new[,final_glist]),
+                                 predict(final_model, x.new[,final_glist],
+                                         type = "prob")) %>%
+  mutate(final = ifelse(consensus == "",
+                   as.character(prediction),
+                   as.character(consensus))
+         )
+
+write.csv(Final_Predictions,"Final_Predictions.csv")
+write.csv(final_glist,"final_glist.csv")
+write_rds(final_model,"final_model.rds")
