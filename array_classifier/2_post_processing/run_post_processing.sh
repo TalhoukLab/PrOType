@@ -22,7 +22,7 @@ echo 'testSet <- "'$testSet'"' >> $Rname
 echo 'outputDir <- "'$outputDir'"' >> $Rname
 echo 'data_dir <- "assets/data"' >> $Rname
 echo 'cli::cat_line("Starting step 1")' >> $Rname
-#echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
+echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 2")' >> $Rname
 echo 'source("array_classifier/2_post_processing/2-internal_validity_plots.R")' >> $Rname
@@ -34,7 +34,7 @@ echo 'cli::cat_line("Starting step 4")' >> $Rname
 echo 'source("array_classifier/2_post_processing/4-ProbeMapping_C2v2.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 5")' >> $Rname
-echo 'source("array_classifier/2_post_processing/5-MappingSignatures.R")' >> $Rname
+echo 'source("array_classifier/2_post_processing/5-MappingSignatures_c2.R")' >> $Rname
 
 # echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' > $Rname
 #     echo 'cat("Starting Part 0\n")' >> $Rname
