@@ -1,5 +1,5 @@
 define_batch <- function(preds_new, nsdat, batch = "b1") {
-  cli::cat_line("Selecting batch ", batch, " data and labels")
+  cli::cat_line("Selecting batch ", batch, " data and labels where there is consensus")
   lab <- preds_new %>%
     dplyr::mutate(agree = ifelse(Adaboost.xpn == TCGA.Predicted.Subtype, 1, 0)) %>%
     dplyr::filter(is.na(published), agree == 1, Batch == batch) %>%
@@ -10,7 +10,7 @@ define_batch <- function(preds_new, nsdat, batch = "b1") {
 }
 
 define_overlap <- function(preds_new, nsdat) {
-  cli::cat_line("Selecting overlap data and labels")
+  cli::cat_line("Selecting overlap data and labels where there is consensus")
   lab <- preds_new %>%
     dplyr::mutate(agree = ifelse(Adaboost.xpn == TCGA.Predicted.Subtype, 1, 0)) %>%
     dplyr::filter(!is.na(published), agree == 1) %>%
