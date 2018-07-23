@@ -183,12 +183,14 @@ sup_plots <- function(plot.title, dir, datasets,
 
   # create iv plot
   p1 <- iv.combine.class %>%
+    dplyr::ungroup() %>%
     ggplot2::ggplot(ggplot2::aes(x = labels)) +
     ggplot2::xlab("Subtype") +
     gglayers
 
   # plot general metrics
   p2 <- iv.combine %>%
+    dplyr::ungroup() %>%
     ggplot2::ggplot(ggplot2::aes(x = mod)) +
     ggplot2::xlab("Evaluation Measure") +
     gglayers
