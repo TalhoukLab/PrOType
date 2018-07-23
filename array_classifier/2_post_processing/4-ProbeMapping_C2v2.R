@@ -21,7 +21,7 @@ dat <- clusts %>%
   purrr::map(~ {
     d <- data.frame(C1 = ., dat_o)
     clusts <- data.frame(Sample = rownames(dat_o), C1 = .)
-    full <- data.frame(t(y))
+    full <- data.frame(t(dat_o))
     full$Probe <- rownames(full)
     centroids <- d %>%
       reshape2::melt(id = "C1") %>%
