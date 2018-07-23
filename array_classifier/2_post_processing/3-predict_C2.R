@@ -42,10 +42,10 @@ train <- cbind(npcp_train, lab)
 
 # Fitting Model
 algs <- c("adaboost", "mlr_lasso", "mlr_ridge", "rf", "svm")
-all_fits <- purrr::map(algs, splendid::classification, data = npcp_subset, class = lab_subset, seed_alg = seed)
+all_fits <- purrr::map(algs, splendid::classification, data = npcp_train, class = lab, seed_alg = seed)
 
 # Predicting Model
 predsC2 <- all_fits %>%
   purrr::set_names(paste("preds", c("ada", "lasso", "ridge", "rf", "svm"), sep = "_")) %>%
-  purrr::map_dfc(splendid::prediction, data = npcp_test_subset, class = lab_subset)
+  purrr::map_dfc(splendid::prediction, data = npcp_test, class = lab)
 write_rds(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
