@@ -47,9 +47,9 @@ pred_labs <- load_prediction_labels(nsdat)
 preds_new <- pred_labs$preds_new
 
 # Compute consensus
-consensus <- compute_consensus(preds_new, nsdat)
-train_dat <- consensus$train$dat
-train_lab <- consensus$train$lab
+train <- define_batch(preds_new, nsdat)
+train_dat <- train$dat
+train_lab <- train$lab
 
 # Get studies
 studies <- unique(train_dat$site)

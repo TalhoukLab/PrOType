@@ -45,11 +45,12 @@ pred_labs <- load_prediction_labels(nsdat)
 preds_new <- pred_labs$preds_new
 
 # Compute consensus
-consensus <- compute_consensus(preds_new, nsdat)
-train_dat <- consensus$train$dat
-train_lab <- consensus$train$lab
-overlap_dat <- consensus$overlap$dat
-overlap_lab <- consensus$overlap$lab
+train <- define_batch(preds_new, nsdat, batch = "b1")
+train_dat <- train$dat
+train_lab <- train$lab
+overlap <- define_overlap(preds_new, nsdat)
+overlap_dat <- overlap$dat
+overlap_lab <- overlap$lab
 
 # Get studies
 studies <- unique(train_dat$site)
