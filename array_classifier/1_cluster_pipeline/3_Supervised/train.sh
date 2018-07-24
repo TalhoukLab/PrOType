@@ -5,7 +5,7 @@
 # specify algs
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
-    for s in `seq -w 1 $supervised_reps`; do
+    for s in `seq 1 $supervised_reps`; do
         for i in "${supervisedAlgs[@]}"; do
             shell_file=$workDir$dataset/sh_file/train/$i$s.sh
             if command -v qsub &>/dev/null; then

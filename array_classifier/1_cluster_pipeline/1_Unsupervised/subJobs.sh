@@ -7,7 +7,7 @@
 ##################################################
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
-    for s in `seq -w 1 $reps`; do
+    for s in `seq 1 $reps`; do
         for i in "${algs[@]}"; do
             shell_file=$workDir$dataset/sh_file/clust/$i$s.sh
             if command -v qsub &>/dev/null; then

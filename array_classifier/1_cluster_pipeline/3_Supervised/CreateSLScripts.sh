@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 
     for i in "${supervisedAlgs[@]}"; do
-        for s in `seq -w 1 $supervised_reps`; do
+        for s in `seq 1 $supervised_reps`; do
             #File names for R script, rds output file, shell job script
             mkdir -p $workDir$dataset/R_file/train
             mkdir -p $workDir$dataset/sh_file/train

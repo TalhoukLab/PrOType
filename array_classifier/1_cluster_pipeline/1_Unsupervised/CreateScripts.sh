@@ -35,7 +35,7 @@ for dataset in "${dataSets[@]}"; do
 
         r=0 # parameter required for partial merge
 
-        for s in `seq -w 1 $reps`; do
+        for s in `seq 1 $reps`; do
             #************************************************
             #*********** create clust scripts ***************
             #************************************************
@@ -47,7 +47,7 @@ for dataset in "${dataSets[@]}"; do
             R_clust=$workDir$dataset/R_file/clust/$i$s.R
             sh_clust=$workDir$dataset/sh_file/clust/$i$s.sh
 
-            #echo "Creating: {$R_clust}: {$sh_clust}"
+           #echo "Creating: {$R_clust}: {$sh_clust}"
 
             if [ ! -f "${workDir}1_Unsupervised/1_clust_data.R" ]; then
                 echo "ERROR: File not found, check 'workDir': ${workDir}1_Unsupervised/1_clust_data.R"
@@ -125,7 +125,7 @@ for dataset in "${dataSets[@]}"; do
 
                 chmod +x $sh_merge
             else
-                #echo "Skipping Merge Files"
+                : #echo "Skipping Merge Files"
             fi
         done
 

@@ -1,6 +1,6 @@
 pkg_list <- c("tidyverse", "crayon", "here", "diceR", "packrat", "cli", "magrittr",
               "devtools", "glmnet", "caret", "pheatmap", "epiR", "ggforce",
-              "RColorBrewer", "gplots", "plotly")
+              "RColorBrewer", "gplots", "plotly", "pryr")
 
 if (compareVersion("3.5.0", as.character(getRversion())) == 1) {
   withCallingHandlers(install.packages("dplyr"), warning = function(w) stop(w))
