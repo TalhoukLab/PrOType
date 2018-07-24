@@ -121,6 +121,7 @@ sup_plots <- function(plot.title, dir, datasets,
                   normalization == "hc",
                   stringr::str_detect(measure, "\\.")) %>%
     tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    dplyr::mutate(class = gsub("X", "", class)) %>%
     dplyr::mutate_at(c("measure", "class"), as.factor) %>%
     dplyr::select(-class, class) %>%
     dplyr::mutate(
@@ -136,6 +137,7 @@ sup_plots <- function(plot.title, dir, datasets,
                   normalization == "hc",
                   stringr::str_detect(measure, "\\.")) %>%
     tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+    dplyr::mutate(class = gsub("X", "", class)) %>%
     dplyr::mutate_at(c("measure", "class"), as.factor) %>%
     dplyr::select(-class, class) %>%
     dplyr::mutate(
