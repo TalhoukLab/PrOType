@@ -7,7 +7,7 @@
 ##################################################
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
-    for s in `seq $c $c $reps`; do
+    for s in `seq -w $c $c $reps`; do
         for i in "${algs[@]}"; do
             shell_file=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
             echo "Adding To Queue: $shell_file"

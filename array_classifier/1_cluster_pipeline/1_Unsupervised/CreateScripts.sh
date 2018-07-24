@@ -35,7 +35,7 @@ for dataset in "${dataSets[@]}"; do
 
         r=0 # parameter required for partial merge
 
-        for s in `seq 1 $reps`; do
+        for s in `seq -w 1 $reps`; do
             #************************************************
             #*********** create clust scripts ***************
             #************************************************
