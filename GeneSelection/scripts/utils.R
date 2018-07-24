@@ -59,7 +59,9 @@ load_nanostring <- function(cut = "all") {
     dplyr::mutate(cut = "cut4")
 
   # combine into list and row bind
-  dplyr::bind_rows(tibble::lst(c1, c2, c3, c4))
+  tibble::lst(c1, c2, c3, c4) %>%
+    dplyr::bind_rows() %>%
+    `names<-`(make.names(names(.)))
 }
 
 # Load published subtype data (and merged with prediction labels)
@@ -67,13 +69,16 @@ load_prediction_labels <- function(nsdat) {
   cli::cat_line("Loading Prediction Labels")
   preds <- read.csv(here::here("data/nstring/predictions.csv"),
                     stringsAsFactors = FALSE)
-  if (!all(nsdat$`OTTA ID` %in% preds$ottaID)) {
+  if (!all(nsdat$`OTTA.ID` %in% preds$ottaID)) {
     stop("Missing OTTA ID cases")
   }
   published <- read.csv(here::here("data/nstring/Subtype_Original.csv"),
                         stringsAsFactors = FALSE) %>%
-    dplyr::select(ottaID, published)
-  preds_new <- dplyr::left_join(preds, published, by = "ottaID")
+    dplyr::select(ottaID, published) %>%
+    dplyr::mutate_at("published", make.names)
+  preds_new <- dplyr::left_join(preds, published, by = "ottaID") %>%
+    dplyr::mutate_at(c("Adaboost.xpn", "Array.Pred.Subtype",
+                       "TCGA.Predicted.Subtype"), make.names)
   tibble::lst(published, preds_new)
 }
 
