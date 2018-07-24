@@ -38,6 +38,9 @@ echo 'source("array_classifier/2_post_processing/4-ProbeMapping_C2v2.R")' >> $Rn
 echo 'cli::cat_line("Starting step 5")' >> $Rname
 echo 'source("array_classifier/2_post_processing/5-MappingSignatures_c2.R")' >> $Rname
 
+echo 'cli::cat_line("Validating Results")' >> $Rname
+echo 'source("array_classifier/2_post_processing/validate_baseline_results.R)' >> $Rname
+
 # echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' > $Rname
 #     echo 'cat("Starting Part 0\n")' >> $Rname
 #     echo 'cat(dataset, "\n")' >> $Rname

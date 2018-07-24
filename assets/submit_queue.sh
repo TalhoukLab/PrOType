@@ -14,7 +14,7 @@ for shname in "${file_to_submit[@]}"; do
 		  echo "Submitting To Queue ($user): $shname"
 
       test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
-	    while [[ $test >= $maxQueueLength ]]; do
+	    while [[ "$test" -ge "$maxQueueLength" ]]; do
         test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
         echo "Waiting on: ${test} jobs to complete before submitting job."
         sleep 30s
