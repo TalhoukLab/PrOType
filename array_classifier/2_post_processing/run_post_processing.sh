@@ -19,11 +19,11 @@ mkdir -p $outputDir/predictions
 
 echo 'trainSet <- "'$trainSet'"' > $Rname
 echo 'testSet <- "'$testSet'"' >> $Rname
+echo 'datasets <- c("'$trainSet'", "'$testSet'")' >> $Rname
 echo 'outputDir <- "'$outputDir'"' >> $Rname
 echo 'data_dir <- "assets/data"' >> $Rname
+
 echo 'cli::cat_line("Starting step 1")' >> $Rname
-echo 'datasets <- c("'$trainSet'", "'$testSet'")' >> $Rname
-echo 'cat(datasets)' >> $Rname
 echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 2")' >> $Rname
