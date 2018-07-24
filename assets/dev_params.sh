@@ -14,6 +14,7 @@ supervisedAlgs=(first second third fourth) #ldaRfe qdaRfe rfRfe lassoRfe)
 # Bash info
 user="$(whoami)"
 RPath="$(which R)"
+maxQueueLength=8000
 
 # specify the working directory
 if [ "$workDir" = "" ]; then
