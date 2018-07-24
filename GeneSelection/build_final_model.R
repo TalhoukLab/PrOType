@@ -107,7 +107,6 @@ test3_lab$prediction <- splendid::prediction(final_model, x.new[,final_glist],y.
 test3_eval <- caret::confusionMatrix(test3_lab$prediction, test3_lab$Adaboost.xpn)
 
 # Predict all NanoString with Final Model----
-colnames(nsdat) <- make.names(colnames(nsdat))
 x.new <- sl_data(nsdat)
 
 preds_new <- preds_new %>% select(ottaID, Batch, Adaboost.xpn, TCGA.Predicted.Subtype, published) %>% mutate(consensus = ifelse(Adaboost.xpn == TCGA.Predicted.Subtype, as.character(Adaboost.xpn), "")) %>% set_colnames(c("ottaID","cut","all_array", "TCGA", "published", "consensus"))
