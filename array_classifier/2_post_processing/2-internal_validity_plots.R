@@ -211,7 +211,12 @@ sup_plots <- function(plot.title, dir, datasets,
 }
 
 # Heatmap on internal validitiy indices by algorithm
-algii_heatmap <- function(ii) {
+algii_heatmap <- function(dir, dataset) {
+  # Read in ii
+  ii <- readRDS(file.path(dir, dataset,
+                          paste0("data_pr_", dataset),
+                          paste0("ii_", dataset, ".rds")))
+
   # Heatmap: order algorithms by ranked ii, remove indices with NaN
   cli::cat_line("Computing Heatmap")
   hm <- ii %>%
@@ -222,6 +227,7 @@ algii_heatmap <- function(ii) {
 
   # Plot heatmap with annotated colours, column scaling, no further reordering
   cli::cat_line("Plotting Heatmap")
+  pdf(file.path(dir, "plots", paste0(dataset, "_algii_heatmap.pdf")))
   NMF::aheatmap(
     hm,
     annCol = data.frame(Criteria = c(rep("Maximized", 5),
@@ -231,6 +237,7 @@ algii_heatmap <- function(ii) {
     Colv = NA, Rowv = NA, scale = "column", col = "PiYG",
     main = "Ranked Algorithms on Internal Validity Indices"
   )
+  dev.off()
 }
 
 # Produce internal validity plots -----------------------------------------
@@ -270,7 +277,6 @@ purrr::iwalk(
   top.algs.no.threshold,
   ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
-for (dataset in datasets) {
-  hm <- readRDS(file.path(outputDir, dataset, paste0("data_pr_", dataset), paste0("ii_", dataset, ".rds")))
-  algii_heatmap(hm)
-}
+
+cli::cat_line("Plotting algorithm by internal validity index heatmap")
+purrr::walk(datasets, algii_heatmap, dir = outputDir)
