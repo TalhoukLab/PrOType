@@ -220,7 +220,6 @@ algii_heatmap <- function(dir, dataset) {
                           paste0("ii_", dataset, ".rds")))
 
   # Heatmap: order algorithms by ranked ii, remove indices with NaN
-  cli::cat_line("Computing Heatmap")
   hm <- ii %>%
     magrittr::set_rownames(NULL) %>%
     tibble::column_to_rownames("Algorithms") %>%
@@ -228,8 +227,7 @@ algii_heatmap <- function(dir, dataset) {
                       purrr::map_lgl(., ~ all(!is.nan(.x))))
 
   # Plot heatmap with annotated colours, column scaling, no further reordering
-  cli::cat_line("Plotting Heatmap")
-  pdf(file.path(dir, "plots", paste0(dataset, "_algii_heatmap.pdf")))
+  png(file.path(dir, "plots", paste0(dataset, "_algii_heatmap.png")))
   NMF::aheatmap(
     hm,
     annCol = data.frame(Criteria = c(rep("Maximized", 5),
