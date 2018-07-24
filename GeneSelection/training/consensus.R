@@ -21,7 +21,7 @@ define_overlap <- function(preds_new, nsdat) {
   lab <- preds_new %>%
     dplyr::mutate(agree = ifelse(Adaboost.xpn == TCGA.Predicted.Subtype, 1, 0)) %>%
     dplyr::filter(!is.na(published), agree == 1) %>%
-    dplyr::mutate_at(c("Adaboost.xpn", "published"),
+    dplyr::mutate_at(c("Adaboost.xpn", "TCGA.Predicted.Subtype","published"),
                      dplyr::funs(factor(gsub("-", "\\.", .))))
   dat <- filter_nsdat(nsdat, lab)
   check_data_order(lab, dat)
