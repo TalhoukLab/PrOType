@@ -25,22 +25,22 @@ echo 'outputDir <- "'$outputDir'"' >> $Rname
 echo 'dataDir <- "assets/data"' >> $Rname
 
 echo 'cli::cat_line("Validating Results")' >> $Rname
-echo 'source("array_classifier/2_post_processing/validate_baseline_results.R")' >> $Rname
+echo 'source("array_classifier/2_post_processing/0-validate_baseline_results.R")' >> $Rname
+
+echo 'cli::cat_line("Starting step 1")' >> $Rname
+echo 'source("array_classifier/2_post_processing/1-evaluate_batch_effects.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 2")' >> $Rname
 echo 'source("array_classifier/2_post_processing/2-internal_validity_plots.R")' >> $Rname
-
-echo 'cli::cat_line("Starting step 1")' >> $Rname
-echo 'source("array_classifier/2_post_processing/1-EvaluateBatchEffects.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 3")' >> $Rname
 echo 'source("array_classifier/2_post_processing/3-predict_C2.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 4")' >> $Rname
-echo 'source("array_classifier/2_post_processing/4-ProbeMapping_C2v2.R")' >> $Rname
+echo 'source("array_classifier/2_post_processing/4-probe_mapping_C2v2.R")' >> $Rname
 
 echo 'cli::cat_line("Starting step 5")' >> $Rname
-echo 'source("array_classifier/2_post_processing/5-MappingSignatures_c2.R")' >> $Rname
+echo 'source("array_classifier/2_post_processing/5-mapping_signatures_C2.R")' >> $Rname
 
 # echo 'for (dataset in unlist(strsplit("'"${dataSets[*]}"'", " "))) {' > $Rname
 #     echo 'cat("Starting Part 0\n")' >> $Rname
