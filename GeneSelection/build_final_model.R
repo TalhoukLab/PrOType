@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
   library(splendid)
   library(caret)
   library(cli)
+  library(readxl)
 })
 source(here("GeneSelection/scripts/utils.R"))
 GS_training_dir <- "GeneSelection/training"
@@ -129,3 +130,16 @@ Final_Predictions <- data.frame(
 write.csv(Final_Predictions, "Final_Predictions.csv")
 write.csv(final_glist, "final_glist.csv")
 write_rds(final_model, "final_model.rds")
+
+# Predict ARL samples
+x.arl.raw <- read_excel("raw_data/Nanostring_ARL-all samples-all gnes_20180607.xlsx")
+
+x.arl <- x.arl.raw %>%
+  `colnames<-`(make.names(colnames(.))) %>%
+  filter(OTTA.ID %in% Final_Predictions$ottaID) %>%
+  as.data.frame() %>%
+  column_to_rownames("OTTA.ID") %>%
+  select_if(is.numeric)
+
+arl_predictions <- predict(final_model, x.arl)
+write_rds(arl_predictions, "arl_predictions.rds")
