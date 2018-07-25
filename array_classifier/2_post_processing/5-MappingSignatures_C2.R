@@ -1,11 +1,19 @@
-library(magrittr)
+# Mapping Signatures C2 ---------------------------------------------------
+
+# Load utility functions
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Load data
-rfive.type <- readr::read_csv(file.path(data_dir, "external", "lasso_PAM100.csv")) %>%
-  set_colnames(c("Gene.Name", colnames(.[-1])))
-rfour.type <- readr::read_csv(file.path(data_dir, "external", "verhaakGS.csv")) %>%
-  set_colnames(c("Gene.Name", "C4.DIF", "C2.IMM", "C1.MES", "C5.PRO"))
+rfive.type <- readr::read_csv(
+  file = file.path(dataDir, "external", "lasso_PAM100.csv"),
+  col_types = readr::cols()
+) %>%
+  magrittr::set_colnames(c("Gene.Name", colnames(.[-1])))
+rfour.type <- readr::read_csv(
+  file = file.path(dataDir, "external", "verhaakGS.csv"),
+  col_types = readr::cols()
+) %>%
+  magrittr::set_colnames(c("Gene.Name", "C4.DIF", "C2.IMM", "C1.MES", "C5.PRO"))
 
 # Input file names
 input.file.vec <- list.files(
@@ -25,7 +33,7 @@ pdf(file.path(outputDir, "plots", "Cor_w_Sigs_c2.pdf"))
 for (k in seq_along(input.file.vec)) {
   # Read input file
   rAff.eb <- readr::read_csv(input.file.vec[k], col_types = readr::cols()) %>%
-    set_colnames(make.names(colnames(.)))
+    magrittr::set_colnames(make.names(colnames(.)))
 
   # Common genes
   common.gene4 <- intersect(rfour.type$Gene.Name, rAff.eb$Gene)
@@ -76,5 +84,5 @@ dev.off()
 # Save loss information
 Loss_df <- Loss %>%
   do.call(rbind, .) %>%
-  set_rownames(input.file.name)
+  magrittr::set_rownames(input.file.name)
 saveRDS(Loss_df, file.path(outputDir, "evals", "Loss_df.rds"))
