@@ -1,59 +1,11 @@
 # Compute PVCA Plots
 
 # Load Packages----
-library(tidyverse)
-library(pvca)
-
-# Functions----
-dropChar <- function(x) {
-  x <- as.character(x)
-  substr(x, 0, nchar(x) - 7)
-}
-
-#********************************************************************
-# Generate substrain mapping table for specified study
-#********************************************************************
-build_mapping <- function(train.set) {
-  labs <- c(1, 2, 3, 4)
-  if (train.set == "ov.afc1_cbt") {
-    map <- data.frame(labs, labels = c("C1-MES",	"C5-PRO",	"C4-DIF",	"C2-IMM"))
-  } else if (train.set == "ov.afc1_xpn") {
-    map <- data.frame(labs, labels = c("C2-IMM",	"C4-DIF", "C5-PRO",	"C1-MES"))
-  } else {
-    print("No valid training set specified")
-  }
-  return(map)
-}
-
-##################################################
-# Function to compute PVCA Object
-##################################################
-CompSrcOfVar <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
-                         pct_threshold = 0.6) {
-  # rows of exp should be the same as column of dat and in the same order
-  if (!all(rownames(annMat) == colnames(dat))) {
-    stop("All rownames of annotation matrix do not correspond to the column names of the data matrix")
-  }
-  phenoData <- new("AnnotatedDataFrame", data = annMat)
-  MASet <- Biobase::ExpressionSet(assayData = data.matrix(dat),
-                                  phenoData = phenoData)
-  pvca::pvcaBatchAssess(MASet, factorsOfInterest, pct_threshold)
-}
-
-##################################################
-# Function to Plot PVCA Object
-##################################################
-pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
-  par(oma = c(1, 0.5, 1, 1), mar = c(5.1, 7.6, 4.1, 0.1))
-  # "Weighted average proportion variance"
-  bp <- barplot(sort(pvcaObj$dat), horiz = TRUE, ylab = "", xlab = "",
-                xlim = c(0,1.1), border = "white", main = ttl,
-                space = 1, las = 1, col = cols)
-  axis(2, at = bp, labels = pvcaObj$label[order(pvcaObj$dat)], ylab = "", cex.axis = 0.8, las = 2)
-  values <- sort(pvcaObj$dat)
-  new_values <- paste(round(values * 100, 1), "%", sep = "")
-  text(sort(pvcaObj$dat), bp, labels = new_values, pos = 4, cex = 0.8)
-}
+suppressPackageStartupMessages({
+  library(tidyverse)
+  library(pvca)
+})
+source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 mapping <- build_mapping(trainSet)
 

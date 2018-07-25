@@ -1,15 +1,5 @@
 library(magrittr)
-
-# Calculate entropy loss and quadratic loss of a matrix
-matrix_loss <- function(Rh, R = NULL) {
-  # Add check that it's a correlation matrix
-  if (is.null(R)) {
-    R <- diag(nrow(Rh))
-  }
-  entropy <- psych::tr(solve(R) %*% Rh) - log(det(solve(R) %*% Rh)) - nrow(Rh)
-  quadratic <- psych::tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
-  tibble::lst(entropy, quadratic)
-}
+source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Load data
 rfive.type <- readr::read_csv(file.path(data_dir, "external", "lasso_PAM100.csv")) %>%

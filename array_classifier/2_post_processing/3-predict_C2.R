@@ -4,17 +4,6 @@ library(tidyverse)
 
 # Functions-----
 
-#********************************************************************
-# Builds mapping matrix from integer class to correct labels names
-buildMapping <- function(train.set) {
-  labs <- c(1, 2, 3, 4)
-  if (train.set == "ov.afc1_xpn") {
-    data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
-  } else {
-    stop("Can only relabel C1 XPN")
-  }
-}
-
 # Load Data  ----
 seed <- read_rds(file.path(data_dir, "seed.rds"))
 

@@ -1,9 +1,6 @@
 # Code to compute cluster centroids based on diceR and map probes to genes
 # Note that if tidyverse is loaded code will not run
 
-# devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/org.Hs.eg.db_3.6.0.tar.gz")
-# devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/hgug4112a.db_3.2.3.tar.gz")
-# devtools::install_url("https://bioconductor.org/packages/release/data/annotation/src/contrib/hgu133plus2.db_3.2.3.tar.gz")
 library(hgug4112a.db)
 library(hgu133plus2.db)
 library(AnnotationDbi)
