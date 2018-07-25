@@ -54,25 +54,18 @@ pvca_plot <- function(pvcaObj, color = "blue", title = "") {
 #' @param dir data directory holding iv summaries
 #' @param datasets vector of datasets to extract data for
 #' @param thresholds logical; if `TRUE`, will import thresholded iv summaries
-import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
-                      threshold = TRUE) {
-
-  # IV threshold filenames
-  fn.iv.xpn <- file.path(dir, datasets[1],
-                         paste0("data_pr_", datasets[1]),
-                         paste0("iv_summary_", datasets[1], "_threshold.rds"))
-  fn.iv.cbt <- file.path(dir, datasets[2],
-                         paste0("data_pr_", datasets[2]),
-                         paste0("iv_summary_", datasets[2], "_threshold.rds"))
-
+import_ivs <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
+                       threshold = TRUE) {
+  # IV summary filenames (threshold)
+  filenames <- datasets %>%
+    purrr::map_chr(~ file.path(dir, .,
+                               paste0("data_pr_", .),
+                               paste0("iv_summary_", ., "_threshold.rds")))
+  # IV summary filenames (no threshold)
   if (!threshold) {
-    # IV filenames
-    fn.iv.xpn <- gsub("_threshold", "", fn.iv.xpn)
-    fn.iv.cbt <- gsub("_threshold", "", fn.iv.cbt)
+    filenames <- gsub("_threshold", "", filenames)
   }
-  sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
-  sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
-  rbind(sup.iv.xpn, sup.iv.cbt)
+  do.call(rbind, purrr::map(filenames, readRDS))
 }
 
 #' Match combinations of batch effect and algorithm to colour palette
@@ -107,7 +100,7 @@ all_algo_plot <- function(dir, datasets, threshold = FALSE,
                           print = TRUE, save = TRUE, col.cust = NULL,
                           width = 16, height = 9) {
   # import iv data, process for general metrics, prepare for ggplot
-  df <- import_iv(dir = dir, datasets = datasets, threshold = threshold) %>%
+  df <- import_ivs(dir = dir, datasets = datasets, threshold = threshold) %>%
     dplyr::filter(normalization == "hc",
                   measure %in% c("auc", "accuracy", "macro_f1")) %>%
     dplyr::mutate(batch_correction = as.factor(batch_correction),
@@ -175,8 +168,8 @@ top2_algo_plot <- function(dir, datasets,
     purrr::map(dplyr::transmute, labels, class = as.factor(labs))
 
   # import iv data
-  iv.data <- import_iv(dir = dir, datasets = datasets, threshold = FALSE)
-  iv.data_t <- import_iv(dir = dir, datasets = datasets, threshold = TRUE)
+  iv.data <- import_ivs(dir = dir, datasets = datasets, threshold = FALSE)
+  iv.data_t <- import_ivs(dir = dir, datasets = datasets, threshold = TRUE)
 
   # process and combine xpn and cbt data for threshold/no threshold
   iv.class <- iv.data %>%
