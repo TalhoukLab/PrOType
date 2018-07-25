@@ -142,7 +142,9 @@ x.arl <- x.arl.raw %>%
   select_if(is.numeric)
 
 arl_predictions <- predict(final_model, x.arl) %>%
-  enframe(name = "ottaID", value = "ARL")
+  enframe(name = "ottaID", value = "ARL") %>%
+  cbind(predict(final_model, x.arl, type = "prob")) %>%
+  as_tibble()
 write_csv(arl_predictions, "arl_predictions.csv")
 
 # Compare NanoString and ARL predictions
