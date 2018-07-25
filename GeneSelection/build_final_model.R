@@ -141,13 +141,12 @@ x.arl <- x.arl.raw %>%
   column_to_rownames("OTTA.ID") %>%
   select_if(is.numeric)
 
-arl_predictions <- predict(final_model, x.arl)
-write_rds(arl_predictions, "arl_predictions.rds")
+arl_predictions <- predict(final_model, x.arl) %>%
+  enframe(name = "ottaID", value = "ARL")
+write_csv(arl_predictions, "arl_predictions.csv")
 
 # Compare NanoString and ARL predictions
-pred_compare <- arl_predictions %>%
-  enframe(name = "ottaID", value = "ARL") %>%
-  inner_join(Final_Predictions, by = "ottaID")
+pred_compare <- inner_join(Final_Predictions, arl_predictions, by = "ottaID")
 
 summarize(pred_compare, agree = sum(ARL == prediction)) # 140/140 agree
 identical(pred_compare$ARL, pred_compare$prediction) # verify identical
