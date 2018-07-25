@@ -18,10 +18,11 @@ mkdir -p $outputDir/plots
 mkdir -p $outputDir/predictions
 
 echo 'trainSet <- "'$trainSet'"' > $Rname
+echo 'trainSet2 <- "'$trainSet2'"' > $Rname
 echo 'testSet <- "'$testSet'"' >> $Rname
-echo 'datasets <- c("'$trainSet'", "'$testSet'")' >> $Rname
+echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname
 echo 'outputDir <- "'$outputDir'"' >> $Rname
-echo 'data_dir <- "assets/data"' >> $Rname
+echo 'dataDir <- "assets/data"' >> $Rname
 
 echo 'cli::cat_line("Validating Results")' >> $Rname
 echo 'source("array_classifier/2_post_processing/validate_baseline_results.R")' >> $Rname

@@ -4,7 +4,7 @@
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Load seeds
-seed <- readRDS(file.path(data_dir, "seed.rds"))
+seed <- readRDS(file.path(dataDir, "seed.rds"))
 
 # Training data
 npcp_train <- readRDS(file.path(outputDir, trainSet,

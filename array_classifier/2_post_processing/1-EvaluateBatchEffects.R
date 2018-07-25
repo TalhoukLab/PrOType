@@ -18,7 +18,7 @@ FinalClust <- data.frame(clust = mapping$labels[final_clust_file[, "kmodes"]],
                          stringsAsFactors = FALSE)
 
 # Load the cases and label the cuts
-cohorts.tmp <- readr::read_csv(file.path(data_dir, "nstring", "inclusion.csv"),
+cohorts.tmp <- readr::read_csv(file.path(dataDir, "nstring", "inclusion.csv"),
                                col_types = readr::cols())
 
 # Select cases included in post and pull out only useful info
