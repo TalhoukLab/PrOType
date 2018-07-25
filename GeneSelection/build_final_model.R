@@ -136,7 +136,6 @@ x.arl.raw <- read_excel("raw_data/Nanostring_ARL-all samples-all gnes_20180607.x
 
 x.arl <- x.arl.raw %>%
   `colnames<-`(make.names(colnames(.))) %>%
-  filter(OTTA.ID %in% Final_Predictions$ottaID) %>%
   as.data.frame() %>%
   column_to_rownames("OTTA.ID") %>%
   select_if(is.numeric)
