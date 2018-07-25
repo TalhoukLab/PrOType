@@ -12,7 +12,7 @@ mapping <- build_mapping(trainSet)
 tdat <- readRDS(file.path(outputDir, trainSet, paste0("data_pr_", trainSet), paste0("tdat_", trainSet, ".rds")))
 final_clust_file <- readRDS(file.path(outputDir, trainSet, paste0("data_pr_", trainSet), paste0("all_clusts_", trainSet, ".rds")))
 
-rownames(tdat) <- dropChar(rownames(tdat))
+rownames(tdat) <- drop_char(rownames(tdat))
 FinalClust <- data.frame(clust = mapping$labels[final_clust_file[, "kmodes"]],
                          Label = rownames(tdat),
                          stringsAsFactors = FALSE)
@@ -39,11 +39,11 @@ rownames(cohorts) <- cohorts$Label
 #cbt "#91B0A8"
 
 #Compute pvca Object
-pvcaObj <- CompSrcOfVar(cohorts, t(tdat), c("clust", "CohortLabel"), "#91B0A8", trainSet)
+pvcaObj <- source_of_var(cohorts, t(tdat), c("clust", "CohortLabel"), "#91B0A8", trainSet)
 saveRDS(pvcaObj, file.path(outputDir, "evals", "pvcaObj.rds"))
 
 pdf(file.path(outputDir, "plots", paste0(trainSet, "_pvca.pdf")))
-pvca.plot(pvcaObj, "#91B0A8", trainSet)
+pvca_plot(pvcaObj, "#91B0A8", trainSet)
 
 # Compute PCA---
 pcaa <- prcomp(tdat)

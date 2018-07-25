@@ -8,14 +8,14 @@ source(here::here("assets/utils.R"))
 # 1 - Evaluate Batch Effects ----------------------------------------------
 
 # drop suffix from OTTA ids
-dropChar <- function(x) {
+drop_char <- function(x) {
   x <- as.character(x)
   substr(x, 0, nchar(x) - 7)
 }
 
-# Compute PVCA Object
-CompSrcOfVar <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
-                         pct_threshold = 0.6) {
+# Compute PVCA source of variation
+source_of_var <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
+                          pct_threshold = 0.6) {
   # rows of exp should be the same as column of dat and in the same order
   if (!all(rownames(annMat) == colnames(dat))) {
     stop("All rownames of annotation matrix do not correspond to the column names of the data matrix")
@@ -27,7 +27,7 @@ CompSrcOfVar <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
 }
 
 # Plot PVCA Object
-pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
+pvca_plot <- function(pvcaObj, cols = "blue", ttl = "") {
   par(oma = c(1, 0.5, 1, 1), mar = c(5.1, 7.6, 4.1, 0.1))
   # "Weighted average proportion variance"
   bp <- barplot(sort(pvcaObj$dat), horiz = TRUE, ylab = "", xlab = "",
