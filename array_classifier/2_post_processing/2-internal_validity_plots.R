@@ -90,7 +90,7 @@ top_algo_plot <- function(plot.title, dir, datasets, threshold = FALSE,
   if (save) {
     ggplot2::ggsave(
       plot = p,
-      filename = file.path(outputDir, "plots", "all_algos_ranked", th, ".png")
+      filename = file.path(outputDir, "plots", paste0("all_algos_ranked", th, ".png"))
     )
   }
   if (print) print(p)
@@ -242,7 +242,7 @@ algii_heatmap <- function(dir, dataset) {
 
 # Produce internal validity plots -----------------------------------------
 
-plot_args <- list(dir = outputDir, datasets = datasets, print = FALSE, save = FALSE)
+plot_args <- list(dir = outputDir, datasets = datasets, print = FALSE, save = TRUE)
 save_args <- list(width = 16, height = 9)
 ranked_fn <- file.path(outputDir, "plots",
                        c("ranked_algorithms_noThreshold.png",

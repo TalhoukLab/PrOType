@@ -22,7 +22,7 @@ top=3
 
 # Post Processing
 trainSet="ov.afc1_xpn"
-testSet="ov.afc2_xpn"
+testSet="ov.afc1_cbt"
 
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/"
