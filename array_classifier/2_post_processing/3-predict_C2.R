@@ -38,4 +38,4 @@ predsC2 <- all_fits %>%
   purrr::set_names(paste("preds", c("ada", "lasso", "ridge", "rf", "svm"),
                          sep = "_")) %>%
   purrr::map_dfc(splendid::prediction, data = npcp_test, class = lab)
-write_rds(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
+saveRDS(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
