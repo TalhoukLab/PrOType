@@ -140,8 +140,8 @@ all_algo_plot <- function(dir, datasets, threshold = FALSE,
     ggplot2::guides(color = ggplot2::guide_legend(nrow = 2, byrow = FALSE))
 
   # save plot
-  th <- ifelse(threshold, "thresh", "nothresh")
   if (save) {
+    th <- ifelse(threshold, "thresh", "nothresh")
     ggplot2::ggsave(
       plot = p,
       filename = file.path(outputDir, "plots",
