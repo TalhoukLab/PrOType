@@ -94,8 +94,16 @@ match_colour <- function(x) {
   )
 }
 
-# Plot evaluation measures by class and overall for all algorithms
-# across bootstrap samples (output retrieved from supervised pipeline)
+#' Plot evaluation measures by class and overall for all algorithms
+#' across bootstrap samples (output retrieved from supervised pipeline)
+#' @param dir input directory with iv summaries
+#' @param datasets vector of datasets to extract iv summaries for
+#' @param threshold logical; with or without threshold?
+#' @param print logical; prints plots to screen
+#' @param save logical; saves plots to pdf devices
+#' @param col.cust vector of custom colours to overwrite defaults
+#' @param width pdf figure width
+#' @param height pdf figure height
 all_algo_plot <- function(dir, datasets, threshold = FALSE,
                           print = TRUE, save = TRUE, col.cust = NULL,
                           width = 16, height = 9) {
@@ -154,8 +162,11 @@ all_algo_plot <- function(dir, datasets, threshold = FALSE,
   p
 }
 
-# Plot evaluation measures by class and overall for top 2 algorithms
-# across bootstrap samples (output retrieved from supervised pipeline)
+#' Plot evaluation measures by class and overall for top 2 algorithms
+#' across bootstrap samples (output retrieved from supervised pipeline)
+#' @inheritParams all_algo_plot
+#' @param algs top 2 algorithms from non-thresholded iv summary
+#' @param algs_t top 2 algorithms from thresholded iv summary
 top2_algo_plot <- function(dir, datasets,
                            algs = c("mlr_ridge", "mlr_lasso"),
                            algs_t = c("adaboost", "rf"),
@@ -269,7 +280,9 @@ top2_algo_plot <- function(dir, datasets,
   list(p1, p2)
 }
 
-# Heatmap on internal validitiy indices by algorithm
+#' Heatmap on internal validitiy indices by algorithm
+#' @param dir input directory where internal validity index matrix is
+#' @param datset dataset to compute heatmap for
 algii_heatmap <- function(dir, dataset) {
   # Read in ii
   ii <- readRDS(file.path(dir, dataset,
@@ -300,7 +313,8 @@ algii_heatmap <- function(dir, dataset) {
 
 # 3 - Predict C2 ----------------------------------------------------------
 
-# Builds mapping matrix from integer class to correct labels names for xpn
+#' Builds mapping matrix from integer class to correct labels names for xpn
+#' @param train.set can only be "ov.afc1_xpn"
 build_mapping_xpn <- function(train.set) {
   if (train.set == "ov.afc1_xpn") {
     data.frame(labs = seq_len(4),
@@ -313,7 +327,9 @@ build_mapping_xpn <- function(train.set) {
 
 # 5 - Mapping Signatures C2 -----------------------------------------------
 
-# Calculate entropy loss and quadratic loss of a matrix
+#' Calculate entropy loss and quadratic loss of a matrix
+#' @param Rh matrix to calculate entropy/quadratic loss for
+#' @param R correlation matrix
 matrix_loss <- function(Rh, R = NULL) {
   # Add check that it's a correlation matrix
   if (is.null(R)) {
