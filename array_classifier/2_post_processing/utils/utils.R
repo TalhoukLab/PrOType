@@ -287,11 +287,11 @@ algii_heatmap <- function(dir, dataset) {
 
 # 3 - Predict C2 ----------------------------------------------------------
 
-# Builds mapping matrix from integer class to correct labels names
-buildMapping <- function(train.set) {
-  labs <- c(1, 2, 3, 4)
+# Builds mapping matrix from integer class to correct labels names for xpn
+build_mapping_xpn <- function(train.set) {
   if (train.set == "ov.afc1_xpn") {
-    data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
+    data.frame(labs = seq_len(4),
+               labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
   } else {
     stop("Can only relabel C1 XPN")
   }

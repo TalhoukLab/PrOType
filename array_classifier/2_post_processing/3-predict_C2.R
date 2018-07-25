@@ -24,7 +24,7 @@ lab <- readRDS(file.path(outputDir, trainSet,
                          paste0("/all_clusts_", trainSet, ".rds"))) %>%
   magrittr::extract(, 1) %>%
   data.frame(labs = .) %>%
-  dplyr::inner_join(buildMapping(trainSet), by = "labs") %>%
+  dplyr::inner_join(build_mapping_xpn(trainSet), by = "labs") %>%
   dplyr::pull(labels)
 
 train <- cbind(npcp_train, lab)
