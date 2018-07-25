@@ -167,58 +167,45 @@ top2_algo_plot <- function(dir, datasets,
     purrr::map(build_mapping) %>%
     purrr::map(dplyr::transmute, labels, class = as.factor(labs))
 
-  # import iv data
-  iv.data <- import_ivs(dir = dir, datasets = datasets, threshold = FALSE)
-  iv.data_t <- import_ivs(dir = dir, datasets = datasets, threshold = TRUE)
+  # import ivs data for with/without threshold
+  ivs_data <- purrr::map(c(FALSE, TRUE), import_ivs,
+                         dir = dir, datasets = datasets)
+  all_algs <- purrr::splice(algs, algs_t)
 
-  # process and combine xpn and cbt data for threshold/no threshold
-  iv.class <- iv.data %>%
-    dplyr::filter(mod %in% algs,
-                  normalization == "hc",
-                  stringr::str_detect(measure, "\\.")) %>%
-    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
-    dplyr::mutate(class = gsub("X", "", class)) %>%
-    dplyr::mutate_at(c("measure", "class"), as.factor) %>%
-    dplyr::select(-class, class) %>%
-    dplyr::mutate(
-      labels = unlist(purrr::map2(
-        class, batch_correction,
-        ~ maps[[.y]]$labels[match(.x, maps[[.y]]$class)])),
-      bcm = interaction(batch_correction, mod)
-    ) %>%
+  # process and combine xpn and cbt data for class specific measures
+  iv.combine.class <- purrr::map2(
+    ivs_data,
+    all_algs,
+    ~ dplyr::filter(.x,
+                    mod %in% .y,
+                    normalization == "hc",
+                    stringr::str_detect(measure, "\\.")) %>%
+      tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
+      dplyr::mutate(class = gsub("X", "", class)) %>%
+      dplyr::mutate_at(c("measure", "class"), as.factor) %>%
+      dplyr::select(-class, class) %>%
+      dplyr::mutate(
+        labels = unlist(purrr::map2(
+          class, batch_correction,
+          ~ maps[[.y]]$labels[match(.x, maps[[.y]]$class)])),
+        bcm = interaction(batch_correction, mod)
+      )
+  ) %>%
+    do.call(rbind, .) %>%
     dplyr::group_by(batch_correction, mod, measure)
-
-  iv.class_t <- iv.data_t %>%
-    dplyr::filter(mod %in% algs_t,
-                  normalization == "hc",
-                  stringr::str_detect(measure, "\\.")) %>%
-    tidyr::separate(measure, c("measure", "class"), sep = "\\.") %>%
-    dplyr::mutate(class = gsub("X", "", class)) %>%
-    dplyr::mutate_at(c("measure", "class"), as.factor) %>%
-    dplyr::select(-class, class) %>%
-    dplyr::mutate(
-      labels = unlist(purrr::map2(
-        class, batch_correction,
-        ~ maps[[.y]]$labels[match(.x, maps[[.y]]$class)])),
-      bcm = interaction(batch_correction, mod)
-    ) %>%
-    dplyr::group_by(batch_correction, mod, measure)
-  iv.combine.class <- rbind.data.frame(iv.class, iv.class_t)
 
   # process and combine xpn and cbt for general metrics
-  iv.general <- iv.data %>%
-    dplyr::filter(mod %in% algs,
-                  normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
-    dplyr::mutate(bcm = interaction(batch_correction, mod)) %>%
+  iv.combine.general <- purrr::map2(
+    ivs_data,
+    all_algs,
+    ~  dplyr::filter(.x,
+                     mod %in% .y,
+                     normalization == "hc",
+                     measure %in% c("auc", "accuracy", "macro_f1")) %>%
+      dplyr::mutate(bcm = interaction(batch_correction, mod))
+  ) %>%
+    do.call(rbind, .) %>%
     dplyr::group_by(batch_correction, mod, measure)
-  iv.general_t <- iv.data_t %>%
-    dplyr::filter(mod %in% algs_t,
-                  normalization == "hc",
-                  measure %in% c("auc", "accuracy", "macro_f1")) %>%
-    dplyr::mutate(bcm = interaction(batch_correction, mod)) %>%
-    dplyr::group_by(batch_correction, mod, measure)
-  iv.combine <- rbind.data.frame(iv.general, iv.general_t)
 
   # create colour palette
   col <- col.cust %||% purrr::map_chr(levels(droplevels(iv.combine$bcm)),
@@ -236,8 +223,10 @@ top2_algo_plot <- function(dir, datasets,
     ggplot2::theme_bw(),
     ggplot2::facet_wrap(~ measure, scales = "free"),
     ggplot2::scale_colour_manual(values = col, name = "Batch and Model"),
-    ggplot2::labs(y = "Evaluation Measure Value",
-                  title = "Top 2 Supervised Algorithm Evaluation (with/without threshold)")
+    ggplot2::labs(
+      y = "Evaluation Measure Value",
+      title = "Top 2 Supervised Algorithm Evaluation (with/without threshold)"
+    )
   )
 
   # create iv plot
@@ -248,7 +237,7 @@ top2_algo_plot <- function(dir, datasets,
     gglayers
 
   # plot general metrics
-  p2 <- iv.combine %>%
+  p2 <- iv.combine.general %>%
     dplyr::ungroup() %>%
     ggplot2::ggplot(ggplot2::aes(x = mod)) +
     ggplot2::xlab("Algorithm") +
@@ -258,10 +247,18 @@ top2_algo_plot <- function(dir, datasets,
   # save plots
   if (save) {
     fn <- "top2_algos_eval"
-    ggplot2::ggsave(p1, filename = file.path(outputDir, "plots", paste0(fn, "_byclass.png")),
-                    width = width, height = height)
-    ggplot2::ggsave(p2, filename = file.path(outputDir, "plots", paste0(fn, "_overall.png")),
-                    width = width, height = height)
+    ggplot2::ggsave(
+      plot = p1,
+      filename = file.path(outputDir, "plots", paste0(fn, "_byclass.png")),
+      width = width,
+      height = height
+    )
+    ggplot2::ggsave(
+      plot = p2,
+      filename = file.path(outputDir, "plots", paste0(fn, "_overall.png")),
+      width = width,
+      height = height
+    )
   }
 
   # print plots
