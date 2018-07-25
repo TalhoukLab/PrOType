@@ -143,3 +143,11 @@ x.arl <- x.arl.raw %>%
 
 arl_predictions <- predict(final_model, x.arl)
 write_rds(arl_predictions, "arl_predictions.rds")
+
+# Compare NanoString and ARL predictions
+pred_compare <- arl_predictions %>%
+  enframe(name = "ottaID", value = "ARL") %>%
+  inner_join(Final_Predictions, by = "ottaID")
+
+summarize(pred_compare, agree = sum(ARL == prediction)) # 140/140 agree
+identical(pred_compare$ARL, pred_compare$prediction) # verify identical
