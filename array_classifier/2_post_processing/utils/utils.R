@@ -13,19 +13,6 @@ dropChar <- function(x) {
   substr(x, 0, nchar(x) - 7)
 }
 
-# Generate substrain mapping table for specified study
-build_mapping <- function(train.set) {
-  labs <- c(1, 2, 3, 4)
-  if (train.set == "ov.afc1_cbt") {
-    map <- data.frame(labs, labels = c("C1-MES",	"C5-PRO",	"C4-DIF",	"C2-IMM"))
-  } else if (train.set == "ov.afc1_xpn") {
-    map <- data.frame(labs, labels = c("C2-IMM",	"C4-DIF", "C5-PRO",	"C1-MES"))
-  } else {
-    print("No valid training set specified")
-  }
-  return(map)
-}
-
 # Compute PVCA Object
 CompSrcOfVar <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
                          pct_threshold = 0.6) {
@@ -54,19 +41,6 @@ pvca.plot <- function(pvcaObj, cols = "blue", ttl = "") {
 
 
 # 2 - Internal Validity Plots ---------------------------------------------
-
-# Generate substrain mapping table for specified study
-build_mapping <- function(train.set) {
-  labs <- c(1, 2, 3, 4)
-  if (train.set %in% c("ov.afc1_cbt", "ov.afc2_cbt")) {
-    map <- data.frame(labs, labels = c("C1-MES",	"C5-PRO",	"C4-DIF",	"C2-IMM"))
-  } else if (train.set %in% c("ov.afc1_xpn", "ov.afc2_xpn")) {
-    map <- data.frame(labs, labels = c("C2-IMM",	"C4-DIF", "C5-PRO",	"C1-MES"))
-  } else {
-    print("No valid training set specified")
-  }
-  return(map)
-}
 
 # import (threshold) iv summary data
 import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
