@@ -1,16 +1,16 @@
-# Code to compute cluster centroids based on diceR and map probes to genes
-# Note that if tidyverse is loaded code will not run
+# Probe Mapping C2 --------------------------------------------------------
 
+# Code to compute cluster centroids based on diceR and map probes to genes
+# Load packages
 library(hgug4112a.db)
 library(hgu133plus2.db)
-library(AnnotationDbi)
-library(RColorBrewer)
-library(magrittr)
 
 # Read in original data
 fdat <- testSet
 ndat <- gsub("ov.af", "", fdat)
-dat_o <- readRDS(file.path(outputDir, fdat, paste0("data_pr_", fdat), paste0("cdat_", fdat, ".rds")))
+dat_o <- readRDS(file.path(outputDir, fdat,
+                           paste0("data_pr_", fdat),
+                           paste0("cdat_", fdat, ".rds")))
 
 # Obtain predictions
 clusts <- readRDS(file.path(outputDir, "predictions", paste0(fdat, ".rds")))
