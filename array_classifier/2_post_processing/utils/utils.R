@@ -7,42 +7,53 @@ source(here::here("assets/utils.R"))
 
 # 1 - Evaluate Batch Effects ----------------------------------------------
 
-# drop suffix from OTTA ids
+#' drop suffix from OTTA ids (last 7 chars)
+#' @param x atomic vector coerced to character
 drop_char <- function(x) {
   x <- as.character(x)
   substr(x, 0, nchar(x) - 7)
 }
 
-# Compute PVCA source of variation
-source_of_var <- function(annMat, dat, factorsOfInterest, cols, ttl = "",
+#' Compute PVCA source of variation
+#' @param ann_mat annotation matrix: samples are rows
+#' @param dat_mat data matrix: samples are columns, features are rows
+#' @param batch_factors vector of factors for mixed linear model
+#' @param pct_threshold percentile of minimum variability of PC to explain
+source_of_var <- function(ann_mat, dat_mat, batch_factors,
                           pct_threshold = 0.6) {
-  # rows of exp should be the same as column of dat and in the same order
-  if (!all(rownames(annMat) == colnames(dat))) {
+  # rows of ann_mat should be the same as column of dat_mat and in same order
+  if (!all(rownames(ann_mat) == colnames(dat_mat))) {
     stop("All rownames of annotation matrix do not correspond to the column names of the data matrix")
   }
-  phenoData <- new("AnnotatedDataFrame", data = annMat)
-  MASet <- Biobase::ExpressionSet(assayData = data.matrix(dat),
+  phenoData <- new("AnnotatedDataFrame", data = ann_mat)
+  MASet <- Biobase::ExpressionSet(assayData = data.matrix(dat_mat),
                                   phenoData = phenoData)
-  pvca::pvcaBatchAssess(MASet, factorsOfInterest, pct_threshold)
+  pvca::pvcaBatchAssess(MASet, batch_factors, pct_threshold)
 }
 
-# Plot PVCA Object
-pvca_plot <- function(pvcaObj, cols = "blue", ttl = "") {
+#' Plot PVCA Object
+#' @param pvcaObj PVCA object from `source_of_var()`
+#' @param color barplot color
+#' @param title plot title
+pvca_plot <- function(pvcaObj, color = "blue", title = "") {
   par(oma = c(1, 0.5, 1, 1), mar = c(5.1, 7.6, 4.1, 0.1))
   # "Weighted average proportion variance"
-  bp <- barplot(sort(pvcaObj$dat), horiz = TRUE, ylab = "", xlab = "",
-                xlim = c(0,1.1), border = "white", main = ttl,
-                space = 1, las = 1, col = cols)
-  axis(2, at = bp, labels = pvcaObj$label[order(pvcaObj$dat)], ylab = "", cex.axis = 0.8, las = 2)
-  values <- sort(pvcaObj$dat)
-  new_values <- paste(round(values * 100, 1), "%", sep = "")
-  text(sort(pvcaObj$dat), bp, labels = new_values, pos = 4, cex = 0.8)
+  bp <- barplot(sort(pvcaObj$dat), horiz = TRUE, col = color, main = title,
+                xlab = "", ylab = "", xlim = c(0, 1.1), border = "white",
+                space = 1, las = 1)
+  axis(2, at = bp, labels = pvcaObj$label[order(pvcaObj$dat)], ylab = "",
+       cex.axis = 0.8, las = 2)
+  values <- paste0(round(sort(pvcaObj$dat) * 100, 1), "%")
+  text(sort(pvcaObj$dat), bp, labels = values, pos = 4, cex = 0.8)
 }
 
 
 # 2 - Internal Validity Plots ---------------------------------------------
 
-# import (threshold) iv summary data
+#' Import (threshold) iv summary data
+#' @param dir data directory holding iv summaries
+#' @param datasets vector of datasets to extract data for
+#' @param thresholds logical; if `TRUE`, will import thresholded iv summaries
 import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
                       threshold = TRUE) {
 
@@ -64,7 +75,8 @@ import_iv <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
   rbind(sup.iv.xpn, sup.iv.cbt)
 }
 
-# match batch and algorithm combinations to colour palette
+#' Match combinations of batch effect and algorithm to colour palette
+#' @param x character in form of "batch_effect.algorithm"
 match_colour <- function(x) {
   switch(
     as.character(x),
