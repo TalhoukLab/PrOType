@@ -101,10 +101,11 @@ match_colour <- function(x) {
   )
 }
 
-# Plot evaluation measures by class and overall for top algorithms
+# Plot evaluation measures by class and overall for all algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
-top_algo_plot <- function(plot.title, dir, datasets, threshold = FALSE,
-                          print = TRUE, save = TRUE, col.cust = NULL) {
+all_algo_plot <- function(dir, datasets, threshold = FALSE,
+                          print = TRUE, save = TRUE, col.cust = NULL,
+                          width = 16, height = 9) {
   # import iv data, process for general metrics, prepare for ggplot
   df <- import_iv(dir = dir, datasets = datasets, threshold = threshold) %>%
     dplyr::filter(normalization == "hc",
@@ -114,8 +115,11 @@ top_algo_plot <- function(plot.title, dir, datasets, threshold = FALSE,
                   bcm = interaction(batch_correction, mod)) %>%
     dplyr::group_by(batch_correction, mod, measure)
 
-  # create colour palette
+  # create colour palette and plot title
   col <- col.cust %||% purrr::map_chr(levels(droplevels(df$bcm)), match_colour)
+  plot.title <- ifelse(threshold,
+                       "Algorithm Performance Ranking with Threshold",
+                       "Algorithm Performance Ranking")
 
   # plot evaluation measures
   p <- df %>%
@@ -148,7 +152,9 @@ top_algo_plot <- function(plot.title, dir, datasets, threshold = FALSE,
     ggplot2::ggsave(
       plot = p,
       filename = file.path(outputDir, "plots",
-                           paste0("all_algos_ranked", th, ".png"))
+                           paste0("all_algos_ranked_", th, ".png")),
+      width = width,
+      height = height
     )
   }
   if (print) print(p)
@@ -157,10 +163,11 @@ top_algo_plot <- function(plot.title, dir, datasets, threshold = FALSE,
 
 # Plot evaluation measures by class and overall for top 2 algorithms
 # across bootstrap samples (output retrieved from supervised pipeline)
-sup_plots <- function(plot.title, dir, datasets,
-                      algs = c("mlr_ridge", "mlr_lasso"),
-                      algs_t = c("adaboost", "rf"),
-                      print = TRUE, save = TRUE, col.cust = NULL) {
+top2_algo_plot <- function(dir, datasets,
+                           algs = c("mlr_ridge", "mlr_lasso"),
+                           algs_t = c("adaboost", "rf"),
+                           print = TRUE, save = TRUE, col.cust = NULL,
+                           width = 16, height = 9) {
   # create mapping tables for xpn & cbt
   maps <- datasets %>%
     purrr::set_names(c("xpn", "cbt")) %>%
@@ -236,7 +243,8 @@ sup_plots <- function(plot.title, dir, datasets,
     ggplot2::theme_bw(),
     ggplot2::facet_wrap(~ measure, scales = "free"),
     ggplot2::scale_colour_manual(values = col, name = "Batch and Model"),
-    ggplot2::labs(y = "Evaluation Measure Value", title = plot.title)
+    ggplot2::labs(y = "Evaluation Measure Value",
+                  title = "Top 2 Supervised Algorithm Evaluation (with/without threshold)")
   )
 
   # create iv plot
@@ -250,14 +258,17 @@ sup_plots <- function(plot.title, dir, datasets,
   p2 <- iv.combine %>%
     dplyr::ungroup() %>%
     ggplot2::ggplot(ggplot2::aes(x = mod)) +
-    ggplot2::xlab("Evaluation Measure") +
-    gglayers
+    ggplot2::xlab("Algorithm") +
+    gglayers +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, hjust = 1))
 
   # save plots
   if (save) {
-    fn <- gsub(" ", "", plot.title)
-    ggplot2::ggsave(p1, filename = file.path(outputDir, "plots", paste0(fn, "_byclass.png")))
-    ggplot2::ggsave(p2, filename = file.path(outputDir, "plots", paste0(fn, "_overall.png")))
+    fn <- "top2_algos_eval"
+    ggplot2::ggsave(p1, filename = file.path(outputDir, "plots", paste0(fn, "_byclass.png")),
+                    width = width, height = height)
+    ggplot2::ggsave(p2, filename = file.path(outputDir, "plots", paste0(fn, "_overall.png")),
+                    width = width, height = height)
   }
 
   # print plots
