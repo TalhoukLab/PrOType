@@ -2,6 +2,13 @@
 This guide is the steps to replicate the published study using this pipeline.
 
 # Installation
+
+If you are running on Genesis, run: (changing parameters where necessary)
+`
+rsync -azv --checksum --progress -e 'ssh -o "ProxyCommand ssh -A jsmith@ssh.bcgsc.ca -W %h:%p"' ~/Documents/Projects/PrOType jsmith@genesis2:~/
+bash /gsc/software/linux-x86_64-centos5/R-3.5.1/source_me.sh
+`
+
 In your terminal run:
 `
 Rscript install_packages.R
