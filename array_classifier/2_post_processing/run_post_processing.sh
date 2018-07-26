@@ -18,7 +18,7 @@ mkdir -p $outputDir/plots
 mkdir -p $outputDir/predictions
 
 echo 'trainSet <- "'$trainSet'"' > $Rname
-echo 'trainSet2 <- "'$trainSet2'"' > $Rname
+echo 'trainSet2 <- "'$trainSet2'"' >> $Rname
 echo 'testSet <- "'$testSet'"' >> $Rname
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname
 echo 'outputDir <- "'$outputDir'"' >> $Rname

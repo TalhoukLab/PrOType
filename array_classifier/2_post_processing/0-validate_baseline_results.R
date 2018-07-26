@@ -20,10 +20,10 @@ check_dataframes <- function(path1, path2, df_set, dataset) {
 
 # Check for reference object
 for (dataset in datasets) {
-  reference_ii <- file.path(data_dir, "references", dataset, "ii.rds")
+  reference_ii <- file.path(dataDir, "references", dataset, "ii.rds")
   computed_ii <- file.path(outputDir, "iv_summary", paste0("data_pr_", dataset), paste0("ii_", dataset, ".rds"))
 
-  reference_iv_summary <- file.path(data_dir, "references", dataset, "iv_summary.rds")
+  reference_iv_summary <- file.path(dataDir, "references", dataset, "iv_summary.rds")
   computed_iv_summary <- file.path(outputDir, "iv_summary", paste0("data_pr_", dataset), paste0("iv_summary_", dataset, ".rds"))
 
   check_dataframes(reference_ii, computed_ii, "ii", dataset)
