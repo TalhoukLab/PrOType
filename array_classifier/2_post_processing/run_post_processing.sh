@@ -5,7 +5,6 @@
 mkdir -p $workDir$dataSet/R_file/post_processing
 
 Rname=$workDir$dataSet/R_file/post_processing/post_processing.R
-rm -f $Rname
 
 for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/iv_summaries/data_pr_$dataset
