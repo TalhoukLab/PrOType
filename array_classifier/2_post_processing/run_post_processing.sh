@@ -3,18 +3,12 @@
 . ./Parameters.sh
 
 mkdir -p $workDir$dataSet/R_file/post_processing
-
-Rname=$workDir$dataSet/R_file/post_processing/post_processing.R
-
-for dataset in "${dataSets[@]}"; do
-    mkdir -p $outputDir/iv_summaries/data_pr_$dataset
-    cp -r "$outputDir$dataset/data_pr_$dataset/" "$outputDir/iv_summaries/data_pr_$dataset/"
-done
-
 mkdir -p $outputDir/fits
 mkdir -p $outputDir/evals
 mkdir -p $outputDir/plots
 mkdir -p $outputDir/predictions
+
+Rname=$workDir$dataSet/R_file/post_processing/post_processing.R
 
 echo 'trainSet <- "'$trainSet'"' > $Rname
 echo 'trainSet2 <- "'$trainSet2'"' >> $Rname
