@@ -1,5 +1,3 @@
-# Clear the deck----
-rm(list = ls())
 # Load packages----
 library(here)
 suppressPackageStartupMessages({
@@ -58,14 +56,7 @@ test3_lab <- test3$lab
 test3_dat <- test3$dat
 
 # Build the final model----
-# Load the average frequency across all studies
-# sumFreq <- read.csv(file.path(output_dir, "output/sumFreq/overallFreqs.csv"),
-#                    stringsAsFactors = FALSE) %>%
-#  arrange(desc(`rfFreq`))
-# sumFreq <- read.csv("/Users/atalhouk/Repositories/NanoString/HGSCS/Outputs/GeneSelection/overallFreqs2.csv",
-#                     stringsAsFactors = FALSE) %>%
-#   arrange(desc(`rfFreq`))
-sumFreq <- read.csv("/Users/dchiu/Documents/Misc/Derek/sumFreq/overallFreqs.csv",
+sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "sumFreq", "overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
   arrange(desc(rfFreq), desc(lassoFreq))
 

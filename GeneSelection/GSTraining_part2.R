@@ -32,9 +32,8 @@ GS_training_files <- c(
 )
 walk(here(GS_training_dir, GS_training_files), source)
 
-output_dir <- mkdir(here("Outputs/GeneSelection"))
-c1_path <- mkdir(file.path(output_dir, "output/TrainingC1"))
-plot_dir <- mkdir(file.path(output_dir, "plots"))
+c1_path <- file.path(output_dir, "output/TrainingC1")
+plot_dir <- file.path(output_dir, "plots")
 
 # Load data----
 # Load the NanoString data and select cut

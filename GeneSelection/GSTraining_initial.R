@@ -36,8 +36,6 @@ GS_training_files <- c(
 )
 walk(here(GS_training_dir, GS_training_files), source)
 
-output_dir <- mkdir(here("Outputs/GeneSelection"))
-
 # Load data----
 # Load the NanoString data and select cut
 nsdat <- load_nanostring()
