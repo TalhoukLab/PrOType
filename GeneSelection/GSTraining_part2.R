@@ -1,6 +1,3 @@
-# Clear the deck----
-rm(list = ls())
-
 # Load Parameters----
 trainModel <- 1
 predOverlap <- 1

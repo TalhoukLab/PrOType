@@ -1,4 +1,4 @@
-pkg_list <- c("tidyverse", "crayon", "here", "diceR", "packrat", "cli", "magrittr",
+pkg_list <- c("tidyverse", "crayon", "here", "diceR", "packrat", "cli", "magrittr", "mclust",
               "glmnet", "caret", "pheatmap", "epiR", "ggforce",
               "RColorBrewer", "gplots", "plotly")
 

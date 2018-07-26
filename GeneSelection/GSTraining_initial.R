@@ -1,8 +1,7 @@
 # Clear the deck----
-rm(list = ls())
 
 # Load Parameters----
-B <- 500
+B <- 5
 runBoot <- 1
 processBoot <- 1
 finalTraining <- 1
