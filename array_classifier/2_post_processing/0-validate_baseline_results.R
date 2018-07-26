@@ -5,11 +5,11 @@ check_dataframes <- function(path1, path2, df_set, dataset) {
     a2 <- readRDS(path2)
 
     validation <- all.equal(a1, a2)
-    if (is.logical(validation) && validation == TRUE) {
+    if (isTRUE(validation)) {
       cli::cat_line(df_set, " for dataset: ", dataset, " identical")
     } else {
       cli::cat_line(df_set, " for dataset: ", dataset, " DIFFERENT")
-      cli::cat_line(all.equal(a1, a2))
+      cli::cat_line(validation)
     }
   } else if (!file.exists(path1)) {
     cli::cat_line("Can't check dataset: ", dataset, " missing reference ", df_set)

@@ -219,7 +219,7 @@ top2_algo_plot <- function(dir, datasets,
     dplyr::group_by(batch_correction, mod, measure)
 
   # create colour palette
-  col <- col.cust %||% purrr::map_chr(levels(droplevels(iv.combine$bcm)),
+  col <- col.cust %||% purrr::map_chr(levels(droplevels(iv.combine.general$bcm)),
                                       match_colour)
 
   # store common ggplot layers
