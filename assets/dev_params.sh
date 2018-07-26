@@ -1,15 +1,17 @@
 #!/usr/bin/env bash
 
 # Developer params
+dataSets=($trainSet $trainSet2 $testSet)
 algs=(nmfbrunet nmflee distalgs rest)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 referenceClass="majority"
 classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
-supervisedAlgs=(first second third fourth) #ldaRfe qdaRfe rfRfe lassoRfe)
+supervisedAlgs=(first second third fourth)
 
 # Bash info
 user="$(whoami)"
 RPath="$(which R)"
+maxQueueLength=8000
 
 # specify the working directory
 if [ "$workDir" = "" ]; then
@@ -59,11 +61,11 @@ if ! [[ $reps -gt 0 ]]; then
 	exit 1
 fi
 
+# specify top ensemble
 if ! [[ $top -gt 0 ]]
 then echo "Top needs to be a positive integer"
 	exit 1
 fi
-
 
 # specify the number of clusters k
 if ! [[ $k -gt 0 ]]
@@ -71,6 +73,7 @@ then echo "k (number of clusters) needs to be a positive integer"
 	exit 1
 fi
 
+# specify number of items to merge per script
 if ! [[ $c -gt 0 ]]; then
     echo "c (# specify minimum number of reps required for merge.  the modulus of the dividend (reps) and divisor (c) must be greater or equal to zero."
 	exit 1

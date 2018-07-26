@@ -24,10 +24,10 @@ suppressPackageStartupMessages({
   library(cli)
 })
 
-source(here("GeneSelection/scripts/utils.R"))
-GS_training_dir <- "GeneSelection/training"
+GS_training_dir <- "GeneSelection/scripts"
 GS_training_files <- c(
-  "consensus.R",
+  "utils.R",
+  "define.R",
   "train.R",
   "bootstrap.R",
   "evaluate.R",
