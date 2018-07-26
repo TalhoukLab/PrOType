@@ -22,7 +22,7 @@ define_overlap <- function(preds_new, nsdat) {
 
 filter_nsdat <- function(nsdat, lab) {
   nsdat %>%
-    dplyr::filter(`OTTA ID` %in% lab$ottaID) %>%
+    dplyr::filter(`OTTA.ID` %in% lab$ottaID) %>%
     `colnames<-`(make.names(colnames(.)))
 }
 
