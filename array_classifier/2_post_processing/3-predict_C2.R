@@ -1,6 +1,6 @@
 # Predict C2 --------------------------------------------------------------
-
 # Load utility functions
+library(magrittr)
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Load seeds

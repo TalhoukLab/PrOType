@@ -5,7 +5,9 @@ datasets <- c("ov.afc1_xpn", "ov.afc1_cbt")
 outputDir <- "/outputs/"
 dataDir <- "assets/data"
 cli::cat_line("Validating Results")
+source("array_classifier/2_post_processing/0-validate_baseline_results.R")
 cli::cat_line("Post-processing step 1")
+source("array_classifier/2_post_processing/1-evaluate_batch_effects.R")
 cli::cat_line("Post-processing step 2")
 source("array_classifier/2_post_processing/2-internal_validity_plots.R")
 cli::cat_line("Post-processing step 3")
