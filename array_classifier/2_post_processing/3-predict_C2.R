@@ -1,72 +1,41 @@
-# load libraries
+# Predict C2 --------------------------------------------------------------
+# Load utility functions
 library(magrittr)
-library(tidyverse)
+source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
-# Directories----
-# intermediate <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/intermediate/"
-# processed <- "/Users/atalhouk/Repositories/NanoString/HGSCS/data/processed/"
-# output <- "/Users/atalhouk/Repositories/NanoString/HGSCS/Results/"
-# v <- "outputs_Feb10_2018/"
-
-# Functions-----
-buildMapping <- function(train.set)
-                         #********************************************************************
-                         # Builds mapping matrix from integer class to correct labels names
-#********************************************************************
-{
-  # label mapping
-  labs <- c(1, 2, 3, 4)
-  if (train.set == "ov.afc1_xpn") {
-    map <- data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
-  } else {
-    stop("Can only relabel C1 XPN")
-  }
-
-  return(map)
-}
-
-# Load Data  ----
-seed <- read_rds(paste0(data_dir, "seed.rds"))
+# Load seeds
+seed <- readRDS(file.path(dataDir, "seed.rds"))
 
 # Training data
-map <- buildMapping(trainSet)
 npcp_train <- readRDS(file.path(outputDir, trainSet,
-                          paste0("data_pr_", trainSet),
-                          paste0("npcp-hcNorm_", trainSet, ".rds")))
-npcp_test <- readRDS(file.path(outputDir, testSet,
-                               paste0("data_pr_", testSet),
-                               paste0("npcp-hcNorm_", testSet, ".rds")))
-
-colnames(npcp_train) <- make.names(colnames(npcp_train))
-colnames(npcp_test) <- make.names(colnames(npcp_test))
-
-train <- cbind(npcp_train, lab = readRDS(file.path(outputDir, trainSet,
-                                                  paste0("data_pr_", trainSet),
-                                                  paste0("/all_clusts_", trainSet, ".rds")))[, 1] %>%
-  data.frame(labs = .) %>%
-  dplyr::inner_join(map, by = "labs") %>%
-  .$labels)
-
-# Fitting Model
-# TODO:// Can this be factored? -- algorithms <- c("adaboost", "mlr_lasso", "mlr_ridge", "rf")
-set.seed(seed)
-fit_ada <- splendid::classification(npcp, class = train$lab, algorithms = "adaboost")
-
-set.seed(seed)
-fit_lasso <- splendid::classification(npcp, class = train$lab, algorithms = "mlr_lasso")
-
-set.seed(seed)
-fit_ridge <- splendid::classification(npcp, class = train$lab, algorithms = "mlr_ridge")
-
-set.seed(seed)
-fit_rf <- splendid::classification(npcp, class = train$lab, algorithms = "rf")
+                                paste0("data_pr_", trainSet),
+                                paste0("npcp-hcNorm_", trainSet, ".rds"))) %>%
+  magrittr::set_colnames(make.names(colnames(.)))
 
 # Testing data
-preds_ada <- splendid::prediction(fit_ada, data = npcp_test, class = NULL)
-preds_lasso <- splendid::prediction(fit_lasso, data = npcp_test, class = NULL)
-preds_ridge <- splendid::prediction(fit_ridge, data = npcp_test, class = NULL)
-preds_rf <- splendid::prediction(fit_rf, data = npcp_test, class = NULL)
+npcp_test <- readRDS(file.path(outputDir, testSet,
+                               paste0("data_pr_", testSet),
+                               paste0("npcp-hcNorm_", testSet, ".rds"))) %>%
+  magrittr::set_colnames(make.names(colnames(.)))
 
-predsC2 <- data_frame(preds_ada, preds_lasso, preds_rf, preds_ridge)
+# Training labels
+lab <- readRDS(file.path(outputDir, trainSet,
+                         paste0("data_pr_", trainSet),
+                         paste0("/all_clusts_", trainSet, ".rds"))) %>%
+  magrittr::extract(, 1) %>%
+  data.frame(labs = .) %>%
+  dplyr::inner_join(build_mapping_xpn(trainSet), by = "labs") %>%
+  dplyr::pull(labels)
 
-write_rds(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds"))
+# Fitting model on training set
+algs <- c("adaboost", "mlr_lasso", "mlr_ridge", "rf", "svm")
+all_fits <- algs %>%
+  purrr::map(splendid::classification,
+             data = npcp_train, class = lab, seed_alg = seed)
+
+# Predicting model on test set
+predsC2 <- all_fits %>%
+  purrr::set_names(paste("preds", c("ada", "lasso", "ridge", "rf", "svm"),
+                         sep = "_")) %>%
+  purrr::map_dfc(splendid::prediction, data = npcp_test, class = lab)
+saveRDS(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))

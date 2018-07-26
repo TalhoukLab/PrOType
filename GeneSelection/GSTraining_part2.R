@@ -20,10 +20,10 @@ suppressPackageStartupMessages({
   library(cli)
 })
 
-source(here("GeneSelection/scripts/utils.R"))
-GS_training_dir <- "GeneSelection/training"
+GS_training_dir <- "GeneSelection/scripts"
 GS_training_files <- c(
-  "consensus.R",
+  "utils.R",
+  "define.R",
   "train.R",
   "bootstrap.R",
   "evaluate.R",
@@ -45,11 +45,12 @@ pred_labs <- load_prediction_labels(nsdat)
 preds_new <- pred_labs$preds_new
 
 # Compute consensus
-consensus <- compute_consensus(preds_new, nsdat)
-train_dat <- consensus$train$dat
-train_lab <- consensus$train$lab
-overlap_dat <- consensus$overlap$dat
-overlap_lab <- consensus$overlap$lab
+train <- define_batch(preds_new, nsdat, batch = "b1")
+train_dat <- train$dat
+train_lab <- train$lab
+overlap <- define_overlap(preds_new, nsdat)
+overlap_dat <- overlap$dat
+overlap_lab <- overlap$lab
 
 # Get studies
 studies <- unique(train_dat$site)

@@ -104,6 +104,20 @@ makePredictions <- function(output_dir, study, train_dat, train_lab,
   readr::write_rds(mod.pred, file.path(preds_dir, paste0(study, "_mod_pred.rds")))
 }
 
+#' Supervised learning data
+#'
+#' Create supervised learning training/test data
+#'
+#' @param train_dat input data
+#' @param study study site. If `NULL` (default), no filtering is performed and
+#'   all cases from `train_dat` are returned.
+#' @param type the type of SL data to produce. If type is "training" (default),
+#'   the site matching `study` is filtered out, and the rest of the observations
+#'   are used as training data. If type is "test", the site matching `study` is
+#'   kept and used as testing data.
+#' @return supervised learning data with cases potentially filtered out, the
+#'   variables "site" and "cut" removed, and unique identifier "OTTA.ID" is
+#'   stored in the rownames
 sl_data <- function(train_dat, study = NULL, type = c("training", "test")) {
   type <- match.arg(type)
   filter_fun <- switch(type, training = `!=`, test = `==`)
@@ -116,6 +130,12 @@ sl_data <- function(train_dat, study = NULL, type = c("training", "test")) {
     tibble::column_to_rownames("OTTA.ID")
 }
 
+#' Supervised learning class
+#'
+#' @param train_lab data with supervised learning labels
+#' @param data expression data
+#' @return A vector of classes for Adaboost after filtering `train_lab` for
+#'   cases found in `data`
 sl_class <- function(train_lab, data) {
   train_lab %>%
     dplyr::filter(ottaID %in% rownames(data)) %>%
