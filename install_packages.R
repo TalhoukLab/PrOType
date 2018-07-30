@@ -10,7 +10,9 @@ install.packages("devtools")
 devtools::install_git("git://github.com/r-lib/processx.git")
 
 for (package in pkg_list) {
-  withCallingHandlers(install.packages(package), warning = function(w) stop(w))
+  if (!package %in% installed.packages()) {
+    withCallingHandlers(install.packages(package), warning = function(w) stop(w))
+  }
 }
 
 devtools::install_github("AlineTalhouk/splendid")
