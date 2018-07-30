@@ -8,7 +8,7 @@ mname <- mname
 for (i in seq_along(ndat)) {
   cat("Processing:",ndat[i], "\n")
   f <- list.files(paste0(fdir, ndat[i], "/", mname, "_", ndat[i], "/"),
-                  pattern = paste0("c1_(first|second|third|fourth|fifth)[0-9]+_", ndat[i], "(_threshold)?.rds"))
+                  pattern = paste0("_train_eval_", ndat[i], "(_threshold)?.rds"))
   algs <- data.frame(f = f) %>%
     tidyr::separate(f, "algs", sep = "_", extra = "drop")
   algs$algs[algs$algs == "second"] <- "svm"
