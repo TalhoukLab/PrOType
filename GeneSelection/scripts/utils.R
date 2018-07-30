@@ -82,7 +82,6 @@ load_prediction_labels <- function(nsdat) {
   tibble::lst(published, preds_new)
 }
 
-
 #******************************************************************
 #Function to extract the number of times the gene is in the TOP 100
 # Inputs: fit output from splendid_model, the algorithm, and the full set of genes

@@ -1,8 +1,7 @@
 # Clear the deck----
-rm(list = ls())
 
 # Load Parameters----
-B <- 500
+B <- 5
 runBoot <- 1
 processBoot <- 1
 finalTraining <- 1
@@ -35,8 +34,6 @@ GS_training_files <- c(
   "analysis.R"
 )
 walk(here(GS_training_dir, GS_training_files), source)
-
-output_dir <- mkdir(here("Outputs/GeneSelection"))
 
 # Load data----
 # Load the NanoString data and select cut

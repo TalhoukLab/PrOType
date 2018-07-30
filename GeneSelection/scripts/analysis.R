@@ -19,7 +19,10 @@ runGeneAnalysis <- function(output_dir, train_dat, algs) {
       purrr::map(match, x = genes30, nomatch = 50) %>%
       as.data.frame() %>%
       magrittr::set_rownames(genes30)
+
+    pdf(file.path(plot_dir, "lasso30_heatmap.pdf"))
     pheatmap::pheatmap(geneRanks_lasso, fontsize_row = 7, main = "Lasso")
+    dev.off()
   }
   if ("rf" %in% algs) {
     cli::cat_line("rf60")
@@ -36,6 +39,9 @@ runGeneAnalysis <- function(output_dir, train_dat, algs) {
       purrr::map(match, x = genes60, nomatch = 70) %>%
       as.data.frame() %>%
       magrittr::set_rownames(genes60)
+
+    pdf(file.path(plot_dir, "rf60_heatmap.pdf"))
     pheatmap::pheatmap(geneRanks_rf, fontsize_row = 6, main = "Random Forest")
+    dev.off()
   }
 }
