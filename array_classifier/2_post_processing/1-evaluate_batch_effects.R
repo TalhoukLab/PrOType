@@ -5,7 +5,9 @@ library(Biobase)
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Create mapping, read in data and clusters for trainSet and trainSet2
-for (dataSet in c(trainSet, trainSet2)) {
+for (dataSet in c(trainSet2, trainSet)) {
+
+  cli::cat_line("Creating plot.")
 
   # Load the cases and label the cuts
   cohorts.tmp <- readr::read_csv(file.path(dataDir, "nstring", "inclusion.csv"),

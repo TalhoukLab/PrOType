@@ -1,11 +1,9 @@
 #!/bin/bash
 
 # data information
-trainSet="ov.afc1_xpn"
-trainSet2="ov.afc1_cbt"
-testSet="ov.afc2_xpn"
-
-shouldCompute=FALSE
+#dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
+dataSets=(ov.afc1_cbt ov.afc1_xpn)
+shouldCompute=TRUE
 
 # Unsupervised parameters
 reps=1000
@@ -22,10 +20,15 @@ normType="conventional"
 # IV Summary
 top=5
 
+# Post Processing
+trainSet="ov.afc1_xpn"
+trainSet2="ov.afc1_cbt"
+testSet="ov.afc2_xpn"
+
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/"
 outputDir="/outputs/"
 inputDir="/PrOType/raw_data/"
-logDir="/logs/"
+logDir="/home/mpaletta/logs/"
 
 . ./assets/dev_params.sh
