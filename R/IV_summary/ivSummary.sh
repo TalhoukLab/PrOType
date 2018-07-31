@@ -46,11 +46,10 @@ fi
 # *************************************************************************
 # Step 3: combine all IV tables into one
 # *************************************************************************
-ivSummary=$outputDir'/iv_summary'
-mkdir -p $ivSummary
-
-for i in "${dataSets[@]}"; do
-	cp -r $outputDir$i'/data_pr_'$i $ivSummary
-done
-
-Rscript $workDir'4_IVSummary/ivCombine.R' $ivSummary
+# create scripts and directories
+mkdir -p $workDir'/R_file/iv_summary'
+R_combine_name=$workDir'/R_file/iv_summary/combine.R'
+echo 'ndat <- c("'$data_sets'")' > $R_combine_name
+echo 'outputDir <- "'$outputDir'"' > $Rname
+echo "Rscript 'R/IV_summary/ivCombine.R'" >> $R_combine_name
+Rscript $R_combine_name

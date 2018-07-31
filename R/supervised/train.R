@@ -19,44 +19,42 @@
 
 
 library(magrittr)
-library(splendid)
 
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model", shouldCompute = FALSE) {
-  outputFile <- paste0(outDir, "/", fname, "_", dataSet, "/c1_", algs, reps, "_", dataSet, ".rds")
+  outputFile <- file.path(outDir, paste0(fname, "_", dataSet), paste0("c1_", algs, reps, "_", dataSet, ".rds"))
 
-  cli::cat_line("Checking previous input:", outputFile, "\n")
-
+  cli::cat_line("Checking previous input:", outputFile)
 
   if (file.exists(outputFile) && !shouldCompute) {
-      cli::cat_line("File already exists, skipping.\n")
+      cli::cat_line("File already exists, skipping.")
       quit(status = 0)
   }
 
 
-  cli::cat_line("Reading training data:", algs, "-", reps, "\n")
+  cli::cat_line("Reading training data:", algs, "-", reps)
   # import training data
-  npcp <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
+  npcp <-  readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("npcp-hcNorm_", dataSet, ".rds")))
+  class <- readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("all_clusts_", dataSet, ".rds")))
 
-  class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
   class.train <- class[, 1]
 
-  cli::cat_line("Normalizing data:", algs, "-", reps, "\n")
+  cli::cat_line("Normalizing data:", algs, "-", reps)
   # normalization
   if (normalize.by == "None") {
-    cli::cat_line("Normalizing None:", algs, "-", reps, "\n")
+    cli::cat_line("Normalizing None:", algs, "-", reps)
     data.train <- npcp %>%
        diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
        as.data.frame()
   } else if (normalize.by == "Genes") {
-    cli::cat_line("Normalizing Genes:", algs, "-", reps, "\n")
+    cli::cat_line("Normalizing Genes:", algs, "-", reps)
     data.train <- npcp %>%
       diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
       as.data.frame()
   } else if (normalize.by == "Samples") {
-    cli::cat_line("Normalizing Samples:", algs, "-", reps, "\n")
+    cli::cat_line("Normalizing Samples:", algs, "-", reps)
     data.train <- npcp %>%
       t() %>%
       diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
@@ -64,7 +62,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
       as.data.frame()
   }
 
-  cli::cat_line("Running training algorithms:", algs, "-", reps, "\n")
+  cli::cat_line("Running training algorithms:", algs, "-", reps)
   # train algorithms
   reps <- as.integer(reps)
   sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = reps, threshold = threshold)

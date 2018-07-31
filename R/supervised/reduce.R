@@ -14,10 +14,10 @@
 library(magrittr)
 reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
   # Store data_directory path
-  dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet, "/")
+  dirpath <- file.path(outDir, dataSet, paste0(fname, "_", dataSet, "/"))
 
 
-  outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, ".rds")
+  outputFile <- file.path(dirpath, paste0(alg, "_train_eval_", dataSet, ".rds"))
 
   # grep files in directory matching pattern
   files.in <- grep(

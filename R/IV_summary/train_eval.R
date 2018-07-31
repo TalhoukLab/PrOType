@@ -6,7 +6,7 @@ ndat <- ndat
 mname <- mname
 
 for (i in seq_along(ndat)) {
-  cli::cat_line("Processing:",ndat[i], "\n")
+  cli::cat_line("Processing:",ndat[i])
   f <- list.files(paste0(fdir, ndat[i], "/", mname, "_", ndat[i], "/"),
                   pattern = paste0("_train_eval_", ndat[i], "(_threshold)?.rds"))
   algs <- data.frame(f = f) %>%

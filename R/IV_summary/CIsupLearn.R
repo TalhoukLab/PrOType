@@ -79,8 +79,8 @@ top <- top
 # data
 final <- fdat %>%
   purrr::map(~ {
-    FinalR_lab <- readRDS(paste0(inDir, ., "/data_pr_", ., "/all_clusts_", ., ".rds"))
-    train_eval <- readRDS(paste0(inDir, ., "/data_pr_", ., "/train_eval_", ., ".rds"))
+    FinalR_lab <- readRDS(file.path(inDir, ., paste0("data_pr_", .), paste0("all_clusts_", ., ".rds")))
+    train_eval <- readRDS(file.path(inDir, ., paste0("data_pr_", .), paste0("train_eval_", ., ".rds")))
     bests <- sort_best(train_eval, top = top)
     ci <- train_eval %>%
       purrr::map(~ {
@@ -95,5 +95,5 @@ final <- fdat %>%
   magrittr::set_names(fdat)
 
 purrr::iwalk(final, ~ {
-  write.csv(.x, paste0(outDir, .y, "/data_pr_", .y, "/sup_lrn_", .y, ".csv"))
+  write.csv(.x, file.path(outDir, .y, paste0("data_pr_", .y), paste0("sup_lrn_", .y, ".csv")))
 })
