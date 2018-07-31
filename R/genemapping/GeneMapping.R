@@ -12,7 +12,16 @@
 #' @author Last updated on 27/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 library(magrittr)
 
-map_to_nano <- function(x, dataSet, outDir) {
+map_to_nano <- function(x, dataSet, outDir, shouldCompute) {
+  tdat_mapped_outfile <- paste0(outDir, dataSet, "/data_pr_", dataSet, "/tdat_mapped_", dataSet, ".rds")
+  npcp_out <-  paste0(outDir, dataSet, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds")
+
+  if (file.exists(tdat_mapped_outfile) && file.exists(npcp_out) && !shouldCompute) {
+    cli::cat_line("File already exists. Skipping.")
+    quit(status = 0)
+  }
+
+
     # Perform mapping according to affy
     # Join mapping table with data table and take median of any repeat probe IDs
     df <- readr::read_csv(file.path("assets", "data", "hgnc", "HGNC-Affymetrix-NanoString-OTTA_Map.csv")) %>%
@@ -55,10 +64,10 @@ map_to_nano <- function(x, dataSet, outDir) {
       tibble::column_to_rownames(var = "rowname")
 
     # write npcp to file
-    readr::write_rds(dat.clean, paste0(outDir, dataSet, "/data_pr_", dataSet, "/npcp-hcNorm_", dataSet, ".rds"))
+    readr::write_rds(dat.clean, npcp_out)
 
     # write mapping to file
-    readr::write_rds(dat.mapped, paste0(outDir, dataSet, "/data_pr_", dataSet, "/tdat_mapped_", dataSet, ".rds"))
+    readr::write_rds(dat.mapped, tdat_mapped_outfile)
 
     print("Mapping is complete.")
 }

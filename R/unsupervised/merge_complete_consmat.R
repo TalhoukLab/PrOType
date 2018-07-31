@@ -11,11 +11,10 @@ multMergeCM <- function(algs, fnames, newdir) {
     purrr::map(~ Reduce(`+`, .))
 }
 
-fnames <- list.files(path = paste0(dir, "/con_mat_merged_", ndat)) %>%
+fnames <- list.files(path = file.path(dir, paste0("con_mat_merged_", ndat))) %>%
   gtools::mixedsort() %>%
   grep(pattern = "^[[:digit:]]", x = ., value = TRUE)
-newdir <- paste0(dir, "/con_mat_merged_", ndat, "/")
+newdir <- file.path(dir, paste0("con_mat_merged_", ndat, "/"))
 consmatF <- lapply(algs, multMergeCM, fnames = fnames, newdir = newdir) %>%
     unlist(recursive = FALSE)
-ifile <- paste0(dir, "/data_pr_", ndat, "/Final_CM_", ndat, ".rds")
-saveRDS(consmatF, ifile)
+saveRDS(consmatF, file.path(dir, paste0("data_pr_", ndat), paste0("Final_CM_", ndat, ".rds")))

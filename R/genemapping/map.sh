@@ -20,7 +20,8 @@ for dataset in "${dataSets[@]}"; do
     echo "x <- data.frame(t(tdat))" >> $Rname
     echo "dataset <- '"$dataset"'" >> $Rname
     echo "outDir <- '"$outputDir"'" >> $Rname
-    echo "map_to_nano(x, dataset, outDir)" >> $Rname
+    echo 'shouldCompute <- '$shouldCompute >> $Rname
+    echo "map_to_nano(x, dataset, outDir, shouldCompute)" >> $Rname
 
     # Run Script
     echo "Rscript $Rname" > $shell_file

@@ -65,8 +65,6 @@ for dataset in "${dataSets[@]}"; do
             echo 'cdat<- readRDS(paste0(datadir,"/cdat_","'$dataset'",".rds"))' >> $R_clust
             echo 'shouldCompute <- '$shouldCompute >> $R_clust
             echo 'source("R/unsupervised/clust_data.R")' >> $R_clust
-            echo 'source("R/unsupervised/impute_missing.R")' >> $R_clust
-            echo 'source("R/unsupervised/con_mat.R")' >> $R_clust
 
             # Contents of sh file
             echo 'Rscript' $R_clust > $sh_clust
