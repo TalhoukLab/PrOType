@@ -81,5 +81,4 @@ gene_selection:
 %:
 		@:
 clean:
-		rm -r ./TCGA; . ./Parameters && rm -r $logDir && rm -r $outputDir && rm -r $workDir
-
+	./assets/clean.sh
