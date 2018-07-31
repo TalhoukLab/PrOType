@@ -1,4 +1,4 @@
-FROM rocker/tidyverse:3.5.1
+FROM rocker/tidyverse:3.5.0
 RUN apt-get update -y && apt-get install -y git vim libudunits2-dev
 ADD install_packages.R /tmp/install_packages.R
 RUN Rscript /tmp/install_packages.R
