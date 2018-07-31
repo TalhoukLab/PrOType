@@ -15,7 +15,7 @@ save_dir <- file.path(paste0(output_dir, "fits"))
 # fit algo
 purrr::walk2(all.dat, datasets, ~ {
   purrr::walk(algs, function(a) {
-    cat("Classifying with: ", a, "\n")
+    cli::cat_line("Classifying with: ", a, "\n")
     colnames(.x) <- make.names(colnames(.x))
     fit <- splendid::classification(
       data = .x[, -1],
@@ -24,14 +24,14 @@ purrr::walk2(all.dat, datasets, ~ {
       standardize = FALSE,
       trees = 15
     )
-    cat("Saving to:", file.path(save_dir, paste0(.y, "_", a, ".rds")), "\n")
+    cli::cat_line("Saving to:", file.path(save_dir, paste0(.y, "_", a, ".rds")), "\n")
     readr::write_rds(fit, file.path(save_dir, paste0(.y, "_", a, ".rds")))
     fit
   })
 })
 
 # build list of all fits
-cat("Reading files\n")
+cli::cat_line("Reading files\n")
 fit.c1 <- purrr::map(datasets, function(b) {
   purrr::map(algs, function(a) {
     readr::read_rds(file.path(save_dir, paste0(b, "_", a, ".rds")))

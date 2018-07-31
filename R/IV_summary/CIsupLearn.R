@@ -3,7 +3,7 @@
 library(magrittr)
 
 matrix.sort <- function(matrix) {
-  cat("Sorting matrix\n")
+  cli::cat_line("Sorting matrix\n")
   if (nrow(matrix) != ncol(matrix)) stop("Not diagonal")
   if (is.null(rownames(matrix))) rownames(matrix) <- seq_len(nrow(matrix))
 
@@ -15,7 +15,7 @@ matrix.sort <- function(matrix) {
 
 # Create CIs
 create_ci <- function(df) {
-  cat("Creating CIs\n")
+  cli::cat_line("Creating CIs\n")
   res <- paste(sprintf("%.2f", df[, "50%"]),
                paste0("(", sprintf("%.2f", df[, "5%"]),
                       "-", sprintf("%.2f", df[, "95%"]), ")")) %>%
@@ -26,7 +26,7 @@ create_ci <- function(df) {
 
 # Sort best
 sort_best <- function(train_eval, top = 5) {
-  cat("Sorting best\n")
+  cli::cat_line("Sorting best\n")
   te <- purrr::map(train_eval, function(x) {
     x %>%
       as.data.frame() %>%
@@ -36,7 +36,7 @@ sort_best <- function(train_eval, top = 5) {
     data.frame(.)
   stopifnot(rownames(te)[1] == "logloss")
 
-  cat("Before calculating best\n")
+  cli::cat_line("Before calculating best\n")
   algsfull <- colnames(te)
   df <- te %>%
     apply(1, function(x) algsfull[order(rank(-x, ties.method = "random"))]) %>%
@@ -44,7 +44,7 @@ sort_best <- function(train_eval, top = 5) {
     RankAggreg::RankAggreg(., ncol(.), method = "GA",
                            verbose = FALSE, maxIter = 2000)
 
-  cat("Calculating best\n")
+  cli::cat_line("Calculating best\n")
   best <- te[, df$top.list]
   res <- best[c("auc", "accuracy", "f1.1", "f1.2", "f1.3", "f1.4"),
               seq_len(top)] %>%
@@ -55,7 +55,7 @@ sort_best <- function(train_eval, top = 5) {
 
 # Relabel classes
 relabel_classes <- function(df, FinalR_lab) {
-  cat("Relaballing classes\n")
+  cli::cat_line("Relaballing classes\n")
   a <- table(FinalR_lab[, 1], FinalR_lab[, "CL"])
   equi <- data.frame(class = rownames(matrix.sort(a)),
                      label = colnames(matrix.sort(a)))

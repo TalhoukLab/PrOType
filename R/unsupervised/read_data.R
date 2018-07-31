@@ -9,13 +9,13 @@ cdat_name <- file.path(datadir, paste0("cdat_", ndat, ".rds"))
 
 # Save as RDS objects
 if (!dir.exists(datadir)) {
-  cat("ERROR: directory does not exist:", datadir)
+  cli::cat_line("ERROR: directory does not exist:", datadir)
   quit(status=1)
 }
 
 cli::cat_line("Processing tdat")
 if (!file.exists(fname)) {
-  cat("ERROR: file not found:", fname)
+  cli::cat_line("ERROR: file not found:", fname)
   stop(0)
 }
 if (file.exists(tdat_name)) {

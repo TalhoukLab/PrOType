@@ -3,13 +3,12 @@
 
 outputFile <- paste0(sfdir, "/rds_out_", ndat, "/", algs, s, "_", ndat)
 
-cat("Checking previous Input\n")
+cli::cat_line("Checking previous Input\n")
 if (file.exists(paste0(outputFile, ".rds")) && !shouldCompute) {
-      cat("File already exists, skipping.\n")
+      cli::cat_line("File already exists, skipping.\n")
       quit(status = 0)
 }
 
-cat(outputFile)
 library(diceR)
 r<-1
 

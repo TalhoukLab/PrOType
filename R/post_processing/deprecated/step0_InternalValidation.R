@@ -7,7 +7,7 @@ library(magrittr)
 source(here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Common arguments
-cat("Outputfile:", output_dir, "\n")
+cli::cat_line("Outputfile:", output_dir, "\n")
 
 plot_args <- list(dir = "array_classifier/2_post_processing/data/", print = FALSE, save = FALSE)
 save_args <- list(width = 16, height = 9)
@@ -20,7 +20,7 @@ top2_th_fn <- file.path(save_dir, c("top2_algorithms_byClass_threshold.png",
                                     "top2_algorithms_threshold.png"))
 
 # top algos overall (without/with) threshold
-cat("Getting ranked algorithms\n")
+cli::cat_line("Getting ranked algorithms\n")
 ranked.algo <- purrr::map2(
   c(FALSE, TRUE),
   c("Algorithm Performance Ranking",
@@ -28,14 +28,14 @@ ranked.algo <- purrr::map2(
   ~ purrr::invoke(top_algo_plot, plot_args, threshold = .x, plot.title = .y)
 ) %>% purrr::set_names(ranked_fn)
 
-cat("Walking algorithms\n")
+cli::cat_line("Walking algorithms\n")
 purrr::iwalk(
   ranked.algo,
   ~ purrr::invoke(ggplot2::ggsave, save_args, filename = .y, plot = .x)
 )
 
 # top two NO threshold
-cat("Getting top 2 no threshold\n")
+cli::cat_line("Getting top 2 no threshold\n")
 top.algs.no.threshold <- purrr::invoke(
   sup_plots,
   plot_args,
@@ -50,7 +50,7 @@ purrr::iwalk(
 )
 
 # top two threshold
-cat("Getting top 2 with threshold\n")
+cli::cat_line("Getting top 2 with threshold\n")
 top.algs.threshold <- purrr::invoke(
   sup_plots,
   plot_args,

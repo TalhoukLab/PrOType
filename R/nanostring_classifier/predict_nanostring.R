@@ -15,7 +15,7 @@ genes <- Van_mod$names
 nsdat <- load_nanostring(dir = "array_classifier/2_post_processing/data/", genes)
 
 # predict nanostring data
-cat("predicting nanostring data\n")
+cli::cat_line("predicting nanostring data\n")
 pred.nano <- predict(Van_mod, nsdat, type = "class") %>%
   data_frame(ottaID = rownames(nsdat), preds = .)
 

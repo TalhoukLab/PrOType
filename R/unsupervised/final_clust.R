@@ -22,7 +22,7 @@ cl.mat <- purrr::map(cons.mat, hc, k = 4) %>%
   lapply(diceR::relabel_class, ref.cl = .[[1]]) %>%
   data.frame()
 
-cat(paste0(ddir, "/cons_CSPA_", dataset, ".rds"), "\n")
+cli::cat_line(paste0(ddir, "/cons_CSPA_", dataset, ".rds"), "\n")
 
 final <- data.frame(
   CSPA = readRDS(paste0(ddir, "/cons_CSPA_", dataset, ".rds")),
@@ -34,17 +34,17 @@ final <- data.frame(
   cl.mat
 )
 
-cat("Relabeling elements\n")
+cli::cat_line("Relabeling elements\n")
 # relabel the elements of the data frame
 finalR <- final
 finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, referenceClass])
 
-cat("Evaluating clustering\n")
+cli::cat_line("Evaluating clustering\n")
 # Cluster evaluate at this point
 ii <- diceR:::ivi_table(finalR, cdat)
 ii <- list(ii)[[1]]
 
-cat("Ranking aggregates\n")
+cli::cat_line("Ranking aggregates\n")
 # Rank aggregate
 # WHY IS ii[s_dbw] NaN?
 cr <- diceR:::consensus_rank(ii, n = 5)
@@ -52,7 +52,7 @@ top <- cr$top.list
 ii <- ii[match(top, ii$Algorithms), ]
 finalR <- finalR[, top]
 
-cat("Saving RDS\n")
+cli::cat_line("Saving RDS\n")
 saveRDS(finalR, paste0(ddir, "/all_clusts_", dataset, ".rds"))
 saveRDS(ii, paste0(ddir, "/ii_", dataset, ".rds"))
 print(readRDS(paste0(ddir, "/ii_", dataset, ".rds")))

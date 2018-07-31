@@ -21,5 +21,4 @@ devtools::install_git("git://github.com/r-lib/processx.git")
 source("https://bioconductor.org/biocLite.R")
 biocLite("pvca")
 biocLite("AnnotationDbi")
-biocLite("hgu133plus2.db")
-biocLite("hgug4112a.db")
+bio

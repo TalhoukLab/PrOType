@@ -25,5 +25,5 @@ overlap <- combine(pred.overlap.array, overlap.nstring, pred.overlap.nstring)
 
 # evaluate overlap results
 eval.overlap <- purrr::transpose(evaluate_all(overlap))
-cat(paste0(output_dir, "/evals/", dataset, "_adaboost.rds"), "\n")
+cli::cat_line(paste0(output_dir, "/evals/", dataset, "_adaboost.rds"), "\n")
 readr::write_rds(eval.overlap, paste0(output_dir, "/evals/", dataset, "_adaboost.rds"))

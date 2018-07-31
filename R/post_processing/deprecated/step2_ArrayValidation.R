@@ -21,7 +21,7 @@ map <- get_mapping("array_classifier/2_post_processing/data/") %>%
 overlap.array <- import_array(dir= "array_classifier/2_post_processing/data/", map = map)
 
 # predict overlap array
-cat("Predicting overlap array\n")
+cli::cat_line("Predicting overlap array\n")
 pred.overlap.array <- fit.c1 %>%
   purrr::imap(~ {
     purrr::imap(.x, function(z, k) {
@@ -37,14 +37,14 @@ readr::write_rds(pred.overlap.array,
                  file.path(preds_dir, "pred_overlap_array.rds"))
 
 # evaluate overlap results
-cat("Evaluating overlap results\n")
+cli::cat_line("Evaluating overlap results\n")
 eval.overlap <- pred.overlap.array %>%
   purrr::modify_depth(2, evaluate_array) %>%
   purrr::map(purrr::transpose) %>%
   purrr::transpose()
 
 # create naming list structure
-cat("Creating naming list structure\n")
+cli::cat_line("Creating naming list structure\n")
 names.ls <- eval.overlap %>%
   purrr::map(~ {
     purrr::imap(., function(y, z) {
@@ -55,7 +55,7 @@ names.ls <- eval.overlap %>%
   })
 
 # name overlapping evaluation results list
-cat("Naming overlapping evaluation results list\n")
+cli::cat_line("Naming overlapping evaluation results list\n")
 evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
   purrr::pmap(~ {
     named <- purrr::set_names(purrr::flatten(..1), ..2)
@@ -64,7 +64,7 @@ evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
   })
 
 # visualize evaluation results
-cat("Visualizing evaluation results\n")
+cli::cat_line("Visualizing evaluation results\n")
 eval.plots <- names(evals.all) %>%
   purrr::map(~ plot_evals_noCBT(
     output_dir = output_dir,
