@@ -22,8 +22,8 @@ for dataset in "${dataSets[@]}"; do
     if command -v qsub &>/dev/null; then
         :
     else
-        chmod +x $workDir/1_Unsupervised/submit_local.py
-        python $workDir/1_Unsupervised/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step clust
+        chmod +x assets/submit_local.py
+        python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step clust
     fi
 done
 

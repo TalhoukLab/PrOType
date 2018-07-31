@@ -6,12 +6,12 @@ dataSets=(ov.afc1_cbt ov.afc1_xpn)
 shouldCompute=TRUE
 
 # Unsupervised parameters
-reps=1000
+reps=10
 k=4
-c=50 # use for determining splitting criterion (min 100 reps required)
+c=1 # use for determining splitting criterion (min 100 reps required)
 
 # Supervised parameters
-supervised_reps=500 # 5
+supervised_reps=5 # 5
 normalizeBy="None"
 threshold=0.0
 minVar=0
