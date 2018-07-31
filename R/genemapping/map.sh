@@ -15,7 +15,7 @@ for dataset in "${dataSets[@]}"; do
     shell_file=$workDir$dataset/sh_file/map/map.sh
 
     # create R script
-    echo "source('R/gene_mapping/GeneMapping.R')" > $Rname
+    echo "source('R/genemapping/GeneMapping.R')" > $Rname
     echo "tdat <- readr::read_rds('"$outputDir$dataset"/data_pr_"$dataset"/tdat_"$dataset".rds')" >> $Rname
     echo "x <- data.frame(t(tdat))" >> $Rname
     echo "dataset <- '"$dataset"'" >> $Rname
@@ -36,7 +36,7 @@ for dataset in "${dataSets[@]}"; do
 done
 
 
-
+shouldWait=FALSE
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

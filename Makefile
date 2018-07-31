@@ -17,8 +17,9 @@ prep_data:
 	./R/unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for pipeline
-files:	prep_data
-	./R/unsupervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS))
+files: prep_data \
+	./R/unsupervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS)) \
+  map
 
 # Running consensus clustering on the queue
 cluster:

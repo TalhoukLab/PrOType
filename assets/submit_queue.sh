@@ -40,7 +40,7 @@ else
   test=0
 fi
 
-while [[ $test > 0 ]]; do
+while [[ $test > 0 && shouldWait ]]; do
     echo "Checking Queue"
     test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
 

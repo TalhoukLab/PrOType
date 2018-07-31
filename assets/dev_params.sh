@@ -12,6 +12,7 @@ supervisedAlgs=(first second third fourth)
 user="$(whoami)"
 RPath="$(which R)"
 maxQueueLength=8000
+shouldWait=TRUE
 
 # specify the working directory
 if [ "$workDir" = "" ]; then
