@@ -19,7 +19,7 @@ prep_data:
 # Create scripts needed for pipeline
 files: prep_data \
 	./R/unsupervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS)) \
-  map
+  Genemapping
 
 # Running consensus clustering on the queue
 cluster:
@@ -77,6 +77,15 @@ nanostring:
 gene_selection:
 	./R/gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
 
+
+# ---------- DEBUG CHECKPOINTS ---------
+from-Unsupervised: Unsupervised from-Supervised
+
+from-Supervised: Supervised from-IVSummary
+
+from-IVSummary: IVSummary from-post_processing
+
+from-post_processing: post_processing
 
 %:
 		@:
