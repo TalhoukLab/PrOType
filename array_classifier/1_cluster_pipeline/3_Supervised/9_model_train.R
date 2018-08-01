@@ -44,6 +44,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   # class to train on is best performing ensemble algorithm
   ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")
   ens.id <- which.min(match(ens, names(class)))
+  cli::cat_line("Best ensemble algorithm: ", ens[ens.id])
   class.train <- class[[ens[ens.id]]]
 
   cat("Normalizing data:", algs, "-", reps, "\n")
