@@ -39,7 +39,11 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   npcp <-  readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("npcp-hcNorm_", dataSet, ".rds")))
   class <- readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("all_clusts_", dataSet, ".rds")))
 
-  class.train <- class[, 1]
+  # class to train on is best performing ensemble algorithm
+  ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")
+  ens.id <- which.min(match(ens, names(class)))
+  cli::cat_line("Best ensemble algorithm: ", ens[ens.id])
+  class.train <- class[[ens[ens.id]]]
 
   cli::cat_line("Normalizing data:", algs, "-", reps)
   # normalization
@@ -65,28 +69,25 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   cli::cat_line("Running training algorithms:", algs, "-", reps)
   # train algorithms
   reps <- as.integer(reps)
-  sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = reps, threshold = threshold)
+  sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = 1, threshold = threshold)
   sm <- switch(
     algs,
     first = purrr::invoke(splendid::splendid_model, sm_args,
-                          algorithms = c("lda", "rf", "pam", "mlr_lasso"), # xgboost
-                          rfe = FALSE),
+                          algorithms = c("lda", "rf", "pam", "mlr_lasso")),
     second = purrr::invoke(splendid::splendid_model, sm_args,
-                           algorithms = "svm", rfe = FALSE),
+                           algorithms = "svm"),
     third = purrr::invoke(splendid::splendid_model, sm_args,
-                          algorithms = c("knn", "adaboost"), # nnet
-                          rfe = FALSE),
+                          algorithms = c("knn", "adaboost")),
     fourth = purrr::invoke(splendid::splendid_model, sm_args,
-                           algorithms = c("nbayes", "mlr_ridge"),
-                           rfe = FALSE),
-    ldaRfe = purrr::invoke(splendid::splendid_model, sm_args,
-                           algorithms = "lda", rfe = TRUE),
-    rfRfe = purrr::invoke(splendid::splendid_model, sm_args,
-                          algorithms = "rf", rfe = TRUE),
-    lassoRfe = purrr::invoke(splendid::splendid_model, sm_args,
-                             algorithms = "mlr_lasso", rfe = TRUE),
-    svmRfe = purrr::invoke(splendid::splendid_model, sm_args,
-                           algorithms = "svm", rfe = TRUE)
+                           algorithms = c("nbayes", "mlr_ridge"))
+    # ldaRfe = purrr::invoke(splendid::splendid_model, sm_args,
+    #                        algorithms = "lda", rfe = TRUE),
+    # rfRfe = purrr::invoke(splendid::splendid_model, sm_args,
+    #                       algorithms = "rf", rfe = TRUE),
+    # lassoRfe = purrr::invoke(splendid::splendid_model, sm_args,
+    #                          algorithms = "mlr_lasso", rfe = TRUE),
+    # svmRfe = purrr::invoke(splendid::splendid_model, sm_args,
+    #                        algorithms = "svm", rfe = TRUE)
   )
 
   cli::cat_line("Saving output:", algs, "-", reps, "\n")
