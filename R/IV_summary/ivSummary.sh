@@ -49,7 +49,9 @@ fi
 # create scripts and directories
 mkdir -p $workDir'/R_file/iv_summary'
 R_combine_name=$workDir'/R_file/iv_summary/combine.R'
-echo 'ndat <- c("'$data_sets'")' > $R_combine_name
-echo 'outputDir <- "'$outputDir'"' > $Rname
-echo "Rscript 'R/IV_summary/ivCombine.R'" >> $R_combine_name
+
+
+echo 'ndat <- purrr::set_names(unlist(strsplit("'"${dataSets[*]}"'", " ")))' > $R_combine_name
+echo 'outputDir <- "'$outputDir'"' >> $R_combine_name
+echo "source('R/IV_summary/ivCombine.R')" >> $R_combine_name
 Rscript $R_combine_name
