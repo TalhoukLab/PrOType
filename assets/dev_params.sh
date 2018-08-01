@@ -7,6 +7,7 @@ cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
 referenceClass="majority"
 classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
 supervisedAlgs=(first second third fourth)
+geneSelectionAlgs=(ada rf lasso)
 
 # Bash info
 user="$(whoami)"

@@ -25,6 +25,9 @@ trainSet="ov.afc1_xpn"
 trainSet2="ov.afc1_cbt"
 testSet="ov.afc2_xpn"
 
+# Gene Selection
+numBootstraps=5 # 500
+
 # directory inputs
 workDir="/PrOType/array_classifier/1_cluster_pipeline/"
 outputDir="/outputs/"

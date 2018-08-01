@@ -65,7 +65,7 @@ saveRDS(E_knn, file = file.path(dir, paste0("data_pr_", ndat), paste0("E_knn_", 
 
 # Completed clustering
 cli::cat_line("Completing Clustering")
-cdat <- readRDS(paste0(dir, paste0("data_pr_", ndat), paste0("cdat_", ndat, ".rds")))
+cdat <- readRDS(file.path(dir, paste0("data_pr_", ndat), paste0("cdat_", ndat, ".rds")))
 Ecomp <- diceR::impute_missing(E_knn, data = cdat, nk = k)
-saveRDS(Ecomp, file = paste0(dir, paste0("data_pr_", ndat), paste0("Ecomp_", ndat, ".rds")))
+saveRDS(Ecomp, file = file.path(dir, paste0("data_pr_", ndat), paste0("Ecomp_", ndat, ".rds")))
 cli::cat_line("Completed Clustering")

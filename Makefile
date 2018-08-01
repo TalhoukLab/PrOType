@@ -17,7 +17,7 @@ prep_data:
 	./R/unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for pipeline
-files: prep_data \
+files: prep_data
 	./R/unsupervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS)) \
   Genemapping
 
@@ -36,7 +36,7 @@ ConFun:
 	./R/unsupervised/con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
 
 FinalClust:
-	./R/unsupervised/FinalClust.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/unsupervised/final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
 map:
 	./R/genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))

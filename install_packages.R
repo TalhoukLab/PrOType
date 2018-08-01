@@ -21,4 +21,4 @@ devtools::install_git("git://github.com/r-lib/processx.git")
 source("https://bioconductor.org/biocLite.R")
 biocLite("pvca")
 biocLite("AnnotationDbi")
-bio
+biocLite('preprocessCore')

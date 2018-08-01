@@ -36,8 +36,8 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cli::cat_line("Reading training data:", algs, "-", reps)
   # import training data
-  npcp <-  readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("npcp-hcNorm_", dataSet, ".rds")))
-  class <- readr::read_rds(paste0(inDir, paste0("data_pr_", dataSet), paste0("all_clusts_", dataSet, ".rds")))
+  npcp <-  readr::read_rds(file.path(inDir, paste0("data_pr_", dataSet), paste0("npcp-hcNorm_", dataSet, ".rds")))
+  class <- readr::read_rds(file.path(inDir, paste0("data_pr_", dataSet), paste0("all_clusts_", dataSet, ".rds")))
 
   # class to train on is best performing ensemble algorithm
   ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")

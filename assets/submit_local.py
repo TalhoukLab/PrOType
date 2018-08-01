@@ -47,7 +47,11 @@ if __name__ == "__main__":
                 "required": True
             },
             "step": {
-                "choices": ["clust", "consensus", "merge", "prep", "train", "iv_summary"],
+                "choices": ["clust", "consensus", "merge", "prep", "train", "iv_summary",
+                            "gene_selection_bootstrap",
+                            "geneselection_process_bootstrap",
+                            "gene_selection_final_training",
+                            "geneselection_predict"],
                 "help": "Which stage we're on...",
                 "required": True
             }
