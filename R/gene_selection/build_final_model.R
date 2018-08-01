@@ -18,7 +18,7 @@ GS_training_files <- c(
   "analysis.R",
   "utils.R"
 )
-walk(here(GS_training_dir, GS_training_files), source)
+purrr::walk(here(GS_training_dir, GS_training_files), source)
 # Parameters----
 n_genes <- 55
 alg <- "rf"

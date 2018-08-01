@@ -1,7 +1,7 @@
 writeSummaryFreqs <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Calculating summary frequencies")
   fnames <- list.files(
-    path = file.path(output_dir, "output/sumFreq"),
+    path = file.path(output_dir, "GeneSelection/output/sumFreq"),
     pattern = "[A-Z]{3}_sumFreq.csv",
     full.names = TRUE
   )
@@ -14,11 +14,11 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
 
   cli::cat_line("Write overall summary")
   readr::write_csv(overall,
-                   file.path(output_dir, "output/sumFreq/overallFreqs.csv"))
+                   file.path(output_dir, "GeneSelection/output/sumFreq/overallFreqs.csv"))
 
   if ("lasso" %in% algs) {
     fnames <- list.files(
-      path = file.path(output_dir, "output/training"),
+      path = file.path(output_dir, "GeneSelection/output/training"),
       pattern = "lasso",
       full.names = TRUE
     )
@@ -44,6 +44,6 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
 
     cli::cat_line("Write overall lasso summary")
     readr::write_csv(overall_lasso,
-                     file.path(output_dir, "output/sumFreq/overall_lasso_byclass.csv"))
+                     file.path(output_dir, "GeneSelection/output/sumFreq/overall_lasso_byclass.csv"))
   }
 }

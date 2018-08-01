@@ -1,3 +1,5 @@
+library(magrittr)
+
 runTrainingSequence <- function(runBoot, processBoot, finalTraining, makePreds,
                                 output_dir, studies, train_dat, train_lab, B,
                                 algs) {
@@ -34,7 +36,7 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
                            algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Processing Boot")
   fnames <- list.files(
-    path = file.path(output_dir, "output/training"),
+    path = file.path(output_dir, "GeneSelection/output/training"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )
@@ -45,41 +47,46 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
   })
   sumFreq <- data.frame(genes, geneFreq) %>%
     dplyr::arrange(dplyr::desc(rfFreq))
-  sumFreq_dir <- mkdir(file.path(output_dir, "output/sumFreq"))
+  sumFreq_dir <- mkdir(file.path(output_dir, "GeneSelection/output/sumFreq"))
   readr::write_csv(sumFreq, file.path(sumFreq_dir, paste0(study, "_sumFreq.csv")))
 }
 
 runFinalTraining <- function(output_dir, study, x, y,
                              algs = c("lasso", "rf", "ada"), seed_alg = 2018) {
   cli::cat_line("Starting Final Training")
-  sumFreq <- readr::read_csv(file.path(output_dir, "output/sumFreq",
+  sumFreq <- readr::read_csv(file.path(output_dir, "GeneSelection/output/sumFreq",
                                        paste0(study, "_sumFreq.csv")),
                              col_types = readr::cols())
 
-  final_dir <- mkdir(file.path(output_dir, "output/finalTraining"))
+  final_dir <- mkdir(file.path(output_dir, "GeneSelection/output/finalTraining"))
   args <- tibble::lst(x, y, sumFreq, final_dir, study, seed_alg)
   purrr::walk(algs, ~ purrr::invoke(classify_top_genes, args, alg = .))
 }
 
 classify_top_genes <- function(x, y, sumFreq, final_dir, study, seed_alg, alg,
-                               ng = seq(4, 100, 5)) {
-  ng %>%
-    purrr::set_names(paste0("ng_", .)) %>%
-    purrr::map(~ {
-      top_genes <- sumFreq %>%
-        dplyr::arrange(dplyr::desc(!!dplyr::sym(paste0(alg, "Freq")))) %>%
-        dplyr::pull(genes) %>%
-        head(.x) %>%
-        make.names()
-      splendid::classification(x[, top_genes], y, match_alg(alg), seed_alg = seed_alg)
-    }) %>%
-    readr::write_rds(file.path(final_dir, paste0(study, "_final_fit_", alg, ".rds")))
+                               ng = seq(4, 100, 5), shouldCompute=TRUE) {
+  output_file <- file.path(final_dir, paste0(study, "_final_fit_", alg, ".rds"))
+  if (file.exists(output_file) && !shouldCompute) {
+    cli::cat_line("Output already exists.")
+  } else {
+    ng %>%
+      purrr::set_names(paste0("ng_", .)) %>%
+      purrr::map(~ {
+        top_genes <- sumFreq %>%
+          dplyr::arrange(dplyr::desc(!!dplyr::sym(paste0(alg, "Freq")))) %>%
+          dplyr::pull(genes) %>%
+          head(.x) %>%
+          make.names()
+        splendid::classification(x[, top_genes], y, match_alg(alg), seed_alg = seed_alg)
+      }) %>%
+      readr::write_rds(output_file)
+  }
 }
 
 makePredictions <- function(output_dir, study, train_dat, train_lab,
                             algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Making Predictions")
-  preds_dir <- mkdir(file.path(output_dir, "output/studyPreds"))
+  preds_dir <- mkdir(file.path(output_dir, "GeneSelection/output/studyPreds"))
   fnames <- list.files(
     path = file.path(output_dir, "output/finalTraining"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),

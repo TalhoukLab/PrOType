@@ -5,7 +5,7 @@ GS_training_files <- c(
   "train.R",
   "bootstrap.R"
 )
-walk(here(GS_training_dir, GS_training_files), source)
+purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
 # Load data----
 # Load the NanoString data and select cut

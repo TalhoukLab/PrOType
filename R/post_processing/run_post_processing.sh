@@ -3,6 +3,8 @@
 . ./Parameters.sh
 
 mkdir -p $workDir$dataSet/R_file/post_processing
+mkdir -p $workDir$dataSet/sh_file/post_processing
+
 mkdir -p $outputDir/fits
 mkdir -p $outputDir/evals
 mkdir -p $outputDir/plots
@@ -14,20 +16,20 @@ Rname2=$workDir$dataSet/R_file/post_processing/interval_validity.R
 Rname3=$workDir$dataSet/R_file/post_processing/mapping_predict.R
 
 
-shname0=$workDir$dataSet/sh_name/post_processing/baseline_validity.sh
-shname1=$workDir$dataSet/sh_name/post_processing/evalute_batch.sh
-shname2=$workDir$dataSet/sh_name/post_processing/interval_validity.sh
-shname3=$workDir$dataSet/sh_name/post_processing/mapping_predict.sh
-
-chmod +x $shname0
-chmod +x $shname1
-chmod +x $shname2
-chmod +x $shname3
+shname0=$workDir$dataSet/sh_file/post_processing/baseline_validity.sh
+shname1=$workDir$dataSet/sh_file/post_processing/evalute_batch.sh
+shname2=$workDir$dataSet/sh_file/post_processing/interval_validity.sh
+shname3=$workDir$dataSet/sh_file/post_processing/mapping_predict.sh
 
 echo "Rscript $Rname0" > $shname0
 echo "Rscript $Rname1" > $shname1
 echo "Rscript $Rname2" > $shname2
 echo "Rscript $Rname3" > $shname3
+
+chmod +x $shname0
+chmod +x $shname1
+chmod +x $shname2
+chmod +x $shname3
 
 
 echo 'trainSet <- "'$trainSet'"' > $Rname0
@@ -79,9 +81,7 @@ file_to_submit=($shname0 $shname1 $shname2 $shname3)
 if command -v qsub &>/dev/null; then
   :
 else
-  for shname in "${file_to_submit[@]}"; do
-    bash $shname
-  done
+  python assets/submit_local.py --num_parallel 4 --file_location $workDir --step post_processing
 fi
 
 if command -v qsub &>/dev/null; then

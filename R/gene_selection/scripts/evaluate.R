@@ -2,7 +2,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
                                 producePlots = TRUE) {
   cli::cat_rule("Evaluating Predictions")
   pred_filenames <-
-    list.files(path = file.path(output_dir, "output/studyPreds"),
+    list.files(path = file.path(output_dir, "GeneSelection/output/studyPreds"),
                full.names = TRUE)
 
   cli::cat_line("Getting training data names")

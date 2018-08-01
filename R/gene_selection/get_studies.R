@@ -1,14 +1,8 @@
-GS_training_dir <- "R/gene_selection/scripts"
-GS_training_files <- c(
-  "utils.R",
-  "define.R",
-  "train.R",
-  "bootstrap.R",
-  "evaluate.R",
-  "summary.R",
-  "analysis.R"
-)
-walk(here::here(GS_training_dir, GS_training_files), source)
+args <- commandArgs(trailingOnly = TRUE)
+
+output_file <- args[1]
+source("R/gene_selection/scripts/define.R")
+source("R/gene_selection/scripts/utils.R")
 
 # Load data----
 # Load the NanoString data and select cut
@@ -26,3 +20,6 @@ train_lab <- train$lab
 # Get studies
 studies <- unique(train_dat$site)
 print(studies)
+
+write(studies, sep = "\n", file = output_file)
+#readr::read_csv(paste0(studies, "\n")) %>% readr::write_csv(output_file)

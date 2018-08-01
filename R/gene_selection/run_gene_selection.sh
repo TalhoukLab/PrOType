@@ -18,10 +18,6 @@ mkdir -p $outputDir/plots
 
 . ./R/gene_selection/training_post_processing.sh
 
-
-#Rname=$workDir$dataSet/R_file/gene_selection/gene_selection.R
-
-#echo 'output_dir <- file.path("'$outputDir'", "GeneSelection")' > $Rname
-#echo 'source("R/gene_selection/training_initial.R")' >> $Rname
-#echo 'source("R/gene_selection/training_part2.R")' >> $Rname
-#Rscript $Rname
+# TODO:// Move these to Qsub.
+Rscript R/gene_selection/training_part2.R
+Rscript R/gene_selection/build_final_model.R

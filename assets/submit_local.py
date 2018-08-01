@@ -48,6 +48,7 @@ if __name__ == "__main__":
             },
             "step": {
                 "choices": ["clust", "consensus", "merge", "prep", "train", "iv_summary",
+                            "post_processing",
                             "gene_selection_bootstrap",
                             "geneselection_process_bootstrap",
                             "gene_selection_final_training",

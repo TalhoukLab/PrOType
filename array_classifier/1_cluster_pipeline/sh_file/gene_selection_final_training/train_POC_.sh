@@ -1,0 +1,1 @@
+Rscript /PrOType/array_classifier/1_cluster_pipeline//R_file/gene_selection_final_training/train_POC_.R

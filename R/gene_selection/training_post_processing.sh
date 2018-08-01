@@ -11,11 +11,10 @@ echo "Processing Evaluate Predictions"
 R_train=$workDir/R_file/geneselection_post_processing/eval_preds.R
 sh_train=$workDir/sh_file/geneselection_post_processing/eval_preds.sh
 
-gene_selection_algs=${geneSelectionAlgs// /'"','"'}
-
 #Content of R file
-echo 'algs <- c("'$gene_selection_algs'")' > $Rname
+echo 'algs <- unique(purrr::set_names(unlist(strsplit("'"${geneSelectionAlgs[*]}"'", " "))))' > $R_train
 echo 'shouldCompute <- '$shouldCompute >> $R_train
+echo 'outputDir <- "'$outputDir'"' >> $R_train
 echo 'source("R/gene_selection/evaluate_predictions.R")' >> $R_train
 
 # contents of sh file
@@ -34,11 +33,10 @@ echo "Processing Summary Frequencies"
 R_train=$workDir/R_file/geneselection_post_processing/summary_freq.R
 sh_train=$workDir/sh_file/geneselection_post_processing/summary_freq.sh
 
-gene_selection_algs=${geneSelectionAlgs// /'"','"'}
-
 #Content of R file
-echo 'algs <- c("'$gene_selection_algs'")' > $Rname
+echo 'algs <- unique(purrr::set_names(unlist(strsplit("'"${geneSelectionAlgs[*]}"'", " "))))' > $R_train
 echo 'shouldCompute <- '$shouldCompute >> $R_train
+echo 'outputDir <- "'$outputDir'"' >> $R_train
 echo 'source("R/gene_selection/summary_frequencies.R")' >> $R_train
 
 # contents of sh file

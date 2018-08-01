@@ -5,7 +5,7 @@ GS_training_files <- c(
   "train.R",
   "bootstrap.R"
 )
-walk(here(GS_training_dir, GS_training_files), source)
+purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
 # Load data----
 # Load the NanoString data and select cut
@@ -27,14 +27,15 @@ y <- sl_class(train_lab, x)
 seed_boot <- 2018
 seed_alg <- 2018
 
-cli::cat_line("Running Boostrap")
-train_model(file.path(output_dir, "output", "training"),
+cli::cat_line("Running Bootstrap")
+train_model(file.path(outputDir, "GeneSelection", "output", "training"),
             study,
             x,
             y,
             B,
             alg,
             seed_boot,
-            seed_alg)
+            seed_alg,
+            shouldCompute)
 
 cli::cat_line("Finished Bootstrap")

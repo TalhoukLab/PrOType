@@ -3,7 +3,7 @@
 . ./Parameters.sh
 
 echo "Getting Studies"
-Rscript R/gene_selection/get_studies.R
+Rscript R/gene_selection/get_studies.R $outputDir/GeneSelection/tmp/studies.txt
 
 #File names for R script, rds output file, shell job script
 mkdir -p $workDir$dataset/R_file/gene_selection_final_training
@@ -12,14 +12,15 @@ mkdir -p $workDir$dataset/sh_file/gene_selection_final_training
 file_to_submit=()
 while read study; do
     for alg in "${geneSelectionAlgs[@]}"; do
-        R_train=$workDir/R_file/gene_selection_final_training/train_$study_$i.R
-        sh_train=$workDir/sh_file/gene_selection_final_training/train_$study_$i.sh
+        R_train=$workDir/R_file/gene_selection_final_training/train_${study}_$alg.R
+        sh_train=$workDir/sh_file/gene_selection_final_training/train_${study}_$alg.sh
 
         #Content of R file
         echo 'study <- "'$study'"' > $R_train
-        echo 'alg <- '$alg >> $R_train
+        echo 'alg <- "'$alg'"' >> $R_train
         echo 'B <- '$numBootstraps >> $R_train
         echo 'shouldCompute <- '$shouldCompute >> $R_train
+        echo 'outputDir <- "'$outputDir'"' >> $R_train
         echo 'source("R/gene_selection/run_final_training.R")' >> $R_train
 
         # contents of sh file
