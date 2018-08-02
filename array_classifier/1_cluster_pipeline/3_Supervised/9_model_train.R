@@ -42,10 +42,11 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   class <- readr::read_rds(paste0(inDir, "/data_pr_", dataSet, "/all_clusts_", dataSet, ".rds"))
 
   # class to train on is best performing ensemble algorithm
-  ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")
-  ens.id <- which.min(match(ens, names(class)))
-  cli::cat_line("Best ensemble algorithm: ", ens[ens.id])
-  class.train <- class[[ens[ens.id]]]
+  # ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")
+  # ens.id <- which.min(match(ens, names(class)))
+  # cli::cat_line("Best ensemble algorithm: ", ens[ens.id])
+  # class.train <- class[[ens[ens.id]]]
+  class.train <- class[["kmodes"]]
 
   cat("Normalizing data:", algs, "-", reps, "\n")
   # normalization
