@@ -25,7 +25,7 @@ match_alg <- function(alg) {
 #*****************************************************************
 load_nanostring <- function(cut = "all") {
   clinical_vars <- 3:37
-  nstring_dir <- "data/nstring"
+  nstring_dir <- "assets/data/nstring"
   # import cut 1 nanostring
   c1 <- readr::read_csv(
     file = here::here(nstring_dir, "nanostring classifier data_batch1_20170217_updated.csv"),
