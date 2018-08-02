@@ -73,7 +73,7 @@ echo 'dataDir <- "assets/data"' >> $Rname3
 echo 'cli::cat_line("Post-processing step 3")' >> $Rname3
 echo 'source("R/post_processing/predict_C2.R")' >> $Rname3
 echo 'cli::cat_line("Post-processing step 4")' >> $Rname3
-echo 'source("R/post_processing/probe_mapping_C2v2.R")' >> $Rname3
+echo 'source("R/post_processing/probe_mapping_C2.R")' >> $Rname3
 echo 'cli::cat_line("Post-processing step 5")' >> $Rname3
 echo 'source("R/post_processing/mapping_signatures_C2.R")' >> $Rname3
 

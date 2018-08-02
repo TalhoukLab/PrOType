@@ -85,7 +85,7 @@ from-Supervised: Supervised from-IVSummary
 
 from-IVSummary: IVSummary from-post_processing
 
-from-post_processing: post_processing
+from-post_processing: post_processing gene_selection
 
 %:
 		@:

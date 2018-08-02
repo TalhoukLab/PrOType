@@ -1,7 +1,7 @@
 # Mapping Signatures C2 ---------------------------------------------------
 
 # Load utility functions
-source(here::here("array_classifier/2_post_processing/utils/utils.R"))
+source(here::here("R/post_processing/utils/utils.R"))
 
 # Load data
 rfive.type <- readr::read_csv(
