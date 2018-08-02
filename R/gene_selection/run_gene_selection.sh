@@ -20,4 +20,3 @@ mkdir -p $outputDir/plots
 
 # TODO:// Move these to Qsub.
 Rscript R/gene_selection/training_part2.R
-Rscript R/gene_selection/build_final_model.R

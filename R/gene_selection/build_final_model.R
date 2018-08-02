@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
   library(cli)
   library(readxl)
 })
-GS_training_dir <- "R/gene_selection/training"
+GS_training_dir <- "R/gene_selection/scripts"
 GS_training_files <- c(
   "consensus.R",
   "train.R",

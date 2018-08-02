@@ -8,9 +8,9 @@ n_min <- 40
 alg <- "rf"
 
 # Load packages----
-library(here)
-library(tidyverse)
 suppressPackageStartupMessages({
+  library(here)
+  library(tidyverse)
   library(magrittr)
   library(splendid)
   library(caret)
@@ -29,8 +29,8 @@ GS_training_files <- c(
 )
 walk(here(GS_training_dir, GS_training_files), source)
 
-c1_path <- file.path(output_dir, "GeneSelection/output/TrainingC1")
-plot_dir <- file.path(output_dir, "GeneSelection/plots")
+c1_path <- file.path(outputDir, "GeneSelection/output/TrainingC1")
+plot_dir <- file.path(outputDir, "GeneSelection/plots")
 
 # Load data----
 # Load the NanoString data and select cut
@@ -65,7 +65,7 @@ study_test1 <- unique(test1_dat$site)
 # Determine Top Genes ----
 cli::cat_line("Determine Top Genes")
 fnames <- list.files(
-  path = file.path(output_dir, "GeneSelection/output/sumFreq"),
+  path = file.path(outputDir, "GeneSelection/output/sumFreq"),
   pattern = "sumFreq",
   full.names = TRUE
 )
@@ -82,7 +82,7 @@ rf70 <- fnames %>%
   )
 
 # Load the average frequency across all studies
-sumFreq <- read.csv(file.path(output_dir, "GeneSelection/output/sumFreq/overallFreqs.csv"),
+sumFreq <- read.csv(file.path(outputDir, "GeneSelection/output/sumFreq/overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
   arrange(desc(`rfFreq`))
 
@@ -243,7 +243,7 @@ if (refineModel) {
     map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     map_dbl(pluck, "overall", "Accuracy")
 
-  pdf(file.path(output_dir, "GeneSelection/plots/Accuracy_alternates.pdf"))
+  pdf(file.path(outputDir, "GeneSelection/plots/Accuracy_alternates.pdf"))
   plot(
     1:3,
     res_pred,

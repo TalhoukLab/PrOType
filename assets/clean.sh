@@ -1,3 +1,5 @@
+#!/bin/bash
+
 . ./Parameters.sh
 rm -r $logDir
 rm -r $outputDir

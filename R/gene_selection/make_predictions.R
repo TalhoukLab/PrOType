@@ -21,5 +21,5 @@ train_dat <- train$dat
 train_lab <- train$lab
 
 cli::cat_line("Making Predictions")
-makePredictions(file.path(output_dir, "output", "training"), study, train_dat, train_lab, algs)
+makePredictions(outputDir, study, train_dat, train_lab, algs)
 cli::cat_line("Making Predictions")

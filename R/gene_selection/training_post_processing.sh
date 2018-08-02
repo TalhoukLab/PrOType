@@ -6,7 +6,7 @@
 mkdir -p $workDir$dataset/R_file/geneselection_post_processing
 mkdir -p $workDir$dataset/sh_file/geneselection_post_processing
 
-file_to_submit=()
+file_to_submit=("R/gene_selection/build_final_model.sh")
 echo "Processing Evaluate Predictions"
 R_train=$workDir/R_file/geneselection_post_processing/eval_preds.R
 sh_train=$workDir/sh_file/geneselection_post_processing/eval_preds.sh
@@ -21,7 +21,6 @@ echo 'source("R/gene_selection/evaluate_predictions.R")' >> $R_train
 echo 'Rscript' $R_train > $sh_train
 
 chmod +x $sh_train
-
 if command -v qsub &>/dev/null; then
   echo "Adding To Queue: $sh_train"
   file_to_submit+=($sh_train)
@@ -51,7 +50,6 @@ else
   bash $sh_train
 fi
 
-shouldWait=FALSE
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

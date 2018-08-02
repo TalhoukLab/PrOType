@@ -1,3 +1,5 @@
+library(purrr)
+
 runGeneAnalysis <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
   fnames <- list.files(file.path(output_dir, "GeneSelection/output/sumFreq"),
