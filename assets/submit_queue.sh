@@ -10,24 +10,26 @@ for shname in "${file_to_submit[@]}"; do
 	fi
 
   mkdir -p $logDir
+  startQLength=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
+  curr_max_submit=$(($maxQueueLength - $startQLength))
 
 	# execute shell script to queue
   if command -v qsub &>/dev/null; then
 		  echo "Submitting To Queue ($user): $shname"
 
-      test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
-	    while [[ "$test" -ge "$maxQueueLength" ]]; do
+      while [[ "$test" -ge "$curr_max_submit" ]]; do
         test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
         echo "Waiting on: ${test} jobs to complete before submitting job."
         sleep 30s
       done
 
 		  qcmd="qsub -V -p -1 -l mem_free=4G -l mem_token=4G -l h_vmem=8G -e $logDir -o $logDir -q all.q $shname"
-          qq=`$qcmd` # runs a qsub command
-          qt=`echo $qq | awk '{print $3}'`
+      qq=`$qcmd` # runs a qsub command
+      qt=`echo $qq | awk '{print $3}'`
 
-          jobid=${qt%%.*}
-          qsubJobArray+=($jobid)
+      jobid=${qt%%.*}
+      qsubJobArray+=($jobid)
+      var=$((var - 1))
   fi
 done
 

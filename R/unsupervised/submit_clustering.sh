@@ -8,6 +8,12 @@
 file_to_submit=()
 
 for dataset in "${dataSets[@]}"; do
+    mkdir -p $workDir$dataset/R_file/clust
+    mkdir -p $workDir$dataset/sh_file/clust
+
+    mkdir -p $outputDir$dataset'/rds_out_'$dataset
+    mkdir -p $outputDir$dataset'/imputed_clust_'$dataset
+    mkdir -p $outputDir$dataset'/con_mat_'$dataset
 
     for s in `seq 1 $reps`; do
         for i in "${algs[@]}"; do

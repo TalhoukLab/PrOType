@@ -1,5 +1,5 @@
 # Makefile to test parallel pipeline
-all: clustering post_processing nanostring gene_selection
+all: clustering post_processing gene_selection cross_platform
 
 # ------------- PART 1 ----------------
 Unsupervised: init cluster CMmerge merge ConFun FinalClust
@@ -68,6 +68,9 @@ nanostring:
 # ----------- PART 4 -------------
 gene_selection:
 	./R/gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
+
+cross_platform:
+	./R/cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # ---------- DEBUG CHECKPOINTS ---------
