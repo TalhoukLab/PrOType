@@ -26,7 +26,7 @@ else
   bash $shname
 fi
 
-logDir=$baseLogDir'/post_processing'
+logDir=$baseLogDir'/cross_platform'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 
