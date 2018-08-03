@@ -1,15 +1,11 @@
-rm(list = ls())
-
 # Load packages
-library(here)
 library(tidyverse)
 
-source(here("GeneSelection/scripts/utils.R"))
-nstring_path <- here("data/nstring")
-array_path <- here("data/array/OverlapSet")
+source(here::here("R/GeneSelection/scripts/utils.R"))
+nstring_path <- "assets/data/nstring"
+array_path <- "data/array/OverlapSet"
 
 # Load data
-
 # Load prediction labels and find overlapping samples where there is agreement
 preds <-
   read.csv(file.path(nstring_path, "predictions.csv"),

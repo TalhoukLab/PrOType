@@ -1,12 +1,9 @@
-rm(list = ls())
-
 # Load and map samples and genes between array and NanoString
-library(here)
-source(here("CrossPlatform/cp_map.R"))
+source(here::here("R/CrossPlatform/map.R"))
 
-input_dir <- mkdir(here("Outputs/GeneSelection/output/sumFreq"))
-output_dir <- mkdir(here("Outputs/CrossPlatform/output"))
-plot_dir <- mkdir(here("Outputs/CrossPlatform/plots"))
+input_dir <- file.path(outputDir, "GeneSelection/output/sumFreq")
+output_dir <- file.path(outputDir, "CrossPlatform/output")
+plot_dir <- file.path(outputDir, "CrossPlatform/plots")
 
 # Determine outliers
 is_outlier <- function(x, y, n = 3) {
