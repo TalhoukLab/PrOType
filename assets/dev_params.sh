@@ -28,7 +28,7 @@ if [ "$outputDir" = "" ]; then
 fi
 
 # specify log directory
-if [ "$logDir" = "" ]; then
+if [ "$baseLogDir" = "" ]; then
     echo "Log directory must be specified"
 	exit 1
 fi

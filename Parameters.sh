@@ -3,7 +3,7 @@
 # data information
 #dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
 dataSets=(ov.afc1_cbt ov.afc1_xpn)
-shouldCompute=TRUE
+shouldCompute=FALSE
 
 # Unsupervised parameters
 reps=10
@@ -29,7 +29,7 @@ testSet="ov.afc2_xpn"
 numBootstraps=5 # 500
 
 # directory inputs
-workDir="/PrOType/array_classifier/1_cluster_pipeline/"
+workDir="/workDir/"
 outputDir="/outputs/"
 inputDir="/PrOType/raw_data/"
 baseLogDir="/home/mpaletta/logs/"
