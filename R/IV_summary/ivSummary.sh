@@ -36,6 +36,7 @@ for i in "${dataSets[@]}"; do
     fi
 done
 
+logDir=$baseLogDir'/IVSummary/ivSummary'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

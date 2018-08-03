@@ -84,6 +84,7 @@ else
   python assets/submit_local.py --num_parallel 4 --file_location $workDir --step post_processing
 fi
 
+logDir=$baseLogDir'/post_processing'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

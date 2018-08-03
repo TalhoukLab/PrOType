@@ -7,17 +7,40 @@
 ##################################################
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
+    mkdir -p $workDir$dataset/R_file/merge
+    mkdir -p $workDir$dataset/sh_file/merge
+
+    mkdir -p $outputDir$dataset'/con_mat_merged_'$dataset
+
     for s in `seq $c $c $reps`; do
         for i in "${algs[@]}"; do
-            shell_file=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
-            echo "Adding To Queue: $shell_file"
+            # file names
+            R_merge=$workDir$dataset/R_file/merge/Merge_$i$s.R
+            sh_merge=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
+
+            # Content of R file
+            echo 'ndat<- "'$dataset'"' > $R_merge
+            echo 'dir <- "'$outputDir$dataset'"' >> $R_merge
+            echo 'algs<- "'$i'"' >> $R_merge
+            echo 'c <- '$c >> $R_merge
+            echo 'r <- '$r >> $R_merge
+            echo 'reps <- '$reps >> $R_merge
+            echo 'k <- '$k >> $R_merge
+            echo 'shouldCompute <- '$shouldCompute >> $R_merge
+            echo 'source("R/unsupervised/merge_partial_consmat.R")' >> $R_merge
+
+            # Content of sh file
+            echo 'Rscript' $R_merge > $sh_merge
+
+            chmod +x $sh_merge
+
             if command -v qsub &>/dev/null; then
                 # execute shell_file to cluster
-                echo "Adding To Queue: $shell_file"
-                file_to_submit+=($shell_file)
+                echo "Adding To Queue: $sh_merge"
+                file_to_submit+=($sh_merge)
             fi
 
-            chmod +x $shell_file
+            chmod +x $sh_merge
         done
     done
 
@@ -30,6 +53,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'Submitted merge files to the queue!'
 done
 
+logDir=$baseLogDir'/unsupervised/CMmerge'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

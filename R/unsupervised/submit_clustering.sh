@@ -6,16 +6,39 @@
 ############# Submit jobs to cluster #############
 ##################################################
 file_to_submit=()
+
 for dataset in "${dataSets[@]}"; do
+
     for s in `seq 1 $reps`; do
         for i in "${algs[@]}"; do
-            shell_file=$workDir$dataset/sh_file/clust/$i$s.sh
+            # File names for R script, rds output file, shell job script
+
+            R_clust=$workDir$dataset/R_file/clust/$i$s.R
+            sh_clust=$workDir$dataset/sh_file/clust/$i$s.sh
+
+            # Content of R file
+            echo 'k<-'$k > $R_clust
+            echo 's<-'$s >> $R_clust
+            echo 'algs<- "'$i'"' >> $R_clust
+            echo 'pr<- "cs"' >> $R_clust
+            echo 'sfdir<- "'$outputDir$dataset'"' >> $R_clust
+            echo 'ndat<- "'$dataset'"' >> $R_clust
+            echo 'datadir<- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_clust
+            echo 'cdat<- readRDS(paste0(datadir,"/cdat_","'$dataset'",".rds"))' >> $R_clust
+            echo 'shouldCompute <- '$shouldCompute >> $R_clust
+            echo 'source("R/unsupervised/clust_data.R")' >> $R_clust
+
+            # Contents of sh file
+            echo 'Rscript' $R_clust > $sh_clust
+
+            chmod +x $sh_clust
+
             if command -v qsub &>/dev/null; then
-                echo "Adding To Queue: $shell_file"
-                file_to_submit+=($shell_file)
+                echo "Adding To Queue: $sh_clust"
+                file_to_submit+=($sh_clust)
             fi
 
-            chmod +x $shell_file
+            chmod +x $sh_clust
         done
     done
 
@@ -27,6 +50,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
+logDir=$baseLogDir'/unsupervised/clustering'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

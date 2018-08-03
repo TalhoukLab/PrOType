@@ -22,4 +22,4 @@ train_lab <- train$lab
 
 cli::cat_line("Making Predictions")
 makePredictions(outputDir, study, train_dat, train_lab, algs)
-cli::cat_line("Making Predictions")
+cli::cat_line("Finished Making Predictions")

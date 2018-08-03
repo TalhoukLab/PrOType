@@ -39,6 +39,7 @@ else
     python assets/submit_local.py --num_parallel 4 --file_location $workDir --step geneselection_predict
 fi
 
+logDir=$baseLogDir'/gene_selection/predictions'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

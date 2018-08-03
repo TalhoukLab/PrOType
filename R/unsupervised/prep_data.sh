@@ -4,16 +4,9 @@
 
 for dataset in "${dataSets[@]}"; do
 
-    echo "Removing Folders"
-    rm -rf $workDir$dataset'/R_file/prep'
-    rm -rf $workDir$dataset'/sh_file/prep'
-
     echo "Creating folders"
     mkdir -p $workDir$dataset'/R_file/prep'
-    mkdir -p $workDir$dataset'/R_file/clust'
     mkdir -p $workDir$dataset'/sh_file/prep'
-    mkdir -p $workDir$dataset'/sh_file/clust'
-    mkdir -p $outputDir$dataset
     mkdir -p $outputDir$dataset'/data_pr_'$dataset
 
     #File names for R script, rds output file, shell job script

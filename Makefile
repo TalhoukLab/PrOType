@@ -2,9 +2,7 @@
 all: clustering post_processing nanostring gene_selection
 
 # ------------- PART 1 ----------------
-Unsupervised: files cluster CMmerge merge ConFun FinalClust
-
-Genemapping: map
+Unsupervised: init cluster CMmerge merge ConFun FinalClust
 
 Supervised: SLtrain SLreduce
 
@@ -17,9 +15,7 @@ prep_data:
 	./R/unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Create scripts needed for pipeline
-files: prep_data
-	./R/unsupervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS)) \
-  Genemapping
+init: prep_data Genemapping
 
 # Running consensus clustering on the queue
 cluster:
@@ -38,15 +34,11 @@ ConFun:
 FinalClust:
 	./R/unsupervised/final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
-map:
+Genemapping:
 	./R/genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Create scripts needed for SL pipeline
-SLfiles:
-	./R/supervised/create_scripts.sh $(filter-out $@,$(MAKECMDGOALS))
-
 # Run scripts to train models
-SLtrain: SLfiles
+SLtrain:
 	./R/supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
 
 SLreduce:

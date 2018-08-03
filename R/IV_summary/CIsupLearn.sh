@@ -33,7 +33,7 @@ for dataset in "${dataSets[@]}"; do
 done
 
 
-
+logDir=$baseLogDir'/IVSummary/CIsupLearn'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

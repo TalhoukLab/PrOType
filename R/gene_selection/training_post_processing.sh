@@ -50,6 +50,7 @@ else
   bash $sh_train
 fi
 
+logDir=$baseLogDir'/gene_selection/post_processing'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

@@ -2,12 +2,13 @@ library(purrr)
 
 runGeneAnalysis <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
+  plot_dir <- file.path(output_dir, "plots")
   fnames <- list.files(file.path(output_dir, "GeneSelection/output/sumFreq"),
                        pattern = "_sumFreq.csv", full.names = TRUE)
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
   if ("lasso" %in% algs) {
-    cli::cat_line("lasso30")
+    cli::cat_line("lasso")
     lasso30 <- purrr::map(fnames, ~ {
       readr::read_csv(file = ., col_types = readr::cols()) %>%
         dplyr::arrange(dplyr::desc(lassoFreq)) %>%

@@ -5,12 +5,14 @@ qsubJobArray=()
 for shname in "${file_to_submit[@]}"; do
 	# check if data set was specified
 	if [ "$shname" = "" ]; then
-		echo "script set must be specified."
-		exit 1
+		  echo "script set must be specified."
+		  exit 1
 	fi
 
+  mkdir -p $logDir
+
 	# execute shell script to queue
-    if command -v qsub &>/dev/null; then
+  if command -v qsub &>/dev/null; then
 		  echo "Submitting To Queue ($user): $shname"
 
       test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
@@ -26,7 +28,7 @@ for shname in "${file_to_submit[@]}"; do
 
           jobid=${qt%%.*}
           qsubJobArray+=($jobid)
-    fi
+  fi
 done
 
 

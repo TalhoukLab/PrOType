@@ -38,6 +38,7 @@ else
     python assets/submit_local.py --num_parallel 4 --file_location $workDir --step geneselection_process_bootstrap
 fi
 
+logDir=$baseLogDir'/gene_selection/process_bootstrap'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

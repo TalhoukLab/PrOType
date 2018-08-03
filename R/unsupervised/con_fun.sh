@@ -12,15 +12,36 @@ file_to_submit=()
 ############ Execute jobs on cluster #############
 ##################################################
 for dataset in "${dataSets[@]}"; do
+
+    mkdir -p $workDir$dataset/R_file/consensus
+    mkdir -p $workDir$dataset/sh_file/consensus
+
     for i in "${cons[@]}"; do
         # execute shell_file to cluster node
-        shell_file=$workDir$dataset/sh_file/consensus/Create_$i.sh
+
+        # file names
+        R_cons=$workDir$dataset/R_file/consensus/Create_$i.R
+        sh_cons=$workDir$dataset/sh_file/consensus/Create_$i.sh
+
+        # create R scripts
+        echo 'ndat<- "'$dataset'"' > $R_cons
+        echo 'cons.funs<-"'$i'"'>> $R_cons
+        echo "k <- $k" >> $R_cons
+        echo 'dir <-"'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_cons
+        echo 'shouldCompute <- '$shouldCompute >> $R_cons
+        echo 'source("R/unsupervised/con_fun.R")' >> $R_cons
+
+        # create sh scripts
+        echo 'Rscript' $R_cons > $sh_cons
+
+        chmod +x $sh_cons
+
         if command -v qsub &>/dev/null; then
-            echo "Submitting to queue: $shell_file"
-            file_to_submit+=($shell_file)
+            echo "Submitting to queue: $sh_cons"
+            file_to_submit+=($sh_cons)
         fi
 
-        chmod +x $shell_file
+        chmod +x $sh_cons
     done
 
     if command -v qsub &>/dev/null; then
@@ -30,6 +51,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
+logDir=$baseLogDir'/unsupervised/confun'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

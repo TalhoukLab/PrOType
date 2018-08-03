@@ -53,7 +53,7 @@ for dataset in "${dataSets[@]}"; do
     done
 done
 
-
+logDir=$baseLogDir'/supervised/reduce'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

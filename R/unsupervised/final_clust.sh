@@ -14,6 +14,14 @@ for dataset in "${dataSets[@]}"; do
 
     R_eval=$workDir$dataset/R_file/eval/eval_run.R
     shell_file=$workDir$dataset/sh_file/eval/eval_run.sh
+
+    # create R script
+    echo "fdir <- '"$outputDir"'" > $R_eval
+    echo "dat <- '"$dataset"'" >> $R_eval
+    echo "referenceClass <- '"$referenceClass"'" >> $R_eval
+    echo 'shouldCompute <- '$shouldCompute >> $R_eval
+    echo "source('R/unsupervised/final_clust.R')" >> $R_eval
+
     # execute R scripts
     echo "Rscript $R_eval" > $shell_file
 
@@ -27,6 +35,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
+logDir=$baseLogDir'/unsupervised/finalClust'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

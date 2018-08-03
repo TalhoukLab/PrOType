@@ -63,9 +63,9 @@ runFinalTraining <- function(output_dir, study, x, y,
   purrr::walk(algs, ~ purrr::invoke(classify_top_genes, args, alg = .))
 }
 
-classify_top_genes <- function(x, y, sumFreq, final_dir, study, seed_alg, alg,
+classify_top_genes <- function(x, y, sumFreq, outputDir, study, seed_alg, alg,
                                ng = seq(4, 100, 5), shouldCompute=TRUE) {
-  output_file <- file.path(final_dir, paste0(study, "_final_fit_", alg, ".rds"))
+  output_file <- file.path(outputDir, "GeneSelection/output/finalTraining", paste0(study, "_final_fit_", alg, ".rds"))
   if (file.exists(output_file) && !shouldCompute) {
     cli::cat_line("Output already exists.")
   } else {
@@ -88,14 +88,13 @@ makePredictions <- function(output_dir, study, train_dat, train_lab,
   cli::cat_line("Making Predictions")
   preds_dir <- mkdir(file.path(output_dir, "GeneSelection/output/studyPreds"))
   fnames <- list.files(
-    path = file.path(output_dir, "output/finalTraining"),
+    path = file.path(output_dir, "GeneSelection/output/finalTraining"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )
   # Generate a subset for testing
   x_new <- sl_data(train_dat, study, "test")
   y_new <- sl_class(train_lab, x_new)
-
   # Model predictions on test set for each algorithm
   mod.pred <- algs %>%
     purrr::set_names() %>%
@@ -106,7 +105,7 @@ makePredictions <- function(output_dir, study, train_dat, train_lab,
         readr::read_rds() %>%
         purrr::set_names(paste(sp_alg, names(.), sep = "_")) %>%
         purrr::map(~ splendid::prediction(., x_new[, which_genes(., sp_alg)], y_new) %>%
-                     purrr::set_names(rownames(x_new)))
+                      purrr::set_names(rownames(x_new)))
     })
   readr::write_rds(mod.pred, file.path(preds_dir, paste0(study, "_mod_pred.rds")))
 }
