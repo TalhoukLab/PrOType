@@ -34,14 +34,14 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 
 ### merge_partial_consmat.R
 - Inputs
-	* [{outputDir}/{dataset}/rds_out_{dataset}/{unsupervised_algorithm}{*}_{dataset}.rds]
+	* [{outputDir}/{dataset}/rds_out_{dataset}/{unsupervised_algorithm}{repetition[*]}_{dataset}.rds]
 - Outputs
 	* {outputDir}/{dataset}/con_mat_merged_{dataset}/{repetition}_{unsupervised_algorithm}_consmat_{dataset}.rds}
 
 ### merge_clust.R
 - Inputs
-	* [{outputDir}/{dataset}/rds_out_{dataset}/{unsupervised_algorithm}{*}_{dataset}.rds]
-	* [{outputDir}/{dataset}/imputed_clust_{dataset}/{*}{*}_{dataset}.rds]
+	* [{outputDir}/{dataset}/rds_out_{dataset}/{unsupervised_algorithm}{repetition[*]}_{dataset}.rds]
+	* [{outputDir}/{dataset}/imputed_clust_{dataset}/{unsupervised_algorithm[*]}{repetition[*]}_{dataset}.rds]
 	* {outputDir}/{dataset}/{data_pr_{dataset}/cdat_{dataset}.rds
 - Outputs
 	* {outputDir}/{dataset}/data_pr_{dataset}/E__{dataset}.rds
@@ -65,7 +65,7 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 - Inputs
 	* {outputDir}/{dataset}/{data_pr_{dataset}/cdat_{dataset}.rds
 	* {outputDir}/{dataset}/data_pr_{dataset}/Final_CM__{dataset}.rds
-	* [{outputDir}/{dataset}/data_pr_{dataset}/cons_{*}_{dataset}.rds]
+	* [{outputDir}/{dataset}/data_pr_{dataset}/cons_{consensus_function[*]}_{dataset}.rds]
 - Outputs
 	* {outputDir}/{dataset}/data_pr_{dataset}/all_clusts_{dataset}.rds
 	* {outputDir}/{dataset}/data_pr_{dataset}/ii__{dataset}.rds
@@ -80,23 +80,23 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 	* {outputDir}/{dataset}/{data_pr_{dataset}/tdat_mapped_{dataset}.rds
 
 ## Supervised
-### model_train.R
+### train.R
 - Inputs
 	* {outputDir}/{dataset}/{data_pr_{dataset}/npcp-hcNorm_{dataset}.rds
 	* {outputDir}/{dataset}/data_pr_{dataset}/all_clusts_{dataset}.rds
 - Outputs
-	* {outputDir}/{dataset}/Model-hc_{dataset}/c1_{supervised_algorithm}{repetition}_{dataset}.rds
+	* {outputDir}/{dataset}/Model-hc_{dataset}/c1_{supervised_algorithm}{supervised_repetition}_{dataset}.rds
 
 ### reduce.R
 - Inputs
-	* [{outputDir}/{dataset}/Model-hc_{dataset}/c1_{supervised_algorithm}{*}_{dataset}.rds]
+	* [{outputDir}/{dataset}/Model-hc_{dataset}/c1_{supervised_algorithm}{supervised_repetition[*]}_{dataset}.rds]
 - Outputs
 	* {outputDir}/{dataset}/Model-hc_{dataset}/{supervised_algorithm}_train_eval_{dataset}.rds
 
 ## IVSummary
 ### train_eval.R
 - Inputs
-	* [{outputDir}/{dataset}/Model-hc_{dataset}/c1_{*}{*}_{dataset}.rds]
+	* [{outputDir}/{dataset}/Model-hc_{dataset}/c1_{supervised_algorithm[*]}{supervised_repetition[*]}_{dataset}.rds]
 - Outputs
 	* {outputDir}/{dataset}/data_pr_{dataset}/train_eval_{dataset}.rds
 
@@ -115,10 +115,9 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 
 ### ivCombine.R
 - Inputs
-	* cp {outputDir}/{dataset}/data_pr_{dataset} {outputDir}/iv_summary
 	* {outputDir}/iv_summary/data_pr_{dataset}/iv_summary_{dataset}{threshold}?.rds'
 - Outputs
-	* {outputDir}/iv_summary/iv_summary_COMBINED.rds
+	* {outputDir}/iv_summary_COMBINED.rds
 
 ## Post-Processing
 #### TODO
@@ -129,31 +128,34 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 prep_data
 	- Unsupervised/read_data.R
 	- Unsupervised/prep_data.R
-files
+	
+init
 	- <<prep_data>>
-	- Unsupervised/CreateScripts.R
+	-- <<GeneMapping>>
+	
 cluster
 	- Unsupervised/clust_data.R
 	- Unsupervised/impute_missing.R
 	- Unsupervised/con_mat.R
+	
 CMmerge
 	- Unsupervised/merge_partial_consmat.R
+	
 merge
 	- Unsupervised/merge_clust.R
 	- Unsupervised/merge_complete_consmat.R
+	
 ConFun
 	- Unsupervised/con_fun.R
+	
 FinalClust
-	- Unsupervised/Evalutuation.R
+	- Unsupervised/evalutuation.R
+	
 map
 	- Genemapping/GeneMapping.R
 
-SLfiles
-	- Supervised/CreateSLScripts.sh
-
 SLtrain
-	- <<SLfiles>>
-	- Supervised/model_train.R
+	- Supervised/train.R
 
 SLreduce
 	- Supervised/reduce.R
