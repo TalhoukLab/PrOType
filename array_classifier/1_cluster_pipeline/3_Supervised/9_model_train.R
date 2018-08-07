@@ -66,7 +66,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cat("Running training algorithms:", algs, "-", reps, "\n")
   # train algorithms
-  reps <- as.integer(reps)
   sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = 1, threshold = threshold)
   sm <- switch(
     algs,
