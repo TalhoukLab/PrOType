@@ -43,6 +43,8 @@ for dataset in "${dataSets[@]}"; do
             echo 'fname <- "'$fname'"' >> $R_train
             echo 'threshold <- '$threshold >> $R_train
             echo 'shouldCompute <- '$shouldCompute >> $R_train
+            echo 'library(magrittr)' >> $R_train
+            echo 'library(splendid)' >> $R_train
             echo 'source("'$workDir'3_Supervised/9_model_train.R")' >> $R_train
             echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_train
 
