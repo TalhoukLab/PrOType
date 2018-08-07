@@ -83,14 +83,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                           algorithms = c("knn", "adaboost")),
     fourth = purrr::invoke(splendid::splendid_model, sm_args,
                            algorithms = c("nbayes", "mlr_ridge"))
-    # ldaRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                        algorithms = "lda", rfe = TRUE),
-    # rfRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                       algorithms = "rf", rfe = TRUE),
-    # lassoRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                          algorithms = "mlr_lasso", rfe = TRUE),
-    # svmRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                        algorithms = "svm", rfe = TRUE)
   )
 
   cat("Saving output:", algs, "-", reps, "\n")
