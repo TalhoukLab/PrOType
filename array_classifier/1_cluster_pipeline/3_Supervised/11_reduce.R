@@ -13,21 +13,18 @@
 
 library(magrittr)
 reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
-  # Store data_directory path
-  dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet, "/")
-
-
-  outputFile <- paste0(dirpath, alg, "_train_eval_", dataSet, ".rds")
+  # store data directory path
+  dirpath <- paste0(outDir, dataSet, "/", fname, "_", dataSet)
 
   # grep files in directory matching pattern
-  files.in <- grep(
+  files.in <- list.files(
+    path = dirpath,
     pattern = paste0("c1_", alg, "[0-9]+_", dataSet, ".rds"),
-    x = list.files(dirpath),
-    value = TRUE
+    full.names = TRUE
   )
 
   # import data into memory, keeping only evaluations
-  files.read <- purrr::map(files.in, ~ readRDS(paste0(dirpath, .))[["evals"]])
+  files.read <- purrr::map(files.in, readRDS)
 
   # transpose evaluation measures to group by algorithm
   reduced <- purrr::transpose(files.read)
@@ -37,5 +34,6 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold =
     purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
 
   # write to file
+  outputFile <- file.path(dirpath, paste0(alg, "_train_eval_", dataSet, ".rds"))
   readr::write_rds(reduced_quantiles, outputFile)
 }
