@@ -168,3 +168,36 @@ write_csv(lax_van_om_test_predictions, here(GS_output_dir, "lax_van_om_test_pred
 pred_compare <- inner_join(Final_Predictions, lax_van_om_test_predictions, by = "ottaID")
 summarize(pred_compare, agree = sum(predicted == prediction)) # 48/48 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
+
+# ARL_paired_samples
+nanostring_data_ARL_paired_samples_20160915 <- read_excel("raw_data/nanostring data_ARL paired samples_20160915.xlsx")
+x.arl_paried_samples <- prepare_samples(nanostring_data_ARL_paired_samples_20160915)
+arl_paired_samples_predictions <- predict_samples(final_model, x.arl_paried_samples)
+write_csv(arl_paired_samples_predictions, here(GS_output_dir, "arl_paired_samples_predictions.csv"))
+
+# Compare NanoString and ARL_paired_samples predictions
+pred_compare <- inner_join(Final_Predictions, arl_paired_samples_predictions, by = "ottaID")
+summarize(pred_compare, agree = sum(predicted == prediction)) # 26/26 agree
+identical(pred_compare$predicted, pred_compare$prediction) # verify identical
+
+# Rep_BIO_samples
+nanostring_data_Rep_BIO_samples_20160916 <- read_excel("raw_data/nanostring data_Rep.BIO samples_20160916.xlsx")
+x.rep_bio_samples <- prepare_samples(nanostring_data_Rep_BIO_samples_20160916)
+rep_bio_samples_predictions <- predict_samples(final_model, x.rep_bio_samples)
+write_csv(rep_bio_samples_predictions, here(GS_output_dir, "rep_bio_samples_predictions.csv"))
+
+# Compare NanoString and Rep_BIO_samples predictions
+pred_compare <- inner_join(Final_Predictions, rep_bio_samples_predictions, by = "ottaID")
+summarize(pred_compare, agree = sum(predicted == prediction)) # 38/38 agree
+identical(pred_compare$predicted, pred_compare$prediction) # verify identical
+
+# Replicates_and_Xsite_samples
+nanostring_data_replicates_and_Xsite_20160915 <- read_excel("raw_data/nanostring data_replicates and Xsite_20160915.xlsx")
+x.replicates_and_Xsite <- prepare_samples(nanostring_data_replicates_and_Xsite_20160915)
+replicates_and_Xsite_predictions <- predict_samples(final_model, x.replicates_and_Xsite)
+write_csv(replicates_and_Xsite_predictions, here(GS_output_dir, "replicates_and_Xsite_predictions.csv"))
+
+# Compare NanoString and Replicates_and_Xsite_samples
+pred_compare <- inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
+summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
+identical(pred_compare$predicted, pred_compare$prediction) # verify identical
