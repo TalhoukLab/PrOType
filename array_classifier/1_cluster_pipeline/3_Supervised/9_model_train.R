@@ -80,6 +80,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   )
 
   cat("Saving output:", algs, "-", reps, "\n")
-  # write to file
-  readr::write_rds(sm, outputFile)
+  # write evaluations to file
+  readr::write_rds(sm[["evals"]], outputFile)
 }

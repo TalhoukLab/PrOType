@@ -36,6 +36,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'fname <- "'$fname'"' >> $Rname
         echo 'threshold <- "'$threshold'"' >> $Rname
         echo 'source("'$workDir'3_Supervised/11_reduce.R")' >> $Rname
+        echo 'library(magrittr)' >> $Rname
         echo 'reduce_supervised(dataSet, alg, outDir, fname, threshold)' >> $Rname
 
         # Content of shell script

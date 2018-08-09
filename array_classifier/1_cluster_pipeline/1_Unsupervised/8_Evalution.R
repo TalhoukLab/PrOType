@@ -42,11 +42,9 @@ finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, referenceClas
 cat("Evaluating clustering\n")
 # Cluster evaluate at this point
 ii <- diceR:::ivi_table(finalR, cdat)
-ii <- list(ii)[[1]]
 
 cat("Ranking aggregates\n")
 # Rank aggregate
-# WHY IS ii[s_dbw] NaN?
 cr <- diceR:::consensus_rank(ii, n = 5)
 top <- cr$top.list
 ii <- ii[match(top, ii$Algorithms), ]

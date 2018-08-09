@@ -13,6 +13,16 @@ user="$(whoami)"
 RPath="$(which R)"
 maxQueueLength=8000
 
+# Check whether an input is a positive integer. If not, logout.
+function is_pos_int() {
+  var=$1
+  val=$(eval echo "$"$var)
+  if ! [[ $val =~ ^[1-9][0-9]*$ ]]; then
+    echo $var=$val is not a positive integer.
+    exit 1
+  fi
+}
+
 # specify the working directory
 if [ "$workDir" = "" ]; then
   echo "Working directory must be specified"
@@ -55,23 +65,10 @@ if [ "$RPath" = "" ]; then
   exit 1
 fi
 
-# specify number of bootstrap reps
-if ! [[ $reps =~ ^[1-9][0-9]*$ ]]; then
-  echo "reps needs to be a positive integer"
-	exit 1
-fi
-
-# specify number of top algorithms
-if ! [[ $top =~ ^[1-9][0-9]*$ ]]; then
-  echo "top needs to be a positive integer"
-	exit 1
-fi
-
-# specify the cluster size
-if ! [[ $k =~ ^[1-9][0-9]*$ ]]; then
-  echo "k needs to be a positive integer"
-	exit 1
-fi
+# Check whether reps, top, k are positive integers
+for param in reps top k
+  do is_pos_int $param
+done
 
 # specify number of items to merge per script
 if ! [[ $c =~ ^[1-9][0-9]* && $(echo "$reps % $c" | bc) == 0 ]]; then
