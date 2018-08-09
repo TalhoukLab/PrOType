@@ -5,9 +5,12 @@
 for dataset in "${dataSets[@]}"; do
 
     echo "Creating folders"
+
     mkdir -p $workDir$dataset'/R_file/prep'
     mkdir -p $workDir$dataset'/sh_file/prep'
-    mkdir -p $outputDir$dataset'/data_pr_'$dataset
+
+    datadir=$outputDir'/unsupervised/prep_data/'$dataset
+    mkdir -p $datadir
 
     #File names for R script, rds output file, shell job script
     Rname=$workDir$dataset/R_file/prep/prep.R
@@ -18,8 +21,8 @@ for dataset in "${dataSets[@]}"; do
     #Content of R file
     echo 'pr<- "cs"' > $Rname
     echo 'sfdir<- "'$outputDir$dataset'"' >> $Rname
-    echo 'ndat<- "'$dataset'"' >> $Rname
-    echo 'datadir<- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $Rname
+    echo 'dataset<- "'$dataset'"' >> $Rname
+    echo 'datadir<- "'$datadir'"' >> $Rname
     echo 'dpath<- "'$inputDir'"' >> $Rname
     echo 'source("R/unsupervised/read_data.R")' >> $Rname
 

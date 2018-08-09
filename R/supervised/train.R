@@ -16,8 +16,6 @@
 #'   "robust", "tsne", or "largevis". See ?diceR::prepare_data for details.
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
-
-
 library(magrittr)
 
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
@@ -32,7 +30,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
       cli::cat_line("File already exists, skipping.")
       quit(status = 0)
   }
-
 
   cli::cat_line("Reading training data:", algs, "-", reps)
   # import training data
@@ -69,7 +66,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cli::cat_line("Running training algorithms:", algs, "-", reps)
   # train algorithms
-  reps <- as.integer(reps)
   sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = 1, threshold = threshold)
   sm <- switch(
     algs,
@@ -81,17 +77,9 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                           algorithms = c("knn", "adaboost")),
     fourth = purrr::invoke(splendid::splendid_model, sm_args,
                            algorithms = c("nbayes", "mlr_ridge"))
-    # ldaRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                        algorithms = "lda", rfe = TRUE),
-    # rfRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                       algorithms = "rf", rfe = TRUE),
-    # lassoRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                          algorithms = "mlr_lasso", rfe = TRUE),
-    # svmRfe = purrr::invoke(splendid::splendid_model, sm_args,
-    #                        algorithms = "svm", rfe = TRUE)
   )
 
-  cli::cat_line("Saving output:", algs, "-", reps, "\n")
-  # write to file
-  readr::write_rds(sm, outputFile)
+  cat("Saving output:", algs, "-", reps, "\n")
+  # write evaluations to file
+  readr::write_rds(sm[["evals"]], outputFile)
 }

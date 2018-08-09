@@ -15,6 +15,8 @@ for dataset in "${dataSets[@]}"; do
     R_eval=$workDir$dataset/R_file/eval/eval_run.R
     shell_file=$workDir$dataset/sh_file/eval/eval_run.sh
 
+    mkdir -p $outputDir'/unsupervised/final/'$dataset
+
     # create R script
     echo "fdir <- '"$outputDir"'" > $R_eval
     echo "dat <- '"$dataset"'" >> $R_eval

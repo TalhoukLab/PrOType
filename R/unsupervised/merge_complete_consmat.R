@@ -1,6 +1,5 @@
 # need dir algs s
 library(magrittr)
-library(Matrix)
 
 multMergeCM <- function(algs, fnames, newdir) {
   # Separate the algorithms
@@ -10,11 +9,12 @@ multMergeCM <- function(algs, fnames, newdir) {
     purrr::transpose() %>%
     purrr::map(~ Reduce(`+`, .))
 }
+con_mat_merged_dir <- file.path(outputdir, "unsupervised", "merge", paste0("con_mat_merged_", dataset))
 
-fnames <- list.files(path = file.path(dir, paste0("con_mat_merged_", ndat))) %>%
+
+fnames <- list.files(path = con_mat_merged_dir) %>%
   gtools::mixedsort() %>%
   grep(pattern = "^[[:digit:]]", x = ., value = TRUE)
-newdir <- file.path(dir, paste0("con_mat_merged_", ndat, "/"))
-consmatF <- lapply(algs, multMergeCM, fnames = fnames, newdir = newdir) %>%
+consmatF <- lapply(algs, multMergeCM, fnames = fnames, newdir = con_mat_merged_dir) %>%
     unlist(recursive = FALSE)
-saveRDS(consmatF, file.path(dir, paste0("data_pr_", ndat), paste0("Final_CM_", ndat, ".rds")))
+saveRDS(consmatF, file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Final_CM_", dataset, ".rds")))

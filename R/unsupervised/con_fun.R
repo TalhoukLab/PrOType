@@ -5,8 +5,8 @@ library(Matrix)
 source(here::here("R/unsupervised/utils.R"))
 
 # Read in completed E and consensus matrices
-Ecomp <- readRDS(file.path(dir, paste0("Ecomp_", ndat, ".rds")))
-CM <- readRDS(file.path(dir, paste0("Final_CM_", ndat, ".rds")))
+Ecomp <- readRDS(file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Ecomp_", datset, ".rds")))
+CM <- readRDS(file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Final_CM_", dataset, ".rds")))
 
 # Obtain HC from each algorithm and relabel for LCE
 cl.mat <- purrr::map(CM, hc, k = 4) %>%
@@ -28,4 +28,4 @@ Consensus <- switch(
   LCEasrs = hc(diceR::asrs(cl.mat, dc = 0.8), k = 4)
 )
 
-saveRDS(Consensus, file.path(dir, paste0("cons_", cons.funs, "_", ndat, ".rds")))
+saveRDS(Consensus, file.path(outputdir, "unsupervised", "consensus", dataset, paste0("cons_", cons.funs, "_", ndat, ".rds")))

@@ -69,9 +69,11 @@ for (dataSet in c(trainSet2, trainSet)) {
   # PCA plots
   p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch1)
   htmlwidgets::saveWidget(p1, file.path(outputDir, "plots",
-                                        paste0(dataSet, "_pcaClust.html")))
+                                        paste0(dataSet, "_pcaClust.html")),
+                          selfcontained = FALSE)
 
   p2 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, color = ~batch2)
   htmlwidgets::saveWidget(p2, file.path(outputDir, "plots",
-                                        paste0(dataSet, "_pcastudy.html")))
+                                        paste0(dataSet, "_pcastudy.html")),
+                          selfcontained = FALSE)
 }

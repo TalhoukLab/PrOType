@@ -18,15 +18,17 @@ for dataset in "${dataSets[@]}"; do
             R_merge=$workDir$dataset/R_file/merge/Merge_$i$s.R
             sh_merge=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
 
+            mkdir -p $outputDir'/unsupervised/merge/con_mat_merged_'$dataset
+
             # Content of R file
-            echo 'ndat<- "'$dataset'"' > $R_merge
-            echo 'dir <- "'$outputDir$dataset'"' >> $R_merge
+            echo 'dataset <- "'$dataset'"' > $R_merge
             echo 'algs<- "'$i'"' >> $R_merge
             echo 'c <- '$c >> $R_merge
             echo 'r <- '$r >> $R_merge
             echo 'reps <- '$reps >> $R_merge
             echo 'k <- '$k >> $R_merge
             echo 'shouldCompute <- '$shouldCompute >> $R_merge
+            echo 'outputdir<- "'$outputDir'"' >> $R_merge
             echo 'source("R/unsupervised/merge_partial_consmat.R")' >> $R_merge
 
             # Content of sh file

@@ -16,6 +16,8 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir$dataset/R_file/consensus
     mkdir -p $workDir$dataset/sh_file/consensus
 
+    mkdir -p $outputDir'/unsupervised/consensus/'$dataset
+
     for i in "${cons[@]}"; do
         # execute shell_file to cluster node
 

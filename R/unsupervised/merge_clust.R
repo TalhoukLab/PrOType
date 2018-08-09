@@ -42,30 +42,31 @@ multMerge <- function(algs, fnames, newdir) {
 
 # Merge the raw clustering
 cli::cat_line("Merging raw clustering")
-regex_str <- paste0(algs, seq_len(reps), ndat, sep = "|")
-fnames <- list.files(path = file.path(dir, paste0("rds_out_", ndat, "/")), pattern = regex_str) %>%
+regex_str <- paste0(algs, seq_len(reps), dataset, sep = "|")
+rds_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset))
+imputed_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("imputed_dir_", dataset))
+
+fnames <- list.files(path = rds_dir, pattern = regex_str) %>%
   gtools::mixedsort()
-newdir <- file.path(dir, paste0("rds_out_", ndat, "/"))
 
 cli::cat_line("l_apply")
-E <- lapply(algs, multMerge, fnames = fnames, newdir = newdir) %>%
+E <- lapply(algs, multMerge, fnames = fnames, newdir = rds_dir) %>%
   abind::abind(along = 3)
 cli::cat_line("Saving RDS")
-saveRDS(E, file = file.path(dir, paste0("data_pr_", ndat), paste0("E_", ndat, ".rds")))
+saveRDS(E, file = file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("E_", dataset, ".rds")))
 
 # Merge KNN_imputed clustering
 cli::cat_line("Merging KNN imputed clustering")
-fnames <- list.files(path = file.path(dir, paste0("imputed_clust_", ndat, "/"))) %>%
+fnames <- list.files(path = imputed_dir) %>%
   gtools::mixedsort()
-newdir <- file.path(dir, paste0("imputed_clust_", ndat, "/"))
 
-E_knn <- lapply(algs, multMerge, fnames = fnames, newdir = newdir) %>%
+E_knn <- lapply(algs, multMerge, fnames = fnames, newdir = imputed_dir) %>%
   abind::abind(along = 3)
-saveRDS(E_knn, file = file.path(dir, paste0("data_pr_", ndat), paste0("E_knn_", ndat, ".rds")))
+saveRDS(E_knn, file = file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("E_knn_", dataset, ".rds")))
 
 # Completed clustering
 cli::cat_line("Completing Clustering")
-cdat <- readRDS(file.path(dir, paste0("data_pr_", ndat), paste0("cdat_", ndat, ".rds")))
+cdat<- readRDS(file.path(outputdir, "unsupervised", "prep_data", dataset, paste0("cdat_", dataset, ".rds")))
 Ecomp <- diceR::impute_missing(E_knn, data = cdat, nk = k)
-saveRDS(Ecomp, file = file.path(dir, paste0("data_pr_", ndat), paste0("Ecomp_", ndat, ".rds")))
+saveRDS(Ecomp, file = file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Ecomp_", dataset, ".rds")))
 cli::cat_line("Completed Clustering")

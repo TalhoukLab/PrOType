@@ -11,9 +11,9 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir$dataset/R_file/clust
     mkdir -p $workDir$dataset/sh_file/clust
 
-    mkdir -p $outputDir$dataset'/rds_out_'$dataset
-    mkdir -p $outputDir$dataset'/imputed_clust_'$dataset
-    mkdir -p $outputDir$dataset'/con_mat_'$dataset
+    mkdir -p $outputDir'/unsupervised/clustering/rds_out_'$dataset
+    mkdir -p $outputDir'/unsupervised/clustering/imputed_clust_'$dataset
+    mkdir -p $outputDir'/unsupervised/clustering/con_mat_'$dataset
 
     for s in `seq 1 $reps`; do
         for i in "${algs[@]}"; do
@@ -23,14 +23,12 @@ for dataset in "${dataSets[@]}"; do
             sh_clust=$workDir$dataset/sh_file/clust/$i$s.sh
 
             # Content of R file
-            echo 'k<-'$k > $R_clust
-            echo 's<-'$s >> $R_clust
-            echo 'algs<- "'$i'"' >> $R_clust
-            echo 'pr<- "cs"' >> $R_clust
-            echo 'sfdir<- "'$outputDir$dataset'"' >> $R_clust
-            echo 'ndat<- "'$dataset'"' >> $R_clust
-            echo 'datadir<- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_clust
-            echo 'cdat<- readRDS(paste0(datadir,"/cdat_","'$dataset'",".rds"))' >> $R_clust
+            echo 'k <-'$k > $R_clust
+            echo 's <-'$s >> $R_clust
+            echo 'algs <- "'$i'"' >> $R_clust
+            echo 'pr <- "cs"' >> $R_clust
+            echo 'dataset <- "'$dataset'"' >> $R_clust
+            echo 'outputdir <- "'$outputDir'"' >> $R_clust
             echo 'shouldCompute <- '$shouldCompute >> $R_clust
             echo 'source("R/unsupervised/clust_data.R")' >> $R_clust
 

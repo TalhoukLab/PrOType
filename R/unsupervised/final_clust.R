@@ -1,17 +1,14 @@
 library(purrr)
 source(here::here("R/unsupervised/utils.R"))
 
-# Input-----
-dataset <- dat
-
 # Final Clustering ----
-ddir <- file.path(fdir, dataset, paste0("data_pr_", dataset))
+ddir <- file.path(outputdir, "unsupervised", "consensus", dataset)
 
 # Read in the data used for clustering
-cdat <- readRDS(file.path(ddir, paste0("cdat_", dataset, ".rds")))
+cdat <- readRDS(file.path(outputdir, "unsupervised", "prep_data", dataset, paste0("cdat_", dataset, ".rds")))
 
 # Read in the consensus matrices
-cons.mat <- readRDS(file.path(ddir, paste0("Final_CM_", dataset, ".rds")))
+cons.mat <- readRDS(file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Final_CM_", dataset, ".rds")))
 
 # Obtain HC from each algorithm and relabel
 cl.mat <- purrr::map(cons.mat, hc, k = 4) %>%
@@ -47,6 +44,6 @@ ii <- ii[match(top, ii$Algorithms), ]
 finalR <- finalR[, top]
 
 cli::cat_line("Saving RDS")
-saveRDS(finalR, file.path(ddir, paste0("all_clusts_", dataset, ".rds")))
-saveRDS(ii,     file.path(ddir, paste0("ii_", dataset, ".rds")))
+saveRDS(finalR, file.path(outputdir, "unsupervised", "final", dataset, paste0("all_clusts_", dataset, ".rds")))
+saveRDS(ii,     file.path(outputdir, "unsupervised", "final", dataset, paste0("ii_", dataset, ".rds")))
 print(ii)

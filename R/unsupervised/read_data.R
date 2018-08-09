@@ -3,9 +3,9 @@
 # Outputs: saved tdat, cdat
 
 # Load data
-fname <- paste0(dpath, ndat, ".RData")
-tdat_name <- file.path(datadir, paste0("tdat_", ndat, ".rds"))
-cdat_name <- file.path(datadir, paste0("cdat_", ndat, ".rds"))
+fname <- paste0(dpath, dataset, ".RData")
+tdat_name <- file.path(datadir, paste0("tdat_", dataset, ".rds"))
+cdat_name <- file.path(datadir, paste0("cdat_", dataset, ".rds"))
 
 # Save as RDS objects
 if (!dir.exists(datadir)) {

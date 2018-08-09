@@ -14,9 +14,11 @@ for dataset in "${dataSets[@]}"; do
     R_merge_final_clust=$workDir$dataset/R_file/merge/Merge_final_clust.R
     R_merge_final_consmat=$workDir$dataset/R_file/merge/Merge_final_consmat.R
 
+    mkdir -p $outputDir'/unsupervised/merge/data_pr_'$dataset
+
     # Create R scripts
-    echo 'ndat<- "'$dataset'"' > $R_merge_final_clust
-    echo 'dir <- "'$outputDir$dataset'"' >> $R_merge_final_clust
+    echo 'dataset<- "'$dataset'"' > $R_merge_final_clust
+    echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_clust
     echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
     echo 'reps<- '$reps >> $R_merge_final_clust
     echo 'k<-'$k >> $R_merge_final_clust
@@ -24,8 +26,8 @@ for dataset in "${dataSets[@]}"; do
     echo 'source("R/unsupervised/merge_clust.R")' >> $R_merge_final_clust
 
     # Create sh scirpts
-    echo 'ndat<- "'$dataset'"' > $R_merge_final_consmat
-    echo 'dir <- "'$outputDir$dataset'"' >> $R_merge_final_consmat
+    echo 'dataset<- "'$dataset'"' > $R_merge_final_consmat
+    echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_consmat
     echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
     echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_consmat
     echo 'source("R/unsupervised/merge_complete_consmat.R")' >> $R_merge_final_consmat
