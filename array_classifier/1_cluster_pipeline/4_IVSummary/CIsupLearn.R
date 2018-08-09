@@ -1,17 +1,5 @@
 # Functions ---------------------------------------------------------------
-# Sort Matrix
 library(magrittr)
-
-matrix.sort <- function(matrix) {
-  cat("Sorting matrix\n")
-  if (nrow(matrix) != ncol(matrix)) stop("Not diagonal")
-  if (is.null(rownames(matrix))) rownames(matrix) <- seq_len(nrow(matrix))
-
-  row.max <- apply(matrix, 1, which.max)
-  if (all(table(row.max) != 1)) stop("Ties cannot be resolved")
-
-  matrix[names(sort(row.max)), ]
-}
 
 # Create CIs
 create_ci <- function(df, alg) {
@@ -49,26 +37,6 @@ sort_best <- function(train_eval, top = 5) {
   cli::cat_line("Extracting top AUC, accuracy, by-class F1")
   te[c("auc", "accuracy", "f1.X1", "f1.X2", "f1.X3", "f1.X4"), top.list]
 }
-
-# Relabel classes
-relabel_classes <- function(df, FinalR_lab) {
-  cli::cat_line("Relabelling classes")
-  a <- table(FinalR_lab[, 1], FinalR_lab[, "CL"])
-  equi <- data.frame(class = rownames(matrix.sort(a)),
-                     label = colnames(matrix.sort(a)))
-  equi <- equi[order(equi$class), ]
-  rownames(df)[grep(".\\d", rownames(df))] <-
-    paste("F1", paste0(equi$class, "-", equi$label), sep = ".")
-  df
-}
-
-
-# Inputs ------------------------------------------------------------------
-
-inDir <- inDir
-outDir <- outDir
-fdat <- fdat
-top <- top
 
 
 # Read in -----------------------------------------------------------------
