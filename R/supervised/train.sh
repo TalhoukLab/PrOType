@@ -9,19 +9,18 @@ for dataset in "${dataSets[@]}"; do
 
     if [ "$normalizeBy" = "Genes" ];
     then
-        mkdir -p $outputDir$dataset'/Model-hc-genes_'$dataset
         fname='Model-hc-genes'
     elif [ "$normalizeBy" = "Samples" ];
     then
-        mkdir -p $outputDir$dataset'/Model-hc-samples_'$dataset
         fname='Model-hc-samples'
     elif [ "$normalizeBy" = "None" ];
     then
-        mkdir -p $outputDir$dataset'/Model-hc_'$dataset
         fname='Model-hc'
     else
         echo "A normalization of type Genes, Samples or None must be specified"
     fi
+
+    mkdir -p $outputDir'/supervised/train/'$fname'_'$dataset
 
     for s in `seq 1 $supervised_reps`; do
         for i in "${supervisedAlgs[@]}"; do
@@ -37,7 +36,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'reps <- '$s >> $R_train
             echo 'algs <- "'$i'"' >> $R_train
             echo 'inDir <- "'$outputDir$dataset'"' >> $R_train
-            echo 'outDir <- "'$outputDir$dataset'"' >> $R_train
+            echo 'outDir <- "'$outputDir'"' >> $R_train
             echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
             echo "minVar <- '$minVar'" >> $R_train
             echo 'normType <- "'$normType'"' >> $R_train

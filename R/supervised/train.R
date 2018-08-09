@@ -22,7 +22,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model", shouldCompute = FALSE) {
-  outputFile <- file.path(outDir, paste0(fname, "_", dataSet), paste0("c1_", algs, reps, "_", dataSet, ".rds"))
+  outputFile <- file.path(outDir, "supervised", "train", paste0(fname, '_', dataSet), paste0(algs, reps, "_", dataSet, ".rds"))
 
   cli::cat_line("Checking previous input:", outputFile)
 
@@ -33,8 +33,8 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cli::cat_line("Reading training data:", algs, "-", reps)
   # import training data
-  npcp <-  readr::read_rds(file.path(inDir, paste0("data_pr_", dataSet), paste0("npcp-hcNorm_", dataSet, ".rds")))
-  class <- readr::read_rds(file.path(inDir, paste0("data_pr_", dataSet), paste0("all_clusts_", dataSet, ".rds")))
+  npcp <-  readr::read_rds(file.path(outDir, "genemapping", dataSet, "tdat_mapped_", dataSet, ".rds"))
+  class <- readr::read_rds(file.path(outDir, "unsupervised", "final", dataSet, paste0("all_clusts_", dataSet, ".rds")))
 
   # class to train on is best performing ensemble algorithm
   # ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")

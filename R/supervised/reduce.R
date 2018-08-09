@@ -1,3 +1,4 @@
+library(magrittr)
 #' Mapping to Nanostring
 #'
 #' This script evaluates all the models that were trained on 100 bootstrap
@@ -11,13 +12,11 @@
 #' @return a data frame containing median and 95% confidence interval
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
-  # Store data_directory path
-  dirpath <- file.path(outDir, dataSet, paste0(fname, "_", dataSet, "/"))
 
   # grep files in directory matching pattern
   files.in <- list.files(
-    path = dirpath,
-    pattern = paste0("c1_", alg, "[0-9]+_", dataSet, ".rds"),
+    path = file.path(outDir, "supervised", "train", paste0(fname, '_', dataSet)),
+    pattern = paste0(alg, "[0-9]+_", dataSet, ".rds"),
     full.names = TRUE
   )
 
@@ -32,6 +31,6 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold =
     purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
 
   # write to file
-  outputFile <- file.path(dirpath, paste0(alg, "_train_eval_", dataSet, ".rds"))
+  outputFile <- file.path(outDir, "supervised", "reduce", dataSet, paste0(alg, "_train_eval_", dataSet, ".rds"))
   readr::write_rds(reduced_quantiles, outputFile)
 }
