@@ -42,7 +42,6 @@ finalR[] <- apply(final, 2, diceR::relabel_class, ref.cl = final[, referenceClas
 cat("Evaluating clustering\n")
 # Cluster evaluate at this point
 ii <- diceR:::ivi_table(finalR, cdat)
-ii <- list(ii)[[1]]
 
 cat("Ranking aggregates\n")
 # Rank aggregate
