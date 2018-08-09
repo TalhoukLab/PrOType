@@ -30,6 +30,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'fdir <- "'$outputDir'"' > $Rname
     echo 'ndat <- c("'$data_sets'")' >> $Rname
     echo 'mname <- "'$fname'"' >> $Rname
+    echo 'library(magrittr)' >> $Rname
     echo 'source("'$workDir'4_IVSummary/train_eval.R")' >> $Rname
 
     # Run Script
