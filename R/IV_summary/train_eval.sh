@@ -17,19 +17,17 @@ else
 fi
 
 for dataset in "${dataSets[@]}"; do
-    # extract data set vector
-    data_sets=${dataset// /'"','"'}
-
     # create R script
     mkdir -p $workDir/sh_file/train/
     mkdir -p $workDir/R_file/train/
 
+    mkdir -p $outputDir'/iv_summary/train_eval/'$dataset
+
     Rname=$workDir$dataset/R_file/train/train_eval.R
     shell_file=$workDir$dataset/sh_file/train/train.sh
 
-    echo 'fdir <- "'$outputDir'"' > $Rname
-    echo 'ndat <- c("'$data_sets'")' >> $Rname
-    echo 'mname <- "'$fname'"' >> $Rname
+    echo 'outputDir <- "'$outputDir'"' > $Rname
+    echo 'dataset <- "'$dataset'"' >> $Rname
     echo 'source("R/IV_summary/train_eval.R")' >> $Rname
 
     # Run Script

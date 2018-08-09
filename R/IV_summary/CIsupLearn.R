@@ -66,21 +66,13 @@ relabel_classes <- function(df, FinalR_lab) {
 }
 
 
-# Inputs ------------------------------------------------------------------
-
-inDir <- inDir
-outDir <- outDir
-fdat <- fdat
-top <- top
-
-
 # Read in -----------------------------------------------------------------
 
 # data
 final <- fdat %>%
   purrr::map(~ {
-    FinalR_lab <- readRDS(file.path(inDir, ., paste0("data_pr_", .), paste0("all_clusts_", ., ".rds")))
-    train_eval <- readRDS(file.path(inDir, ., paste0("data_pr_", .), paste0("train_eval_", ., ".rds")))
+    FinalR_lab <- readRDS(file.path(outDir, "unsupervised", "final", ., paste0("all_clusts_", ., ".rds")))
+    train_eval <- readRDS(file.path(outDir, "iv_summary", "train_eval", ., paste0("train_eval_", ., ".rds")))
     bests <- sort_best(train_eval, top = top)
     ci <- train_eval %>%
       purrr::map(~ {
@@ -95,5 +87,5 @@ final <- fdat %>%
   magrittr::set_names(fdat)
 
 purrr::iwalk(final, ~ {
-  write.csv(.x, file.path(outDir, .y, paste0("data_pr_", .y), paste0("sup_lrn_", .y, ".csv")))
+  write.csv(.x, file.path(outDir, "iv_summary", "ci_sup_lrn", .y, paste0("sup_lrn_", .y, ".csv")))
 })

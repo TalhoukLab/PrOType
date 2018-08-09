@@ -1,11 +1,11 @@
 # create internal validation table
 library(magrittr)
 
-df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
+df <- list.files(file.path(outputDir, "supervised", "train"), recursive = TRUE, pattern = "*_train_*") %>%
   grep("Model", ., value = TRUE) %>%
-  purrr::map(~ readRDS(paste0(fdir, "/", .))) %>%
+  purrr::map(~ readRDS(file.path(outDir, "supervised", "train", .))) %>%
   purrr::set_names(
-    list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
+    list.files(file.path(outputDir, "supervised", "train"), recursive = TRUE, pattern = "*_train_*") %>%
       grep("Model", ., value = TRUE) %>%
       dirname() %>%
       basename()
@@ -34,4 +34,5 @@ df <- list.files(fdir, recursive = TRUE, pattern = "*_train_*") %>%
   )
 
 # write results to file
-readr::write_rds(df, sdir)
+readr::write_rds(df, file.path(outputDir, "iv_summary", "summary", dataset, paste0("iv_summary_", dataset, ".rds")))
+readr::write_rds(df, file.path(outputDir, "iv_summary", "summary", dataset, paste0("iv_summary_", dataset, "_threshold.rds")))
