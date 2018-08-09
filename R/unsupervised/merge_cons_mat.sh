@@ -7,16 +7,16 @@
 ##################################################
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
-    mkdir -p $workDir$dataset/R_file/merge
-    mkdir -p $workDir$dataset/sh_file/merge
+    mkdir -p $workDir/R_file/merge_consmat/$dataset
+    mkdir -p $workDir/sh_file/merge_consmat/$dataset
 
     mkdir -p $outputDir$dataset'/con_mat_merged_'$dataset
 
     for s in `seq $c $c $reps`; do
         for i in "${algs[@]}"; do
             # file names
-            R_merge=$workDir$dataset/R_file/merge/Merge_$i$s.R
-            sh_merge=$workDir$dataset/sh_file/merge/Merge_$i$s.sh
+            R_merge=$workDir/R_file/merge_consmat/$dataset/Merge_$i$s.R
+            sh_merge=$workDir/sh_file/merge_consmat/$dataset/Merge_$i$s.sh
 
             mkdir -p $outputDir'/unsupervised/merge/con_mat_merged_'$dataset
 

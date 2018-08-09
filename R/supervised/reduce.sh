@@ -22,11 +22,11 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir'/supervised/reduce/'$dataset
 
     for i in "${supervisedAlgs[@]}"; do
-        mkdir -p $workDir$dataset/R_file/reduce
-        mkdir -p $workDir$dataset/sh_file/reduce
+        mkdir -p $workDir/R_file/reduce/$dataset
+        mkdir -p $workDir/sh_file/reduce/$dataset
 
-        Rname=$workDir$dataset/R_file/reduce/reduce_$i.R
-        shell_file=$workDir$dataset/sh_file/reduce/reduce_$i.sh
+        Rname=$workDir/R_file/reduce/$dataset/reduce_$i.R
+        shell_file=$workDir/sh_file/reduce/$dataset/reduce_$i.sh
 
         #Content of R file
         echo 'outDir <- "'$outputDir'"' > $Rname

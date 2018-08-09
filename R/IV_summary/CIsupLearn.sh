@@ -8,11 +8,11 @@ for dataset in "${dataSets[@]}"; do
     data_sets=${dataset// /'"','"'}
 
     # create R script
-    mkdir -p $workDir$dataset/R_file/CIsuplearn
-    mkdir -p $workDir$dataset/sh_file/CIsuplearn
+    mkdir -p $workDir/R_file/CIsuplearn/$dataset
+    mkdir -p $workDir/sh_file/CIsuplearn/$dataset
 
-    Rname=$workDir$dataset/R_file/CIsuplearn/CIsupLearn.R
-    shell_file=$workDir$dataset/sh_file/CIsuplearn/CIsupLearn.sh
+    Rname=$workDir/R_file/CIsuplearn/$dataset/CIsupLearn.R
+    shell_file=$workDir/sh_file/CIsuplearn/$dataset/CIsupLearn.sh
 
     mkdir -p $outputDir'/iv_summary/ci_sup_lrn/'$dataset
 

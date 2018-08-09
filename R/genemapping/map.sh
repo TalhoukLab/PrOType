@@ -8,11 +8,11 @@
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir$dataset/R_file/map
-    mkdir -p $workDir$dataset/sh_file/map
+    mkdir -p $workDir/R_file/map/$dataset
+    mkdir -p $workDir/sh_file/map/$dataset
 
-    Rname=$workDir$dataset/R_file/map/map.R
-    shell_file=$workDir$dataset/sh_file/map/map.sh
+    Rname=$workDir/R_file/map/$datasetmap.R
+    shell_file=$workDir/sh_file/map/$dataset/map.sh
 
     mkdir -p $outputDir'/genemapping/'$dataset
 

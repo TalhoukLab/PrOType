@@ -8,8 +8,8 @@
 file_to_submit=()
 
 for dataset in "${dataSets[@]}"; do
-    mkdir -p $workDir$dataset/R_file/clust
-    mkdir -p $workDir$dataset/sh_file/clust
+    mkdir -p $workDir/R_file/clust/$dataset
+    mkdir -p $workDir/sh_file/clust/$dataset
 
     mkdir -p $outputDir'/unsupervised/clustering/rds_out_'$dataset
     mkdir -p $outputDir'/unsupervised/clustering/imputed_clust_'$dataset
@@ -19,8 +19,8 @@ for dataset in "${dataSets[@]}"; do
         for i in "${algs[@]}"; do
             # File names for R script, rds output file, shell job script
 
-            R_clust=$workDir$dataset/R_file/clust/$i$s.R
-            sh_clust=$workDir$dataset/sh_file/clust/$i$s.sh
+            R_clust=$workDir/R_file/clust/$dataset/$i$s.R
+            sh_clust=$workDir/sh_file/clust/$dataset/$i$s.sh
 
             # Content of R file
             echo 'k <-'$k > $R_clust

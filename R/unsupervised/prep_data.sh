@@ -6,17 +6,15 @@ for dataset in "${dataSets[@]}"; do
 
     echo "Creating folders"
 
-    mkdir -p $workDir$dataset'/R_file/prep'
-    mkdir -p $workDir$dataset'/sh_file/prep'
+    mkdir -p $workDir'/R_file/prep/'$dataset
+    mkdir -p $workDir'/sh_file/prep'$dataset
 
     datadir=$outputDir'/unsupervised/prep_data/'$dataset
     mkdir -p $datadir
 
     #File names for R script, rds output file, shell job script
-    Rname=$workDir$dataset/R_file/prep/prep.R
-    shname=$workDir$dataset/sh_file/prep/prep.sh
-
-    echo "Working with folders: $Rname: $shname"
+    Rname=$workDir/R_file/prep/$dataset/prep.R
+    shname=$workDir/sh_file/prep/$dataset/prep.sh
 
     #Content of R file
     echo 'pr<- "cs"' > $Rname

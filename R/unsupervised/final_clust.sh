@@ -9,11 +9,11 @@
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir$dataset/R_file/eval/
-    mkdir -p $workDir$dataset/sh_file/eval/
+    mkdir -p $workDir/R_file/eval/$dataset
+    mkdir -p $workDir/sh_file/eval/$dataset
 
-    R_eval=$workDir$dataset/R_file/eval/eval_run.R
-    shell_file=$workDir$dataset/sh_file/eval/eval_run.sh
+    R_eval=$workDirR_file/eval/$dataset/eval_run.R
+    shell_file=$workDir/sh_file/eval/$dataset/eval_run.sh
 
     mkdir -p $outputDir'/unsupervised/final/'$dataset
 

@@ -18,13 +18,13 @@ fi
 
 for dataset in "${dataSets[@]}"; do
     # create R script
-    mkdir -p $workDir/sh_file/train/
-    mkdir -p $workDir/R_file/train/
+    mkdir -p $workDir/sh_file/train/$dataset
+    mkdir -p $workDir/R_file/train/$dataset
 
     mkdir -p $outputDir'/iv_summary/train_eval/'$dataset
 
-    Rname=$workDir$dataset/R_file/train/train_eval.R
-    shell_file=$workDir$dataset/sh_file/train/train.sh
+    Rname=$workDir/R_file/train/$dataset/train_eval.R
+    shell_file=$workDir/sh_file/train/$dataset/train.sh
 
     echo 'outputDir <- "'$outputDir'"' > $Rname
     echo 'dataset <- "'$dataset'"' >> $Rname

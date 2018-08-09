@@ -25,11 +25,11 @@ for dataset in "${dataSets[@]}"; do
     for s in `seq 1 $supervised_reps`; do
         for i in "${supervisedAlgs[@]}"; do
             #File names for R script, rds output file, shell job script
-            mkdir -p $workDir$dataset/R_file/train
-            mkdir -p $workDir$dataset/sh_file/train
+            mkdir -p $workDir/R_file/train/$dataset
+            mkdir -p $workDir/sh_file/train/$dataset
 
-            R_train=$workDir$dataset/R_file/train/$i$s$t.R
-            sh_train=$workDir$dataset/sh_file/train/$i$s$t.sh
+            R_train=$workDir/R_file/train/$dataset/$i$s$t.R
+            sh_train=$workDir/sh_file/train/$dataset/$i$s$t.sh
 
             #Content of R file
             echo 'dataSet <- "'$dataset'"' > $R_train

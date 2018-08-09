@@ -13,8 +13,8 @@ file_to_submit=()
 ##################################################
 for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir$dataset/R_file/consensus
-    mkdir -p $workDir$dataset/sh_file/consensus
+    mkdir -p $workDir/R_file/consensus/$dataset
+    mkdir -p $workDir/sh_file/consensus/$dataset
 
     mkdir -p $outputDir'/unsupervised/consensus/'$dataset
 
@@ -22,8 +22,8 @@ for dataset in "${dataSets[@]}"; do
         # execute shell_file to cluster node
 
         # file names
-        R_cons=$workDir$dataset/R_file/consensus/Create_$i.R
-        sh_cons=$workDir$dataset/sh_file/consensus/Create_$i.sh
+        R_cons=$workDir/R_file/consensus/$dataset/Create_$i.R
+        sh_cons=$workDir/sh_file/consensus/$dataset/Create_$i.sh
 
         # create R scripts
         echo 'ndat<- "'$dataset'"' > $R_cons

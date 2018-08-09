@@ -8,11 +8,11 @@
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
     # get R scripts
-    mkdir -p $workDir$dataset/R_file/merge
-    mkdir -p $workDir$dataset/sh_file/merge
+    mkdir -p $workDir/R_file/merge/$dataset
+    mkdir -p $workDir/sh_file/merge/$dataset
 
-    R_merge_final_clust=$workDir$dataset/R_file/merge/Merge_final_clust.R
-    R_merge_final_consmat=$workDir$dataset/R_file/merge/Merge_final_consmat.R
+    R_merge_final_clust=$workDir/R_file/merge/$dataset/Merge_final_clust.R
+    R_merge_final_consmat=$workDir/R_file/merge/$dataset/Merge_final_consmat.R
 
     mkdir -p $outputDir'/unsupervised/merge/data_pr_'$dataset
 
@@ -32,7 +32,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_consmat
     echo 'source("R/unsupervised/merge_complete_consmat.R")' >> $R_merge_final_consmat
 
-    shell_file=$workDir$dataset/sh_file/merge/merge_final.sh
+    shell_file=$workDir/sh_file/merge/$dataset/merge_final.sh
 
     echo "echo 'merge_final_clust'" > $shell_file
     echo "Rscript $R_merge_final_clust" >> $shell_file

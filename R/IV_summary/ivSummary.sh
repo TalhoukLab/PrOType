@@ -11,11 +11,11 @@ for dataset in "${dataSets[@]}"; do
 	fi
 
 	# create scripts and directories
-	mkdir -p $workDir$dataset'/R_file/iv_summary'
-	mkdir -p $workDir$dataset'/sh_file/iv_summary'
+	mkdir -p $workDir/R_file/iv_summary/$dataset
+	mkdir -p $workDir/sh_file/iv_summary/$dataset
 
-	Rname=$workDir$dataset'/R_file/iv_summary/iv.R'
-	shname=$workDir$dataset'/sh_file/iv_summary/iv.sh'
+	Rname=$workDir/R_file/iv_summary/$dataset/iv.R
+	shname=$workDir/sh_file/iv_summary/$dataset/iv.sh
 
     mkdir -p $outputDir'/iv_summary/summary'$dataset
 
