@@ -14,14 +14,14 @@ for dataset in "${dataSets[@]}"; do
     Rname=$workDir$dataset/R_file/map/map.R
     shell_file=$workDir$dataset/sh_file/map/map.sh
 
+    mkdir -p $outputDir'/genemapping/'$dataset
+
     # create R script
     echo "source('R/genemapping/GeneMapping.R')" > $Rname
-    echo "tdat <- readr::read_rds('"$outputDir$dataset"/data_pr_"$dataset"/tdat_"$dataset".rds')" >> $Rname
-    echo "x <- data.frame(t(tdat))" >> $Rname
     echo "dataset <- '"$dataset"'" >> $Rname
     echo "outDir <- '"$outputDir"'" >> $Rname
     echo 'shouldCompute <- '$shouldCompute >> $Rname
-    echo "map_to_nano(x, dataset, outDir, shouldCompute)" >> $Rname
+    echo "map_to_nano(dataset, outDir, shouldCompute)" >> $Rname
 
     # Run Script
     echo "Rscript $Rname" > $shell_file
