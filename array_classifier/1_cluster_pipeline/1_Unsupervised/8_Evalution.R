@@ -45,7 +45,6 @@ ii <- diceR:::ivi_table(finalR, cdat)
 
 cat("Ranking aggregates\n")
 # Rank aggregate
-# WHY IS ii[s_dbw] NaN?
 cr <- diceR:::consensus_rank(ii, n = 5)
 top <- cr$top.list
 ii <- ii[match(top, ii$Algorithms), ]
