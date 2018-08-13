@@ -33,7 +33,7 @@ dat <- file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dat_tr, 
   readRDS() %>%
   `rownames<-`(stringr::str_sub(rownames(.), end = -8)) %>%
   `colnames<-`(make.names(colnames(.)))
-y <- file.path(outputdir, "unsupervised", "final", dataset, paste0("all_clusts_", dat_tr, ".rds")) %>%
+y <- file.path(outputdir, "unsupervised", "final", paste(dat_tr, top_bcm, sep = "_"), paste0("all_clusts_", paste(dat_tr, top_bcm, sep = "_"), ".rds")) %>%
   readRDS() %>%
   dplyr::select(labs = top_cl_alg) %>%
   dplyr::inner_join(build_mapping(paste(dat_tr, top_bcm, sep = "_")), by = "labs") %>%
