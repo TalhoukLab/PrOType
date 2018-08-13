@@ -18,6 +18,7 @@ for i in "${dataSets[@]}"; do
 	shname=$workDir$i'/sh_file/iv_summary/iv.sh'
 
 	echo 'fdir <- "'$outputDir$i'"' > $Rname
+
 	echo 'sdir <- "'$outputDir$i'/data_pr_'$i'/iv_summary_'$i'.rds"' >> $Rname
 	echo 'source("'$workDir'4_IVSummary/ivSummary.R")' >> $Rname
 

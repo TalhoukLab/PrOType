@@ -52,7 +52,7 @@ all_fits <- top_sl_algs %>%
   purrr::map(splendid::classification, data = dat, class = y, seed_alg = seed)
 
 # Save full model fits
-iwalk(all_fits,
+purrr::iwalk(all_fits,
       ~ saveRDS(.x, file.path(
         outputDir, "fits",
         paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
