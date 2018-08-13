@@ -31,6 +31,6 @@ reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold =
     purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
 
   # write to file
-  outputFile <- file.path(outDir, "supervised", "reduce", dataSet, paste0(alg, "_train_eval_", dataSet, ".rds"))
+  outputFile <- file.path(outDir, "supervised", "reduce", paste0(fname, '_', dataSet), paste0(alg, "_train_eval_", dataSet, ".rds"))
   readr::write_rds(reduced_quantiles, outputFile)
 }

@@ -19,7 +19,7 @@ for dataset in "${dataSets[@]}"; do
         echo "A normalization of type Genes, Samples or None must be specified"
     fi
 
-    mkdir -p $outputDir'/supervised/reduce/'$dataset
+    mkdir -p $outputDir'/supervised/reduce/'$fname'_'$dataset
 
     for i in "${supervisedAlgs[@]}"; do
         mkdir -p $workDir/R_file/reduce/$dataset

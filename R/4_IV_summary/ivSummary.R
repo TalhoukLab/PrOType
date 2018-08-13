@@ -1,37 +1,29 @@
 # create internal validation table
 library(magrittr)
 
-df <- list.files(file.path(outputDir, "supervised", "train"), recursive = TRUE, pattern = "*_train_*") %>%
-  grep("Model", ., value = TRUE) %>%
-  purrr::map(~ readRDS(file.path(outDir, "supervised", "train", .))) %>%
-  purrr::set_names(
-    list.files(file.path(outputDir, "supervised", "train"), recursive = TRUE, pattern = "*_train_*") %>%
-      grep("Model", ., value = TRUE) %>%
-      dirname() %>%
-      basename()
-  ) %>%
-  purrr::modify_depth(2, ~ {
-    data.frame(measure = rownames(t(.)), t(.)) %>%
-      purrr::set_names(c("measure", "percentile_50", "percentile_5", "percentile_95"))
+model <- basename(grep("Model", list.dirs(file.path(outputDir, "supervised", "reduce")), value = TRUE))
+df <- list.files(
+  path = file.path(list.dirs(file.path(outputDir, "supervised", "reduce"))),
+  pattern = "train_eval",
+  full.names = TRUE
+) %>%
+  readRDS() %>%
+  purrr::imap_dfr(~ {
+    t(.x) %>%
+      as.data.frame() %>%
+      purrr::set_names(paste0("percentile_", gsub("%", "", names(.)))) %>%
+      tibble::rownames_to_column("measure") %>%
+      tibble::add_column(mod = .y, model, .before = 1) %>%
+      tidyr::separate(col = model,
+                      into = c("normalization", "data", "batch_correction"),
+                      sep = "_") %>%
+      dplyr::select(-data, -batch_correction, batch_correction) %>%
+      dplyr::mutate(normalization = gsub("Model-", "", normalization) %>%
+                      ifelse(. == "", "None", .)) %>%
+      dplyr::mutate_at(c("normalization", "measure", "batch_correction"),
+                       as.factor)
   }) %>%
-  purrr::imap(~ purrr::map(.x, function(x) {
-      data.frame(normalization = .y, x, stringsAsFactors = FALSE)
-    })) %>%
-  purrr::map(function(x) {
-      purrr::imap(x, ~ data.frame(mod = .y, .x, stringsAsFactors = FALSE))
-    }) %>%
-  purrr::map_df(dplyr::bind_rows) %>%
-  tibble::as_tibble() %>%
-  dplyr::mutate(
-    batch_correction = purrr::map_chr(
-      strsplit(normalization, split = "_"), ~ .[3]) %>%
-      as.factor(),
-    normalization = purrr::map_chr(
-      strsplit(normalization, split = "_"), ~ .[1]) %>%
-      substr(start = 7, stop = nchar(.)) %>%
-      ifelse(. == "", "None", .) %>%
-      as.factor()
-  )
+  tibble::as_tibble()
 
 # write results to file
 readr::write_rds(df, file.path(outputDir, "iv_summary", "summary", dataset, paste0("iv_summary_", dataset, ".rds")))
