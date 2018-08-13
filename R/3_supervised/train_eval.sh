@@ -28,7 +28,7 @@ for dataset in "${dataSets[@]}"; do
 
     echo 'outputDir <- "'$outputDir'"' > $Rname
     echo 'dataset <- "'$dataset'"' >> $Rname
-    echo 'source("R/4_IV_summary/train_eval.R")' >> $Rname
+    echo 'source("R/3_supervised/train_eval.R")' >> $Rname
 
     # Run Script
     echo "Rscript $Rname" > $shell_file

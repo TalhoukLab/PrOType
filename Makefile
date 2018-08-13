@@ -4,9 +4,9 @@ all: clustering post_processing gene_selection cross_platform
 # ------------- PART 1 ----------------
 Unsupervised: init cluster CMmerge merge ConFun FinalClust
 
-Supervised: SLtrain SLreduce
+Supervised: SLtrain SLreduce trainEval
 
-IVSummary: trainEval supLearn IVsummary
+IVSummary: supLearn IVsummary
 
 clustering: Unsupervised Genemapping Supervised IVSummary
 
@@ -46,15 +46,15 @@ SLreduce:
 
 # return internal validation summary
 trainEval:
-	./R/4_IV_summary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/3_supervised/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 supLearn:
-	./R/4_IV_summary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/3_supervised/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # return internal validation summary
 IVsummary:
-	./R/4_IV_summary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/3_supervised/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # ----------- PART 2 -------------

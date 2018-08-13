@@ -20,7 +20,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'inDir <- "'$outputDir'"' >> $Rname
     echo 'fdat <- c("'$data_sets'")' >> $Rname
     echo "top <- $top" >> $Rname
-    echo 'source("R/4_IV_summary/CIsupLearn.R")' >> $Rname
+    echo 'source("R/3_supervised/CIsupLearn.R")' >> $Rname
 
     # Run Script
     echo "Rscript $Rname" > $shell_file

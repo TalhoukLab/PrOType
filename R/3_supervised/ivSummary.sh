@@ -22,8 +22,7 @@ for dataset in "${dataSets[@]}"; do
 	echo 'outputDir <- "'$outputDir'"' > $Rname
 	echo 'dataset <- "'$dataset'"' >> $Rname
 
-	echo 'source("R/4_IV_summary/ivSummary.R")' >> $Rname
-	#echo 'source("R/4_IV_summary/ivSummary.R")' >> $Rname
+	echo 'source("R/3_supervised/ivSummary.R")' >> $Rname
 
 	echo "Rscript $Rname" > $shname
 	chmod +x $shname
@@ -37,6 +36,29 @@ for dataset in "${dataSets[@]}"; do
         bash $shname
     fi
 done
+
+
+mkdir -p $workDir/R_file/iv_summary
+mkdir -p $workDir/sh_file/iv_summary
+
+
+Rname=$workDir/R_file/iv_summary/top_models.R
+shname=$workDir/sh_file/iv_summary/top_models.sh
+
+echo 'outputDir <- "'$outputDir'"' > $Rname
+echo 'source("R/3_supervised/top_models.R")' >> $Rname
+
+echo "Rscript $Rname" > $shname
+chmod +x $shname
+
+# execute shell script to queue
+if command -v qsub &>/dev/null; then
+	echo "Adding To Queue: $shname"
+    file_to_submit+=($shname)
+else
+    echo "Making File"
+    bash $shname
+fi
 
 logDir=$baseLogDir'/IVSummary/ivSummary'
 if command -v qsub &>/dev/null; then
@@ -55,5 +77,5 @@ R_combine_name=$workDir'/R_file/iv_summary/combine.R'
 
 echo 'ndat <- purrr::set_names(unlist(strsplit("'"${dataSets[*]}"'", " ")))' > $R_combine_name
 echo 'outputDir <- "'$outputDir'"' >> $R_combine_name
-echo "source('R/4_IV_summary/ivCombine.R')" >> $R_combine_name
+echo "source('R/3_supervised/ivCombine.R')" >> $R_combine_name
 Rscript $R_combine_name

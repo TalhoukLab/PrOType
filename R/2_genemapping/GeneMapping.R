@@ -16,8 +16,8 @@ map_to_nano <- function(dataSet, outDir, shouldCompute) {
   tdat <- readr::read_rds(file.path(outDir, "unsupervised", "prep_data", dataSet, paste0("tdat_", dataSet, ".rds"))
   x <- data.frame(t(tdat))
 
-  tdat_mapped_outfile <- file.path(outDir, "genemapping", dataSet, "tdat_mapped_", dataSet, ".rds")
-  npcp_out <-  file.path(outDir, "genemapping", dataSet, "npcp-hcNorm_", dataSet, ".rds")
+  tdat_mapped_outfile <- file.path(outDir, "genemapping", dataSet, paste0("tdat_mapped_", dataSet, ".rds"))
+  npcp_out <-  file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds"))
 
   if (file.exists(tdat_mapped_outfile) && file.exists(npcp_out) && !shouldCompute) {
     cli::cat_line("File already exists. Skipping.")

@@ -19,13 +19,7 @@ top_bcm <- list.files(
   names()
 
 # Choose top 5 supervised learning algorithms by rank aggregated evaluations
-dat_path <- file.path(
-  outputDir,
-  paste(dat_tr, top_bcm, sep = "_"),
-  paste("data_pr", dat_tr, top_bcm, sep = "_")
-)
-
-top_sl_algs <- list.files(path = dat_path,
+top_sl_algs <- list.files(path = file.path(outputDir, "iv_summary", "ci_sup_lrn"),
                           pattern = "sup_lrn",
                           full.names = TRUE) %>%
   read.csv(row.names = 1) %>%
@@ -35,11 +29,11 @@ top_sl_algs <- list.files(path = dat_path,
 seed <- 2018
 
 # Import full normalized data and class labels
-dat <- file.path(dat_path, paste0("npcp-hcNorm_", dat_tr, "_", top_bcm, ".rds")) %>%
+dat <- file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dat_tr, ".rds")) %>%
   readRDS() %>%
   `rownames<-`(stringr::str_sub(rownames(.), end = -8)) %>%
   `colnames<-`(make.names(colnames(.)))
-y <- file.path(dat_path, paste0("all_clusts_", dat_tr, "_", top_bcm, ".rds")) %>%
+y <- file.path(outputdir, "unsupervised", "final", dataset, paste0("all_clusts_", dat_tr, ".rds")) %>%
   readRDS() %>%
   dplyr::select(labs = top_cl_alg) %>%
   dplyr::inner_join(build_mapping(paste(dat_tr, top_bcm, sep = "_")), by = "labs") %>%
@@ -52,7 +46,7 @@ all_fits <- top_sl_algs %>%
   purrr::map(splendid::classification, data = dat, class = y, seed_alg = seed)
 
 # Save full model fits
-iwalk(all_fits,
+purrr::iwalk(all_fits,
       ~ saveRDS(.x, file.path(
         outputDir, "fits",
         paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
