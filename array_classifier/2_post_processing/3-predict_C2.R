@@ -1,41 +1,33 @@
 # Predict C2 --------------------------------------------------------------
 # Load utility functions
+library(glmnet)
+library(randomForest)
+library(e1071)
 library(magrittr)
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
-# Load seeds
-seed <- readRDS(file.path(dataDir, "seed.rds"))
-
-# Training data
-npcp_train <- readRDS(file.path(outputDir, trainSet,
-                                paste0("data_pr_", trainSet),
-                                paste0("npcp-hcNorm_", trainSet, ".rds"))) %>%
-  magrittr::set_colnames(make.names(colnames(.)))
-
-# Testing data
+# Test data
 npcp_test <- readRDS(file.path(outputDir, testSet,
                                paste0("data_pr_", testSet),
                                paste0("npcp-hcNorm_", testSet, ".rds"))) %>%
   magrittr::set_colnames(make.names(colnames(.)))
 
-# Training labels
+# Reference Training labels
 lab <- readRDS(file.path(outputDir, trainSet,
                          paste0("data_pr_", trainSet),
-                         paste0("/all_clusts_", trainSet, ".rds"))) %>%
-  magrittr::extract(, 1) %>%
-  data.frame(labs = .) %>%
+                         paste0("all_clusts_", trainSet, ".rds"))) %>%
+  dplyr::select(labs = "kmodes") %>%
   dplyr::inner_join(build_mapping_xpn(trainSet), by = "labs") %>%
   dplyr::pull(labels)
 
-# Fitting model on training set
-algs <- c("adaboost", "mlr_lasso", "mlr_ridge", "rf", "svm")
-all_fits <- algs %>%
-  purrr::map(splendid::classification,
-             data = npcp_train, class = lab, seed_alg = seed)
+# Load models fitted on training set
+all_fits <- list.files(path = file.path(outputDir, "fits"),
+                       full.names = TRUE) %>%
+  purrr::set_names(gsub(trainSet, "preds", basename(.))) %>%
+  purrr::set_names(gsub("\\.rds", "", names(.))) %>%
+  purrr::map(readRDS)
 
-# Predicting model on test set
-predsC2 <- all_fits %>%
-  purrr::set_names(paste("preds", c("ada", "lasso", "ridge", "rf", "svm"),
-                         sep = "_")) %>%
+# Make predictions on test set
+preds_c2 <- all_fits %>%
   purrr::map_dfc(splendid::prediction, data = npcp_test, class = lab)
-saveRDS(predsC2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
+saveRDS(preds_c2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
