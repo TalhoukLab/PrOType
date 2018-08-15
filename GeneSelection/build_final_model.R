@@ -8,15 +8,15 @@ suppressPackageStartupMessages({
   library(cli)
   library(readxl)
 })
-source(here("GeneSelection/scripts/utils.R"))
-GS_training_dir <- "GeneSelection/training"
+GS_training_dir <- "GeneSelection/scripts"
 GS_training_files <- c(
-  "consensus.R",
+  "define.R",
   "train.R",
   "bootstrap.R",
   "evaluate.R",
   "summary.R",
-  "analysis.R"
+  "analysis.R",
+  "utils.R"
 )
 walk(here(GS_training_dir, GS_training_files), source)
 # Parameters----
