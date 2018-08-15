@@ -1,5 +1,7 @@
-FROM rocker/tidyverse:3.5.0
-RUN apt-get update -y && apt-get install -y git vim libudunits2-dev
-ADD install_packages.R /tmp/install_packages.R
-RUN Rscript /tmp/install_packages.R
+FROM mattpaletta/r-base:3.5.1
+#RUN mkdir -p /PrOType/packrat
+RUN R -e 'install.packages("packrat", repos="http://cran.rstudio.com", dependencies=TRUE);'
+COPY packrat /PrOType/packrat
+RUN R -e 'packrat::restore(project="/PrOType");'
+ADD . /PrOType
 # docker run --rm -it -h docker.example.com -v ~/Documents/Projects/PrOType/:/PrOType/ --privileged protype:latest bash

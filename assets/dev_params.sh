@@ -15,68 +15,69 @@ RPath="$(which R)"
 maxQueueLength=8000
 shouldWait=TRUE
 
+# Check whether an input is a positive integer. If not, logout.
+function is_pos_int() {
+  var=$1
+  val=$(eval echo "$"$var)
+  if ! [[ $val =~ ^[1-9][0-9]*$ ]]; then
+    echo $var=$val is not a positive integer.
+    exit 1
+  fi
+}
+
 # specify the working directory
 if [ "$workDir" = "" ]; then
-    echo "Working directory must be specified"
+  echo "Working directory must be specified"
 	exit 1
 fi
 
 # specify the output directory
 if [ "$outputDir" = "" ]; then
-    echo "Output directory must be specified"
+  echo "Output directory must be specified"
 	exit 1
 fi
 
 # specify log directory
 if [ "$baseLogDir" = "" ]; then
+<<<<<<< HEAD
     echo "Log directory must be specified"
+=======
+  echo "Log directory must be specified"
+>>>>>>> 289cfc583bdb93b81c94932bb37896971d63335d
 	exit 1
 fi
 
 # specify the normalization method
 if [ "$normalizeBy" = "" ]; then
-    echo "Normalization method must be specified"
-    exit 1
+  echo "Normalization method must be specified"
+  exit 1
 fi
 
 # specify the minimum variance
 if ! [[ $minVar -ge 0 ]]; then
-    echo "Minimum variance type must be greater than or equal to 0.0"
+  echo "Minimum variance type must be greater than or equal to 0.0"
 	exit 1
 fi
 
 # specify the normalization type
 if [ "$normType" = "" ]; then
-    echo "Normalization type must be specified"
+  echo "Normalization type must be specified"
 	exit 1
 fi
 
 # specify R path to place in $PATH
 if [ "$RPath" = "" ]; then
-    echo "Path to R directory must be specified"
-    exit 1
+  echo "Path to R directory must be specified"
+  exit 1
 fi
 
-# specify number of bootstrap reps
-if ! [[ $reps -gt 0 ]]; then
-    echo "reps Needs To Be Positive Integer"
-	exit 1
-fi
-
-# specify top ensemble
-if ! [[ $top -gt 0 ]]
-then echo "Top needs to be a positive integer"
-	exit 1
-fi
-
-# specify the number of clusters k
-if ! [[ $k -gt 0 ]]
-then echo "k (number of clusters) needs to be a positive integer"
-	exit 1
-fi
+# Check whether reps, top, k are positive integers
+for param in reps top k
+  do is_pos_int $param
+done
 
 # specify number of items to merge per script
-if ! [[ $c -gt 0 ]]; then
-    echo "c (# specify minimum number of reps required for merge.  the modulus of the dividend (reps) and divisor (c) must be greater or equal to zero."
+if ! [[ $c =~ ^[1-9][0-9]* && $(echo "$reps % $c" | bc) == 0 ]]; then
+  echo "c needs to be a positive integer and reps needs to be divisible by c"
 	exit 1
 fi
