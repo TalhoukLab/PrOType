@@ -7,7 +7,7 @@ for dataset in "${dataSets[@]}"; do
     echo "Creating folders"
 
     mkdir -p $workDir'/R_file/prep/'$dataset
-    mkdir -p $workDir'/sh_file/prep'$dataset
+    mkdir -p $workDir'/sh_file/prep/'$dataset
 
     datadir=$outputDir'/unsupervised/prep_data/'$dataset
     mkdir -p $datadir

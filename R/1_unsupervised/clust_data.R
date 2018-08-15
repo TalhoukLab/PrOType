@@ -7,7 +7,7 @@
 # Impute E to make E_knn and save to imputed directory
 pl_impute <- function(E, data, seed = 123, dir.name = ".") {
   E_knn <- apply(E, 2:4, diceR::impute_knn, data = data, seed = seed)
-  saveRDS(E_knn, file.path(sfdir, paste0("imputed_clust_", dataset), paste0("E_knn_", algs, s, "_", ndat, ".rds")))
+  saveRDS(E_knn, file.path(dir.name, paste0("E_knn_", algs, s, "_", dataset, ".rds")))
 }
 
 # Fixed Inputs: ndat, sfdir, ssclust
@@ -22,10 +22,10 @@ pl_conmat <- function(E, dir.name = ".") {
 
 rds_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset))
 con_mat_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("con_mat_", dataset))
-imputed_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("imputed_dir_", dataset))
+imputed_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("imputed_clust_", dataset))
 
 cdat<- readRDS(file.path(outputdir, "unsupervised", "prep_data", dataset, paste0("cdat_", dataset, ".rds")))
-outputFile <- file.path(rds_dir, paste0("rds_out_", dataset), paste0(algs, s, "_", dataset))
+outputFile <- file.path(rds_dir, paste0(algs, s, "_", dataset))
 
 cli::cat_line("Checking previous Input")
 if (file.exists(paste0(outputFile, ".rds")) && !shouldCompute) {

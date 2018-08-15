@@ -25,8 +25,11 @@ for dataset in "${dataSets[@]}"; do
         R_cons=$workDir/R_file/consensus/$dataset/Create_$i.R
         sh_cons=$workDir/sh_file/consensus/$dataset/Create_$i.sh
 
+        mkdir -p $outputDir'/unsupervised/consensus/'$dataset
+
         # create R scripts
-        echo 'ndat<- "'$dataset'"' > $R_cons
+        echo 'outputDir <- "'$outputDir'"' > $R_cons
+        echo 'dataset <- "'$dataset'"' >> $R_cons
         echo 'cons.funs<-"'$i'"'>> $R_cons
         echo "k <- $k" >> $R_cons
         echo 'dir <-"'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_cons

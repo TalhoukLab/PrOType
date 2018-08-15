@@ -4,7 +4,7 @@ library(magrittr)
 multMergeCM <- function(algs, fnames, newdir) {
   # Separate the algorithms
   algF <- unique(grep(algs, fnames, value = TRUE))
-  MetaConsMat <- paste0(newdir, algF) %>% # Read the files
+  MetaConsMat <- file.path(newdir, algF) %>% # Read the files
     purrr::map(readRDS) %>% # Sum the entries of the list
     purrr::transpose() %>%
     purrr::map(~ Reduce(`+`, .))

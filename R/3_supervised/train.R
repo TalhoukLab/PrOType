@@ -33,7 +33,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   cli::cat_line("Reading training data:", algs, "-", reps)
   # import training data
-  npcp <-  readr::read_rds(file.path(outDir, "genemapping", dataSet, "tdat_mapped_", dataSet, ".rds"))
+  npcp <-  readr::read_rds(file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds")))
   class <- readr::read_rds(file.path(outDir, "unsupervised", "final", dataSet, paste0("all_clusts_", dataSet, ".rds")))
 
   # class to train on is best performing ensemble algorithm

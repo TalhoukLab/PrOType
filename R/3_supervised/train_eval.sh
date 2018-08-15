@@ -5,13 +5,13 @@
 # extract correct Model directories
 if [ "$normalizeBy" = "Genes" ];
 then
-	fname='Model-hc-genes'
+	mname='Model-hc-genes'
 elif [ "$normalizeBy" = "Samples" ];
 then
-	fname='Model-hc-samples'
+	mname='Model-hc-samples'
 elif [ "$normalizeBy" = "None" ];
 then
-	fname='Model-hc'
+	mname='Model-hc'
 else
 	echo "A normalization of type Genes, Samples or None must be specified"
 fi
@@ -21,13 +21,14 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir/sh_file/train/$dataset
     mkdir -p $workDir/R_file/train/$dataset
 
-    mkdir -p $outputDir'/iv_summary/train_eval/'$dataset
+    mkdir -p $outputDir'/iv_summary/train_eval'
 
     Rname=$workDir/R_file/train/$dataset/train_eval.R
     shell_file=$workDir/sh_file/train/$dataset/train.sh
 
     echo 'outputDir <- "'$outputDir'"' > $Rname
     echo 'dataset <- "'$dataset'"' >> $Rname
+    echo 'mname <- "'$mname'"' >> $Rname
     echo 'source("R/3_supervised/train_eval.R")' >> $Rname
 
     # Run Script

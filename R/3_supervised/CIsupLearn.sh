@@ -16,8 +16,7 @@ for dataset in "${dataSets[@]}"; do
 
     mkdir -p $outputDir'/iv_summary/ci_sup_lrn/'$dataset
 
-    echo 'outDir <- "'$outputDir'"' > $Rname
-    echo 'inDir <- "'$outputDir'"' >> $Rname
+    echo 'outputDir <- "'$outputDir'"' > $Rname
     echo 'fdat <- c("'$data_sets'")' >> $Rname
     echo "top <- $top" >> $Rname
     echo 'source("R/3_supervised/CIsupLearn.R")' >> $Rname
@@ -34,7 +33,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
-
+shouldWait=FALSE
 logDir=$baseLogDir'/IVSummary/CIsupLearn'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh

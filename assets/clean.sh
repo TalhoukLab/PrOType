@@ -1,6 +1,6 @@
 #!/bin/bash
 
 . ./Parameters.sh
-rm -r $logDir
+rm -r $baseLogDir
 rm -r $outputDir
 rm -r $workDir

@@ -12,14 +12,14 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir/R_file/eval/$dataset
     mkdir -p $workDir/sh_file/eval/$dataset
 
-    R_eval=$workDirR_file/eval/$dataset/eval_run.R
+    R_eval=$workDir/R_file/eval/$dataset/eval_run.R
     shell_file=$workDir/sh_file/eval/$dataset/eval_run.sh
 
     mkdir -p $outputDir'/unsupervised/final/'$dataset
 
     # create R script
-    echo "fdir <- '"$outputDir"'" > $R_eval
-    echo "dat <- '"$dataset"'" >> $R_eval
+    echo "outputdir <- '"$outputDir"'" > $R_eval
+    echo "dataset <- '"$dataset"'" >> $R_eval
     echo "referenceClass <- '"$referenceClass"'" >> $R_eval
     echo 'shouldCompute <- '$shouldCompute >> $R_eval
     echo "source('R/1_unsupervised/final_clust.R')" >> $R_eval

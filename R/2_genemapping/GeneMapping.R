@@ -13,7 +13,7 @@
 library(magrittr)
 
 map_to_nano <- function(dataSet, outDir, shouldCompute) {
-  tdat <- readr::read_rds(file.path(outDir, "unsupervised", "prep_data", dataSet, paste0("tdat_", dataSet, ".rds"))
+  tdat <- readr::read_rds(file.path(outDir, "unsupervised", "prep_data", dataSet, paste0("tdat_", dataSet, ".rds")))
   x <- data.frame(t(tdat))
 
   tdat_mapped_outfile <- file.path(outDir, "genemapping", dataSet, paste0("tdat_mapped_", dataSet, ".rds"))
@@ -45,6 +45,8 @@ map_to_nano <- function(dataSet, outDir, shouldCompute) {
       dplyr::group_by(nanostring.probeID) %>%
       dplyr::summarise_all("median") %>%
       dplyr::mutate(housekeeping = as.factor(ifelse(housekeeping != 0 & housekeeping <= 1, 1, 0)))
+
+    rm(df)
 
     # extract housekeeping from table
     housekeeping <- dat %>%

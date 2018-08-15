@@ -14,7 +14,7 @@ multMerge <- function(algs, fnames, newdir) {
   error <- 0
   cli::cat_line("Merging Seeds")
   # Combine reps that succeeded
-  lalgo <- lapply(paste0(newdir, algF), readRDS) %>%
+  lalgo <- lapply(file.path(newdir, algF), readRDS) %>%
     purrr::set_names(paste0("R", seeds)) %>%
     abind::abind(along = 2)
   # Merge the seeds within algorithm when all have completed
@@ -44,7 +44,7 @@ multMerge <- function(algs, fnames, newdir) {
 cli::cat_line("Merging raw clustering")
 regex_str <- paste0(algs, seq_len(reps), dataset, sep = "|")
 rds_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset))
-imputed_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("imputed_dir_", dataset))
+imputed_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("imputed_clust_", dataset))
 
 fnames <- list.files(path = rds_dir, pattern = regex_str) %>%
   gtools::mixedsort()
@@ -59,7 +59,6 @@ saveRDS(E, file = file.path(outputdir, "unsupervised", "merge", paste0("data_pr_
 cli::cat_line("Merging KNN imputed clustering")
 fnames <- list.files(path = imputed_dir) %>%
   gtools::mixedsort()
-
 E_knn <- lapply(algs, multMerge, fnames = fnames, newdir = imputed_dir) %>%
   abind::abind(along = 3)
 saveRDS(E_knn, file = file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("E_knn_", dataset, ".rds")))

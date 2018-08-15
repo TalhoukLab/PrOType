@@ -3,7 +3,7 @@ library(magrittr)
 
 model <- basename(grep("Model", list.dirs(file.path(outputDir, "supervised", "reduce")), value = TRUE))
 df <- list.files(
-  path = file.path(list.dirs(file.path(outputDir, "supervised", "reduce"))),
+  path = file.path(outputDir, "iv_summary", "train_eval"),
   pattern = "train_eval",
   full.names = TRUE
 ) %>%

@@ -17,7 +17,7 @@ for dataset in "${dataSets[@]}"; do
 	Rname=$workDir/R_file/iv_summary/$dataset/iv.R
 	shname=$workDir/sh_file/iv_summary/$dataset/iv.sh
 
-    mkdir -p $outputDir'/iv_summary/summary'$dataset
+    mkdir -p $outputDir'/iv_summary/summary/'$dataset
 
 	echo 'outputDir <- "'$outputDir'"' > $Rname
 	echo 'dataset <- "'$dataset'"' >> $Rname

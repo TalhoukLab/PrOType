@@ -1,7 +1,7 @@
 # command line arguments
 library(magrittr)
 
-x<-list.files(file.path(outputDir, "iv_summary", "summary"),
+x <- list.files(file.path(outputDir, "iv_summary", "summary"),
                 recursive = TRUE,
                 full.names = TRUE,
                 pattern = "iv_summary_ov.*") %>%
