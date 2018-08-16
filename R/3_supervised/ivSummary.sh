@@ -60,7 +60,7 @@ else
     bash $shname
 fi
 
-logDir=$baseLogDir'/IVSummary/ivSummary'
+logDir=$baseLogDir'/supervised/ivSummary'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 

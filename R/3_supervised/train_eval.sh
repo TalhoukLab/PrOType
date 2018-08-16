@@ -43,7 +43,7 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
-logDir=$baseLogDir'/IVSummary/train_eval'
+logDir=$baseLogDir'/supervised/train_eval'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 
