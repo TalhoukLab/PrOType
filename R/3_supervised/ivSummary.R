@@ -3,7 +3,7 @@ library(magrittr)
 
 model <- basename(grep("Model", list.dirs(file.path(outputDir, "supervised", "reduce")), value = TRUE))
 df <- list.files(
-  path = file.path(outputDir, "iv_summary", "train_eval"),
+  path = file.path(outputDir, "supervised", "train_eval"),
   pattern = "train_eval",
   full.names = TRUE
 ) %>%
@@ -26,5 +26,5 @@ df <- list.files(
   tibble::as_tibble()
 
 # write results to file
-readr::write_rds(df, file.path(outputDir, "iv_summary", "summary", dataset, paste0("iv_summary_", dataset, ".rds")))
-readr::write_rds(df, file.path(outputDir, "iv_summary", "summary", dataset, paste0("iv_summary_", dataset, "_threshold.rds")))
+readr::write_rds(df, file.path(outputDir, "supervised", "summary", dataset, paste0("supervised_", dataset, ".rds")))
+readr::write_rds(df, file.path(outputDir, "supervised", "summary", dataset, paste0("supervised_", dataset, "_threshold.rds")))

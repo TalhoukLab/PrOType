@@ -9,4 +9,4 @@ f <- list.files(path = file.path(outputDir, "supervised", "reduce", paste0(mname
     `[`(c(1, 3, 4, 2))
 res <- purrr::map(f, readRDS) %>% purrr::flatten()
 
-saveRDS(res, file.path(outputDir, "iv_summary", "train_eval", paste0("train_eval_", dataset, ".rds")))
+saveRDS(res, file.path(outputDir, "supervised", "train_eval", paste0("train_eval_", dataset, ".rds")))

@@ -11,13 +11,13 @@ for dataset in "${dataSets[@]}"; do
 	fi
 
 	# create scripts and directories
-	mkdir -p $workDir/R_file/iv_summary/$dataset
-	mkdir -p $workDir/sh_file/iv_summary/$dataset
+	mkdir -p $workDir/R_file/supervised/$dataset
+	mkdir -p $workDir/sh_file/supervised/$dataset
 
-	Rname=$workDir/R_file/iv_summary/$dataset/iv.R
-	shname=$workDir/sh_file/iv_summary/$dataset/iv.sh
+	Rname=$workDir/R_file/supervised/$dataset/iv.R
+	shname=$workDir/sh_file/supervised/$dataset/iv.sh
 
-    mkdir -p $outputDir'/iv_summary/summary/'$dataset
+    mkdir -p $outputDir'/supervised/summary/'$dataset
 
 	echo 'outputDir <- "'$outputDir'"' > $Rname
 	echo 'dataset <- "'$dataset'"' >> $Rname
@@ -38,12 +38,12 @@ for dataset in "${dataSets[@]}"; do
 done
 
 
-mkdir -p $workDir/R_file/iv_summary
-mkdir -p $workDir/sh_file/iv_summary
+mkdir -p $workDir/R_file/supervised
+mkdir -p $workDir/sh_file/supervised
 
 
-Rname=$workDir/R_file/iv_summary/top_models.R
-shname=$workDir/sh_file/iv_summary/top_models.sh
+Rname=$workDir/R_file/supervised/top_models.R
+shname=$workDir/sh_file/supervised/top_models.sh
 
 echo 'outputDir <- "'$outputDir'"' > $Rname
 echo 'source("R/3_supervised/top_models.R")' >> $Rname
@@ -72,8 +72,8 @@ fi
 # Step 3: combine all IV tables into one
 # *************************************************************************
 # create scripts and directories
-mkdir -p $workDir'/R_file/iv_summary'
-R_combine_name=$workDir'/R_file/iv_summary/combine.R'
+mkdir -p $workDir'/R_file/supervised'
+R_combine_name=$workDir'/R_file/supervised/combine.R'
 
 echo 'ndat <- purrr::set_names(unlist(strsplit("'"${dataSets[*]}"'", " ")))' > $R_combine_name
 echo 'outputDir <- "'$outputDir'"' >> $R_combine_name

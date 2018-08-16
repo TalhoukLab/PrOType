@@ -19,7 +19,7 @@ top_bcm <- list.files(
   names()
 
 # Choose top 5 supervised learning algorithms by rank aggregated evaluations
-top_sl_algs <- list.files(path = file.path(outputDir, "iv_summary", "ci_sup_lrn"),
+top_sl_algs <- list.files(path = file.path(outputDir, "supervised", "ci_sup_lrn"),
                           pattern = "sup_lrn",
                           full.names = TRUE) %>%
   read.csv(row.names = 1) %>%

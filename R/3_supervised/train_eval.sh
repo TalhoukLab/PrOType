@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir/sh_file/train/$dataset
     mkdir -p $workDir/R_file/train/$dataset
 
-    mkdir -p $outputDir'/iv_summary/train_eval'
+    mkdir -p $outputDir'/supervised/train_eval'
 
     Rname=$workDir/R_file/train/$dataset/train_eval.R
     shell_file=$workDir/sh_file/train/$dataset/train.sh
