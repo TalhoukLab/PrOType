@@ -28,7 +28,7 @@ import_array <- function(dir = "data", map) {
   # combine GSE and TCGA validation data and match with mapping table
   validation.set <- c("gse", "tcga") %>%
     purrr::map_df(
-      ~ file.path(dir, "ValidationSet", paste0("validation_", ., ".rds")) %>%
+      ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
         readr::read_rds() %>%
         tibble::rownames_to_column("sampleID")
     ) %>%
