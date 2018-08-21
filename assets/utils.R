@@ -36,20 +36,21 @@ get_mapping <- function(dir = "data") {
 
   # combine & drop NAs
   dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
-    dplyr::filter(published != "n/a")
+    dplyr::filter(published != "n/a") %>%
+    dplyr::mutate(published = factor(make.names(published)))
 }
 
 #********************************************************************
 # Simple predict function to take it a fit and predict on new.data
 #********************************************************************
-predict_overlap <- function(fit, new.data) {
-  splendid::prediction(
-    mod = fit,
-    data = new.data,
-    class = seq_len(nrow(new.data))
-  ) %>%
-    data.table::setattr("sampleID", rownames(new.data))
-}
+# predict_overlap <- function(fit, new.data) {
+#   splendid::prediction(
+#     mod = fit,
+#     data = new.data,
+#     class = seq_len(nrow(new.data))
+#   ) %>%
+#     data.table::setattr("sampleID", rownames(new.data))
+# }
 
 should_compute <- function(force_recompute, workdir, output_file) {
   target_file <- file.path(workdir, "file_cache.rds")
