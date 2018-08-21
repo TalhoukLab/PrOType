@@ -13,7 +13,7 @@ all_fits <- list.files(file.path(output_dir, "fits"), full.names = TRUE) %>%
   purrr::set_names(tools::file_path_sans_ext(names(.))) %>%
   purrr::map(readRDS)
 
-# Import overlap array samples
+# Import overlap array samples (remove 1 case without ottaID match)
 cli::cat_line("Importing overlap array samples")
 mapping <- load_overlap(dir = "assets/data/nstring") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
@@ -25,7 +25,7 @@ cli::cat_line("Predicting overlap array samples")
 pred_dir <- file.path(output_dir, "predictions")
 pred_overlap_array <- all_fits %>%
   purrr::map(splendid::prediction, data = data_overlap_array, class = NULL) %>%
-  purrr::map(get_overlap, mapping = mapping) %>%
+  purrr::map(join_overlap_array, mapping = mapping) %>%
   purrr::iwalk(~ saveRDS(.x, file.path(
     pred_dir, paste0("pred_overlap_array_", .y, ".rds")
   )))
