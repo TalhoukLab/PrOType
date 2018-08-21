@@ -56,8 +56,8 @@ import_iv <- function(dir = "data", threshold = TRUE) {
   rbind(sup.iv.xpn, sup.iv.cbt)
 }
 
-# Combine array with predictions and and join with mapping table
-get_overlap <- function(pred, mapping) {
+# Join array predictions with published overlapping array samples
+join_overlap_array <- function(pred, mapping) {
   pred %>%
     tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
     dplyr::inner_join(mapping, ., by = "sampleID")
