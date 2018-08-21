@@ -15,7 +15,7 @@ all_fits <- list.files(file.path(output_dir, "fits"), full.names = TRUE) %>%
 
 # Import overlap array samples
 cli::cat_line("Importing overlap array samples")
-mapping <- get_mapping(dir = "assets/data/nstring") %>%
+mapping <- load_overlap(dir = "assets/data/nstring") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
 data_overlap_array <-
   import_array(dir = "assets/data/array", osamples = mapping$sampleID)
