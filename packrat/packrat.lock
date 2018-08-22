@@ -910,18 +910,10 @@ Hash: 49286102a855640daaa38eafe8b1ec30
 Requires: assertthat, magrittr
 
 Package: processx
-Source: github
+Source: CRAN
 Version: 3.2.0
-Hash: 9bc621d35923190e81b706fe444c17cd
+Hash: 906405f0bc681c9438826952417d5d5a
 Requires: R6, assertthat, crayon, ps
-GithubRepo: processx
-GithubUsername: r-lib
-GithubRef: master
-GithubSha1: 76b03c8e12241b4c2fbe3ce12b46a210b4ffd2fe
-RemoteHost: https://api.github.com
-RemoteRepo: processx
-RemoteUsername: r-lib
-RemoteSha: 76b03c8e12241b4c2fbe3ce12b46a210b4ffd2fe
 
 Package: prodlim
 Source: CRAN
@@ -1128,10 +1120,6 @@ GithubRepo: splendid
 GithubUsername: AlineTalhouk
 GithubRef: master
 GithubSha1: f1ae831c80f30e2fccae3fb1bfe3f31148b936e0
-RemoteHost: https://api.github.com
-RemoteRepo: splendid
-RemoteUsername: AlineTalhouk
-RemoteSha: f1ae831c80f30e2fccae3fb1bfe3f31148b936e0
 
 Package: stringi
 Source: CRAN
