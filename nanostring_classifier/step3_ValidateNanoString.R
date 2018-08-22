@@ -1,11 +1,7 @@
 ## Validate overlapping nanostring data
 library(magrittr)
-library(randomForest)
-library(glmnet)
-library(e1071)
 
 source(here::here("nanostring_classifier/utils/utils.R"))
-# source(here::here("array_classifier/2_post_processing/utils/utils-deprecated.R"))
 
 # Import cut 1 fits on top models
 all_fits <- list.files(file.path(output_dir, "fits"), full.names = TRUE) %>%

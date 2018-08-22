@@ -1,8 +1,5 @@
 ## Validate overlapping array data
 library(magrittr)
-library(randomForest)
-library(glmnet)
-library(e1071)
 
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 source(here::here("array_classifier/2_post_processing/utils/utils-deprecated.R"))
