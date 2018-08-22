@@ -14,14 +14,21 @@ source(here("assets/utils.R"))
 # Import nanostring data of overlapped samples and select those that
 # match the mapping table returned from get_mapping()
 #********************************************************************
-get_nstring_overlap <- function(dir = "data", map) {
-  nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
+get_nstring_overlap <- function(dir = "data", osamples) {
+  overlap_nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("ottaID") %>%
-    dplyr::inner_join(map["ottaID"], ., by = "ottaID") %>%
-    as.data.frame() %>%
-    tibble::column_to_rownames("ottaID")
-  nanostring
+    dplyr::filter(ottaID %in% osamples) %>%
+    tibble::column_to_rownames("ottaID") %>%
+    magrittr::extract(match(osamples, rownames(.)), )
+  overlap_nanostring
+}
+
+# Join nanostring predictions with published overlapping nanostring samples
+join_overlap_nstring <- function(pred, mapping) {
+  pred %>%
+    tibble::tibble(ottaID = rownames(attr(., "prob")), nstring = .) %>%
+    dplyr::inner_join(mapping, ., by = "ottaID")
 }
 
 #********************************************************************
@@ -37,6 +44,11 @@ combine <- function(mapped.dat, nstring.overlap, nstring.pred) {
     dplyr::inner_join(mapped.dat, ., by = "ottaID") %>%
     dplyr::select(sampleID, ottaID, published, array, nstring)
   overlap
+}
+
+combine_pred <- function(overlap_array, overlap_nstring) {
+  dplyr::inner_join(overlap_array, overlap_nstring,
+                    by = c("sampleID", "ottaID", "published"))
 }
 
 #********************************************************************

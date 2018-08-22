@@ -1,29 +1,43 @@
-###############################################################
-################# STEP 3: Validate Nanostring #################
-###############################################################
+## Validate overlapping nanostring data
+library(magrittr)
 
-library(here)
-source(here("nanostring_classifier/utils/utils.R"))
+source(here::here("nanostring_classifier/utils/utils.R"))
 
-set.seed(2017)
+# Import cut 1 fits on top models
+all_fits <- list.files(file.path(output_dir, "fits"), full.names = TRUE) %>%
+  purrr::set_names(stringr::str_remove(basename(.), paste0(trainSet, "_"))) %>%
+  purrr::set_names(tools::file_path_sans_ext(names(.))) %>%
+  purrr::map(readRDS)
 
-# import cut 1 fits
-fit.c1 <- readr::read_rds(paste0(output_dir, "/fits/ov.afc1_cbt_adaboost.rds"))
+# Import overlap nanostring samples
+cli::cat_line("Importing overlap nanostring samples")
+mapping <- load_overlap(dir = "assets/data/nstring") %>%
+  dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
+data_overlap_nstring <-
+  get_nstring_overlap(dir = "assets/data/nstring", osamples = mapping$ottaID)
 
-# import overlapping data
-map <- get_mapping(dir = "array_classifier/2_post_processing/data/")
-overlap.nstring <- get_nstring_overlap(dir = "array_classifier/2_post_processing/data/", map = map)
+# Predict overlap nstring samples and combine with published
+cli::cat_line("Predicting overlap nanostring samples")
+pred_dir <- file.path(output_dir, "predictions")
+pred_overlap_nstring <- all_fits %>%
+  purrr::map(splendid::prediction, data = data_overlap_nstring, class = NULL) %>%
+  purrr::map(join_overlap_nstring, mapping = mapping) %>%
+  purrr::iwalk(~ saveRDS(.x, file.path(
+    pred_dir, paste0("pred_overlap_nstring_", .y, ".rds")
+  )))
+saveRDS(pred_overlap_nstring, file.path(pred_dir, "pred_overlap_nstring.rds"))
 
-# predict overlap nstring
-pred.overlap.nstring <- predict_overlap(fit.c1, overlap.nstring)
+# Import overlap array predictions
+pred_overlap_array <- readRDS(file.path(output_dir, "predictions", "pred_overlap_array.rds"))
 
-# import adaboost predictions from validation step
-pred.overlap.array <- transpose(read_rds(paste0(output_dir, "/predictions/pred_overlap_array.rds")))$adaboost[[1]]
+# Combine overlapping array and nstring predictions
+pred_all <- purrr::map2(pred_overlap_array, pred_overlap_nstring, combine_pred)
 
-# combine overlapping array and nstring
-overlap <- combine(pred.overlap.array, overlap.nstring, pred.overlap.nstring)
-
-# evaluate overlap results
-eval.overlap <- purrr::transpose(evaluate_all(overlap))
-cat(paste0(output_dir, "/evals/", dataset, "_adaboost.rds"), "\n")
-readr::write_rds(eval.overlap, paste0(output_dir, "/evals/", dataset, "_adaboost.rds"))
+# Evaluate overlap results
+cli::cat_line("Evaluating overlap array and nanostring predictions")
+eval_dir <- file.path(output_dir, "evals")
+eval_all <- purrr::map(pred_all, evaluate_all) %>%
+  purrr::iwalk(~ saveRDS(.x, file.path(
+    eval_dir, paste0("eval_overlap_all_", .y, ".rds")
+  )))
+saveRDS(eval_all, file.path(eval_dir, "eval_overlap_all.rds"))

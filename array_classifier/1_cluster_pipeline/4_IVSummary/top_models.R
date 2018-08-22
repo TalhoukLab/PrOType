@@ -48,15 +48,17 @@ y <- file.path(dat_path, paste0("all_clusts_", dat_tr, "_", top_bcm, ".rds")) %>
 
 # Refit on full data
 all_fits <- top_sl_algs %>%
-  purrr::set_names() %>%
-  purrr::map(~ {
-    .Random.seed <- seed
-    splendid::classification(data = dat, class = y, algorithms = .)
-  })
+  purrr::list_along() %>%
+  purrr::set_names(top_sl_algs)
+for (a in seq_along(top_sl_algs)) {
+  .Random.seed <- seed
+  all_fits[[a]] <- splendid::classification(data = dat, class = y,
+                                            algorithms = top_sl_algs[a])
+}
 
 # Save full model fits
 purrr::iwalk(all_fits,
-      ~ saveRDS(.x, file.path(
-        outputDir, "fits",
-        paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
-      )))
+             ~ saveRDS(.x, file.path(
+               outputDir, "fits",
+               paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
+             )))
