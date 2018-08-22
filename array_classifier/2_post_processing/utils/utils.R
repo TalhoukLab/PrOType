@@ -339,3 +339,49 @@ matrix_loss <- function(Rh, R = NULL) {
   quadratic <- psych::tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
   tibble::lst(entropy, quadratic)
 }
+
+
+# 6 - Validate Array ------------------------------------------------------
+
+#' Import array validation data and filter for overlapping samples
+#'
+#' Combine TCGA and GSE validation data and keep overlapping samples
+#'
+#' @param dir directory for TCGA and GSE validation data
+#' @param osamples character vector of overlapping samples. Given as "sampleID"
+#'   column from `load_overlap()`
+import_array_overlap <- function(dir = "data", osamples) {
+  overlap_array <- c("tcga", "gse") %>%
+    purrr::map_df(
+      ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
+        readr::read_rds() %>%
+        tibble::rownames_to_column("sampleID")
+    ) %>%
+    dplyr::filter(sampleID %in% osamples) %>%
+    tibble::column_to_rownames("sampleID")
+  overlap_array
+}
+
+#' Join published labels with overlap array predictions
+#'
+#' @param pred predicted overlap array labels
+#' @param overlap tibble of overlap sampleID, ottaID, and published labels
+join_published_array <- function(pred, overlap) {
+  pred %>%
+    tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
+    dplyr::inner_join(overlap, ., by = "sampleID")
+}
+
+#' Evaluate overlap array predictions using splendid and caret
+#'
+#' @param data tibble of published labels and predicted overlap array labels
+evaluate_array <- function(data) {
+  p <- data[["published"]]
+  a <- data[["array"]]
+  list(
+    published_vs_array = list(
+      metrics = splendid::evaluation(p, a),
+      confmat = caret::confusionMatrix(a, p)
+    )
+  )
+}

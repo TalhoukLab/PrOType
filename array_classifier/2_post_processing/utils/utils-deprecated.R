@@ -22,25 +22,6 @@ import_study <- function(dir = "data", study = "ov.afc1_cbt") {
   data.frame(y, dat)
 }
 
-#' Import array validation data and filter for overlapping samples
-#'
-#' Combine TCGA and GSE validation data and keep overlapping samples
-#'
-#' @param dir directory for TCGA and GSE validation data
-#' @param osamples character vector of overlapping samples. Given as "sampleID"
-#'   column from `get_mapping()`
-import_array <- function(dir = "data", osamples) {
-  overlap_array <- c("tcga", "gse") %>%
-    purrr::map_df(
-      ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
-        readr::read_rds() %>%
-        tibble::rownames_to_column("sampleID")
-    ) %>%
-    dplyr::filter(sampleID %in% osamples) %>%
-    tibble::column_to_rownames("sampleID")
-  overlap_array
-}
-
 # import (threshold) iv summary data
 import_iv <- function(dir = "data", threshold = TRUE) {
   # IV threshold filenames
@@ -54,25 +35,6 @@ import_iv <- function(dir = "data", threshold = TRUE) {
   sup.iv.xpn <- readr::read_rds(fn.iv.xpn)
   sup.iv.cbt <- readr::read_rds(fn.iv.cbt)
   rbind(sup.iv.xpn, sup.iv.cbt)
-}
-
-# Join array predictions with published overlapping array samples
-join_overlap_array <- function(pred, mapping) {
-  pred %>%
-    tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
-    dplyr::inner_join(mapping, ., by = "sampleID")
-}
-
-# Return list of evaluation measures. Output is required for ploting.
-evaluate_array <- function(data) {
-  y <- data$array
-  x <- data$published
-
-  published_vs_array <- list(
-    metrics = splendid::evaluation(x, y),
-    confmat = caret::confusionMatrix(y, x)
-  )
-  tibble::lst(published_vs_array)
 }
 
 # Plot evaluation measures by class and overall for top algorithms
