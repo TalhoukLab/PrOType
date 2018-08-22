@@ -1,4 +1,6 @@
-library(magrittr)
+# Fit top models on full cut1 data ----------------------------------------
+
+# Load packages and utility functions
 source(here::here("assets/utils.R"))
 
 # Training data
