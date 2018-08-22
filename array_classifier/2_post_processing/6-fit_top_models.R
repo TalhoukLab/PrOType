@@ -54,8 +54,10 @@ all_fits <- top_sl_algs %>%
   purrr::set_names(top_sl_algs)
 for (a in seq_along(top_sl_algs)) {
   .Random.seed <- seed
+  alg <- top_sl_algs[a]
+  cli::cat_line("Classifying full training data with ", alg)
   all_fits[[a]] <- splendid::classification(data = dat, class = y,
-                                            algorithms = top_sl_algs[a])
+                                            algorithms = alg)
 }
 
 # Save full model fits
