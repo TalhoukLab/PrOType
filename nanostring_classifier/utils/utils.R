@@ -1,20 +1,17 @@
-# Dependencies ----
+# Current NanoString utility functions -------------------------------
 
-# load dependencies
-suppressPackageStartupMessages({
-  library(tidyverse)
-  library(here)
-})
+# Load packages and project wide utility functions
+library(purrr)
+source(here::here("assets/utils.R"))
 
-source(here("assets/utils.R"))
-
-# Functions ----
-
-#********************************************************************
-# Import nanostring data of overlapped samples and select those that
-# match the mapping table returned from get_mapping()
-#********************************************************************
-get_nstring_overlap <- function(dir = "data", osamples) {
+#' Import nanostring validation data and filter for overlapping samples
+#'
+#' Uses "nanostring_aocs_tcga" to filter for overlapping samples.
+#'
+#' @param dir directory with "nanostring_aocs_tcga" data
+#' @param osamples character vector of overlapping samples. Given as "ottaID"
+#'   column from `load_overlap()`
+import_nstring_overlap <- function(dir = "data", osamples) {
   overlap_nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
     readr::read_rds() %>%
     tibble::rownames_to_column("ottaID") %>%
@@ -24,50 +21,52 @@ get_nstring_overlap <- function(dir = "data", osamples) {
   overlap_nanostring
 }
 
-# Join nanostring predictions with published overlapping nanostring samples
-join_overlap_nstring <- function(pred, mapping) {
+#' Join published labels with overlap nanostring predictions
+#'
+#' @param pred predicted overlap nanostring labels
+#' @param overlap tibble of overlap sampleID, ottaID, and published labels
+join_published_nstring <- function(pred, overlap) {
   pred %>%
     tibble::tibble(ottaID = rownames(attr(., "prob")), nstring = .) %>%
-    dplyr::inner_join(mapping, ., by = "ottaID")
+    dplyr::inner_join(overlap, ., by = "ottaID")
 }
 
-#********************************************************************
-# Combine nanostring, its predictions and array, then join with
-# mapping table. Return table containing predicted labels on
-# nanostring and array in addition to published labels.
-#********************************************************************
-combine <- function(mapped.dat, nstring.overlap, nstring.pred) {
-  mapped.dat$published <- factor(make.names(mapped.dat$published))
-  overlap <- nstring.overlap %>%
-    tibble::rownames_to_column("ottaID") %>%
-    dplyr::transmute(ottaID, nstring = nstring.pred) %>%
-    dplyr::inner_join(mapped.dat, ., by = "ottaID") %>%
-    dplyr::select(sampleID, ottaID, published, array, nstring)
-  overlap
-}
-
+#' Combine overlap predictions for array and nanostring with published
+#'
+#' @param overlap_array tibble of predicted overlap array labels with published
+#'   labels
+#' @param overlap_nstring tibble of predicted overlap nanostring labels with
+#'   published labels
 combine_pred <- function(overlap_array, overlap_nstring) {
   dplyr::inner_join(overlap_array, overlap_nstring,
                     by = c("sampleID", "ottaID", "published"))
 }
 
-#********************************************************************
-# Return list of evaluation measures. Output is required for ploting.
-#********************************************************************
-evaluate_all <- function(x) {
-  published_vs_array <- list(
-    splendid::evaluation(x$published, x$array),
-    caret::confusionMatrix(x$array, x$published)
+#' Evaluate all combinations of predicted labels
+#'
+#' Evaluate published vs overlap array labels, published vs nanostring array
+#' labels, and overlap array vs overlap nanostring labels
+#'
+#' @param data tibble of published labels, predicted overlap array labels, and
+#'   predicted overlap nanostring labels. Uses output from `combine_pred()`.
+evaluate_all <- function(data) {
+  p <- data[["published"]]
+  a <- data[["array"]]
+  n <- data[["nstring"]]
+  list(
+    published_vs_array = list(
+      metrics = splendid::evaluation(p, a),
+      confmat = caret::confusionMatrix(a, p)
+    ),
+    published_vs_nstring = list(
+      metrics = splendid::evaluation(p, n),
+      confmat = caret::confusionMatrix(n, p)
+    ),
+    array_vs_nstring = list(
+      metrics = splendid::evaluation(a, n),
+      confmat = caret::confusionMatrix(n, a)
+    )
   )
-  published_vs_nstring <- list(
-    splendid::evaluation(x$published, x$nstring),
-    caret::confusionMatrix(x$nstring, x$published)
-  )
-  array_vs_nstring <- list(
-    splendid::evaluation(x$array, x$nstring),
-    caret::confusionMatrix(x$nstring, x$array)
-  )
-  tibble::lst(published_vs_array, published_vs_nstring, array_vs_nstring)
 }
 
 #********************************************************************
