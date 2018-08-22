@@ -11,11 +11,13 @@ build_mapping <- function(train.set) {
   }
 }
 
-#********************************************************************
-# Import overlapping samples from TCGA and GSE and combine. Table
-# also includes published labels.
-#********************************************************************
-get_mapping <- function(dir = "data") {
+#' Load overlapping samples with their published class labels
+#'
+#' Combines TCGA and GSE overlapping samples. Samples with published label
+#' "n/a" are removed.
+#'
+#' @param dir directory for mapped TCGA and GSE overlapping samples
+load_overlap <- function(dir = "data") {
   # TCGA overlap
   tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv(col_types = readr::cols()) %>%
@@ -36,19 +38,8 @@ get_mapping <- function(dir = "data") {
 
   # combine & drop NAs
   dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
-    dplyr::filter(published != "n/a")
-}
-
-#********************************************************************
-# Simple predict function to take it a fit and predict on new.data
-#********************************************************************
-predict_overlap <- function(fit, new.data) {
-  splendid::prediction(
-    mod = fit,
-    data = new.data,
-    class = seq_len(nrow(new.data))
-  ) %>%
-    data.table::setattr("sampleID", rownames(new.data))
+    dplyr::filter(published != "n/a") %>%
+    dplyr::mutate(published = factor(make.names(published)))
 }
 
 should_compute <- function(force_recompute, workdir, output_file) {

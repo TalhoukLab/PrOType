@@ -22,20 +22,23 @@ import_study <- function(dir = "data", study = "ov.afc1_cbt") {
   data.frame(y, dat)
 }
 
-# Import array data of overlapped samples and select those that
-# match the mapping table returned from get_mapping()
-import_array <- function(dir = "data", map) {
-  # combine GSE and TCGA validation data and match with mapping table
-  validation.set <- c("gse", "tcga") %>%
+#' Import array validation data and filter for overlapping samples
+#'
+#' Combine TCGA and GSE validation data and keep overlapping samples
+#'
+#' @param dir directory for TCGA and GSE validation data
+#' @param osamples character vector of overlapping samples. Given as "sampleID"
+#'   column from `get_mapping()`
+import_array <- function(dir = "data", osamples) {
+  overlap_array <- c("tcga", "gse") %>%
     purrr::map_df(
-      ~ file.path(dir, "ValidationSet", paste0("validation_", ., ".rds")) %>%
+      ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
         readr::read_rds() %>%
         tibble::rownames_to_column("sampleID")
     ) %>%
-    dplyr::inner_join(map["sampleID"], ., by = "sampleID") %>%
-    as.data.frame() %>%
+    dplyr::filter(sampleID %in% osamples) %>%
     tibble::column_to_rownames("sampleID")
-  validation.set
+  overlap_array
 }
 
 # import (threshold) iv summary data
@@ -53,26 +56,21 @@ import_iv <- function(dir = "data", threshold = TRUE) {
   rbind(sup.iv.xpn, sup.iv.cbt)
 }
 
-# Combine array with predictions and and join with mapping table
-get_overlap <- function(array, pred, map) {
-  # join the validation set
-  array %>%
-    tibble::rownames_to_column("sampleID") %>%
-    data.frame(array = pred) %>%
-    dplyr::inner_join(map, by = "sampleID") %>%
-    dplyr::select(sampleID, ottaID, published, array) %>%
-    dplyr::filter(published != "n/a") %>%
-    dplyr::mutate(published = as.factor(published))
+# Join array predictions with published overlapping array samples
+join_overlap_array <- function(pred, mapping) {
+  pred %>%
+    tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
+    dplyr::inner_join(mapping, ., by = "sampleID")
 }
 
 # Return list of evaluation measures. Output is required for ploting.
 evaluate_array <- function(data) {
   y <- data$array
-  x <- factor(make.names(data$published))
+  x <- data$published
 
   published_vs_array <- list(
-    splendid::evaluation(x, y),
-    caret::confusionMatrix(y, x)
+    metrics = splendid::evaluation(x, y),
+    confmat = caret::confusionMatrix(y, x)
   )
   tibble::lst(published_vs_array)
 }

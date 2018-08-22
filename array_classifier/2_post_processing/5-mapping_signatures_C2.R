@@ -46,7 +46,8 @@ for (k in seq_along(input.file.vec)) {
   mch.fiveT.idx <- match(common.gene5, rfive.type$Gene.Name)
 
   # Remove the gene names and re-order them to match each other
-  four.mtx <- as.matrix(rfour.type[mch.fourT.idx, -1])
+  four.mtx <- as.matrix(rfour.type[mch.fourT.idx, -1]) %>%
+    magrittr::extract(, order(colnames(.)))
   five.mtx <- as.matrix(rfive.type[mch.fiveT.idx, -1])
   affy.mtx4 <- as.matrix(rAff.eb[mch.Affy.idx4, affy.labs])
   affy.mtx5 <- as.matrix(rAff.eb[mch.Affy.idx5, affy.labs])
@@ -63,7 +64,8 @@ for (k in seq_along(input.file.vec)) {
   # Common heatmap arguments
   heatmap_args <- list(trace = "none", col = gplots::bluered(25), key = FALSE,
                        dendrogram = "none", notecol = "black",
-                       margins = c(5, 5), cexRow = 0.9, cexCol = 0.9)
+                       margins = c(5, 5), cexRow = 0.9, cexCol = 0.9,
+                       Rowv = FALSE, Colv = FALSE)
   # Invoke heatmap on common and different arguments
   purrr::invoke(
     .f = gplots::heatmap.2, .x = heatmap_args,

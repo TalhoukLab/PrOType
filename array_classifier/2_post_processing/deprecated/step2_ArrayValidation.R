@@ -1,76 +1,39 @@
-###############################################################
-################## STEP 2: Array Validation ##################
-###############################################################
-
-library(here)
+## Validate overlapping array data
 library(magrittr)
-library(glmnet)
 
-source(here("array_classifier/2_post_processing/utils/utils.R"))
+source(here::here("array_classifier/2_post_processing/utils/utils.R"))
+source(here::here("array_classifier/2_post_processing/utils/utils-deprecated.R"))
 
-set.seed(2017)
-preds_dir <- paste0(output_dir, "predictions")
-evals_dir <- paste0(output_dir, "evals")
+# Import cut 1 fits on top models
+all_fits <- list.files(file.path(output_dir, "fits"), full.names = TRUE) %>%
+  purrr::set_names(stringr::str_remove(basename(.), paste0(trainSet, "_"))) %>%
+  purrr::set_names(tools::file_path_sans_ext(names(.))) %>%
+  purrr::map(readRDS)
 
-# import cut 1 fits
-fit.c1 <- readr::read_rds(paste0(output_dir, "fits/all_fits.rds"))
-
-# import overlapping data
-map <- get_mapping("array_classifier/2_post_processing/data/") %>%
+# Import overlap array samples (remove 1 case without ottaID match)
+cli::cat_line("Importing overlap array samples")
+mapping <- load_overlap(dir = "assets/data/nstring") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
-overlap.array <- import_array(dir= "array_classifier/2_post_processing/data/", map = map)
+data_overlap_array <-
+  import_array(dir = "assets/data/array", osamples = mapping$sampleID)
 
-# predict overlap array
-cat("Predicting overlap array\n")
-pred.overlap.array <- fit.c1 %>%
-  purrr::imap(~ {
-    purrr::imap(.x, function(z, k) {
-      bc <- stringr::str_sub(.y, nchar(.y) - 2)
-      fname <- file.path(preds_dir, paste0("array_", bc, "_", k, ".rds"))
-      preds <- predict_overlap(z, overlap.array)
-      readr::write_rds(preds, path = fname)
-      return(preds)
-    })
-  }) %>%
-  purrr::modify_depth(2, ~ get_overlap(overlap.array, ., map))
-readr::write_rds(pred.overlap.array,
-                 file.path(preds_dir, "pred_overlap_array.rds"))
+# Predict overlap array samples and combine with published
+cli::cat_line("Predicting overlap array samples")
+pred_dir <- file.path(output_dir, "predictions")
+pred_overlap_array <- all_fits %>%
+  purrr::map(splendid::prediction, data = data_overlap_array, class = NULL) %>%
+  purrr::map(join_overlap_array, mapping = mapping) %>%
+  purrr::iwalk(~ saveRDS(.x, file.path(
+    pred_dir, paste0("pred_overlap_array_", .y, ".rds")
+  )))
+saveRDS(pred_overlap_array, file.path(pred_dir, "pred_overlap_array.rds"))
 
-# evaluate overlap results
-cat("Evaluating overlap results\n")
-eval.overlap <- pred.overlap.array %>%
-  purrr::modify_depth(2, evaluate_array) %>%
-  purrr::map(purrr::transpose) %>%
-  purrr::transpose()
-
-# create naming list structure
-cat("Creating naming list structure\n")
-names.ls <- eval.overlap %>%
-  purrr::map(~ {
-    purrr::imap(., function(y, z) {
-      study.extract <- stringr::str_sub(z, nchar(z) - 2)
-      paste(study.extract, names(y), sep = ".")
-    }) %>%
-      purrr::flatten()
-  })
-
-# name overlapping evaluation results list
-cat("Naming overlapping evaluation results list\n")
-evals.all <- list(eval.overlap, names.ls, names(eval.overlap)) %>%
-  purrr::pmap(~ {
-    named <- purrr::set_names(purrr::flatten(..1), ..2)
-    readr::write_rds(named, file.path(evals_dir, paste0(..3, ".rds")))
-    return(named)
-  })
-
-# visualize evaluation results
-cat("Visualizing evaluation results\n")
-eval.plots <- names(evals.all) %>%
-  purrr::map(~ plot_evals_noCBT(
-    output_dir = output_dir,
-    dir = file.path(evals_dir, paste0(., ".rds")),
-    plot.title = gsub("_", " ", .),
-    algs = algs,
-    save = TRUE,
-    print = FALSE
-  ))
+# Evaluate overlap array predictions using splendid and caret
+cli::cat_line("Evaluating overlap array predictions")
+eval_dir <- file.path(output_dir, "evals")
+eval_overlap_array <- pred.overlap.array %>%
+  purrr::map(evaluate_array) %>%
+  purrr::iwalk(~ saveRDS(.x, file.path(
+    eval_dir, paste0("eval_overlap_array_", .y, ".rds")
+  )))
+saveRDS(eval_overlap_array, file.path(eval_dir, "eval_overlap_array.rds"))

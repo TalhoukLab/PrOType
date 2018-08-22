@@ -2,8 +2,10 @@
 
 # Code to compute cluster centroids based on diceR and map probes to genes
 # Load packages
-library(hgug4112a.db)
-library(hgu133plus2.db)
+suppressPackageStartupMessages({
+  library(hgug4112a.db)
+  library(hgu133plus2.db)
+})
 
 # Read in original data
 fdat <- testSet

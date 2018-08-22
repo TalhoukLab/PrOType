@@ -32,7 +32,7 @@ top_sl_algs <- list.files(path = dat_path,
   names()
 
 # Choose seed
-seed <- 2018
+seed <- readRDS(file.path("assets/data/seed.rds"))
 
 # Import full normalized data and class labels
 dat <- file.path(dat_path, paste0("npcp-hcNorm_", dat_tr, "_", top_bcm, ".rds")) %>%
@@ -48,12 +48,17 @@ y <- file.path(dat_path, paste0("all_clusts_", dat_tr, "_", top_bcm, ".rds")) %>
 
 # Refit on full data
 all_fits <- top_sl_algs %>%
-  purrr::set_names() %>%
-  purrr::map(splendid::classification, data = dat, class = y, seed_alg = seed)
+  purrr::list_along() %>%
+  purrr::set_names(top_sl_algs)
+for (a in seq_along(top_sl_algs)) {
+  .Random.seed <- seed
+  all_fits[[a]] <- splendid::classification(data = dat, class = y,
+                                            algorithms = top_sl_algs[a])
+}
 
 # Save full model fits
-iwalk(all_fits,
-      ~ saveRDS(.x, file.path(
-        outputDir, "fits",
-        paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
-      )))
+purrr::iwalk(all_fits,
+             ~ saveRDS(.x, file.path(
+               outputDir, "fits",
+               paste0(dat_tr, "_", top_bcm, "_", .y, ".rds")
+             )))
