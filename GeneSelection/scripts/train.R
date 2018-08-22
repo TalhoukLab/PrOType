@@ -1,12 +1,12 @@
 runTrainingSequence <- function(runBoot, processBoot, finalTraining, makePreds,
                                 output_dir, studies, train_dat, train_lab, B,
-                                algs) {
+                                algs, var) {
   cli::cat_rule("Running Training Sequence")
   for (study in studies) {
     cli::cat_line("Train ", study, " study")
     # Generate a subset for training
     x <- sl_data(train_dat, study, "training")
-    y <- sl_class(train_lab, x)
+    y <- sl_class(train_lab, x, var)
 
     # Bootstrap several algos
     if (runBoot) {
@@ -134,10 +134,11 @@ sl_data <- function(train_dat, study = NULL, type = c("training", "test")) {
 #'
 #' @param train_lab data with supervised learning labels
 #' @param data expression data
+#' @param var variable of predicted classes
 #' @return A vector of classes for Adaboost after filtering `train_lab` for
 #'   cases found in `data`
-sl_class <- function(train_lab, data) {
+sl_class <- function(train_lab, data, var = "Adaboost.xpn") {
   train_lab %>%
     dplyr::filter(ottaID %in% rownames(data)) %>%
-    dplyr::pull(Adaboost.xpn)
+    dplyr::pull(var)
 }

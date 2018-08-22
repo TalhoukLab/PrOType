@@ -77,7 +77,7 @@ load_prediction_labels <- function(nsdat) {
     dplyr::select(ottaID, published) %>%
     dplyr::mutate_at("published", make.names)
   preds_new <- dplyr::left_join(preds, published, by = "ottaID") %>%
-    dplyr::mutate_at(c("Adaboost.xpn", "Array.Pred.Subtype",
+    dplyr::mutate_at(c("Lasso.xpn", "Adaboost.xpn", "Array.Pred.Subtype",
                        "TCGA.Predicted.Subtype"), make.names)
   tibble::lst(published, preds_new)
 }

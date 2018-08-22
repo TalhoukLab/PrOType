@@ -1,16 +1,18 @@
 # Clear the deck----
 
 # Load Parameters----
-B <- 5
+B <- 500
 runBoot <- 1
 processBoot <- 1
-finalTraining <- 1
-makePreds <- 1
-evaluatePreds <- 1
-producePlots <- 1
+finalTraining <- 0
+makePreds <- 0
+evaluatePreds <- 0
+producePlots <- 0
 sumOverallFreqs <- 1
-geneAnalysis <- 1
+geneAnalysis <- 0
 algs <- c("lasso", "rf")
+var <- "Lasso.xpn"
+output_dir <- "/extscratch/shahlab/huntsman/dchiu/gstmp"
 
 # Load packages----
 library(here)
@@ -44,7 +46,7 @@ pred_labs <- load_prediction_labels(nsdat)
 preds_new <- pred_labs$preds_new
 
 # Compute consensus
-train <- define_batch(preds_new, nsdat)
+train <- define_batch(preds_new, nsdat, var)
 train_dat <- train$dat
 train_lab <- train$lab
 
@@ -53,7 +55,7 @@ studies <- unique(train_dat$site)
 
 # Train over study site----
 runTrainingSequence(runBoot, processBoot, finalTraining, makePreds,
-                    output_dir, studies, train_dat, train_lab, B, algs)
+                    output_dir, studies, train_dat, train_lab, B, algs, var)
 
 # Evaluate the predictions----
 if (evaluatePreds) {

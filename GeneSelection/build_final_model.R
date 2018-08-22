@@ -31,38 +31,40 @@ pred_labs <- load_prediction_labels(nsdat)
 preds_new <- pred_labs$preds_new
 
 # Define training set (cut1)
-train <- define_batch(preds_new, nsdat, batch = "b1")
+train <- define_batch(preds_new, nsdat, var = "Lasso.xpn", batch = "b1")
 train_dat <- train$dat
 train_lab <- train$lab
 
 # Define overlap
-overlap <- define_overlap(preds_new, nsdat)
+overlap <- define_overlap(preds_new, nsdat, var = "Lasso.xpn")
 overlap_dat <- overlap$dat
 overlap_lab <- overlap$lab
 
 # Define test 1 (cut2 excluding overlap)
-test1 <- define_batch(preds_new, nsdat, batch = "b2")
+test1 <- define_batch(preds_new, nsdat, var = "Lasso.xpn", batch = "b2")
 test1_lab <- test1$lab
 test1_dat <- test1$dat
 
 # Define test 2 (cut3)
-test2 <- define_batch(preds_new, nsdat, batch = "b3")
+test2 <- define_batch(preds_new, nsdat, var = "Lasso.xpn", batch = "b3")
 test2_lab <- test2$lab
 test2_dat <- test2$dat
 
 # Define test 3 (cut4)
-test3 <- define_batch(preds_new, nsdat, batch = "b4")
+test3 <- define_batch(preds_new, nsdat, var = "Lasso.xpn", batch = "b4")
 test3_lab <- test3$lab
 test3_dat <- test3$dat
 
 # Build the final model----
-sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "sumFreq", "overallFreqs.csv"),
-                    stringsAsFactors = FALSE) %>%
+# sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "sumFreq", "overallFreqs.csv"),
+#                     stringsAsFactors = FALSE) %>%
+#   arrange(desc(rfFreq), desc(lassoFreq))
+sumFreq <- read.csv("~/Desktop/overallFreqs.csv") %>%
   arrange(desc(rfFreq), desc(lassoFreq))
 
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
-y <- sl_class(train_lab, x)
+y <- sl_class(train_lab, x, var = "Lasso.xpn")
 genes <- get_genes(train_dat)
 rf_genes <- make.names(sumFreq$genes)
 final_glist <- head(rf_genes[!rf_genes %in% grm], n_genes) # Final gene list
@@ -104,7 +106,8 @@ test3_eval <- caret::confusionMatrix(test3_lab$prediction, test3_lab$Adaboost.xp
 x.new <- sl_data(nsdat)
 
 preds_new_cons <- preds_new %>%
-  select(ottaID, cut = Batch, all_array = Adaboost.xpn, TCGA = TCGA.Predicted.Subtype, published) %>%
+  # select(ottaID, cut = Batch, all_array = Adaboost.xpn, TCGA = TCGA.Predicted.Subtype, published) %>%
+  select(ottaID, cut = Batch, all_array = Lasso.xpn, TCGA = TCGA.Predicted.Subtype, published) %>%
   mutate(consensus = ifelse(all_array == TCGA, all_array, ""))
 
 Final_Predictions <- data.frame(
