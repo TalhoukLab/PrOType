@@ -1,23 +1,22 @@
-###############################################################
-################ STEP 4: Predict All Nanostring ###############
-###############################################################
+# Predict all nanostring data ---------------------------------------------
 
-library(here)
-source(here("nanostring_classifier/utils/utils.R"))
+# Load utility functions
+source(here::here("nanostring_classifier/utils/utils.R"))
 
-set.seed(2017)
+# Load vancouver model
+alg <- "adaboost"
+van_mod <-
+  readRDS(file.path(outputDir, "fits", paste0(trainSet, "_", alg, ".rds")))
+genes <- van_mod[["names"]]
 
-# load vancouver model
-Van_mod <- readr::read_rds(paste0(output_dir, "/fits/", dataset, "_adaboost.rds"))
-genes <- Van_mod$names
+# Load all nanostring data
+cli::cat_line("Loading all nanostring data")
+nsdat <- load_nstring_all(dir = "assets/data/nstring", genes = genes)
 
-# load nanostring data
-nsdat <- load_nanostring(dir = "array_classifier/2_post_processing/data/", genes)
-
-# predict nanostring data
-cat("predicting nanostring data\n")
-pred.nano <- predict(Van_mod, nsdat, type = "class") %>%
-  data_frame(ottaID = rownames(nsdat), preds = .)
-
-# write to file
-readr::write_rds(pred.nano, paste0(output_dir, "/predictions/nstring_allbatches.rds"))
+# Predict all nanostring data
+cli::cat_line("Predicting all nanostring data")
+pred_nano <- splendid::prediction(van_mod, nsdat) %>%
+  tibble::tibble(ottaID = rownames(nsdat), preds = .) %>%
+  `attr<-`("batch", attr(nsdat, "batch"))
+saveRDS(pred_nano,
+        file.path(outputDir, "predictions", "nstring_all_batches.rds"))

@@ -1,4 +1,6 @@
-## Validate overlapping nanostring data
+# Validate overlapping nanostring data ------------------------------------
+
+# Load utility functions
 source(here::here("nanostring_classifier/utils/utils.R"))
 
 # Import cut 1 fits on top models

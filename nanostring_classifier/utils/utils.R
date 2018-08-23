@@ -1,8 +1,11 @@
-# Current NanoString utility functions -------------------------------
+# NanoString utility functions -------------------------------
 
 # Load packages and project wide utility functions
 library(purrr)
 source(here::here("assets/utils.R"))
+
+
+# 1 - Validate Nanostring -------------------------------------------------
 
 #' Import nanostring validation data and filter for overlapping samples
 #'
@@ -69,47 +72,18 @@ evaluate_all <- function(data) {
   )
 }
 
-#********************************************************************
-# Prepare data for cross-platform to Nanostring
-#********************************************************************
-prep_data <- function(dataSet, dir = "data") {
-  subdir <- paste0("data_pr_", dataSet) # subdirectory
 
-  # read npcp normalized by housekeeping genes
-  npcp.tmp <- file.path(dir, subdir, paste0("npcp-hcNorm_", dataSet, ".rds")) %>%
-    readr::read_rds() %>%
-    `rownames<-`(stringr::str_sub(rownames(.), end = -8)) # process rownames
+# 2 - Predict All Nanostring ----------------------------------------------
 
-  # read in diceR cluster labels (hgsc subtypes)
-  train.class.tmp <- file.path(dir, subdir, paste0("all_clusts_", dataSet, ".rds")) %>%
-    readr::read_rds() %>%
-    dplyr::select(labs = 1) %>%
-    dplyr::inner_join(build_mapping(dataSet), by = "labs") %>%
-    dplyr::pull(labels)
-
-  # read in required prep files
-  inclusion <- readr::read_csv(file.path(dir, "inclusion.csv"))
-  original <- read.csv(file.path(dir, "Subtype_Original.csv"))
-  labels <- read.csv(file.path(dir, "NS_final_labels.csv"))
-
-  # only keep post == 1
-  keep <- inclusion %>%
-    dplyr::mutate(Label = gsub("\\.|\\+", "_", Label)) %>%
-    dplyr::filter(post == 1) %>%
-    dplyr::pull(Label) %>%  # This is both cut 1 and 2
-    magrittr::is_in(rownames(npcp.tmp), .)
-  npcp <- data.frame(lab = train.class.tmp[keep], npcp.tmp[keep, ],
-                     check.names = FALSE)
-  tibble::lst(npcp, original, labels)
-}
-
-#********************************************************************
-# Load Nanostring data - all batches, aocs & tcga
-#********************************************************************
-load_nanostring <- function(dir = "data", genes) {
+#' Load all nanostring data
+#'
+#' Load nanostring data from all batches and extract intersecting genes
+#' from model
+#'
+#' @param dir directory where all batches of nanostring data are
+#' @param genes genes used in the top model chosen
+load_nstring_all <- function(dir = "data", genes) {
   # format gene data for extraction from nstring
-  npcp <- data.frame(t(genes))
-  colnames(npcp) <- genes
   genes <- make.names(genes)
 
   # nanostring data filenames
@@ -118,38 +92,26 @@ load_nanostring <- function(dir = "data", genes) {
     "nanostring_classifier_data_batch2_20170221.csv",
     "nanostring_classifier_data_batch3_20170307_updated_NCO.csv",
     "nanostring_classifier_data_batch4_20170512.csv"
-  )) %>% purrr::set_names(gsub(".*(b)atch([0-9]+).*", "\\1\\2", .))
+  ))
 
   # import batch 1-4 nanostring and combine into list
-  test.dat <- batches %>%
-    purrr::imap(~ dplyr::mutate(readr::read_csv(.x, col_types = readr::cols()), batch = .y)) %>%
-    purrr::map(~ magrittr::set_colnames(., make.names(colnames(.))))
+  nstring_list <- batches %>%
+    purrr::set_names(gsub(".*(b)atch([0-9]+).*", "\\1\\2", .)) %>%
+    purrr::imap(
+      ~ .x %>%
+        readr::read_csv(col_types = readr::cols()) %>%
+        dplyr::mutate(batch = .y) %>%
+        magrittr::set_colnames(make.names(colnames(.)))
+    )
 
-  # extract intersecting genes
-  matched <- test.dat %>%
+  # extract intersecting genes and coerce to data frame; store batch as attr
+  nstring_df <- nstring_list %>%
     purrr::map_df(`[`, c("OTTA.ID", genes, "batch")) %>%
     as.data.frame() %>%
     na.omit() %>%
-    `rownames<-`(NULL) %>%
+    magrittr::set_rownames(NULL) %>%
     tibble::column_to_rownames("OTTA.ID") %>%
-    data.table::setattr("batch", .$batch) %>%
+    `attr<-`("batch", .[["batch"]]) %>%
     dplyr::select(-batch)
-  str(matched)
-  matched
-}
-
-#********************************************************************
-# Predict fit on nanostring data
-#   fit: model fit returned from train()
-#   nstring: nanostring data on which to predict
-#********************************************************************
-predict_nstring <- function(fit, nstring) {
-  pred <- splendid::prediction(
-    mod = fit,
-    data = nstring,
-    class = rep(NA, nrow(nstring))
-  ) %>%
-    data.table::setattr("ottaID", rownames(nstring)) %>%
-    data.table::setattr("batch", attr(nstring, "batch"))
-  pred
+  nstring_df
 }
