@@ -311,37 +311,7 @@ algii_heatmap <- function(dir, dataset) {
 }
 
 
-# 3 - Predict C2 ----------------------------------------------------------
-
-#' Builds mapping matrix from integer class to correct labels names for xpn
-#' @param train.set can only be "ov.afc1_xpn"
-build_mapping_xpn <- function(train.set) {
-  if (train.set == "ov.afc1_xpn") {
-    data.frame(labs = seq_len(4),
-               labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
-  } else {
-    stop("Can only relabel C1 XPN")
-  }
-}
-
-
-# 5 - Mapping Signatures C2 -----------------------------------------------
-
-#' Calculate entropy loss and quadratic loss of a matrix
-#' @param Rh matrix to calculate entropy/quadratic loss for
-#' @param R correlation matrix
-matrix_loss <- function(Rh, R = NULL) {
-  # Add check that it's a correlation matrix
-  if (is.null(R)) {
-    R <- diag(nrow(Rh))
-  }
-  entropy <- psych::tr(solve(R) %*% Rh) - log(det(solve(R) %*% Rh)) - nrow(Rh)
-  quadratic <- psych::tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
-  tibble::lst(entropy, quadratic)
-}
-
-
-# 6 - Validate Array ------------------------------------------------------
+# 4 - Validate Array ------------------------------------------------------
 
 #' Import array validation data and filter for overlapping samples
 #'
@@ -384,4 +354,20 @@ evaluate_array <- function(data) {
       confmat = caret::confusionMatrix(a, p)
     )
   )
+}
+
+
+# 7 - Mapping Signatures C2 -----------------------------------------------
+
+#' Calculate entropy loss and quadratic loss of a matrix
+#' @param Rh matrix to calculate entropy/quadratic loss for
+#' @param R correlation matrix
+matrix_loss <- function(Rh, R = NULL) {
+  # Add check that it's a correlation matrix
+  if (is.null(R)) {
+    R <- diag(nrow(Rh))
+  }
+  entropy <- psych::tr(solve(R) %*% Rh) - log(det(solve(R) %*% Rh)) - nrow(Rh)
+  quadratic <- psych::tr((solve(R) %*% Rh - diag(nrow(Rh)))^2)
+  tibble::lst(entropy, quadratic)
 }
