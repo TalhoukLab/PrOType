@@ -1,10 +1,13 @@
-# build mapping
+#' Build label mapping
+#'
+#' Map numeric labels to HGSC subtypes for each batch effect correction method
+#'
+#' @param train.set name of training set
 build_mapping <- function(train.set) {
-  # label mapping
   labs <- seq_len(4)
-  if (train.set == "ov.afc1_cbt") {
+  if (grepl("cbt", train.set)) {
     data.frame(labs, labels = c("C1-MES", "C5-PRO", "C4-DIF", "C2-IMM"))
-  } else if (train.set == "ov.afc1_xpn") {
+  } else if (grepl("xpn", train.set)) {
     data.frame(labs, labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
   } else {
     stop("No valid training set specified")
