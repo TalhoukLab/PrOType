@@ -1,4 +1,4 @@
-# Current post-processing utility functions -------------------------------
+# Post-processing utility functions -------------------------------
 
 # Load packages and project wide utility functions
 library(purrr)
