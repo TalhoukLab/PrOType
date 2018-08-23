@@ -1,18 +1,17 @@
 #!/bin/bash
 
 . ./Parameters.sh
-for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir$dataset/R_file/nanostring
+mkdir -p $workDir$dataSet/R_file/nanostring
+Rname=$workDir$dataSet/R_file/nanostring/nanostring.R
 
-    Rname=$workDir$dataset/R_file/nanostring/nanostring.R
+echo 'outputDir <- "'$outputDir'"' > $Rname
+echo 'trainSet <- "'$trainSet'"' >> $Rname
 
-    echo 'output_dir <- "'$outputDir'"' > $Rname
-    echo 'dataset <- "'$dataset'"' >> $Rname
-    echo 'cat("Starting Part 1\n")' >> $Rname
-    echo 'source("nanostring_classifier/step3_ValidateNanoString.R")' >> $Rname
-    echo 'cat("Starting Part 2\n")' >> $Rname
-    echo 'source("nanostring_classifier/step4_PredictNanoString.R")' >> $Rname
+echo 'cli::cat_line("NanoString classifier 1: validating overlap NanoString")' >> $Rname
+echo 'source("nanostring_classifier/1-validate_nanostring.R")' >> $Rname
 
-    Rscript $Rname
-done
+echo 'cli::cat_line("NanoString classifier 2: predicting all NanoString batches")' >> $Rname
+echo 'source("nanostring_classifier/2-predict_all_nanostring")' >> $Rname
+
+Rscript $Rname
