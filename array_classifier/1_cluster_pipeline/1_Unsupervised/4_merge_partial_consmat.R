@@ -13,7 +13,7 @@ cli::cat_line("MergeConstmat:", part_complete, seeds, "Done:", k)
 consmat <- paste0(dir, "/con_mat_", ndat, "/CM_", algs, part_complete,"_", ndat,".rds") %>%
   lapply(readRDS) %>%
   purrr::set_names(part_complete) %>%
-  purrr::map(., ~ purrr::modify_depth(., 2, as.matrix)) %>%
+  purrr::map(., ~ purrr::modify_depth(., 2, Matrix::as.matrix)) %>%
   lapply("[[", as.character(k)) %>%
   purrr::transpose() %>%
   purrr::map(~ Reduce(`+`, .))
