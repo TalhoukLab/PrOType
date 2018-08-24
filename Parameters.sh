@@ -6,12 +6,12 @@ dataSets=(ov.afc1_cbt ov.afc1_xpn)
 shouldCompute=TRUE
 
 # Unsupervised parameters
-reps=1000
+reps=10 #1000
 k=4
-c=50 # use for determining splitting criterion (min 100 reps required)
+c=5 #50 # use for determining splitting criterion
 
 # Supervised parameters
-supervised_reps=500 # 5
+supervised_reps=5 #500
 normalizeBy="None"
 threshold=0.0
 minVar=0
@@ -26,9 +26,9 @@ trainSet2="ov.afc1_cbt"
 testSet="ov.afc2_xpn"
 
 # directory inputs
-workDir="/PrOType/array_classifier/1_cluster_pipeline/"
-outputDir="/outputs/"
-inputDir="/PrOType/raw_data/"
-logDir="/home/mpaletta/logs/"
+workDir="~/Projects/PrOType/array_classifier/1_cluster_pipeline/"
+outputDir="/extscratch/shahlab/huntsman/dchiu/outputs/"
+inputDir="~/Projects/PrOType/raw_data"
+logDir="/extscratch/shahlab/huntsman/dchiu/logs/"
 
 . ./assets/dev_params.sh
