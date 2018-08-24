@@ -26,7 +26,7 @@ trainSet2="ov.afc1_cbt"
 testSet="ov.afc2_xpn"
 
 # directory inputs
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir/"
+workDir="/home/dchiu/Projects/PrOType/array_classifier/1_cluster_pipeline/"
 outputDir="/extscratch/shahlab/huntsman/dchiu/outputs/"
 inputDir="~/Projects/PrOType/raw_data"
 logDir="/extscratch/shahlab/huntsman/dchiu/logs/"
