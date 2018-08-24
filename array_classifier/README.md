@@ -155,7 +155,13 @@ The `data` folder provided to you should contain all necessary data dependencies
 
 The following should be run in sequential order:
 
-1. `step0_InternalValidation`: The supervised learning ensemble is evaluated through a series of visualizations of top performing algorithms.
-2. `step1_BuildFinalModel.R`: The top models from the previous step and fit to the cut 1 array data and evaluated.
-3. `step2_ArrayValidation.R`: The fitted models are evaluated against "cut 3", which contains the overlap samples. These results are benchmarked against published labels.
-4. Transfer the outputs folder containing all outputs of steps 1 to 3 and the data folder to `PrOType/nanostring_classifier` and navigate to this directory and continue the following steps provided in that `README.md`.
+1. `0-validate_baseline_results.R`: Compare results from cluster pipeline to see if they changed from repeated runs
+2. `1-evaluate_batch_effects.R`: Use PVCA and PCA plots to choose the best batch effect correction method
+3. `2-internal_validitiy_plots.R`: The supervised learning ensemble is evaluated through a series of visualizations of top performing algorithms
+4. `3-fit_top_models.R`: The top 5 models from the array classiifer are fit to the full cut 1 array data
+5. `4-validate_array.R`: The fitted models are used to predict and evaluated against the overlapping array samples. These results are benchmarked against published labels.
+6. `5-predict_C2.R`: The fitted models are used to predict the cut 2 array data
+7. `6-probe_mapping_C2v2.R`: Map the cut 2 predictions to subtypes and generate centroid data for each gene
+8. `7-mapping_signatures_C2.R`: Compare cut 2 predictions with Verhaaks signature and compute correlation matrices and calculate entropy and quadratic loss
+
+Transfer the outputs folder containing all outputs of steps 1 to 3 and the data folder to `PrOType/nanostring_classifier` and navigate to this directory and continue the following steps provided in that `README.md`.

@@ -13,5 +13,5 @@
 
 To run the NanoString classifier, the following should be run in sequential order:
 
-1. `step3_ValidationNanoString`: The optimal model and batch-correction method are validated on the overlapping samples between Affymetrix and Nanostring.
-2. `step4_PredictNanoString`: The optimal model (adaboost) is used to predict all samples of NanoString.
+1. `1-validate_nanostring.R`: The optimal model and batch-correction method are validated on the overlapping samples between Affymetrix and Nanostring. Evaluation between array, NanoString, and published labels is conducted.
+2. `2-predict_all_nanostring.R`: The optimal model (adaboost) is used to predict all samples of NanoString (batch 1-4.)

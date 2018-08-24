@@ -13,11 +13,13 @@ npcp_test <- readRDS(file.path(outputDir, testSet,
   magrittr::set_colnames(make.names(colnames(.)))
 
 # Reference Training labels
+stopifnot(trainSet == "ov.afc1_xpn")
+mapping <- build_mapping(trainSet)
 lab <- readRDS(file.path(outputDir, trainSet,
                          paste0("data_pr_", trainSet),
                          paste0("all_clusts_", trainSet, ".rds"))) %>%
   dplyr::select(labs = "kmodes") %>%
-  dplyr::inner_join(build_mapping_xpn(trainSet), by = "labs") %>%
+  dplyr::inner_join(mapping, by = "labs") %>%
   dplyr::pull(labels)
 
 # Load models fitted on training set

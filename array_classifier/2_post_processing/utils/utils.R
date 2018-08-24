@@ -1,4 +1,4 @@
-# Current post-processing utility functions -------------------------------
+# Post-processing utility functions -------------------------------
 
 # Load packages and project wide utility functions
 library(purrr)
@@ -311,21 +311,53 @@ algii_heatmap <- function(dir, dataset) {
 }
 
 
-# 3 - Predict C2 ----------------------------------------------------------
+# 4 - Validate Array ------------------------------------------------------
 
-#' Builds mapping matrix from integer class to correct labels names for xpn
-#' @param train.set can only be "ov.afc1_xpn"
-build_mapping_xpn <- function(train.set) {
-  if (train.set == "ov.afc1_xpn") {
-    data.frame(labs = seq_len(4),
-               labels = c("C2-IMM", "C4-DIF", "C5-PRO", "C1-MES"))
-  } else {
-    stop("Can only relabel C1 XPN")
-  }
+#' Import array validation data and filter for overlapping samples
+#'
+#' Combine TCGA and GSE validation data and keep overlapping samples
+#'
+#' @param dir directory for TCGA and GSE validation data
+#' @param osamples character vector of overlapping samples. Given as "sampleID"
+#'   column from `load_overlap()`
+import_array_overlap <- function(dir = "data", osamples) {
+  overlap_array <- c("tcga", "gse") %>%
+    purrr::map_df(
+      ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
+        readr::read_rds() %>%
+        tibble::rownames_to_column("sampleID")
+    ) %>%
+    dplyr::filter(sampleID %in% osamples) %>%
+    tibble::column_to_rownames("sampleID")
+  overlap_array
+}
+
+#' Join published labels with overlap array predictions
+#'
+#' @param pred predicted overlap array labels
+#' @param overlap tibble of overlap sampleID, ottaID, and published labels
+join_published_array <- function(pred, overlap) {
+  pred %>%
+    tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
+    dplyr::inner_join(overlap, ., by = "sampleID")
+}
+
+#' Evaluate overlap array predictions using splendid and caret
+#'
+#' @param data tibble of published labels and predicted overlap array labels
+evaluate_array <- function(data) {
+  p <- data[["published"]]
+  a <- data[["array"]]
+  list(
+    published_vs_array = list(
+      metrics = splendid::evaluation(p, a),
+      confmat = caret::confusionMatrix(a, p)
+    )
+  )
 }
 
 
-# 5 - Mapping Signatures C2 -----------------------------------------------
+# 7 - Mapping Signatures C2 -----------------------------------------------
 
 #' Calculate entropy loss and quadratic loss of a matrix
 #' @param Rh matrix to calculate entropy/quadratic loss for
