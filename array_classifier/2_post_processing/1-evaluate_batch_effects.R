@@ -1,7 +1,7 @@
 # Evaluate Batch Effects --------------------------------------------------
 
 # Load packages and utility functions
-library(Biobase)
+suppressPackageStartupMessages(library(Biobase))
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Create mapping, read in data and clusters for trainSet and trainSet2
