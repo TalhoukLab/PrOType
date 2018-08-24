@@ -28,7 +28,7 @@ testSet="ov.afc2_xpn"
 # directory inputs
 workDir="/home/dchiu/Projects/PrOType/array_classifier/1_cluster_pipeline/"
 outputDir="/extscratch/shahlab/huntsman/dchiu/outputs/"
-inputDir="~/Projects/PrOType/raw_data"
+inputDir="/home/dchiu/Projects/PrOType/raw_data"
 logDir="/extscratch/shahlab/huntsman/dchiu/logs/"
 
 . ./assets/dev_params.sh
