@@ -12,6 +12,6 @@ echo 'cli::cat_line("NanoString classifier 1: validating overlap NanoString")' >
 echo 'source("nanostring_classifier/1-validate_nanostring.R")' >> $Rname
 
 echo 'cli::cat_line("NanoString classifier 2: predicting all NanoString batches")' >> $Rname
-echo 'source("nanostring_classifier/2-predict_all_nanostring")' >> $Rname
+echo 'source("nanostring_classifier/2-predict_all_nanostring.R")' >> $Rname
 
 Rscript $Rname
