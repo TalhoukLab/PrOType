@@ -72,9 +72,6 @@ gene_selection:
 cross_platform:
 	./R/7_cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
 
-cross_platform:
-	./R/cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
-
 
 # ---------- DEBUG CHECKPOINTS ---------
 from-Unsupervised: Unsupervised from-Supervised
