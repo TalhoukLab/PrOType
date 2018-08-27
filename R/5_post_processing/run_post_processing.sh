@@ -40,7 +40,7 @@ echo 'outputDir <- "'$outputDir'"' >> $Rname0
 echo 'dataDir <- "assets/data"' >> $Rname0
 
 echo 'cli::cat_line("Validating Results")' >> $Rname0
-echo 'source("R/5_post_processing/validate_baseline_results.R")' >> $Rname0
+echo 'source("R/5_post_processing/0-validate_baseline_results.R")' >> $Rname0
 
 
 echo 'trainSet <- "'$trainSet'"' > $Rname1
@@ -51,7 +51,7 @@ echo 'outputDir <- "'$outputDir'"' >> $Rname1
 echo 'dataDir <- "assets/data"' >> $Rname1
 
 echo 'cli::cat_line("Post-processing step 1")' >> $Rname1
-echo 'source("R/5_post_processing/evaluate_batch_effects.R")' >> $Rname1
+echo 'source("R/5_post_processing/1-evaluate_batch_effects.R")' >> $Rname1
 
 echo 'trainSet <- "'$trainSet'"' > $Rname2
 echo 'trainSet2 <- "'$trainSet2'"' >> $Rname2
@@ -61,7 +61,7 @@ echo 'outputDir <- "'$outputDir'"' >> $Rname2
 echo 'dataDir <- "assets/data"' >> $Rname2
 
 echo 'cli::cat_line("Post-processing step 2")' >> $Rname2
-echo 'source("R/5_post_processing/internal_validity_plots.R")' >> $Rname2
+echo 'source("R/5_post_processing/2-internal_validity_plots.R")' >> $Rname2
 
 echo 'trainSet <- "'$trainSet'"' > $Rname3
 echo 'trainSet2 <- "'$trainSet2'"' >> $Rname3

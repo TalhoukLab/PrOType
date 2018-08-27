@@ -11,7 +11,7 @@ geneSelectionAlgs=(ada rf lasso)
 
 # Bash info
 user="$(whoami)"
-RPath="$(which R)"
+RPath="$(which R | sort | tail -n 1)"
 maxQueueLength=8000
 shouldWait=TRUE
 

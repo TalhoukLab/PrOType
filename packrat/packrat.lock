@@ -910,18 +910,10 @@ Hash: 49286102a855640daaa38eafe8b1ec30
 Requires: assertthat, magrittr
 
 Package: processx
-Source: github
+Source: CRAN
 Version: 3.2.0
-Hash: 9bc621d35923190e81b706fe444c17cd
+Hash: 906405f0bc681c9438826952417d5d5a
 Requires: R6, assertthat, crayon, ps
-GithubRepo: processx
-GithubUsername: r-lib
-GithubRef: master
-GithubSha1: 76b03c8e12241b4c2fbe3ce12b46a210b4ffd2fe
-RemoteHost: https://api.github.com
-RemoteRepo: processx
-RemoteUsername: r-lib
-RemoteSha: 76b03c8e12241b4c2fbe3ce12b46a210b4ffd2fe
 
 Package: prodlim
 Source: CRAN
@@ -1120,18 +1112,18 @@ Hash: eaf92d047e413fca071fc14c76fc9220
 Package: splendid
 Source: github
 Version: 0.1.0
-Hash: 5b1e2f0773334a72c836ae3aef99d699
+Hash: 51bb970348306d7ba13544c6efb23e86
 Requires: HandTill2001, MLmetrics, RankAggreg, caret, dplyr, e1071,
     forcats, ggplot2, glmnet, kernlab, maboost, magrittr, modelr, pamr,
     purrr, randomForest, rlang, sda, tibble, tidyr, xgboost
 GithubRepo: splendid
 GithubUsername: AlineTalhouk
 GithubRef: master
-GithubSha1: f1ae831c80f30e2fccae3fb1bfe3f31148b936e0
+GithubSha1: 3da918cad49bc8bbad2c0f2a667562336fd633b4
 RemoteHost: https://api.github.com
 RemoteRepo: splendid
 RemoteUsername: AlineTalhouk
-RemoteSha: f1ae831c80f30e2fccae3fb1bfe3f31148b936e0
+RemoteSha: 3da918cad49bc8bbad2c0f2a667562336fd633b4
 
 Package: stringi
 Source: CRAN

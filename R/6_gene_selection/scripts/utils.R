@@ -30,7 +30,7 @@ load_nanostring <- function(cut = "all") {
   nstring_dir <- "assets/data/nstring"
   # import cut 1 nanostring
   c1 <- readr::read_csv(
-    file = here::here(nstring_dir, "nanostring classifier data_batch1_20170217_updated.csv"),
+    file = here::here(nstring_dir, "nanostring_classifier_data_batch1_20170217_updated.csv"),
     col_types = readr::cols()
   ) %>%
     dplyr::select(-clinical_vars) %>%
@@ -38,7 +38,7 @@ load_nanostring <- function(cut = "all") {
 
   # import batch 2 nanostring
   c2 <- readr::read_csv(
-    file = here::here(nstring_dir, "nanostring classifier data_batch2_20170221.csv"),
+    file = here::here(nstring_dir, "nanostring_classifier_data_batch2_20170221.csv"),
     col_types = readr::cols()
   ) %>%
     dplyr::select(-clinical_vars) %>%
@@ -46,7 +46,7 @@ load_nanostring <- function(cut = "all") {
 
   # import batch 3 nanostring
   c3 <- readr::read_csv(
-    file = here::here(nstring_dir, "nanostring classifier data_batch3_20170307_updated_NCO.csv"),
+    file = here::here(nstring_dir, "nanostring_classifier_data_batch3_20170307_updated_NCO.csv"),
     col_types = readr::cols()
   ) %>%
     dplyr::select(-clinical_vars) %>%
@@ -54,7 +54,7 @@ load_nanostring <- function(cut = "all") {
 
   # import batch 4 nanostring
   c4 <- readr::read_csv(
-    file = here::here(nstring_dir, "nanostring classifier data_batch4_20170512.csv"),
+    file = here::here(nstring_dir, "nanostring_classifier_data_batch4_20170512.csv"),
     col_types = readr::cols()
   ) %>%
     dplyr::select(-clinical_vars, -ARL_block) %>%
