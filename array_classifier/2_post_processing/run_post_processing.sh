@@ -31,7 +31,7 @@ echo 'cli::cat_line("Post-processing 3: fitting top models")' >> $Rname
 echo 'source("'$ppDir'3-fit_top_models.R")' >> $Rname
 
 echo 'cli::cat_line("Post-processing 4: validating overlap array")' >> $Rname
-echo 'source("'$ppDir'4-validate_array")' >> $Rname
+echo 'source("'$ppDir'4-validate_array.R")' >> $Rname
 
 echo 'cli::cat_line("Post-processing 5: predict on cut2")' >> $Rname
 echo 'source("'$ppDir'5-predict_C2.R")' >> $Rname

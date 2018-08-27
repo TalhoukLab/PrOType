@@ -32,22 +32,24 @@ dat <- clusts %>%
   purrr::transpose()
 
 # Probe mapping
-centroid_dat <- dat[["centroids"]] %>%
-  purrr::map(~ {
-    ID <- trimws(substring(as.character(.$variable), 2, 50))
-    AFX_lab <- AnnotationDbi::select(hgu133plus2.db, ID, "SYMBOL") %>%
-      dplyr::filter(!is.na(SYMBOL), !duplicated(PROBEID))
-    .$Gene <- AFX_lab$SYMBOL[match(ID, AFX_lab$PROBEID)]
-    .
-  })
+suppressMessages({
+  centroid_dat <- dat[["centroids"]] %>%
+    purrr::map(~ {
+      ID <- trimws(substring(as.character(.$variable), 2, 50))
+      AFX_lab <- AnnotationDbi::select(hgu133plus2.db, ID, "SYMBOL") %>%
+        dplyr::filter(!is.na(SYMBOL), !duplicated(PROBEID))
+      .$Gene <- AFX_lab$SYMBOL[match(ID, AFX_lab$PROBEID)]
+      .
+    })
 
-full_dat <- dat[["full"]] %>%
-  purrr::map(~ {
-    AFX_lab <- AnnotationDbi::select(hgu133plus2.db, .$Probe, "SYMBOL") %>%
-      dplyr::filter(!is.na(SYMBOL), !duplicated(PROBEID))
-    .$Gene <- AFX_lab$SYMBOL[match(.$Probe, AFX_lab$PROBEID)]
-    .
-  })
+  full_dat <- dat[["full"]] %>%
+    purrr::map(~ {
+      AFX_lab <- AnnotationDbi::select(hgu133plus2.db, .$Probe, "SYMBOL") %>%
+        dplyr::filter(!is.na(SYMBOL), !duplicated(PROBEID))
+      .$Gene <- AFX_lab$SYMBOL[match(.$Probe, AFX_lab$PROBEID)]
+      .
+    })
+})
 
 # Write Full Data (preserve row names with write.csv)
 purrr::iwalk(full_dat, ~ {

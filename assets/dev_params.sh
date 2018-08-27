@@ -10,7 +10,7 @@ supervisedAlgs=(first second third fourth)
 
 # Bash info
 user="$(whoami)"
-RPath="$(which R)"
+RPath="$(which R | sort | tail -n 1)"
 maxQueueLength=8000
 
 # Check whether an input is a positive integer. If not, logout.

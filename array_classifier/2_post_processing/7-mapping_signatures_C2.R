@@ -5,7 +5,7 @@ source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Load data
 rfive.type <- readr::read_csv(
-  file = file.path(dataDir, "external", "lasso_PAM100.csv"),
+  file = file.path(dataDir, "external", "Lasso_PAM100.csv"),
   col_types = readr::cols()
 ) %>%
   magrittr::set_colnames(c("Gene.Name", colnames(.[-1])))
