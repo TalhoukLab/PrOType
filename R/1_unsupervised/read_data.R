@@ -3,7 +3,7 @@
 # Outputs: saved tdat, cdat
 
 # Load data
-fname <- paste0(dpath, dataset, ".RData")
+fname <- file.path(dpath, paste0(dataset, ".RData"))
 tdat_name <- file.path(datadir, paste0("tdat_", dataset, ".rds"))
 cdat_name <- file.path(datadir, paste0("cdat_", dataset, ".rds"))
 
