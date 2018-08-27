@@ -11,7 +11,7 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $workDir/R_file/map/$dataset
     mkdir -p $workDir/sh_file/map/$dataset
 
-    Rname=$workDir/R_file/map/$datasetmap.R
+    Rname=$workDir/R_file/map/$dataset/map.R
     shell_file=$workDir/sh_file/map/$dataset/map.sh
 
     mkdir -p $outputDir'/genemapping/'$dataset
