@@ -30,11 +30,7 @@ for dataset in "${dataSets[@]}"; do
 
     if command -v qsub &>/dev/null; then
         echo "Adding To Queue: $shell_file"
-        #file_to_submit+=($shell_file)
-        echo "TODO:// Add these back to queue."
-        bash $shell_file
-    else
-        bash $shell_file
+        file_to_submit+=($shell_file)
     fi
 done
 
