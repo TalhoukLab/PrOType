@@ -1,41 +1,40 @@
-# This file is called in the beginning and not processed as part of the Q
-# Inputs: dpath, ndat, pr, and datadir
-# Outputs: saved tdat, cdat
+# This file is called in the beginning and not processed as part of the queue
+# Inputs: pr, dataset, datadir, dpath
+# Outputs: tdat, cdat
 
-# Load data
+# Data file names
 fname <- file.path(dpath, paste0(dataset, ".RData"))
 tdat_name <- file.path(datadir, paste0("tdat_", dataset, ".rds"))
 cdat_name <- file.path(datadir, paste0("cdat_", dataset, ".rds"))
 
-# Save as RDS objects
+# Check if datadir and fname exist
 if (!dir.exists(datadir)) {
-  cli::cat_line("ERROR: directory does not exist:", datadir)
-  quit(status=1)
+  stop("Directory ", datadir, " does not exist")
+  q("no", 1, FALSE)
+}
+if (!file.exists(fname)) {
+  stop("File ", fname, "does not exist")
+  q("no", 1, FALSE)
 }
 
-cli::cat_line("Processing tdat")
-if (!file.exists(fname)) {
-  cli::cat_line("ERROR: file not found:", fname)
-  stop(0)
-}
+# Process if not already exists and save as rds objects
+cli::cat_line("Processing transposed data")
 if (file.exists(tdat_name)) {
-  cli::cat_line("tdat already exists.  Skipping.")
+  cli::cat_line("Transposed data already exists, skipping...")
 } else {
   tdat <- t(get(load(fname)))
   saveRDS(tdat, tdat_name)
 }
 
-cli::cat_line("Processing cdat")
+cli::cat_line("Processing scaled data")
 if (file.exists(cdat_name)) {
-  cli::cat_line("cdat already exists. Skipping.")
+  cli::cat_line("Scaled data already exists, skipping...")
 } else {
-  # Center and scale
   cdat <- switch(
     pr,
     cs = diceR::prepare_data(tdat, scale = TRUE, type = "conventional"),
     rs = diceR::prepare_data(tdat, scale = TRUE, type = "robust"),
     ns = diceR::prepare_data(tdat, scale = FALSE)
   )
-
   saveRDS(cdat, cdat_name)
 }
