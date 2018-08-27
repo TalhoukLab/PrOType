@@ -15,6 +15,7 @@ con_mat_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("con_ma
 consmat <- file.path(con_mat_dir, paste0("CM_", algs, part_complete, "_", dataset, ".rds")) %>%
   lapply(readRDS) %>%
   purrr::set_names(part_complete) %>%
+  purrr::map(., ~ purrr::modify_depth(., 2, Matrix::as.matrix)) %>%
   lapply("[[", as.character(k)) %>%
   purrr::transpose() %>%
   purrr::map(~ Reduce(`+`, .))

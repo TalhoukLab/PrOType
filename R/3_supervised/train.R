@@ -35,12 +35,6 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
   # import training data
   npcp <-  readr::read_rds(file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds")))
   class <- readr::read_rds(file.path(outDir, "unsupervised", "final", dataSet, paste0("all_clusts_", dataSet, ".rds")))
-
-  # class to train on is best performing ensemble algorithm
-  # ens <- c("CSPA", "kmodes", "majority", "cts", "srs", "asrs")
-  # ens.id <- which.min(match(ens, names(class)))
-  # cli::cat_line("Best ensemble algorithm: ", ens[ens.id])
-  # class.train <- class[[ens[ens.id]]]
   class.train <- class[["kmodes"]]
 
   cli::cat_line("Normalizing data:", algs, "-", reps)
