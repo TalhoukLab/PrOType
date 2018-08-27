@@ -39,11 +39,7 @@ fi
 
 # specify log directory
 if [ "$baseLogDir" = "" ]; then
-<<<<<<< HEAD
-    echo "Log directory must be specified"
-=======
   echo "Log directory must be specified"
->>>>>>> 289cfc583bdb93b81c94932bb37896971d63335d
 	exit 1
 fi
 
