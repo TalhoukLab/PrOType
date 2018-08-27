@@ -1112,18 +1112,18 @@ Hash: eaf92d047e413fca071fc14c76fc9220
 Package: splendid
 Source: github
 Version: 0.1.0
-Hash: 51bb970348306d7ba13544c6efb23e86
+Hash: 36f1cd23f2ce3424e99b4280a8bebce1
 Requires: HandTill2001, MLmetrics, RankAggreg, caret, dplyr, e1071,
     forcats, ggplot2, glmnet, kernlab, maboost, magrittr, modelr, pamr,
     purrr, randomForest, rlang, sda, tibble, tidyr, xgboost
 GithubRepo: splendid
 GithubUsername: AlineTalhouk
 GithubRef: master
-GithubSha1: 3da918cad49bc8bbad2c0f2a667562336fd633b4
+GithubSha1: d6fceb2cbc8637596419d92e0de3f76a6fc97c49
 RemoteHost: https://api.github.com
 RemoteRepo: splendid
 RemoteUsername: AlineTalhouk
-RemoteSha: 3da918cad49bc8bbad2c0f2a667562336fd633b4
+RemoteSha: d6fceb2cbc8637596419d92e0de3f76a6fc97c49
 
 Package: stringi
 Source: CRAN
