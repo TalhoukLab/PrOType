@@ -8,7 +8,7 @@ model <-
   ), value = TRUE))
 df <- list.files(
   path = file.path(outputDir, "supervised", "train_eval"),
-  pattern = "train_eval",
+  pattern = dataset,
   full.names = TRUE
 ) %>%
   readRDS() %>%
