@@ -48,12 +48,8 @@ echo 'dataDir <- "assets/data"' >> $Rname1
 echo 'cli::cat_line("Post-processing step 1")' >> $Rname1
 echo 'source("R/5_post_processing/1-evaluate_batch_effects.R")' >> $Rname1
 
-echo 'trainSet <- "'$trainSet'"' > $Rname2
-echo 'trainSet2 <- "'$trainSet2'"' >> $Rname2
-echo 'testSet <- "'$testSet'"' >> $Rname2
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname2
 echo 'outputDir <- "'$outputDir'"' >> $Rname2
-echo 'dataDir <- "assets/data"' >> $Rname2
 
 echo 'cli::cat_line("Post-processing step 2")' >> $Rname2
 echo 'source("R/5_post_processing/2-internal_validity_plots.R")' >> $Rname2

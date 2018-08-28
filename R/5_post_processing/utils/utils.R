@@ -58,8 +58,7 @@ import_ivs <- function(dir = "data", datasets = c("ov.afc1_xpn", "ov.afc1_cbt"),
                        threshold = TRUE) {
   # IV summary filenames (threshold)
   filenames <- datasets %>%
-    purrr::map_chr(~ file.path(dir, .,
-                               paste0("data_pr_", .),
+    purrr::map_chr(~ file.path(dir, "supervised", "summary", .,
                                paste0("iv_summary_", ., "_threshold.rds")))
   # IV summary filenames (no threshold)
   if (!threshold) {
@@ -285,8 +284,7 @@ top2_algo_plot <- function(dir, datasets,
 #' @param datset dataset to compute heatmap for
 algii_heatmap <- function(dir, dataset) {
   # Read in ii
-  ii <- readRDS(file.path(dir, dataset,
-                          paste0("data_pr_", dataset),
+  ii <- readRDS(file.path(dir, "unsupervised", "final", dataset,
                           paste0("ii_", dataset, ".rds")))
 
   # Heatmap: order algorithms by ranked ii, remove indices with NaN
