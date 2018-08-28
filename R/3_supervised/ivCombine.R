@@ -1,12 +1,22 @@
 `%>%` <- magrittr::`%>%`
 
-x <- list.files(file.path(outputDir, "supervised", "summary"),
-                recursive = TRUE,
-                full.names = TRUE,
-                pattern = "iv_summary.*") %>%
+# Read in all iv_summary and row bind
+x <- list.files(
+  path = file.path(outputDir, "supervised", "summary"),
+  pattern = "iv_summary.*",
+  full.names = TRUE,
+  recursive = TRUE
+) %>%
   purrr::map_df(readRDS)
 
-readr::write_rds(x, file.path(outputDir, "supervised", "summary", "iv_summary_COMBINED.rds"))
-x1 <- subset(x, x$measure == "accuracy")
-x2 <- x1[order(x1$percentile_50, decreasing = TRUE), ]
-print(x2[!duplicated(x2[,c(`percentile_50`)]),])
+# Sanity check the top accuracies per algorithm
+top_accuracy <- x %>%
+  dplyr::filter(measure == "accuracy") %>%
+  dplyr::arrange(dplyr::desc(percentile_50)) %>%
+  dplyr::distinct()
+
+# Write out iv_summary combined
+saveRDS(
+  object = x,
+  file = file.path(outputDir, "supervised", "summary", "iv_summary_COMBINED.rds")
+)
