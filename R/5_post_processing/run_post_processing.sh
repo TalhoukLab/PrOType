@@ -64,9 +64,7 @@ echo 'cli::cat_line("Post-processing step 4")' >> $Rname3
 echo 'source("R/5_post_processing/4-validate_array.R")' >> $Rname3
 
 echo 'trainSet <- "'$trainSet'"' > $Rname4
-echo 'trainSet2 <- "'$trainSet2'"' >> $Rname4
 echo 'testSet <- "'$testSet'"' >> $Rname4
-echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname4
 echo 'outputDir <- "'$outputDir'"' >> $Rname4
 echo 'dataDir <- "assets/data"' >> $Rname4
 

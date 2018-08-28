@@ -4,16 +4,14 @@
 source(here::here("array_classifier/2_post_processing/utils/utils.R"))
 
 # Test data
-npcp_test <- readRDS(file.path(outputDir, testSet,
-                               paste0("data_pr_", testSet),
+npcp_test <- readRDS(file.path(outputDir, "genemapping", testSet,
                                paste0("npcp-hcNorm_", testSet, ".rds"))) %>%
   magrittr::set_colnames(make.names(colnames(.)))
 
 # Reference Training labels
 stopifnot(trainSet == "ov.afc1_xpn")
 mapping <- build_mapping(trainSet)
-lab <- readRDS(file.path(outputDir, trainSet,
-                         paste0("data_pr_", trainSet),
+lab <- readRDS(file.path(outputDir, "unsupervised", "final", trainSet,
                          paste0("all_clusts_", trainSet, ".rds"))) %>%
   dplyr::select(labs = "kmodes") %>%
   dplyr::inner_join(mapping, by = "labs") %>%

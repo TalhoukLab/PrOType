@@ -9,9 +9,7 @@ suppressPackageStartupMessages({
 
 # Read in original data
 fdat <- testSet
-ndat <- gsub("ov.af", "", fdat)
-dat_o <- readRDS(file.path(outputDir, fdat,
-                           paste0("data_pr_", fdat),
+dat_o <- readRDS(file.path(outputDir, "unsupervised", "prep_data", fdat,
                            paste0("cdat_", fdat, ".rds")))
 
 # Obtain predictions
