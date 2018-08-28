@@ -152,7 +152,7 @@ all_algo_plot <- function(dir, datasets, threshold = FALSE,
     ggplot2::ggsave(
       plot = p,
       filename = file.path(outputDir, "plots",
-                           paste0("all_algos_ranked_", th, ".png")),
+                           paste0("all_algos_ranked_", th, ".pdf")),
       width = width,
       height = height
     )
@@ -259,13 +259,13 @@ top2_algo_plot <- function(dir, datasets,
     fn <- "top2_algos_eval"
     ggplot2::ggsave(
       plot = p1,
-      filename = file.path(outputDir, "plots", paste0(fn, "_byclass.png")),
+      filename = file.path(outputDir, "plots", paste0(fn, "_byclass.pdf")),
       width = width,
       height = height
     )
     ggplot2::ggsave(
       plot = p2,
-      filename = file.path(outputDir, "plots", paste0(fn, "_overall.png")),
+      filename = file.path(outputDir, "plots", paste0(fn, "_overall.pdf")),
       width = width,
       height = height
     )
@@ -295,7 +295,7 @@ algii_heatmap <- function(dir, dataset) {
                       purrr::map_lgl(., ~ all(!is.nan(.x))))
 
   # Plot heatmap with annotated colours, column scaling, no further reordering
-  png(file.path(dir, "plots", paste0(dataset, "_algii_heatmap.png")))
+  pdf(file.path(dir, "plots", paste0(dataset, "_algii_heatmap.pdf")))
   NMF::aheatmap(
     hm,
     annCol = data.frame(Criteria = c(rep("Maximized", 5),
