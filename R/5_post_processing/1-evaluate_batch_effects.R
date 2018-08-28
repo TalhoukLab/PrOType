@@ -5,7 +5,7 @@ suppressPackageStartupMessages(library(Biobase))
 source(here::here("R/5_post_processing/utils/utils.R"))
 
 # Create mapping, read in data and clusters for trainSet and trainSet2
-for (dataSet in c(trainSet2, trainSet)) {
+for (dataSet in datasets) {
 
   cli::cat_line("Creating plot")
 
@@ -20,11 +20,11 @@ for (dataSet in c(trainSet2, trainSet)) {
     dplyr::mutate(Label = gsub("\\.|\\+", "_", Label))
 
   mapping <- build_mapping(dataSet)
-  tdat <- readRDS(file.path(outputDir, dataSet,
-                            paste0("data_pr_", dataSet),
+  tdat <- readRDS(file.path(outputDir, "unsupervised", "prep_data",
+                            dataSet,
                             paste0("tdat_", dataSet, ".rds")))
-  final_clust_file <- readRDS(file.path(outputDir, dataSet,
-                                        paste0("data_pr_", dataSet),
+  final_clust_file <- readRDS(file.path(outputDir, "unsupervised", "final",
+                                        dataSet,
                                         paste0("all_clusts_", dataSet, ".rds")))
 
   rownames(tdat) <- drop_char(rownames(tdat))
@@ -65,6 +65,7 @@ for (dataSet in c(trainSet2, trainSet)) {
   df <- tibble::tibble(batch1 = as.character(cohorts$clust),
                        batch2 = cohorts$CohortLabel) %>%
     cbind(pcaa$x[, 1:3])
+  saveRDS(df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
 
   # PCA plots
   p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, type = "scatter3d",

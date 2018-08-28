@@ -34,9 +34,6 @@ chmod +x $shname2
 chmod +x $shname3
 chmod +x $shname4
 
-# echo 'trainSet <- "'$trainSet'"' > $Rname0
-# echo 'trainSet2 <- "'$trainSet2'"' >> $Rname0
-# echo 'testSet <- "'$testSet'"' >> $Rname0
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname0
 echo 'outputDir <- "'$outputDir'"' >> $Rname0
 echo 'dataDir <- "assets/data"' >> $Rname0
@@ -44,9 +41,6 @@ echo 'dataDir <- "assets/data"' >> $Rname0
 echo 'cli::cat_line("Validating Results")' >> $Rname0
 echo 'source("R/5_post_processing/0-validate_baseline_results.R")' >> $Rname0
 
-echo 'trainSet <- "'$trainSet'"' > $Rname1
-echo 'trainSet2 <- "'$trainSet2'"' >> $Rname1
-echo 'testSet <- "'$testSet'"' >> $Rname1
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' >> $Rname1
 echo 'outputDir <- "'$outputDir'"' >> $Rname1
 echo 'dataDir <- "assets/data"' >> $Rname1
