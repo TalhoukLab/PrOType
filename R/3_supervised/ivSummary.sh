@@ -52,7 +52,6 @@ fi
 mkdir -p $workDir'/R_file/supervised'
 R_combine_name=$workDir'/R_file/supervised/combine.R'
 
-echo 'ndat <- purrr::set_names(unlist(strsplit("'"${dataSets[*]}"'", " ")))' > $R_combine_name
 echo 'outputDir <- "'$outputDir'"' >> $R_combine_name
 echo "source('R/3_supervised/ivCombine.R')" >> $R_combine_name
 Rscript $R_combine_name
