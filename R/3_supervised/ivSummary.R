@@ -1,7 +1,11 @@
-# create internal validation table
-library(magrittr)
+# Internal Validity Summary
+`%>%` <- magrittr::`%>%`
 
-model <- basename(grep("Model", list.dirs(file.path(outputDir, "supervised", "reduce")), value = TRUE))
+model <-
+  basename(grep(dataset, list.dirs(
+    path = file.path(outputDir, "supervised", "reduce"),
+    recursive = FALSE
+  ), value = TRUE))
 df <- list.files(
   path = file.path(outputDir, "supervised", "train_eval"),
   pattern = "train_eval",
@@ -26,5 +30,5 @@ df <- list.files(
   tibble::as_tibble()
 
 # write results to file
-readr::write_rds(df, file.path(outputDir, "supervised", "summary", dataset, paste0("iv_summary_", dataset, ".rds")))
-readr::write_rds(df, file.path(outputDir, "supervised", "summary", dataset, paste0("iv_summary_", dataset, "_threshold.rds")))
+saveRDS(df, file.path(outputDir, "supervised", "summary", dataset, paste0("iv_summary_", dataset, ".rds")))
+saveRDS(df, file.path(outputDir, "supervised", "summary", dataset, paste0("iv_summary_", dataset, "_threshold.rds")))
