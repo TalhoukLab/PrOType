@@ -44,7 +44,7 @@ sort_best <- function(train_eval, top = 5) {
 final <- fdat %>%
   purrr::map(~ {
     FinalR_lab <- readRDS(file.path(outputDir, "unsupervised", "final", ., paste0("all_clusts_", ., ".rds")))
-    train_eval <- readRDS(file.path(outputDir, "iv_summary", "train_eval", paste0("train_eval_", ., ".rds")))
+    train_eval <- readRDS(file.path(outputDir, "supervised", "train_eval", paste0("train_eval_", ., ".rds")))
     bests <- sort_best(train_eval, top = top)
     ci <- train_eval %>%
       purrr::imap(~ {
