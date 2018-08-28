@@ -3,11 +3,15 @@
 # Read in all iv_summary and row bind
 x <- list.files(
   path = file.path(outputDir, "supervised", "summary"),
-  pattern = "iv_summary.*",
   full.names = TRUE,
   recursive = TRUE
 ) %>%
-  purrr::map_df(readRDS)
+  grep(pattern = "(?<!threshold|COMBINED)\\.rds",
+       perl = TRUE,
+       value = TRUE) %>%
+  purrr::map(readRDS) %>%
+  purrr::map_df(~ dplyr::mutate_at(., "batch_correction", as.character)) %>%
+  dplyr::mutate_at("batch_correction", as.factor)
 
 # Sanity check the top accuracies per algorithm
 top_accuracy <- x %>%
