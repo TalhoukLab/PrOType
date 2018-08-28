@@ -1,7 +1,7 @@
 # Validate overlapping array data -----------------------------------------
 
 # Load utility functions
-source(here::here("array_classifier/2_post_processing/utils/utils.R"))
+source(here::here("R/5_post_processing/utils/utils.R"))
 
 # Import cut 1 fits on top models
 all_fits <- list.files(file.path(outputDir, "fits"), full.names = TRUE) %>%

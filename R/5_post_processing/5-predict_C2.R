@@ -1,7 +1,7 @@
 # Predict C2 --------------------------------------------------------------
 
 # Load utility functions
-source(here::here("array_classifier/2_post_processing/utils/utils.R"))
+source(here::here("R/5_post_processing/utils/utils.R"))
 
 # Test data
 npcp_test <- readRDS(file.path(outputDir, "genemapping", testSet,
