@@ -56,6 +56,7 @@ echo 'source("R/5_post_processing/2-internal_validity_plots.R")' >> $Rname2
 
 echo 'trainSet <- "'$trainSet'"' > $Rname3
 echo 'outputDir <- "'$outputDir'"' >> $Rname3
+echo 'dataDir <- "assets/data"' >> $Rname3
 
 echo 'cli::cat_line("Post-processing step 3")' >> $Rname3
 echo 'source("R/5_post_processing/3-fit_top_models.R")' >> $Rname3
