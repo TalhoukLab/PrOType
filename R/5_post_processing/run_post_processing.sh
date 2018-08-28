@@ -71,7 +71,7 @@ echo 'dataDir <- "assets/data"' >> $Rname4
 echo 'cli::cat_line("Post-processing 5: predict on cut2")' >> $Rname4
 echo 'source("R/5_post_processing/5-predict_C2.R")' >> $Rname4
 echo 'cli::cat_line("Post-processing 6: probe mapping on cut2")' >> $Rname4
-echo 'source("R/5_post_processing/6-probe_mapping_C2.R")' >> $Rname4
+echo 'source("R/5_post_processing/6-probe_mapping_C2v2.R")' >> $Rname4
 echo 'cli::cat_line("Post-processing 7: mapping signatures on cut2")' >> $Rname4
 echo 'source("R/5_post_processing/7-mapping_signatures_C2.R")' >> $Rname4
 
