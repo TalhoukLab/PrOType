@@ -1,5 +1,6 @@
 source(here::here("assets/utils.R"))
 
+# Default hc from diceR but with data matrix as input
 hc <- function(x, k, method = "average") {
-  as.integer(stats::cutree(stats::hclust(stats::dist(x), method = method), k))
+  diceR:::hc(stats::dist(x), k = k, method = method)
 }
