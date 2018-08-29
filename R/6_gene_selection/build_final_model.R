@@ -59,7 +59,8 @@ test3_lab <- test3$lab
 test3_dat <- test3$dat
 
 # Build the final model----
-sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "sumFreq", "overallFreqs.csv"),
+sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "output", "sumFreq",
+                              "overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
   arrange(desc(rfFreq), desc(lassoFreq))
 
