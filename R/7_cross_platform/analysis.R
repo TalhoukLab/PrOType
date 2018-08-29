@@ -26,11 +26,11 @@ genes59 <- file.path(input_dir, "overallFreqs.csv") %>%
 df <- rbind(
   overlap_array_dat %>%
     `[`(colnames(.) %in% c("ottaID", genes59[!genes59 %in% "CTHRC1"])) %>%
-    gather(key = "gene", value = "value", -1, factor_key = TRUE) %>%
+    tidyr::gather(key = "gene", value = "value", -1, factor_key = TRUE) %>%
     data.frame(platform = "array", .),
   overlap_nstring_dat %>%
     `[`(colnames(.) %in% c("ottaID", genes59[!genes59 %in% "CTHRC1"])) %>%
-    gather(key = "gene", value = "value", -1, factor_key = TRUE) %>%
+    tidyr::gather(key = "gene", value = "value", -1, factor_key = TRUE) %>%
     data.frame(platform = "nstring", .)
 )
 
