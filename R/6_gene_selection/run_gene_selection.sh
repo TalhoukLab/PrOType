@@ -16,10 +16,11 @@ mkdir -p $outputDir/GeneSelection/plots
 . ./R/6_gene_selection/run_final_training.sh
 . ./R/6_gene_selection/make_predictions.sh
 . ./R/6_gene_selection/training_post_processing.sh
+. ./R/6_gene_selection/training_part2.sh
 
-Rscript R/6_gene_selection/training_part2.R
-echo 'output_dir <- file.path("'$outputDir'", "GeneSelection")' > $Rname
-echo 'plot_dir <- file.path(output_dir, "plots")' >> $Rname
-echo 'source("R/6_gene_selection/training_initial.R")' >> $Rname
-echo 'source("R/6_gene_selection/training_part2.R")' >> $Rname
-Rscript $Rname
+# Rscript R/6_gene_selection/training_part2.R
+# echo 'output_dir <- file.path("'$outputDir'", "GeneSelection")' > $Rname
+# echo 'plot_dir <- file.path(output_dir, "plots")' >> $Rname
+# echo 'source("R/6_gene_selection/training_initial.R")' >> $Rname
+# echo 'source("R/6_gene_selection/training_part2.R")' >> $Rname
+# Rscript $Rname
