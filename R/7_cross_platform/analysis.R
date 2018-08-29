@@ -80,5 +80,5 @@ for (i in seq_len(n_pages)) {
 
 # Reliability summary
 reliability <- df_spr %>%
-  tidyr::select(gene, concordance_est, accuracy)
+  dplyr::select(gene, concordance_est, accuracy)
 readr::write_csv(reliability, file.path(output_dir, "reliability.csv"))
