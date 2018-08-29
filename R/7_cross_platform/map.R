@@ -44,7 +44,7 @@ overlap_array_dat <-
     readRDS(file.path(array_path, "validation_gse.rds")),
     readRDS(file.path(array_path, "validation_tcga.rds"))
   ) %>%
-  rename(PD.L1 = PD.1) %>%
+  dplyr::rename(PD.L1 = PD.1) %>%
   tibble::rownames_to_column("sampleID") %>%
   dplyr::inner_join(overlap_lab, ., by = "sampleID") %>%
   dplyr::arrange(ottaID)
