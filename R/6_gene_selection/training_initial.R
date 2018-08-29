@@ -13,13 +13,10 @@ geneAnalysis <- 1
 algs <- c("lasso", "rf")
 
 # Load packages----
-library(here)
-library(tidyverse)
 suppressPackageStartupMessages({
   library(magrittr)
   library(splendid)
   library(caret)
-  library(glmnet)
   library(cli)
 })
 
@@ -33,7 +30,7 @@ GS_training_files <- c(
   "summary.R",
   "analysis.R"
 )
-walk(here(GS_training_dir, GS_training_files), source)
+walk(here::here(GS_training_dir, GS_training_files), source)
 
 # Load data----
 # Load the NanoString data and select cut

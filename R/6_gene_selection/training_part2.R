@@ -1,4 +1,4 @@
-# Load Parameters----
+# Load Parameters
 trainModel <- 1
 predOverlap <- 1
 predCut2 <- 1
@@ -7,16 +7,8 @@ top_overall <- 60
 n_min <- 40
 alg <- "rf"
 
-# Load packages----
-suppressPackageStartupMessages({
-  library(here)
-  library(tidyverse)
-  library(magrittr)
-  library(splendid)
-  library(caret)
-  library(cli)
-})
-
+# Load utility functions
+`%>%` <- magrittr::`%>%`
 GS_training_dir <- "R/6_gene_selection/scripts"
 GS_training_files <- c(
   "utils.R",
@@ -27,7 +19,7 @@ GS_training_files <- c(
   "summary.R",
   "analysis.R"
 )
-walk(here(GS_training_dir, GS_training_files), source)
+purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
 c1_path <- file.path(outputDir, "GeneSelection/output/TrainingC1")
 plot_dir <- file.path(outputDir, "GeneSelection/plots")
@@ -74,33 +66,34 @@ fnames <- list.files(
 # return the top 70 genes
 site_names <- table(train_dat$site) %>% paste0(names(.), .)
 rf70 <- fnames %>%
-  set_names(site_names) %>%
-  map(~ read_csv(., col_types = cols()) %>%
-        arrange(desc(`rfFreq`)) %>%
-        pull(genes) %>%
-        head(70)
+  purrr::set_names(site_names) %>%
+  purrr::map(
+    ~ readr::read_csv(., col_types = readr::cols()) %>%
+      dplyr::arrange(dplyr::desc(rfFreq)) %>%
+      dplyr::pull(genes) %>%
+      head(70)
   )
 
 # Load the average frequency across all studies
 sumFreq <- read.csv(file.path(outputDir, "GeneSelection/output/sumFreq/overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
-  arrange(desc(`rfFreq`))
+  dplyr::arrange(dplyr::desc(rfFreq))
 
 # We consider the union of the genes across studies
 genes70 <- Reduce(union, rf70)
 
 geneRanks_rf <- rf70 %>%
-  map(match, x = genes70, nomatch = 80) %>%
+  purrr::map(match, x = genes70, nomatch = 80) %>%
   as.data.frame() %>%
-  set_rownames(genes70)
+  magrittr::set_rownames(genes70)
 
 # Generate annotations for rows
 legend_title <- paste0("InTop", top_overall)
 annotation_row <-
-  tibble(!!legend_title := ifelse(genes70 %in% head(sumFreq$genes, top_overall),
-                                  "yes", "no")) %>%
+  tibble::tibble(!!legend_title := ifelse(genes70 %in% head(sumFreq$genes, top_overall),
+                                          "yes", "no")) %>%
   as.data.frame() %>%
-  set_rownames(genes70)
+  magrittr::set_rownames(genes70)
 
 cli::cat_line("Plotting heatmap of top 70 rf genes")
 
@@ -121,12 +114,12 @@ if (trainModel) {
   genes <- get_genes(train_dat)
 
   # Sequence from n_min to length(genes70) adding one gene at a time
-  ng <- seq(n_min, length(genes70), 1) %>% set_names(paste0("ng_", .))
+  ng <- seq(n_min, length(genes70), 1) %>% magrittr::set_names(paste0("ng_", .))
   rf_genes <- make.names(sumFreq$genes)
   l <- ng %>%
-    map(head, x = rf_genes) %>%
-    map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
-  write_rds(l, file.path(c1_path, "rf_allc1.rds"))
+    purrr::map(head, x = rf_genes) %>%
+    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
+  saveRDS(l, file.path(c1_path, "rf_allc1.rds"))
 }
 
 # Predict overlapping samples----
@@ -139,10 +132,10 @@ if (predOverlap) {
   mod.pred <- fnames %>%
     readRDS() %>%
     purrr::map(~ splendid::prediction(., x.new[, which_genes(., alg)], y.new) %>%
-                 set_names(rownames(x.new))) %>%
-    set_names(paste(alg, names(.), sep = "_"))
+                 magrittr::set_names(rownames(x.new))) %>%
+    purrr::set_names(paste(alg, names(.), sep = "_"))
 
-  write_rds(mod.pred, file.path(c1_path, "overlap_pred.rds"))
+  saveRDS(mod.pred, file.path(c1_path, "overlap_pred.rds"))
 }
 
 # Evaluate the predictions on cut2 samples----
@@ -155,20 +148,20 @@ if (predCut2) {
   mod.pred <- fnames %>%
     readRDS() %>%
     purrr::map(~ splendid::prediction(., x.new[, which_genes(., alg)], y.new) %>%
-                 set_names(rownames(x.new))) %>%
-    set_names(paste(alg, names(.), sep = "_"))
+                 magrittr::set_names(rownames(x.new))) %>%
+    purrr::set_names(paste(alg, names(.), sep = "_"))
 
-  write_rds(mod.pred, file.path(c1_path, "cut2_pred.rds"))
+  saveRDS(mod.pred, file.path(c1_path, "cut2_pred.rds"))
 
   rf <- mod.pred %>%
     as.data.frame(., col.names = names(.)) %>%
     tibble::rownames_to_column(var = "ottaID") %>%
-    inner_join(test1_lab, ., by = "ottaID")
+    dplyr::inner_join(test1_lab, ., by = "ottaID")
 
   res_pred <- rf %>%
-    select(matches("ng")) %>%
-    map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
-    map_dbl(pluck, "overall", "Accuracy")
+    dplyr::select(dplyr::matches("ng")) %>%
+    purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
+    purrr::map_dbl(purrr::pluck, "overall", "Accuracy")
 
   pdf(file.path(plot_dir, "Accuracy_cut2.pdf"))
   plot(
@@ -183,12 +176,14 @@ if (predCut2) {
   dev.off()
 
   byclass.res <- rf %>%
-    select(matches("ng")) %>%
-    map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
-    map(~ .[["byClass"]][, "F1"]) %>%
-    transpose() %>%
-    map(~ list(F1_score = unlist(.))) %>%
-    set_names(gsub("\\.", "-", map_chr(strsplit(names(.), split = " "), 2)))
+    dplyr::select(matches("ng")) %>%
+    purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
+    purrr::map(~ .[["byClass"]][, "F1"]) %>%
+    purrr::transpose() %>%
+    purrr::map(~ list(F1_score = unlist(.))) %>%
+    purrr::set_names(gsub("\\.", "-", purrr::map_chr(
+      strsplit(names(.), split = " "), 2
+    )))
 
   loso_plot(
     file_name = file.path(plot_dir, "F1score_cut2_byclass.pdf"),
@@ -220,28 +215,28 @@ if (refineModel) {
   topGenes <- list(topGenes_1, topGenes_2, topGenes_3)
 
   fits <- topGenes %>%
-    map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
-  write_rds(fits, file.path(c1_path, "rf_alternate_c1.rds"))
+    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
+  saveRDS(fits, file.path(c1_path, "rf_alternate_c1.rds"))
 
   # test alternate models on cut 2
   x.new <- sl_data(test1_dat)
   y.new <- sl_class(test1_lab, x.new)
 
   mod.pred <- fits %>%
-    map(~ splendid::prediction(., x.new[, which_genes(., alg)], y.new) %>%
-          set_names(rownames(x.new))) %>%
-    set_names(c("fit_0", "fit_1", "fit_2"))
-  write_rds(mod.pred, file.path(c1_path, "cut2_pred_alternates_list.rds"))
+    purrr::map(~ splendid::prediction(., x.new[, which_genes(., alg)], y.new) %>%
+                 magrittr::set_names(rownames(x.new))) %>%
+    purrr::set_names(c("fit_0", "fit_1", "fit_2"))
+  saveRDS(mod.pred, file.path(c1_path, "cut2_pred_alternates_list.rds"))
 
   rf <- mod.pred %>%
     as.data.frame(., col.names = names(.)) %>%
     tibble::rownames_to_column("ottaID") %>%
-    inner_join(test1_lab, ., by = "ottaID")
+    dplyr::inner_join(test1_lab, ., by = "ottaID")
 
   res_pred <- rf %>%
-    select(matches("fit")) %>%
-    map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
-    map_dbl(pluck, "overall", "Accuracy")
+    dplyr::select(matches("fit")) %>%
+    purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
+    purrr::map_dbl(purrr::pluck, "overall", "Accuracy")
 
   pdf(file.path(outputDir, "GeneSelection/plots/Accuracy_alternates.pdf"))
   plot(
@@ -256,12 +251,12 @@ if (refineModel) {
   dev.off()
 
   byclass.res <- rf %>%
-    select(matches("fit")) %>%
-    map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
-    map(~ .[["byClass"]][, "F1"]) %>%
-    transpose() %>%
-    map(~ list(F1_score = unlist(.))) %>%
-    set_names(gsub("\\.", "-", map_chr(strsplit(names(.), split = " "), 2)))
+    dplyr::select(matches("fit")) %>%
+    purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
+    purrr::map(~ .[["byClass"]][, "F1"]) %>%
+    purrr::transpose() %>%
+    purrr::map(~ list(F1_score = unlist(.))) %>%
+    purrr::set_names(gsub("\\.", "-", purrr::map_chr(strsplit(names(.), split = " "), 2)))
 
   loso_plot(
     file_name = file.path(plot_dir, "F1score_alternates.pdf"),
@@ -276,5 +271,5 @@ if (refineModel) {
   )
 
   colnames(rf)[2] <- "Label"
-  write_csv(rf, file.path(c1_path, "cut2_pred_alternates_table.csv"))
+  readr::write_csv(rf, file.path(c1_path, "cut2_pred_alternates_table.csv"))
 }
