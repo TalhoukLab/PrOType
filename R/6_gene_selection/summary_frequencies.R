@@ -2,7 +2,8 @@ GS_training_dir <- "R/6_gene_selection/scripts"
 GS_training_files <- c(
   "utils.R",
   "define.R",
-  "summary.R"
+  "summary.R",
+  "analysis.R"
 )
 purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
