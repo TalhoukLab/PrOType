@@ -11,9 +11,9 @@ bash /gsc/software/linux-x86_64-centos5/R-3.5.1/source_me.sh
 
 In your terminal run:
 `
-Rscript install_packages.R
+Rscript -e "packrat::restore()"
 `
-and ensure that all dependencies are installed successfully.
+to ensure that all package dependencies are installed.
 
 Alternatively, you can use the docker image, and run the code in there.  This docker image is already configured with all the dependencies already installed.
 
