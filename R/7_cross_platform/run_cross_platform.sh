@@ -8,18 +8,25 @@ mkdir -p $workDir$dataSet/sh_file/cross_platform
 mkdir -p $outputDir/CrossPlatform/output
 mkdir -p $outputDir/CrossPlatform/plots
 
-Rname=$workDir$dataSet/R_file/cross_platform/analysis_preds.R
-shname=$workDir$dataSet/sh_file/cross_platform/analysis_preds.sh
+Rname1=$workDir$dataSet/R_file/cross_platform/cp_analysis.R
+shname1=$workDir$dataSet/sh_file/cross_platform/cp_analysis.sh
 
-echo 'outputDir <- "'$outputDir'"' > $Rname
-echo "source('R/7_cross_platform/analysis.R')" >> $Rname
-echo "source('R/7_cross_platform/predictions.R')" >> $Rname
+echo 'outputDir <- "'$outputDir'"' > $Rname1
+echo "source('R/7_cross_platform/analysis.R')" >> $Rname1
 
-echo "Rscript $Rname" > $shname
+Rname2=$workDir$dataSet/R_file/cross_platform/cp_predictions.R
+shname2=$workDir$dataSet/sh_file/cross_platform/cp_predictions.sh
 
-chmod +x $shname
+echo 'outputDir <- "'$outputDir'"' > $Rname2
+echo "source('R/7_cross_platform/predictions.R')" >> $Rname2
 
-file_to_submit=($shname)
+echo "Rscript $Rname1" > $shname1
+echo "Rscript $Rname2" > $shname2
+
+chmod +x $shname1
+chmod +x $shname2
+
+file_to_submit=($shname1 $shname2)
 if command -v qsub &>/dev/null; then
   :
 else
