@@ -176,7 +176,7 @@ if (predCut2) {
   dev.off()
 
   byclass.res <- rf %>%
-    dplyr::select(matches("ng")) %>%
+    dplyr::select(dplyr::matches("ng")) %>%
     purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     purrr::map(~ .[["byClass"]][, "F1"]) %>%
     purrr::transpose() %>%
