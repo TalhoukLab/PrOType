@@ -18,6 +18,8 @@ preds_new <- pred_labs$preds_new
 train <- define_batch(preds_new, nsdat)
 train_dat <- train$dat
 
+library(Matrix)
+
 cli::cat_line("Writing Summary Freqs")
 writeSummaryFreqs(outputDir, train_dat, algs)
 cli::cat_line("Finished Writing Summary Freqs")
