@@ -58,5 +58,5 @@ final <- fdat %>%
   magrittr::set_names(fdat)
 
 purrr::iwalk(final, ~ {
-  write.csv(.x, file.path(outputDir, "iv_summary", "ci_sup_lrn", paste0("sup_lrn_", .y, ".csv")))
+  write.csv(.x, file.path(outputDir, "supervised", "ci_sup_lrn", paste0("sup_lrn_", .y, ".csv")))
 })

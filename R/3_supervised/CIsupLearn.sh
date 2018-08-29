@@ -14,7 +14,7 @@ for dataset in "${dataSets[@]}"; do
     Rname=$workDir/R_file/CIsuplearn/$dataset/CIsupLearn.R
     shell_file=$workDir/sh_file/CIsuplearn/$dataset/CIsupLearn.sh
 
-    mkdir -p $outputDir'/iv_summary/ci_sup_lrn/'$dataset
+    mkdir -p $outputDir'/supervised/ci_sup_lrn/'
 
     echo 'outputDir <- "'$outputDir'"' > $Rname
     echo 'fdat <- c("'$data_sets'")' >> $Rname
