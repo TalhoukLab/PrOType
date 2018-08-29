@@ -11,7 +11,7 @@ mkdir -p $sh_dir
 file_to_submit=()
 
 R_file=$R_dir/training_part2.R
-sh_file=$sh_dir/training_part2.R
+sh_file=$sh_dir/training_part2.sh
 
 # Content of R file
 echo 'outputDir <- "'$outputDir'"' > $R_file
