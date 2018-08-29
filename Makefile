@@ -11,73 +11,82 @@ unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
 supervised: SLtrain SLreduce trainEval supLearn IVsummary
 
 
-# ------------- PART 1 ----------------
+# Part 1: unsupervised learning
 
 # Prepare data (pre-processing and filtering)
 prep_data:
-	./R/1_unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/1-prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Map genes to NanoString
 map_genes:
-	./R/2_genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/2-map_genes.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Running consensus clustering on the queue
+# Consensus clustering
 cluster:
-	./R/1_unsupervised/submit_clustering.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/3-clustering.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Merge consensus matrices on the queue (not used)
+# Merge consensus matrices
 CMmerge:
-	./R/1_unsupervised/merge_cons_mat.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/4-merge_cons_mat.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Merge cluster assignments and all consensus matrices
 merge:
-	./R/1_unsupervised/merge_final.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/5-merge_final.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Calculate ensembles
 ConFun:
-	./R/1_unsupervised/con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/6-con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Final clusters and internal validitiy indices
 FinalClust:
-	./R/1_unsupervised/final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/7-final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# ------------- PART 2 ----------------
 
-# Run scripts to train models
+# Part 2: supervised learning
+
+# Train models and return evaluations
 SLtrain:
-	./R/3_supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/2-supervised/1-train.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Combine evaluations across reps
 SLreduce:
-	./R/3_supervised/reduce.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/2-supervised/2-reduce.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# return internal validation summary
+# Combine all training evaluations
 trainEval:
-	./R/3_supervised/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/2-supervised/3-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# return internal validation summary
+# Confidence intervals for top supervised learning algorithms
 supLearn:
-	./R/3_supervised/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/2-supervised/4-CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# return internal validation summary
+# Internal validation summary
 IVsummary:
-	./R/3_supervised/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/2-supervised/5-ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 3 -------------
+# Part 3: Post-processing
 
+# post-processing for array classifier: plots and validation on overlap
 post_processing:
-	./R/5_post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/3-post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 4 -------------
+# Part 4: validate NanoString classifier
 
+# NanoString overlap validation and prediction
 nanostring:
-	./R/nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/4-nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 5 -------------
+# Part 5: gene selection in full NanoString
 gene_selection:
-	./R/6_gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/5-gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# ----------- PART 6 -------------
+
+# Part 6: cross-platform verification
 cross_platform:
-	./R/7_cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/6-cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # ---------- DEBUG CHECKPOINTS ---------
