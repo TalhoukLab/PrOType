@@ -55,7 +55,7 @@ test3_dat <- test3$dat
 sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "output", "sumFreq",
                               "overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
-  arrange(desc(rfFreq), desc(lassoFreq))
+  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
 
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
@@ -101,15 +101,15 @@ test3_eval <- caret::confusionMatrix(test3_lab$prediction, test3_lab$Adaboost.xp
 x.new <- sl_data(nsdat)
 
 preds_new_cons <- preds_new %>%
-  select(ottaID, cut = Batch, all_array = Adaboost.xpn, TCGA = TCGA.Predicted.Subtype, published) %>%
-  mutate(consensus = ifelse(all_array == TCGA, all_array, ""))
+  dplyr::select(ottaID, cut = Batch, all_array = Adaboost.xpn, TCGA = TCGA.Predicted.Subtype, published) %>%
+  dplyr::mutate(consensus = ifelse(all_array == TCGA, all_array, ""))
 
 Final_Predictions <- data.frame(
   preds_new_cons,
   prediction = predict(final_model, x.new[, final_glist]),
   predict(final_model, x.new[, final_glist], type = "prob")
 ) %>%
-  mutate(final = ifelse(
+  dplyr::mutate(final = ifelse(
     consensus == "",
     as.character(prediction),
     as.character(consensus)
@@ -123,11 +123,11 @@ write_rds(final_model, file.path(GS_output_dir, "final_model.rds"))
 x.arl.raw <- readxl::read_excel(file.path(input_dir, "Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
 x.arl <- prepare_samples(x.arl.raw)
 arl_predictions <- predict_samples(final_model, x.arl)
-write_csv(arl_predictions, file.path(GS_output_dir, "arl_predictions.csv"))
+readr::write_csv(arl_predictions, file.path(GS_output_dir, "arl_predictions.csv"))
 
 # Compare NanoString and ARL predictions
-pred_compare <- inner_join(Final_Predictions, arl_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 140/140 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, arl_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 140/140 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # Predict additional NanoString samples----
@@ -136,63 +136,63 @@ identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 nanostring_data_BRO_HET_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_BRO HET.test_20160915.xlsx"))
 x.bro_het_test <- prepare_samples(nanostring_data_BRO_HET_test_20160915)
 bro_het_test_predictions <- predict_samples(final_model, x.bro_het_test)
-write_csv(bro_het_test_predictions, file.path(GS_output_dir, "bro_het_test_predictions.csv"))
+readr::write_csv(bro_het_test_predictions, file.path(GS_output_dir, "bro_het_test_predictions.csv"))
 
 # Compare NanoString and BRO_HET_test predictions
-pred_compare <- inner_join(Final_Predictions, bro_het_test_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 28/28 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, bro_het_test_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 28/28 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # cell_lines
 nanostring_data_cell_lines_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_cell lines_20160915.xlsx"))
 x.cell_lines <- prepare_samples(nanostring_data_cell_lines_20160915)
 cell_lines_predictions <- predict_samples(final_model, x.cell_lines)
-write_csv(cell_lines_predictions, file.path(GS_output_dir, "cell_lines_predictions.csv"))
+readr::write_csv(cell_lines_predictions, file.path(GS_output_dir, "cell_lines_predictions.csv"))
 
 # Compare NanoString and cell_lines predictions
-pred_compare <- inner_join(Final_Predictions, cell_lines_predictions, by = "ottaID")
+pred_compare <- dplyr::inner_join(Final_Predictions, cell_lines_predictions, by = "ottaID")
 nrow(pred_compare) # zero overlapping samples
 
 # LAX_VAN_OM_test
 nanostring_data_LAX_VAN_OM_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_LAX VAN OM.test_20160915.xlsx"))
 x.lax_van_om_test <- prepare_samples(nanostring_data_LAX_VAN_OM_test_20160915)
 lax_van_om_test_predictions <- predict_samples(final_model, x.lax_van_om_test)
-write_csv(lax_van_om_test_predictions, file.path(GS_output_dir, "lax_van_om_test_predictions.csv"))
+readr::write_csv(lax_van_om_test_predictions, file.path(GS_output_dir, "lax_van_om_test_predictions.csv"))
 
 # Compare NanoString and LAX_VAN_OM_test predictions
-pred_compare <- inner_join(Final_Predictions, lax_van_om_test_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 48/48 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, lax_van_om_test_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 48/48 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # ARL_paired_samples
 nanostring_data_ARL_paired_samples_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_ARL paired samples_20160915.xlsx"))
 x.arl_paried_samples <- prepare_samples(nanostring_data_ARL_paired_samples_20160915)
 arl_paired_samples_predictions <- predict_samples(final_model, x.arl_paried_samples)
-write_csv(arl_paired_samples_predictions, file.path(GS_output_dir, "arl_paired_samples_predictions.csv"))
+readr::write_csv(arl_paired_samples_predictions, file.path(GS_output_dir, "arl_paired_samples_predictions.csv"))
 
 # Compare NanoString and ARL_paired_samples predictions
-pred_compare <- inner_join(Final_Predictions, arl_paired_samples_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 26/26 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, arl_paired_samples_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 26/26 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # Rep_BIO_samples
 nanostring_data_Rep_BIO_samples_20160916 <- readxl::read_excel(file.path(input_dir, "nanostring data_Rep.BIO samples_20160916.xlsx"))
 x.rep_bio_samples <- prepare_samples(nanostring_data_Rep_BIO_samples_20160916)
 rep_bio_samples_predictions <- predict_samples(final_model, x.rep_bio_samples)
-write_csv(rep_bio_samples_predictions, file.path(GS_output_dir, "rep_bio_samples_predictions.csv"))
+readr::write_csv(rep_bio_samples_predictions, file.path(GS_output_dir, "rep_bio_samples_predictions.csv"))
 
 # Compare NanoString and Rep_BIO_samples predictions
-pred_compare <- inner_join(Final_Predictions, rep_bio_samples_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 38/38 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, rep_bio_samples_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 38/38 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # Replicates_and_Xsite_samples
 nanostring_data_replicates_and_Xsite_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_replicates and Xsite_20160915.xlsx"))
 x.replicates_and_Xsite <- prepare_samples(nanostring_data_replicates_and_Xsite_20160915)
 replicates_and_Xsite_predictions <- predict_samples(final_model, x.replicates_and_Xsite)
-write_csv(replicates_and_Xsite_predictions, file.path(GS_output_dir, "replicates_and_Xsite_predictions.csv"))
+readr::write_csv(replicates_and_Xsite_predictions, file.path(GS_output_dir, "replicates_and_Xsite_predictions.csv"))
 
 # Compare NanoString and Replicates_and_Xsite_samples
-pred_compare <- inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
-summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
+pred_compare <- dplyr::inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
