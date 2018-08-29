@@ -7,6 +7,7 @@ mkdir -p $outputDir/GeneSelection/output/TrainingC1
 mkdir -p $outputDir/GeneSelection/output/sumFreq
 mkdir -p $outputDir/GeneSelection/output/finalTraining
 mkdir -p $outputDir/GeneSelection/output/studyPreds
+mkdir -p $outputDir/GeneSelection/output/finalPredictions
 mkdir -p $outputDir/GeneSelection/tmp
 
 mkdir -p $outputDir/GeneSelection/plots
@@ -17,6 +18,7 @@ mkdir -p $outputDir/GeneSelection/plots
 . ./R/6_gene_selection/make_predictions.sh
 . ./R/6_gene_selection/training_post_processing.sh
 . ./R/6_gene_selection/training_part2.sh
+. ./R/6_gene_selection/build_final_model.sh
 
 # Rscript R/6_gene_selection/training_part2.R
 # echo 'output_dir <- file.path("'$outputDir'", "GeneSelection")' > $Rname

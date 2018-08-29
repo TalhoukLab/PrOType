@@ -9,7 +9,7 @@ suppressPackageStartupMessages({
   library(readxl)
 })
 
-GS_output_dir <- "R/6_gene_selection/outputs"
+GS_output_dir <- file.path(outputDir, "GeneSelection/output/finalPredictions")
 GS_training_dir <- "R/6_gene_selection/scripts"
 GS_training_files <- c(
   "define.R",
