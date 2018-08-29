@@ -234,7 +234,7 @@ if (refineModel) {
     dplyr::inner_join(test1_lab, ., by = "ottaID")
 
   res_pred <- rf %>%
-    dplyr::select(matches("fit")) %>%
+    dplyr::select(dplyr::matches("fit")) %>%
     purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     purrr::map_dbl(purrr::pluck, "overall", "Accuracy")
 
@@ -251,7 +251,7 @@ if (refineModel) {
   dev.off()
 
   byclass.res <- rf %>%
-    dplyr::select(matches("fit")) %>%
+    dplyr::select(dplyr::matches("fit")) %>%
     purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     purrr::map(~ .[["byClass"]][, "F1"]) %>%
     purrr::transpose() %>%
