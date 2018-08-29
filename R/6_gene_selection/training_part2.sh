@@ -18,8 +18,8 @@ echo 'outputDir <- "'$outputDir'"' > $R_file
 echo 'source("R/6_gene_selection/training_part2.R")' >> $R_file
 
 # Content of sh file
-echo 'Rscript' $R_train > $sh_train
-chmod +x $sh_train
+echo 'Rscript' $R_file > $sh_file
+chmod +x $sh_file
 
 # Add to queue
 if command -v qsub &>/dev/null; then
