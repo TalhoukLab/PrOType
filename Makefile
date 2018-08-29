@@ -1,21 +1,24 @@
-# Makefile to test parallel pipeline
-all: clustering post_processing gene_selection cross_platform
+# Makefile to run PrOType pipeline
+
+# Run full pipeline
+all: array nanostring gene_selection cross_platform
+
+# Intermediate targets
+array: unsupervised supervised post_processing
+
+unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
+
+supervised: SLtrain SLreduce trainEval supLearn IVsummary
+
 
 # ------------- PART 1 ----------------
-Unsupervised: init cluster CMmerge merge ConFun FinalClust
-
-Supervised: SLtrain SLreduce trainEval
-
-IVSummary: supLearn IVsummary
-
-clustering: Unsupervised Genemapping Supervised IVSummary
 
 # Prepare data (pre-processing and filtering)
 prep_data:
 	./R/1_unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Create scripts needed for pipeline
-init: prep_data Genemapping
+map_genes:
+	./R/2_genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Running consensus clustering on the queue
 cluster:
@@ -34,8 +37,7 @@ ConFun:
 FinalClust:
 	./R/1_unsupervised/final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
-Genemapping:
-	./R/2_genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
+# ------------- PART 2 ----------------
 
 # Run scripts to train models
 SLtrain:
@@ -57,18 +59,23 @@ IVsummary:
 	./R/3_supervised/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 2 -------------
+# ----------- PART 3 -------------
+
 post_processing:
 	./R/5_post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# ----------- PART 4 -------------
 
 nanostring:
 	./R/nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 4 -------------
+# ----------- PART 5 -------------
 gene_selection:
 	./R/6_gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# ----------- PART 6 -------------
 cross_platform:
 	./R/7_cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
 
@@ -82,6 +89,8 @@ from-IVSummary: IVSummary from-post_processing
 
 from-post_processing: post_processing gene_selection
 
+
+# Clean target
 %:
 		@:
 clean:
