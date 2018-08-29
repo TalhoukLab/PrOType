@@ -117,7 +117,7 @@ Final_Predictions <- data.frame(
 
 write.csv(Final_Predictions, file.path(GS_output_dir, "Final_Predictions.csv"))
 write.csv(final_glist, file.path(GS_output_dir, "final_glist.csv"))
-write_rds(final_model, file.path(GS_output_dir, "final_model.rds"))
+saveRDS(final_model, file.path(GS_output_dir, "final_model.rds"))
 
 # Predict ARL NanoString samples----
 x.arl.raw <- readxl::read_excel(file.path(input_dir, "Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
