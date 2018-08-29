@@ -1,5 +1,6 @@
 # Load and map samples and genes between array and NanoString
-source(here::here("R/CrossPlatform/map.R"))
+library(ggplot2)
+source(here::here("R/7_cross_platform/map.R"))
 
 input_dir <- file.path(outputDir, "GeneSelection/output/sumFreq")
 output_dir <- file.path(outputDir, "CrossPlatform/output")
@@ -16,8 +17,8 @@ is_outlier <- function(x, y, n = 3) {
 # load genes in the classifier
 genes59 <- file.path(input_dir, "overallFreqs.csv") %>%
   read.csv(stringsAsFactors = FALSE) %>%
-  arrange(desc(rfFreq)) %>%
-  pull(genes) %>%
+  dplyr::arrange(desc(rfFreq)) %>%
+  dplyr::pull(genes) %>%
   head(59) %>%
   make.names()
 
@@ -35,18 +36,18 @@ df <- rbind(
 
 # Plot the average expression and point out outliers
 df_spr <- df %>%
-  spread(platform, value) %>%
-  group_by(gene) %>%
-  summarize(
+  tidyr::spread(platform, value) %>%
+  dplyr::group_by(gene) %>%
+  dplyr::summarize(
     nstring.mean = mean(nstring, na.rm = TRUE),
     array.mean = median(array, na.rm = TRUE),
     concordance_est = epiR::epi.ccc(nstring, array)[["rho.c"]][["est"]],
     accuracy = epiR::epi.ccc(nstring, array)[["C.b"]]
   ) %>%
-  arrange(desc(concordance_est), desc(accuracy)) %>%
-  mutate(outlier = ifelse(is_outlier(nstring.mean, array.mean), gene, NA_real_))
+  dplyr::arrange(dplyr::desc(concordance_est), dplyr::desc(accuracy)) %>%
+  dplyr::mutate(outlier = ifelse(is_outlier(nstring.mean, array.mean), gene, NA_real_))
 
-ggplot(df_spr, aes(x = nstring.mean, y = array.mean)) +
+p1 <- ggplot(df_spr, aes(x = nstring.mean, y = array.mean)) +
   geom_point() +
   theme_bw() +
   geom_abline(slope = 1, intercept = 0, colour = "blue", size = 1) +
@@ -54,18 +55,18 @@ ggplot(df_spr, aes(x = nstring.mean, y = array.mean)) +
             colour = "red", size = 3) +
   ggtitle("Nanostring - Array Mean Expression")
 
-ggsave(file.path(plot_dir, "meanexpr.pdf"))
+ggsave(file.path(plot_dir, "meanexpr.pdf"), p1)
 
-ggplot(df_spr, aes(x = concordance_est, y = accuracy)) +
+p2 <- ggplot(df_spr, aes(x = concordance_est, y = accuracy)) +
   geom_point() +
   theme_bw() +
   ggtitle("Accuracy and concordance")
 
-ggsave(file.path(plot_dir, "ACCconc.pdf"))
+ggsave(file.path(plot_dir, "ACCconc.pdf"), p2)
 
 # concordance combination of precision (how tight the points together)
 # and accuracy how close the line is to the identity line
-df_2 <- spread(df, platform, value)
+df_2 <- tidyr::spread(df, platform, value)
 n_pages <- ceiling(58 / 25)
 # Draw each page
 for (i in seq_len(n_pages)) {
@@ -79,5 +80,5 @@ for (i in seq_len(n_pages)) {
 
 # Reliability summary
 reliability <- df_spr %>%
-  select(gene, concordance_est, accuracy)
-write_csv(reliability, file.path(output_dir, "reliability.csv"))
+  tidyr::select(gene, concordance_est, accuracy)
+readr::write_csv(reliability, file.path(output_dir, "reliability.csv"))

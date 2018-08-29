@@ -1,7 +1,5 @@
-# Load packages
-library(tidyverse)
-
-source(here::here("R/GeneSelection/scripts/utils.R"))
+# Load utility functions
+source(here::here("R/6_gene_selection/scripts/utils.R"))
 nstring_path <- "assets/data/nstring"
 array_path <- "data/array/OverlapSet"
 
@@ -16,8 +14,8 @@ preds <-
 # TCGA overlap
 tcga.mapped <-
   readr::read_csv(file.path(nstring_path, "TCGA_sampleIDs_OTTA-Mapped.csv"),
-                  col_types = cols()) %>%
-  select(c(
+                  col_types = readr::cols()) %>%
+  dplyr::select(c(
     sampleID = TCGA,
     ottaID = `OTTA-ID`,
     published = `MOL-SUBTYPE-NAME (published)`
@@ -26,8 +24,8 @@ tcga.mapped <-
 # GSE overlap
 gse.mapped <-
   readr::read_csv(file.path(nstring_path, "GSE9891_sampleIDs_OTTA-Mapped.csv"),
-                  col_types = cols()) %>%
-  select(c(
+                  col_types = readr::cols()) %>%
+  dplyr::select(c(
     sampleID = GSE9891,
     ottaID = `OTTA ID`,
     published = `MOL-SUBTYPE-NAME (published)`
@@ -37,31 +35,31 @@ gse.mapped <-
 # overlap$ottaID[!(overlap$ottaID %in% preds$ottaID)]
 
 # Combine & drop NAs, merge with predictions
-overlap_lab <- bind_rows(tcga.mapped, gse.mapped) %>%
-  inner_join(preds, by = "ottaID")
+overlap_lab <- dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
+  dplyr::inner_join(preds, by = "ottaID")
 
 # get the array data
 overlap_array_dat <-
   rbind(
-    read_rds(file.path(array_path, "validation_gse.rds")),
-    read_rds(file.path(array_path, "validation_tcga.rds"))
+    readRDS(file.path(array_path, "validation_gse.rds")),
+    readRDS(file.path(array_path, "validation_tcga.rds"))
   ) %>%
   rename(PD.L1 = PD.1) %>%
   tibble::rownames_to_column("sampleID") %>%
-  inner_join(overlap_lab, ., by = "sampleID") %>%
-  arrange(ottaID)
+  dplyr::inner_join(overlap_lab, ., by = "sampleID") %>%
+  dplyr::arrange(ottaID)
 
 # get the nstring data they are only in b1 and b2
 overlap_nstring_dat <- rbind(
   read.csv(file.path(
-    nstring_path, "nanostring classifier data_batch1_20170217_updated.csv")),
+    nstring_path, "nanostring_classifier_data_batch1_20170217_updated.csv")),
   read.csv(file.path(
-    nstring_path, "nanostring classifier data_batch2_20170221.csv"))
+    nstring_path, "nanostring_classifier_data_batch2_20170221.csv"))
 ) %>%
-  rename(ottaID = OTTA.ID) %>%
-  mutate(ottaID = as.character(ottaID)) %>%
-  inner_join(overlap_lab, ., by = "ottaID") %>%
-  arrange(ottaID)
+  dplyr::rename(ottaID = OTTA.ID) %>%
+  dplyr::mutate(ottaID = as.character(ottaID)) %>%
+  dplyr::inner_join(overlap_lab, ., by = "ottaID") %>%
+  dplyr::arrange(ottaID)
 
 if (!all(overlap_nstring_dat$ottaID == overlap_array_dat$ottaID)) {
   stop("Overlap data orrder doesn't match")
