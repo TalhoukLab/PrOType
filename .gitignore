@@ -1,9 +1,6 @@
-GeneSelection/outputs/
-raw_data/
-.idea/
 .Rproj.user
 .Rhistory
 .RData
-.Ruserdata
 .DS_Store
+raw_data/
 packrat/lib*/
