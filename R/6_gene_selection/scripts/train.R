@@ -1,5 +1,3 @@
-library(magrittr)
-
 runTrainingSequence <- function(runBoot, processBoot, finalTraining, makePreds,
                                 output_dir, studies, train_dat, train_lab, B,
                                 algs) {

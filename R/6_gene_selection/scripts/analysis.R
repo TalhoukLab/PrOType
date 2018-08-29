@@ -1,5 +1,3 @@
-library(purrr)
-
 runGeneAnalysis <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "plots")
