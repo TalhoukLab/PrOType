@@ -55,14 +55,14 @@ p1 <- ggplot(df_spr, aes(x = nstring.mean, y = array.mean)) +
             colour = "red", size = 3) +
   ggtitle("Nanostring - Array Mean Expression")
 
-ggsave(file.path(plot_dir, "meanexpr.pdf"), p1)
+ggsave(file.path(plot_dir, "meanexpr.pdf"), p1, width = 7, height = 7)
 
 p2 <- ggplot(df_spr, aes(x = concordance_est, y = accuracy)) +
   geom_point() +
   theme_bw() +
   ggtitle("Accuracy and concordance")
 
-ggsave(file.path(plot_dir, "ACCconc.pdf"), p2)
+ggsave(file.path(plot_dir, "ACCconc.pdf"), p2, width = 7, height = 7)
 
 # concordance combination of precision (how tight the points together)
 # and accuracy how close the line is to the identity line
@@ -75,7 +75,7 @@ for (i in seq_len(n_pages)) {
     geom_point() +
     theme_bw() +
     geom_abline(slope = 1, intercept = 0, colour = "blue", size = 1)
-  ggsave(file.path(plot_dir, paste0("bygene_", i, ".pdf")))
+  ggsave(file.path(plot_dir, paste0("bygene_", i, ".pdf")), width = 7, height = 7)
 }
 
 # Reliability summary
