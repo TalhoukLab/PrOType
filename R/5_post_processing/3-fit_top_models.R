@@ -1,7 +1,7 @@
 # Fit top models on full cut1 data ----------------------------------------
 
-# Load packages and utility functions
-source(here::here("assets/utils.R"))
+# Load utility functions
+source(here::here("R/5_post_processing/utils/utils.R"))
 
 # Choose kmodes clustering algorithm
 top_cl_alg <- "kmodes"

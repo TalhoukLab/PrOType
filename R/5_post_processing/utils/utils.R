@@ -1,7 +1,7 @@
 # Post-processing utility functions -------------------------------
 
 # Load packages and project wide utility functions
-library(purrr)
+`%>%` <- magrittr::`%>%`
 source(here::here("assets/utils.R"))
 
 
