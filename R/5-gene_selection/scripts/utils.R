@@ -1,3 +1,5 @@
+`%>%` <- magrittr::`%>%`
+
 exit <- function() {
   .Internal(.invokeRestart(list(NULL, NULL), NULL))
 }
