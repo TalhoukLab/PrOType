@@ -2,13 +2,13 @@
 
 . ./Parameters.sh
 
-mkdir -p $workDir$dataSet/R_file/post_processing
-mkdir -p $workDir$dataSet/sh_file/post_processing
+mkdir -p $workDir$/R_file/post_processing
+mkdir -p $workDir$/sh_file/post_processing
 
-mkdir -p $outputDir/fits
-mkdir -p $outputDir/evals
-mkdir -p $outputDir/plots
-mkdir -p $outputDir/predictions
+mkdir -p $outputDir/post_processing/fits
+mkdir -p $outputDir/post_processing/evals
+mkdir -p $outputDir/post_processing/plots
+mkdir -p $outputDir/post_processing/predictions
 
 Rname0=$workDir$dataSet/R_file/post_processing/check_baseline.R
 Rname1=$workDir$dataSet/R_file/post_processing/plot_iv.R
