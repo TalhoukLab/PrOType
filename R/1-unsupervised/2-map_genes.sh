@@ -34,7 +34,7 @@ for dataset in "${dataSets[@]}"; do
 done
 
 shouldWait=FALSE
-logDir=$baseLogDir'/genemapping/map'
+logDir=$baseLogDir'/unsupervised/map_genes'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
