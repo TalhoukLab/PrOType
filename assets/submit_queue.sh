@@ -2,6 +2,11 @@
 
 qsubJobArray=()
 
+# Return number of jobs in queue for user
+function njobs() {
+  qstat -u $1 | grep -r ".*$1.*" | awk '{print $1}' | wc -l
+}
+
 for shname in "${file_to_submit[@]}"; do
 	# check if data set was specified
 	if [ "$shname" = "" ]; then
@@ -10,16 +15,16 @@ for shname in "${file_to_submit[@]}"; do
 	fi
 
   mkdir -p $logDir
-  startQLength=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
+  startQLength=`njobs $user`
   curr_max_submit=$(($maxQueueLength - $startQLength))
 
 	# execute shell script to queue
   if command -v qsub &>/dev/null; then
 		  echo "Submitting To Queue ($user): $shname"
 
-      while [[ "$test" -ge "$curr_max_submit" ]]; do
-        test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
-        echo "Waiting on: ${test} jobs to complete before submitting job."
+      while [[ "$currQLength" -ge "$curr_max_submit" ]]; do
+        currQLength=`njobs $user`
+        echo "Waiting on: ${currQLength} jobs to complete before submitting job."
         sleep 30s
       done
 
@@ -37,19 +42,19 @@ done
 # *************************************************************************
 # Step 2: wait until cluster jobs are complete until proceeding
 # *************************************************************************
-test=100
+currQLength=100
 if command -v qsub &>/dev/null; then
-  test=100
+  currQLength=100
 else
-  test=0
+  currQLength=0
 fi
 
-while [[ $test > 0 && shouldWait ]]; do
+while [[ $currQLength > 0 && shouldWait ]]; do
     echo "Checking Queue"
-    test=`qstat -u $user | grep -r ".*$user.*" | awk '{print $1}' | wc -l`
+    currQLength=`njobs $user`
 
-    if [[ $test > 0 ]]; then
-      echo "Waiting on: ${test} jobs to complete"
+    if [[ $currQLength > 0 ]]; then
+      echo "Waiting on: ${currQLength} jobs to complete"
       sleep 30s
     else
       echo "All jobs completed.";
