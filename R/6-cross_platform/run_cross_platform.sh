@@ -27,6 +27,9 @@ chmod +x $shname1
 chmod +x $shname2
 
 file_to_submit=($shname1 $shname2)
+echo -e "$GREEN_TICK Added to queue: $shname1"
+echo -e "$GREEN_TICK Added to queue: $shname2"
+
 if command -v qsub &>/dev/null; then
   :
 else
@@ -36,7 +39,4 @@ fi
 logDir=$baseLogDir'/cross_platform'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi
