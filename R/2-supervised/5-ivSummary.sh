@@ -4,11 +4,6 @@
 
 file_to_submit=()
 for dataset in "${dataSets[@]}"; do
-	# check if data set was specified
-	if [ "$dataset" = "" ]; then
-		echo "Data set must be specified."
-		exit 1
-	fi
 
 	# create scripts and directories
 	mkdir -p $workDir/R_file/supervised/$dataset
