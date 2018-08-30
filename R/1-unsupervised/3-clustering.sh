@@ -32,17 +32,14 @@ for dataset in "${dataSets[@]}"; do
             echo 'shouldCompute <- '$shouldCompute >> $R_clust
             echo 'source("R/1-unsupervised/3-clustering.R")' >> $R_clust
 
-            # Contents of sh file
+            # Content of sh file
             echo 'Rscript' $R_clust > $sh_clust
-
             chmod +x $sh_clust
 
             if command -v qsub &>/dev/null; then
-                echo "Adding To Queue: $sh_clust"
                 file_to_submit+=($sh_clust)
+                echo -e "$GREEN_TICK Added to queue: $sh_clust"
             fi
-
-            chmod +x $sh_clust
         done
     done
 
@@ -57,7 +54,4 @@ done
 logDir=$baseLogDir'/unsupervised/clustering'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi

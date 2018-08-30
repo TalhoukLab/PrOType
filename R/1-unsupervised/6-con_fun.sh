@@ -30,23 +30,20 @@ for dataset in "${dataSets[@]}"; do
         # create R scripts
         echo 'outputDir <- "'$outputDir'"' > $R_cons
         echo 'dataset <- "'$dataset'"' >> $R_cons
-        echo 'cons.funs<-"'$i'"'>> $R_cons
+        echo 'cons.funs <- "'$i'"'>> $R_cons
         echo "k <- $k" >> $R_cons
-        echo 'dir <-"'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_cons
+        echo 'dir <- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_cons
         echo 'shouldCompute <- '$shouldCompute >> $R_cons
         echo 'source("R/1-unsupervised/6-con_fun.R")' >> $R_cons
 
         # create sh scripts
         echo 'Rscript' $R_cons > $sh_cons
-
         chmod +x $sh_cons
 
         if command -v qsub &>/dev/null; then
-            echo "Submitting to queue: $sh_cons"
             file_to_submit+=($sh_cons)
+            echo -e "$GREEN_TICK Added to queue: $sh_cons"
         fi
-
-        chmod +x $sh_cons
     done
 
     if command -v qsub &>/dev/null; then
@@ -59,7 +56,4 @@ done
 logDir=$baseLogDir'/unsupervised/confun'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi

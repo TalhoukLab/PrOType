@@ -17,18 +17,18 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir'/unsupervised/merge/data_pr_'$dataset
 
     # Create R scripts
-    echo 'dataset<- "'$dataset'"' > $R_merge_final_clust
+    echo 'dataset <- "'$dataset'"' > $R_merge_final_clust
     echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_clust
-    echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
-    echo 'reps<- '$reps >> $R_merge_final_clust
-    echo 'k<-'$k >> $R_merge_final_clust
+    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
+    echo 'reps <- '$reps >> $R_merge_final_clust
+    echo 'k <-'$k >> $R_merge_final_clust
     echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_clust
     echo 'source("R/1-unsupervised/5-merge_clust.R")' >> $R_merge_final_clust
 
     # Create sh scirpts
-    echo 'dataset<- "'$dataset'"' > $R_merge_final_consmat
+    echo 'dataset <- "'$dataset'"' > $R_merge_final_consmat
     echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_consmat
-    echo 'algs<- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
+    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
     echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_consmat
     echo 'source("R/1-unsupervised/5-merge_complete_consmat.R")' >> $R_merge_final_consmat
 
@@ -42,8 +42,8 @@ for dataset in "${dataSets[@]}"; do
     chmod +x $shell_file
 
     if command -v qsub &>/dev/null; then
-        echo "Adding To Queue: $shell_file"
         file_to_submit+=($shell_file)
+        echo -e "$GREEN_TICK Added to queue: $shell_file"
     else
         bash $shell_file
     fi
@@ -52,7 +52,4 @@ done
 logDir=$baseLogDir'/unsupervised/merge'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi

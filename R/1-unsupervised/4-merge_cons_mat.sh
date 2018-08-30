@@ -36,16 +36,12 @@ for dataset in "${dataSets[@]}"; do
 
                 # Content of sh file
                 echo 'Rscript' $R_merge > $sh_merge
-
                 chmod +x $sh_merge
 
                 if command -v qsub &>/dev/null; then
-                    # execute shell_file to cluster
-                    echo "Adding To Queue: $sh_merge"
                     file_to_submit+=($sh_merge)
+                    echo -e "$GREEN_TICK Added to queue: $sh_merge"
                 fi
-
-                chmod +x $sh_merge
             fi
         done
     done
@@ -55,14 +51,9 @@ for dataset in "${dataSets[@]}"; do
     else
       python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step merge
     fi
-    # complete
-    echo 'Submitted merge files to the queue!'
 done
 
 logDir=$baseLogDir'/unsupervised/CMmerge'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi
