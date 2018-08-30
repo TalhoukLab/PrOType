@@ -33,11 +33,11 @@ for dataset in "${dataSets[@]}"; do
 
     # Run Script
     echo "Rscript $Rname" > $shell_file
+    chmod +x $shell_file
 
     if command -v qsub &>/dev/null; then
-        echo "Adding To Queue: $shell_file"
         file_to_submit+=($shell_file)
-        chmod +x $shell_file
+        echo -e "$GREEN_TICK Added to queue: $shell_file"
     else
         bash $shell_file
     fi
@@ -46,7 +46,4 @@ done
 logDir=$baseLogDir'/supervised/train_eval'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi

@@ -48,14 +48,12 @@ for dataset in "${dataSets[@]}"; do
 
             # contents of sh file
             echo 'Rscript' $R_train > $sh_train
+            chmod +x $sh_train
 
             if command -v qsub &>/dev/null; then
-                # execute shell_file to cluster
-                echo "Adding To Queue: $sh_train"
                 file_to_submit+=($sh_train)
+                echo -e "$GREEN_TICK Added to queue: $sh_train"
             fi
-
-            chmod +x $sh_train
         done
     done
 
@@ -69,7 +67,4 @@ done
 logDir=$baseLogDir'/supervised/training'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi

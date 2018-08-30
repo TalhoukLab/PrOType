@@ -24,10 +24,9 @@ for dataset in "${dataSets[@]}"; do
 
 	# execute shell script to queue
     if command -v qsub &>/dev/null; then
-		echo "Adding To Queue: $shname"
-	    file_to_submit+=($shname)
+        file_to_submit+=($shname)
+        echo -e "$GREEN_TICK Added to queue: $shname"
     else
-        echo "Making File"
         bash $shname
     fi
 done
@@ -35,9 +34,6 @@ done
 logDir=$baseLogDir'/supervised/ivSummary'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi
 
 # *************************************************************************
