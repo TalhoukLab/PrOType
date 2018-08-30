@@ -29,7 +29,7 @@ for dataset in "${dataSets[@]}"; do
     chmod +x $shname
     $shname
 
-    echo 'Data preparation completed for dataset '$dataset
+    echo -e "$GREEN_TICK Data preparation completed for dataset $dataset"
 done
 
 echo -e "$GREEN_TICK All data preparation completed"
