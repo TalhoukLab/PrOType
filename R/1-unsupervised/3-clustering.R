@@ -15,8 +15,8 @@ pl_impute <- function(E, data, seed = 123, dir.name = ".") {
 
 # Compute the consensus Matrix
 pl_conmat <- function(E, dir.name = ".") {
-  conmat <- diceR::consensus_combine(E, element = "matrix")
-  #conmat_sparse = purrr::map(conmat, ~ purrr::map(., ~ Matrix::Matrix(., sparse = TRUE)))
+  conmat <- diceR::consensus_combine(E, element = "matrix") %>%
+    purrr::modify_depth(2, ~ Matrix::Matrix(., sparse = TRUE))
   saveRDS(conmat, file.path(dir.name, paste0("CM_", algs, s, "_", dataset, ".rds")))
 }
 
