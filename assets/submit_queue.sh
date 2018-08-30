@@ -54,4 +54,5 @@ while [[ $currQLength > 0 && shouldWait ]]; do
       echo -e "$GREEN_TICK All jobs completed"
     fi
 done
-echo "Logs written to \"${logDir}\""
+echo -e "$GREEN_BULLET Logs written to \"${logDir}\""
+echo -e "$GREEN_BULLET Outputs written to \"${outputDir}\""
