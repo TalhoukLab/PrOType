@@ -21,17 +21,14 @@ chmod +x $sh_file
 # Add to queue if qsub exists, submit by python otherwise
 file_to_submit=()
 if command -v qsub &>/dev/null; then
-  echo "Adding To Queue: $sh_file"
   file_to_submit+=($sh_file)
+  echo -e "$GREEN_TICK Added to queue: $sh_file"
 fi
 
 # Submit to queue if qsub exists, to python otherwise
 logDir=$baseLogDir'/gene_selection/build_final_model'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 else
     python assets/submit_local.py --num_parallel 4 --file_location $workDir --step build_final_model
 fi

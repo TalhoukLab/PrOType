@@ -31,8 +31,8 @@ while read study; do
 
     # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        echo "Adding To Queue: $sh_train"
         file_to_submit+=($sh_train)
+        echo -e "$GREEN_TICK Added to queue: $sh_train"
     fi
 done < "$outputDir/GeneSelection/tmp/studies.txt"
 
@@ -40,9 +40,6 @@ done < "$outputDir/GeneSelection/tmp/studies.txt"
 logDir=$baseLogDir'/gene_selection/process_bootstrap'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 else
     python assets/submit_local.py --num_parallel 4 --file_location $workDir --step geneselection_process_bootstrap
 fi

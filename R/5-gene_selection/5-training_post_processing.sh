@@ -26,8 +26,8 @@ chmod +x $sh_train
 # Add to queue if qsub exists, submit by bash otherwise
 file_to_submit=()
 if command -v qsub &>/dev/null; then
-  echo "Adding To Queue: $sh_train"
   file_to_submit+=($sh_train)
+  echo -e "$GREEN_TICK Added to queue: $sh_train"
 else
   bash $sh_train
 fi
@@ -49,8 +49,8 @@ chmod +x $sh_train
 # Add to queue if qsub exists, submit by bash otherwise
 file_to_submit=()
 if command -v qsub &>/dev/null; then
-  echo "Adding To Queue: $sh_train"
   file_to_submit+=($sh_train)
+  echo -e "$GREEN_TICK Added to queue: $sh_train"
 else
   bash $sh_train
 fi
@@ -59,7 +59,4 @@ fi
 logDir=$baseLogDir'/gene_selection/post_processing'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi
