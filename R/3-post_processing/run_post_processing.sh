@@ -59,6 +59,10 @@ echo 'cli::cat_line("Post-processing 7: mapping signatures on cut2")' >> $Rname2
 echo 'source("R/3-post_processing/7-mapping_signatures_C2.R")' >> $Rname2
 
 file_to_submit=($shname0 $shname1 $shname2)
+echo -e "$GREEN_TICK Added to queue: $shname0"
+echo -e "$GREEN_TICK Added to queue: $shname1"
+echo -e "$GREEN_TICK Added to queue: $shname2"
+
 if command -v qsub &>/dev/null; then
   :
 else
@@ -68,7 +72,4 @@ fi
 logDir=$baseLogDir'/post_processing'
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
-
-    echo "Finished Submitting files.  Check progress with \"qstat -u ${user}\""
-    echo "The logs can be found in \"${logDir}\""
 fi
