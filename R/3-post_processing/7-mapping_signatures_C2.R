@@ -8,8 +8,7 @@ source(here::here("R/3-post_processing/utils/utils.R"))
 rfive.type <- readr::read_csv(
   file = file.path(dataDir, "external", "Lasso_PAM100.csv"),
   col_types = readr::cols()
-) %>%
-  magrittr::set_colnames(c("Gene.Name", colnames(.[-1])))
+)
 rfour.type <- readr::read_csv(
   file = file.path(dataDir, "external", "verhaakGS.csv"),
   col_types = readr::cols()
