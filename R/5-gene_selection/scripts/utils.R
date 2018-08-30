@@ -1,9 +1,5 @@
 `%>%` <- magrittr::`%>%`
 
-exit <- function() {
-  .Internal(.invokeRestart(list(NULL, NULL), NULL))
-}
-
 mkdir <- function(dir) {
   if (!dir.exists(dir)) {
     cli::cat_line("Directory ", shQuote(dir), " does not exist, creating now...")
