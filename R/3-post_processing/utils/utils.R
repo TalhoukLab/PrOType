@@ -48,6 +48,22 @@ pvca_plot <- function(pvcaObj, color = "blue", title = "") {
   text(sort(pvcaObj$dat), bp, labels = values, pos = 4, cex = 0.8)
 }
 
+#' Fast PCA for only the first n PC's
+#'
+#' More efficient PCA if only the first few PC's are needed (e.g. for plotting)
+#' and there are many columns in `x`. Faster implementation uses `La.svd()`.
+#'
+#' @param x data matrix
+#' @param n the first `n` principal components are returned
+#' @param center logical; should `data` be centered
+#' @param scale logical; should `data` be scaled
+prcomp_n <- function(x, n = 3, center = TRUE, scale = FALSE) {
+  x %>%
+    scale(center = center, scale = scale) %>%
+    magrittr::multiply_by_matrix(t(La.svd(., nu = 0, nv = n)$vt)) %>%
+    magrittr::set_colnames(paste0("PC", seq_len(n)))
+}
+
 
 # 2 - Internal Validity Plots ---------------------------------------------
 

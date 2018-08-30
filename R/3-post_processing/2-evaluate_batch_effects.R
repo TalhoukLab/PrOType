@@ -58,13 +58,13 @@ for (dataSet in datasets) {
   pvca_plot(pvcaObj, "#91B0A8", dataSet)
   dev.off()
 
-  # Compute PCA Object
-  pcaa <- prcomp(tdat)
+  # Compute PCA Object for first 3 PC's
+  pca3 <- prcomp_n(tdat)
   saveRDS(pcaa, file.path(outputDir, "evals",
                           paste0(dataSet, "_pcaa.rds")), compress = "xz")
   df <- tibble::tibble(batch1 = as.character(cohorts$clust),
                        batch2 = cohorts$CohortLabel) %>%
-    cbind(pcaa$x[, 1:3])
+    cbind(pca3)
   saveRDS(df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
 
   # PCA plots
