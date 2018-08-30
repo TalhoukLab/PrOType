@@ -12,6 +12,8 @@ geneSelectionAlgs=(ada rf lasso)
 # Bash parameters
 user="$(whoami)"
 RPath="$(which R | sort | tail -n 1)"
+GREEN_TICK='\033[0;32m\xe2\x9c\x93\033[0m'
+BLUE_BULLET='\033[0;34m\xe2\x80\xa2\033[0m'
 
 # Queue parameters
 maxQueueLength=8000

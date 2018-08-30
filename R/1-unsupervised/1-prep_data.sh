@@ -32,4 +32,4 @@ for dataset in "${dataSets[@]}"; do
     echo 'Data preparation completed for dataset '$dataset
 done
 
-echo 'All data preparation completed'
+echo -e "$GREEN_TICK All data preparation completed"
