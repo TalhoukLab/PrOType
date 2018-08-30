@@ -9,11 +9,16 @@ classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
 supervisedAlgs=(first second third fourth)
 geneSelectionAlgs=(ada rf lasso)
 
-# Bash info
+# Bash parameters
 user="$(whoami)"
 RPath="$(which R | sort | tail -n 1)"
+
+# Queue parameters
 maxQueueLength=8000
 shouldWait=TRUE
+mem_free="4G"
+mem_token="4G"
+h_vmem="8G"
 
 # Check whether an input is a positive integer. If not, logout.
 function is_pos_int() {

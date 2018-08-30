@@ -28,7 +28,7 @@ for shname in "${file_to_submit[@]}"; do
         sleep 30s
       done
 
-		  qcmd="qsub -V -p -1 -l mem_free=4G -l mem_token=4G -l h_vmem=8G -e $logDir -o $logDir -q all.q $shname"
+		  qcmd="qsub -V -p -1 -l mem_free=$mem_free -l mem_token=$mem_token -l h_vmem=$h_vmem -e $logDir -o $logDir -q all.q $shname"
       qq=`$qcmd` # runs a qsub command
       qt=`echo $qq | awk '{print $3}'`
 
