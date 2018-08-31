@@ -58,8 +58,7 @@ while [[ $currQLength > 0 && shouldWait ]]; do
     currQLength=`njobs $user`
 
     if [[ $currQLength > 0 ]]; then
-      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}`"
-      echo -e "$BLUE_BULLET Jobs remaining: ${currQLength}"
+      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}` | Jobs remaining: ${currQLength}"
       sleep 30s
     else
       echo -e "$GREEN_TICK All jobs completed"
