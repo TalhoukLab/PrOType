@@ -72,10 +72,9 @@ echo -e "$GREEN_TICK Job submission finished. Check status with \"qstat -u ${use
 
 # Step 2: wait until all jobs are complete before proceeding
 
-# Initialize queue length at positive integer
-currQLength=100
+# Initialize queue length at starting number of jobs
 if command -v qsub &>/dev/null; then
-  currQLength=100
+  currQLength=`njobs $user`
 else
   currQLength=0
 fi
