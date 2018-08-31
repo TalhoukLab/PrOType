@@ -6,6 +6,7 @@ function njobs() {
 }
 
 # Elapsed time since first job submitted
+# Reference: https://www.linuxquestions.org/questions/linux-newbie-8/time-difference-calculation-4175459414/
 function elapsed() {
   first=`qstat -u $1 | grep -r ".*$1.*" | awk '{print $7}' | head -n 1`
   now=$(date +"%T")
