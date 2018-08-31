@@ -1,14 +1,19 @@
 #!/bin/bash
 
-# Current number of jobs in queue
-function njobs() {
-  qstat -u $1 | grep -r ".*$1.*" | awk '{print $1}' | wc -l
+# Queue status for user without the column headers
+function qstatu() {
+  qstat -u $1 | grep -r ".*$1.*"
 }
 
-# Elapsed time since first job submitted
+# Current number of jobs in queue for user
+function njobs() {
+  qstatu $1 | wc -l
+}
+
+# Elapsed time since first job submitted for user
 # Reference: https://www.linuxquestions.org/questions/linux-newbie-8/time-difference-calculation-4175459414/
 function elapsed() {
-  first=`qstat -u $1 | grep -r ".*$1.*" | awk '{print $7}' | head -n 1`
+  first=`qstatu $1 | awk "{print $7}" | head -n 1`
   now=$(date +"%T")
   SEC1=`date +%s -d ${first}`
   SEC2=`date +%s -d ${now}`
