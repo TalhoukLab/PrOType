@@ -4,7 +4,7 @@
 function err_msg() {
   err_nfiles=`find $1 -name "*.e*" -type f ! -empty | wc -l`
   err_nlines=`find $1 -name "*.e*" -exec cat {} + | wc -l`
-  if (($err_nfiles > 0)); then
+  if [[ $err_nfiles > 0 ]]; then
     echo -e "$RED_CROSS ${err_nlines} lines written to ${err_nfiles} standard error log files"
   else
     echo -e "$GREEN_TICK ${err_nlines} lines written to standard error log files"
@@ -21,10 +21,15 @@ function njobs() {
   qstatu $1 | wc -l
 }
 
-# Elapsed time since first job submitted for user
+# Elapsed time since first job submitted for user.
+# Total time when last job has completed.
 # Reference: https://www.linuxquestions.org/questions/linux-newbie-8/time-difference-calculation-4175459414/
 function elapsed() {
-  first=`qstatu $1 | awk '{print $7}' | head -n 1`
+  if [[ `njobs $1` > 0 ]]; then
+    first=`qstatu $1 | awk '{print $7}' | head -n 1`
+  else
+    first=$2
+  fi
   now=$(date +"%T")
   SEC1=`date +%s -d ${first}`
   SEC2=`date +%s -d ${now}`
@@ -66,6 +71,8 @@ done
 echo -e "$GREEN_TICK Job submission finished. Check status with \"qstat -u ${user}\""
 
 # Step 2: wait until all jobs are complete before proceeding
+
+# Initialize queue length at positive integer
 currQLength=100
 if command -v qsub &>/dev/null; then
   currQLength=100
@@ -73,14 +80,17 @@ else
   currQLength=0
 fi
 
+# Store start time
+start=$(date +"%T")
+
 while [[ $currQLength > 0 && shouldWait ]]; do
     currQLength=`njobs $user`
 
     if [[ $currQLength > 0 ]]; then
-      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}` | Jobs remaining: ${currQLength}"
+      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user} ${start}` | Jobs remaining: ${currQLength}"
       sleep 30s
     else
-      echo -e "$GREEN_TICK All jobs completed"
+      echo -e "$GREEN_TICK All jobs completed in: `elapsed ${user} ${start}"
     fi
 done
 
