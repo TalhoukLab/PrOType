@@ -1,5 +1,16 @@
 #!/bin/bash
 
+# Dynamic messages about standard error log files
+function err_msg() {
+  err_nfiles=`find $1 -name "*.e*" -type f ! -empty | wc -l`
+  err_nlines=`find $1 -name "*.e*" -exec cat {} + | wc -l`
+  if (($err_nfiles > 0)); then
+    echo -e "$RED_CROSS ${err_nlines} lines written to ${err_nfiles} standard error log files"
+  else
+    echo -e "$GREEN_TICK ${err_nlines} lines written to standard error log files"
+  fi
+}
+
 # Queue status for user without the column headers
 function qstatu() {
   qstat -u $1 | grep -r ".*$1.*"
@@ -72,5 +83,8 @@ while [[ $currQLength > 0 && shouldWait ]]; do
       echo -e "$GREEN_TICK All jobs completed"
     fi
 done
+
+# Step 3: Verbose printouts
+err_msg $logDir
 echo -e "$GREEN_BULLET Logs written to \"${logDir}\""
 echo -e "$GREEN_BULLET Outputs written to \"${outputDir}\""
