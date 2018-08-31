@@ -1,11 +1,9 @@
 args <- commandArgs(trailingOnly = TRUE)
-
 output_file <- args[1]
 source("R/5-gene_selection/scripts/define.R")
 source("R/5-gene_selection/scripts/utils.R")
 
-# Load data----
-# Load the NanoString data and select cut
+# Load data
 nsdat <- load_nanostring()
 
 # Load prediction labels
@@ -19,7 +17,4 @@ train_lab <- train$lab
 
 # Get studies
 studies <- unique(train_dat$site)
-print(studies)
-
 write(studies, sep = "\n", file = output_file)
-#readr::read_csv(paste0(studies, "\n")) %>% readr::write_csv(output_file)
