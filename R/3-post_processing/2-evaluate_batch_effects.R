@@ -59,13 +59,13 @@ for (dataSet in datasets) {
   dev.off()
 
   # Compute PCA Object for first 3 PC's
-  pca3 <- prcomp_n(tdat)
-  saveRDS(pcaa, file.path(outputDir, "evals",
-                          paste0(dataSet, "_pcaa.rds")), compress = "xz")
-  df <- tibble::tibble(batch1 = as.character(cohorts$clust),
-                       batch2 = cohorts$CohortLabel) %>%
-    cbind(pca3)
-  saveRDS(df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
+  pca <- prcomp_n(tdat, n = 3)
+  saveRDS(pca, file.path(outputDir, "evals", paste0(dataSet, "_pca.rds")),
+          compress = "xz")
+  pca_df <- tibble::tibble(batch1 = as.character(cohorts$clust),
+                           batch2 = cohorts$CohortLabel) %>%
+    cbind(pca)
+  saveRDS(pca_df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
 
   # PCA plots
   p1 <- plotly::plot_ly(df, x = ~PC2, y = ~PC1, z = ~PC3, type = "scatter3d",
