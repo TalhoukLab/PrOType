@@ -1,8 +1,18 @@
 #!/bin/bash
 
-# Return number of jobs in queue for user
+# Current number of jobs in queue
 function njobs() {
   qstat -u $1 | grep -r ".*$1.*" | awk '{print $1}' | wc -l
+}
+
+# Elapsed time since first job submitted
+function elapsed() {
+  first=`qstat -u $1 | grep -r ".*$1.*" | awk '{print $7}' | head -n 1`
+  now=$(date +"%T")
+  SEC1=`date +%s -d ${first}`
+  SEC2=`date +%s -d ${now}`
+  DIFFSEC=`expr ${SEC2} - ${SEC1}`
+  date +%H:%M:%S -ud @${DIFFSEC}
 }
 
 # Step 1: Loop over array of shell scripts and submit batch jobs
@@ -44,7 +54,7 @@ else
 fi
 
 while [[ $currQLength > 0 && shouldWait ]]; do
-    echo -e "$BLUE_BULLET Checking queue"
+    echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}`"
     currQLength=`njobs $user`
 
     if [[ $currQLength > 0 ]]; then
