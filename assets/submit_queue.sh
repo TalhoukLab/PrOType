@@ -55,10 +55,10 @@ else
 fi
 
 while [[ $currQLength > 0 && shouldWait ]]; do
-    echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}`"
     currQLength=`njobs $user`
 
     if [[ $currQLength > 0 ]]; then
+      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user}`"
       echo -e "$BLUE_BULLET Jobs remaining: ${currQLength}"
       sleep 30s
     else
