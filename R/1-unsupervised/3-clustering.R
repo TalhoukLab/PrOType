@@ -1,3 +1,4 @@
+`%>%` <- magrittr::`%>%`
 # input fixed cdat,sfdir,r,k
 # input variable algs, seed (s)
 
