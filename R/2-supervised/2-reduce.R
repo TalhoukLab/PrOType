@@ -1,4 +1,3 @@
-library(magrittr)
 #' Mapping to Nanostring
 #'
 #' This script evaluates all the models that were trained on 100 bootstrap
@@ -11,6 +10,7 @@ library(magrittr)
 #' @param outDir directory specifying the output location
 #' @return a data frame containing median and 95% confidence interval
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu.
+`%>%` <- magrittr::`%>%`
 reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
 
   # grep files in directory matching pattern

@@ -1,4 +1,4 @@
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 # list all the files in the path
 fnames <- list.files(path = file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset, "/"))) %>%

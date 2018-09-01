@@ -1,5 +1,5 @@
 # Functions ---------------------------------------------------------------
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 # Create CIs
 create_ci <- function(df, alg) {

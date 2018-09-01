@@ -1,7 +1,7 @@
 # Merge results together to form array
 # Inputs: dir, reps, algs
 
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 multMerge <- function(algs, fnames, newdir) {
   #cli::cat_line(algs, fnames, newdir, reps)

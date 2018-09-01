@@ -16,7 +16,7 @@
 #'   "robust", "tsne", or "largevis". See ?diceR::prepare_data for details.
 #' @return a list of model fits from Spendid
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,

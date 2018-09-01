@@ -1,5 +1,5 @@
 # need dir algs s
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 multMergeCM <- function(algs, fnames, newdir) {
   # Separate the algorithms

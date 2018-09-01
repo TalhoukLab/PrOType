@@ -1,5 +1,5 @@
 # Inputs ------------------------------------------------------------------
-library(magrittr)
+`%>%` <- magrittr::`%>%`
 
 cli::cat_line("Processing:", dataset)
 

@@ -1,5 +1,4 @@
-library(magrittr)
-library(Matrix)
+`%>%` <- magrittr::`%>%`
 
 # inputs: ndat, cons.funs, k, dir
 source(here::here("R/1-unsupervised/utils.R"))
