@@ -15,8 +15,8 @@ for dataset in "${dataSets[@]}"; do
     # Content of R file
     Rname=$workDir/R_file/map/$dataset/map.R
     echo "dataset <- '"$dataset"'" > $Rname
-    echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', '"$dataSet"')" >> $Rname
-    echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', '"$dataSet"')" >> $Rname
+    echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', dataset)" >> $Rname
+    echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', dataset)" >> $Rname
     echo 'shouldCompute <- '$shouldCompute >> $Rname
     echo "source('R/1-unsupervised/2-map_genes.R')" >> $Rname
     echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $Rname
