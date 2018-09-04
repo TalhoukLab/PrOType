@@ -6,18 +6,18 @@
 #' @param x is a data frame with feature as row and sample as column
 #' @param dataSet dataset
 #' @param inDir input directory
-#' @param outDir output directory
+#' @param outputDir output directory
 #' @return a data frame with nanostring probe as feature and same number of
 #'   sample as X
 #' @author Last updated on 27/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 library(magrittr)
 
-map_to_nano <- function(dataSet, outDir, shouldCompute) {
-  tdat <- readr::read_rds(file.path(outDir, "unsupervised", "prep_data", dataSet, paste0("tdat_", dataSet, ".rds")))
+map_to_nano <- function(dataSet, outputDir, shouldCompute) {
+  tdat <- readr::read_rds(file.path(outputDir, "unsupervised", "prep_data", dataSet, paste0("tdat_", dataSet, ".rds")))
   x <- data.frame(t(tdat))
 
-  tdat_mapped_outfile <- file.path(outDir, "unsupervised", "map_genes", dataSet, paste0("tdat_mapped_", dataSet, ".rds"))
-  npcp_out <-  file.path(outDir, "unsupervised", "map_genes", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds"))
+  tdat_mapped_outfile <- file.path(outputDir, "unsupervised", "map_genes", dataSet, paste0("tdat_mapped_", dataSet, ".rds"))
+  npcp_out <-  file.path(outputDir, "unsupervised", "map_genes", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds"))
 
   if (file.exists(tdat_mapped_outfile) && file.exists(npcp_out) && !shouldCompute) {
     cli::cat_line("File already exists. Skipping.")

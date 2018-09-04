@@ -19,9 +19,9 @@ for dataset in "${dataSets[@]}"; do
     # create R script
     echo "source('R/1-unsupervised/2-map_genes.R')" > $Rname
     echo "dataset <- '"$dataset"'" >> $Rname
-    echo "outDir <- '"$outputDir"'" >> $Rname
+    echo "outputDir <- '"$outputDir"'" >> $Rname
     echo 'shouldCompute <- '$shouldCompute >> $Rname
-    echo "map_to_nano(dataset, outDir, shouldCompute)" >> $Rname
+    echo "map_to_nano(dataset, outputDir, shouldCompute)" >> $Rname
 
     # Run Script
     echo "Rscript $Rname" > $shell_file
