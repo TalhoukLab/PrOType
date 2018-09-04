@@ -2,41 +2,44 @@
 
 . ./Parameters.sh
 
-
-##################################################
-########## Execute R scripts for merge ###########
-##################################################
 file_to_submit=()
+
+# Make directories for R script, shell script
+subDir=unsupervised/final
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
-    mkdir -p $workDir/R_file/eval/$dataset
-    mkdir -p $workDir/sh_file/eval/$dataset
+    # Content of R file
+    R_file=$R_dir/$dataset/final_clust.R
+    echo "outputdir <- '"$outputDir"'" > $R_file
+    echo "dataset <- '"$dataset"'" >> $R_file
+    echo "referenceClass <- '"$referenceClass"'" >> $R_file
+    echo 'shouldCompute <- '$shouldCompute >> $R_file
+    echo "source('R/1-unsupervised/7-final_clust.R')" >> $R_file
 
-    R_eval=$workDir/R_file/eval/$dataset/eval_run.R
-    shell_file=$workDir/sh_file/eval/$dataset/eval_run.sh
+    # Content of sh file
+    sh_file=$R_dir/$dataset/final_clust.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
 
-    mkdir -p $outputDir'/unsupervised/final/'$dataset
-
-    # create R script
-    echo "outputdir <- '"$outputDir"'" > $R_eval
-    echo "dataset <- '"$dataset"'" >> $R_eval
-    echo "referenceClass <- '"$referenceClass"'" >> $R_eval
-    echo 'shouldCompute <- '$shouldCompute >> $R_eval
-    echo "source('R/1-unsupervised/7-final_clust.R')" >> $R_eval
-
-    # execute R scripts
-    echo "Rscript $R_eval" > $shell_file
-    chmod +x $shell_file
-
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shell_file)
-        echo -e "$GREEN_TICK Added to queue: $shell_file"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
-        bash $shell_file
+        bash $sh_file
     fi
 done
 
-logDir=$baseLogDir'/unsupervised/finalClust'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
