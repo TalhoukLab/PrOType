@@ -18,7 +18,7 @@ lab <- readRDS(file.path(outputDir, "unsupervised", "final", trainSet,
   dplyr::pull(labels)
 
 # Load models fitted on training set
-all_fits <- list.files(path = file.path(outputDir, "fits"),
+all_fits <- list.files(path = file.path(outputDir, "post_processing", "fits"),
                        full.names = TRUE) %>%
   purrr::set_names(gsub(trainSet, "preds", basename(.))) %>%
   purrr::set_names(gsub("\\.rds", "", names(.))) %>%
