@@ -16,7 +16,7 @@ rfour.type <- readr::read_csv(
 
 # Input file names
 input.file.vec <- list.files(
-  path = file.path(outputDir, "evals"),
+  path = file.path(outputDir, "post_processing", "evals"),
   pattern = "centroid_data_preds.*\\.csv",
   full.names = TRUE
 )
