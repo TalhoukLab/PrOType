@@ -2,21 +2,21 @@
 
 . ./Parameters.sh
 
-mkdir -p $workDir$/R_file/post_processing
-mkdir -p $workDir$/sh_file/post_processing
+mkdir -p $workDir/R_file/post_processing
+mkdir -p $workDir/sh_file/post_processing
 
 mkdir -p $outputDir/post_processing/fits
 mkdir -p $outputDir/post_processing/evals
 mkdir -p $outputDir/post_processing/plots
 mkdir -p $outputDir/post_processing/predictions
 
-Rname0=$workDir$dataSet/R_file/post_processing/check_baseline.R
-Rname1=$workDir$dataSet/R_file/post_processing/plot_iv.R
-Rname2=$workDir$dataSet/R_file/post_processing/validate_overlap_c2.R
+Rname0=$workDir/R_file/post_processing/check_baseline.R
+Rname1=$workDir/R_file/post_processing/plot_iv.R
+Rname2=$workDir/R_file/post_processing/validate_overlap_c2.R
 
-shname0=$workDir$dataSet/sh_file/post_processing/check_baseline.sh
-shname1=$workDir$dataSet/sh_file/post_processing/plot_iv.sh
-shname2=$workDir$dataSet/sh_file/post_processing/validate_overlap_c2.sh
+shname0=$workDir/sh_file/post_processing/check_baseline.sh
+shname1=$workDir/sh_file/post_processing/plot_iv.sh
+shname2=$workDir/sh_file/post_processing/validate_overlap_c2.sh
 
 echo "Rscript $Rname0" > $shname0
 echo "Rscript $Rname1" > $shname1
