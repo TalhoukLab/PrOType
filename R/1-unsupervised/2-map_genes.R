@@ -13,7 +13,7 @@
 #' @author Last updated on 27/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 library(magrittr)
 map_to_nano <- function(dataSet, inputDir, outputDir, shouldCompute) {
-  tdat <- readr::read_rds(inputDir, paste0("tdat_", dataSet, ".rds"))
+  tdat <- readRDS(file.path(inputDir, paste0("tdat_", dataSet, ".rds")))
   x <- data.frame(t(tdat))
 
   tdat_mapped_outfile <- file.path(outputDir,
