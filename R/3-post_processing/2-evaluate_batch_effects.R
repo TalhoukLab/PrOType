@@ -54,7 +54,8 @@ for (dataSet in datasets) {
                              paste0(dataSet, "_pvcaObj.rds")))
 
   # PVCA Plot
-  pdf(file.path(outputDir, "plots", paste0(dataSet, "_pvca.pdf")))
+  pdf(file.path(outputDir, "post_processing", "plots",
+                paste0(dataSet, "_pvca.pdf")))
   pvca_plot(pvcaObj, "#91B0A8", dataSet)
   dev.off()
 
@@ -68,15 +69,21 @@ for (dataSet in datasets) {
   saveRDS(pca_df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
 
   # PCA plots
-  p1 <- plotly::plot_ly(pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
+  p1 <- plotly::plot_ly(data = pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
                         type = "scatter3d", mode = "markers", color = ~batch1)
-  htmlwidgets::saveWidget(p1, file.path(outputDir, "plots",
-                                        paste0(dataSet, "_pcaClust.html")),
-                          selfcontained = FALSE)
+  htmlwidgets::saveWidget(
+    widget = p1,
+    file = file.path(outputDir, "post_processing", "plots",
+                     paste0(dataSet, "_pcaClust.html")),
+    selfcontained = FALSE
+  )
 
-  p2 <- plotly::plot_ly(pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
+  p2 <- plotly::plot_ly(data = pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
                         type = "scatter3d", mode = "markers", color = ~batch2)
-  htmlwidgets::saveWidget(p2, file.path(outputDir, "plots",
-                                        paste0(dataSet, "_pcastudy.html")),
-                          selfcontained = FALSE)
+  htmlwidgets::saveWidget(
+    widget = p2,
+    file = file.path(outputDir, "post_processing", "plots",
+                     paste0(dataSet, "_pcastudy.html")),
+    selfcontained = FALSE
+  )
 }

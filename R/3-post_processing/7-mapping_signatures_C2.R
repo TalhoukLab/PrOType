@@ -28,7 +28,7 @@ Loss <- purrr::list_along(input.file.vec)
 affy.labs <- c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
 
 # Make and Save Plots----
-pdf(file.path(outputDir, "plots", "Cor_w_Sigs_c2.pdf"))
+pdf(file.path(outputDir, "post_processing", "plots", "Cor_w_Sigs_c2.pdf"))
 
 for (k in seq_along(input.file.vec)) {
   # Read input file
