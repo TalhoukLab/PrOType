@@ -51,15 +51,18 @@ suppressMessages({
 
 # Write Full Data (preserve row names with write.csv)
 purrr::iwalk(full_dat, ~ {
-  write.csv(.x, file.path(outputDir, "evals", paste0("full_data_", .y, "_all.csv")))
+  write.csv(.x, file.path(outputDir, "post_processing", "evals",
+                          paste0("full_data_", .y, "_all.csv")))
 })
 
 # Write Full Data clusters
 purrr::iwalk(dat$clusts, ~ {
-  readr::write_csv(.x, file.path(outputDir, "evals", paste0("full_data_", .y, "_clusters.csv")))
+  readr::write_csv(.x, file.path(outputDir, "post_processing", "evals",
+                                 paste0("full_data_", .y, "_clusters.csv")))
 })
 
 # Write Centroid Data
 purrr::iwalk(centroid_dat, ~ {
-  readr::write_csv(.x, file.path(outputDir, "evals", paste0("centroid_data_", .y, ".csv")))
+  readr::write_csv(.x, file.path(outputDir, "post_processing", "evals",
+                                 paste0("centroid_data_", .y, ".csv")))
 })

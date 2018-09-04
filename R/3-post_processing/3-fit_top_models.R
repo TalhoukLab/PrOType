@@ -64,6 +64,6 @@ for (a in seq_along(top_sl_algs)) {
 # Save full model fits
 purrr::iwalk(all_fits,
              ~ saveRDS(.x, file.path(
-               outputDir, "fits",
+               outputDir, "post_processing", "fits",
                paste0(dataset, "_", .y, ".rds")
              )))

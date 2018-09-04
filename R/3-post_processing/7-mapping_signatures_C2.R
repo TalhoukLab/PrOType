@@ -87,4 +87,5 @@ dev.off()
 Loss_df <- Loss %>%
   do.call(rbind, .) %>%
   magrittr::set_rownames(input.file.name)
-saveRDS(Loss_df, file.path(outputDir, "evals", "Loss_df.rds"))
+saveRDS(Loss_df, file.path(outputDir, "post_processing", "evals",
+                           "Loss_df.rds"))

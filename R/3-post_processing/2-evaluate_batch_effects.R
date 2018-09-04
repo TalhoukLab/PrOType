@@ -50,7 +50,7 @@ for (dataSet in datasets) {
 
   # Compute PVCA Object
   pvcaObj <- source_of_var(cohorts, t(tdat), c("clust", "CohortLabel"))
-  saveRDS(pvcaObj, file.path(outputDir, "evals",
+  saveRDS(pvcaObj, file.path(outputDir, "post_processing", "evals",
                              paste0(dataSet, "_pvcaObj.rds")))
 
   # PVCA Plot
@@ -61,12 +61,14 @@ for (dataSet in datasets) {
 
   # Compute PCA Object for first 3 PC's
   pca <- prcomp_n(tdat, n = 3)
-  saveRDS(pca, file.path(outputDir, "evals", paste0(dataSet, "_pca.rds")),
+  saveRDS(pca, file.path(outputDir, "post_processing", "evals",
+                         paste0(dataSet, "_pca.rds")),
           compress = "xz")
   pca_df <- tibble::tibble(batch1 = as.character(cohorts$clust),
                            batch2 = cohorts$CohortLabel) %>%
     cbind(pca)
-  saveRDS(pca_df, file.path(outputDir, "evals", paste0(dataSet, "_pca_df.rds")))
+  saveRDS(pca_df, file.path(outputDir, "post_processing", "evals",
+                            paste0(dataSet, "_pca_df.rds")))
 
   # PCA plots
   p1 <- plotly::plot_ly(data = pca_df, x = ~PC2, y = ~PC1, z = ~PC3,

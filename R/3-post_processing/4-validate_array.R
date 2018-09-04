@@ -19,7 +19,7 @@ data_overlap_array <-
 
 # Predict overlap array samples and combine with published
 cli::cat_line("Predicting overlap array samples")
-pred_dir <- file.path(outputDir, "predictions")
+pred_dir <- file.path(outputDir, "post_processing", "predictions")
 pred_overlap_array <- all_fits %>%
   purrr::map(splendid::prediction, data = data_overlap_array) %>%
   purrr::map(join_published_array, overlap = overlaps) %>%
@@ -30,7 +30,7 @@ saveRDS(pred_overlap_array, file.path(pred_dir, "pred_overlap_array.rds"))
 
 # Evaluate overlap array predictions using splendid and caret
 cli::cat_line("Evaluating overlap array predictions")
-eval_dir <- file.path(outputDir, "evals")
+eval_dir <- file.path(outputDir, "post_processing", "evals")
 eval_overlap_array <- pred_overlap_array %>%
   purrr::map(evaluate_array) %>%
   purrr::iwalk(~ saveRDS(.x, file.path(

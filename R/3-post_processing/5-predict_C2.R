@@ -27,4 +27,5 @@ all_fits <- list.files(path = file.path(outputDir, "fits"),
 # Make predictions on test set
 preds_c2 <- all_fits %>%
   purrr::map_dfc(splendid::prediction, data = npcp_test, class = lab)
-saveRDS(preds_c2, file.path(outputDir, "predictions", paste0(testSet, ".rds")))
+saveRDS(preds_c2, file.path(outputDir, "post_processing", "predictions",
+                            paste0(testSet, ".rds")))
