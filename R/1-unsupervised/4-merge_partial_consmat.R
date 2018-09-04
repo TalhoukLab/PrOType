@@ -3,6 +3,7 @@
 # list all the files in the path
 fnames <- list.files(path = file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset, "/"))) %>%
   gtools::mixedsort()
+r <- (r - 1) %/% 4 + 1
 part <- (r * c - (c - 1)):(r * c)
 algF <- unique(grep(algs, fnames, value = TRUE))
 # Get the seeds
