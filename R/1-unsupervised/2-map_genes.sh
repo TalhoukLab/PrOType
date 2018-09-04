@@ -10,20 +10,19 @@ for dataset in "${dataSets[@]}"; do
 
     mkdir -p $workDir/R_file/map/$dataset
     mkdir -p $workDir/sh_file/map/$dataset
-
-    Rname=$workDir/R_file/map/$dataset/map.R
-    shell_file=$workDir/sh_file/map/$dataset/map.sh
-
     mkdir -p $outputDir'/unsupervised/map_genes/'$dataset
 
-    # create R script
-    echo "source('R/1-unsupervised/2-map_genes.R')" > $Rname
-    echo "dataset <- '"$dataset"'" >> $Rname
-    echo "outputDir <- '"$outputDir"'" >> $Rname
+    # Content of R file
+    Rname=$workDir/R_file/map/$dataset/map.R
+    echo "dataset <- '"$dataset"'" > $Rname
+    echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', '"$dataSet"')" >> $Rname
+    echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', '"$dataSet"')" >> $Rname
     echo 'shouldCompute <- '$shouldCompute >> $Rname
-    echo "map_to_nano(dataset, outputDir, shouldCompute)" >> $Rname
+    echo "source('R/1-unsupervised/2-map_genes.R')" >> $Rname
+    echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $Rname
 
-    # Run Script
+    # Content of sh file
+    shell_file=$workDir/sh_file/map/$dataset/map.sh
     echo "Rscript $Rname" > $shell_file
     chmod +x $shell_file
 
