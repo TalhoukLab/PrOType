@@ -1,7 +1,6 @@
 # Mapping Signatures C2 ---------------------------------------------------
 
 # Load utility functions
-`%>%` <- magrittr::`%>%`
 source(here::here("R/3-post_processing/utils/utils.R"))
 
 # Load data
