@@ -14,7 +14,7 @@ for dataset in "${dataSets[@]}"; do
     Rname=$workDir/R_file/map/$dataset/map.R
     shell_file=$workDir/sh_file/map/$dataset/map.sh
 
-    mkdir -p $outputDir'/genemapping/'$dataset
+    mkdir -p $outputDir'/unsupervised/map_genes/'$dataset
 
     # create R script
     echo "source('R/1-unsupervised/2-map_genes.R')" > $Rname
