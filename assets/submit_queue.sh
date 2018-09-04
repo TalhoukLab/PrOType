@@ -38,7 +38,8 @@ function elapsed() {
 }
 
 # Print number of total jobs to submit
-echo -e "$BLUE_BULLET Total jobs: ${#file_to_submit[@]}"
+jtotal=${#file_to_submit[@]}
+echo -e "$BLUE_BULLET Total jobs: $jtotal"
 
 # Step 1: Loop over array of shell scripts and submit batch jobs
 for shname in "${file_to_submit[@]}"; do
@@ -86,7 +87,7 @@ while [[ $currQLength > 0 && shouldWait ]]; do
     currQLength=`njobs $user`
 
     if [[ $currQLength > 0 ]]; then
-      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user} ${start}` | Jobs remaining: ${currQLength}"
+      echo -e "$BLUE_BULLET Time elapsed: `elapsed ${user} ${start}` | Jobs remaining: ${currQLength}/${jtotal}"
       sleep 30s
     else
       echo -e "$GREEN_TICK All jobs completed in: `elapsed ${user} ${start}`"
