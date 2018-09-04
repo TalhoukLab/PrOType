@@ -4,7 +4,8 @@
 source(here::here("R/3-post_processing/utils/utils.R"))
 
 # Import cut 1 fits on top models
-all_fits <- list.files(file.path(outputDir, "fits"), full.names = TRUE) %>%
+all_fits <- list.files(file.path(outputDir, "post_processing", "fits"),
+                       full.names = TRUE) %>%
   purrr::set_names(stringr::str_remove(basename(.), paste0(trainSet, "_"))) %>%
   purrr::set_names(tools::file_path_sans_ext(names(.))) %>%
   purrr::map(readRDS)
