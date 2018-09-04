@@ -2,8 +2,12 @@
 
 . ./Parameters.sh
 
-mkdir -p $workDir$dataSet/R_file/nanostring
-Rname=$workDir$dataSet/R_file/nanostring/nanostring.R
+mkdir -p $workDir/R_file/nanostring
+
+mkdir -p $outputDir/nanostring/evals
+mkdir -p $outputDir/nanostring/predictions
+
+Rname=$workDir/R_file/nanostring/nanostring.R
 
 echo 'outputDir <- "'$outputDir'"' > $Rname
 echo 'trainSet <- "'$trainSet'"' >> $Rname

@@ -19,4 +19,5 @@ pred_nano <- splendid::prediction(van_mod, nsdat) %>%
   tibble::tibble(ottaID = rownames(nsdat), preds = .) %>%
   `attr<-`("batch", attr(nsdat, "batch"))
 saveRDS(pred_nano,
-        file.path(outputDir, "predictions", "nstring_all_batches.rds"))
+        file.path(outputDir, "nanostring", "predictions",
+                  "nstring_all_batches.rds"))
