@@ -13,7 +13,8 @@ dat_o <- readRDS(file.path(outputDir, "unsupervised", "prep_data", fdat,
                            paste0("cdat_", fdat, ".rds")))
 
 # Obtain predictions
-clusts <- readRDS(file.path(outputDir, "predictions", paste0(fdat, ".rds")))
+clusts <- readRDS(file.path(outputDir, "post_processing", "predictions",
+                            paste0(fdat, ".rds")))
 dat <- clusts %>%
   purrr::map(~ {
     d <- data.frame(C1 = ., dat_o)
