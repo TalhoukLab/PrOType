@@ -11,7 +11,7 @@ dat_tr <- "ov.afc1"
 
 # Choose batch effect correction by highest variance explained by clustering
 top_bcm <- list.files(
-  path = file.path(outputDir, "evals"),
+  path = file.path(outputDir, "post_processing", "evals"),
   pattern = "pvca",
   full.names = TRUE
 ) %>%
