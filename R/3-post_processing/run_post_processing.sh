@@ -31,7 +31,7 @@ echo 'outputDir <- "'$outputDir'"' >> $Rname0
 echo 'dataDir <- "assets/data"' >> $Rname0
 
 echo 'cli::cat_line("Validating baseline results")' >> $Rname0
-echo 'source("R/3-post_processing/0-validate_baseline_results.R")' >> $Rname0
+echo 'source("R/3-post_processing/0-compare_reference.R")' >> $Rname0
 
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' > $Rname1
 echo 'outputDir <- "'$outputDir'"' >> $Rname1
