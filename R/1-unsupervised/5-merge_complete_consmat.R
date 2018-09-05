@@ -1,20 +1,24 @@
-# need dir algs s
 `%>%` <- magrittr::`%>%`
 
-multMergeCM <- function(algs, fnames, newdir) {
-  # Separate the algorithms
-  algF <- unique(grep(algs, fnames, value = TRUE))
-  MetaConsMat <- file.path(newdir, algF) %>% # Read the files
-    purrr::map(readRDS) %>% # Sum the entries of the list
+# Merge consensus matrices across all seeds
+multMergeCM <- function(path, alg) {
+  list.files(path = path, pattern = alg, full.names = TRUE) %>%
+    gtools::mixedsort() %>%
+    purrr::map(readRDS) %>%
     purrr::transpose() %>%
-    purrr::map(~ Reduce(`+`, .))
+    purrr::map(Reduce, f = `+`)
 }
-con_mat_merged_dir <- file.path(outputdir, "unsupervised", "merge_consmat", paste0("con_mat_merged_", dataset))
 
+# Path of partially merged consensus matrices
+consmat_path <- file.path(outputdir, "unsupervised", "merge_consmat",
+                          paste0("con_mat_merged_", dataset))
 
-fnames <- list.files(path = con_mat_merged_dir) %>%
-  gtools::mixedsort() %>%
-  grep(pattern = "^[[:digit:]]", x = ., value = TRUE)
-consmatF <- lapply(algs, multMergeCM, fnames = fnames, newdir = con_mat_merged_dir) %>%
-    unlist(recursive = FALSE)
-saveRDS(consmatF, file.path(outputdir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Final_CM_", dataset, ".rds")))
+# Flatten after merge to get one consensus matrix per algorithm
+consmatF <- algs %>%
+  purrr::map(multMergeCM, path = consmat_path) %>%
+  purrr::flatten()
+
+# Write to file
+saveRDS(consmatF, file.path(outputdir, "unsupervised", "merge",
+                            paste0("data_pr_", dataset),
+                            paste0("Final_CM_", dataset, ".rds")))

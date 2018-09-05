@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputdir <- "'$outputDir'"' >> $R_file1
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file1
     echo 'reps <- '$reps >> $R_file1
-    echo 'k <-'$k >> $R_file1
+    echo 'k <- '$k >> $R_file1
     echo 'shouldCompute <- '$shouldCompute >> $R_file1
     echo 'source("R/1-unsupervised/5-merge_clust.R")' >> $R_file1
 
