@@ -10,6 +10,8 @@ unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
 
 supervised: SLtrain SLreduce trainEval supLearn IVsummary
 
+post_processing: compare plot_iv validation
+
 
 # Part 1: unsupervised learning
 
@@ -67,9 +69,17 @@ IVsummary:
 
 # Part 3: Post-processing
 
-# post-processing for array classifier: plots and validation on overlap
-post_processing:
-	./R/3-post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+# compare reference outputs
+compare:
+	./R/3-post_processing/0-compare_reference.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# internal validity plots
+plot_iv:
+	./R/3-post_processing/1-internal_validity_plots.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# validate overlap array and cut2 samples
+validation:
+	./R/3-post_processing/2-validation.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 4: validate NanoString classifier
