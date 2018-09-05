@@ -15,34 +15,33 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $sh_dir/$dataset
     mkdir -p $outputDir/$subDir'/con_mat_merged_'$dataset
 
-    r=0
-    for s in `seq $c $c $reps`; do
+    for r in `seq 1 $((reps / c))`; do
+    #for s in `seq $c $c $reps`; do
         for i in "${algs[@]}"; do
-            if (($s % $c == 0 )); then
-                r=$((r+1))
+            # Zero-padded iteration of r * c using # digits of reps
+            printf -v s "%0${#reps}d" $((r * c))
 
-                # Content of R file
-                R_file=$R_dir/$dataset/merge_$i$s.R
-                echo 'dataset <- "'$dataset'"' > $R_file
-                echo 'algs <- "'$i'"' >> $R_file
-                echo 'c <- '$c >> $R_file
-                echo 'r <- '$r >> $R_file
-                echo 'reps <- '$reps >> $R_file
-                echo 'k <- '$k >> $R_file
-                echo 'shouldCompute <- '$shouldCompute >> $R_file
-                echo 'outputdir <- "'$outputDir'"' >> $R_file
-                echo 'source("R/1-unsupervised/4-merge_partial_consmat.R")' >> $R_file
+            # Content of R file
+            R_file=$R_dir/$dataset/merge_$i$s.R
+            echo 'dataset <- "'$dataset'"' > $R_file
+            echo 'algs <- "'$i'"' >> $R_file
+            echo 'c <- '$c >> $R_file
+            echo 'r <- '$r >> $R_file
+            echo 'reps <- '$reps >> $R_file
+            echo 'k <- '$k >> $R_file
+            echo 'shouldCompute <- '$shouldCompute >> $R_file
+            echo 'outputdir <- "'$outputDir'"' >> $R_file
+            echo 'source("R/1-unsupervised/4-merge_partial_consmat.R")' >> $R_file
 
-                # Content of sh file
-                sh_file=$sh_dir/$dataset/merge_$i$s.sh
-                echo "Rscript $R_file" > $sh_file
-                chmod +x $sh_file
+            # Content of sh file
+            sh_file=$sh_dir/$dataset/merge_$i$s.sh
+            echo "Rscript $R_file" > $sh_file
+            chmod +x $sh_file
 
-                # Add to queue if qsub exists
-                if command -v qsub &>/dev/null; then
-                    file_to_submit+=($sh_file)
-                    echo -e "$GREEN_TICK Added to queue: $sh_file"
-                fi
+            # Add to queue if qsub exists
+            if command -v qsub &>/dev/null; then
+                file_to_submit+=($sh_file)
+                echo -e "$GREEN_TICK Added to queue: $sh_file"
             fi
         done
     done
