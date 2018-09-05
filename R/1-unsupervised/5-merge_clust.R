@@ -1,15 +1,9 @@
-`%>%` <- magrittr::`%>%`
+source(here::here("R/1-unsupervised/utils.R"))
 
-multMerge <- function(alg, dataset, dir) {
-  # Numerically sorted file names for alg
-  fnames <- list.files(path = dir, pattern = alg, full.names = TRUE) %>%
-    gtools::mixedsort()
-
-  # Extract seeds
-  seeds <- fnames %>%
-    basename() %>%
-    gsub(paste0(".*", alg, "([[:digit:]]+)_", dataset, ".rds"), "\\1", .) %>%
-    as.numeric()
+multMerge <- function(path, alg, dataset) {
+  # Extract seeds to merge
+  fnames <- sort_filenames(path = path, pattern = alg, full.names = TRUE)
+  seeds <- seed_from_file(fnames, alg, dataset)
 
   # Combine reps that succeeded for alg
   Ealg <- fnames %>%
@@ -38,30 +32,30 @@ multMerge <- function(alg, dataset, dir) {
 }
 
 # Write directory
-writedir <- file.path(outputdir, "unsupervised", "merge",
+writeDir <- file.path(outputDir, "unsupervised", "merge",
                       paste0("data_pr_", dataset))
 
 # Merge the raw clustering
 cli::cat_line("Merging raw clustering")
-raw_dir <- file.path(outputdir, "unsupervised", "clustering",
-                     paste0("rds_out_", dataset))
+raw_path <- file.path(outputDir, "unsupervised", "clustering",
+                      paste0("rds_out_", dataset))
 E <- algs %>%
-  purrr::map(multMerge, dataset = dataset, dir = raw_dir) %>%
+  purrr::map(multMerge, path = raw_path, dataset = dataset) %>%
   abind::abind(along = 3)
-saveRDS(E, file = file.path(writedir, paste0("E_", dataset, ".rds")))
+saveRDS(E, file = file.path(writeDir, paste0("E_", dataset, ".rds")))
 
 # Merge KNN-imputed clustering
 cli::cat_line("Merging KNN-imputed clustering")
-imputed_dir <- file.path(outputdir, "unsupervised", "clustering",
-                         paste0("imputed_clust_", dataset))
+imputed_path <- file.path(outputDir, "unsupervised", "clustering",
+                          paste0("imputed_clust_", dataset))
 E_knn <- algs %>%
-  purrr::map(multMerge, dataset = dataset, dir = imputed_dir) %>%
+  purrr::map(multMerge, path = imputed_path, dataset = dataset) %>%
   abind::abind(along = 3)
-saveRDS(E_knn, file = file.path(writedir, paste0("E_knn_", dataset, ".rds")))
+saveRDS(E_knn, file = file.path(writeDir, paste0("E_knn_", dataset, ".rds")))
 
 # Complete clustering by majority vote imputation
 cli::cat_line("Complete clustering")
-cdat <- readRDS(file.path(outputdir, "unsupervised", "prep_data", dataset,
+cdat <- readRDS(file.path(outputDir, "unsupervised", "prep_data", dataset,
                           paste0("cdat_", dataset, ".rds")))
 Ecomp <- diceR::impute_missing(E_knn, data = cdat, nk = k)
-saveRDS(Ecomp, file = file.path(writedir, paste0("Ecomp_", dataset, ".rds")))
+saveRDS(Ecomp, file = file.path(writeDir, paste0("Ecomp_", dataset, ".rds")))

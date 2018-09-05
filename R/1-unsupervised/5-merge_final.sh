@@ -18,7 +18,7 @@ for dataset in "${dataSets[@]}"; do
     # Content of R files
     R_file1=$R_dir/$dataset/merge_final_clust.R
     echo 'dataset <- "'$dataset'"' > $R_file1
-    echo 'outputdir <- "'$outputDir'"' >> $R_file1
+    echo 'outputDir <- "'$outputDir'"' >> $R_file1
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file1
     echo 'reps <- '$reps >> $R_file1
     echo 'k <- '$k >> $R_file1
@@ -27,7 +27,7 @@ for dataset in "${dataSets[@]}"; do
 
     R_file2=$R_dir/$dataset/merge_final_consmat.R
     echo 'dataset <- "'$dataset'"' > $R_file2
-    echo 'outputdir <- "'$outputDir'"' >> $R_file2
+    echo 'outputDir <- "'$outputDir'"' >> $R_file2
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file2
     echo 'shouldCompute <- '$shouldCompute >> $R_file2
     echo 'source("R/1-unsupervised/5-merge_complete_consmat.R")' >> $R_file2

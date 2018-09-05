@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
             # Content of R file
             R_file=$R_dir/$dataset/merge_$i$s.R
             echo 'dataset <- "'$dataset'"' > $R_file
-            echo 'algs <- "'$i'"' >> $R_file
+            echo 'alg <- "'$i'"' >> $R_file
             echo 'c <- '$c >> $R_file
             echo 'r <- '$r >> $R_file
             echo 'reps <- '$reps >> $R_file
