@@ -9,7 +9,7 @@ multMergeCM <- function(algs, fnames, newdir) {
     purrr::transpose() %>%
     purrr::map(~ Reduce(`+`, .))
 }
-con_mat_merged_dir <- file.path(outputdir, "unsupervised", "merge", paste0("con_mat_merged_", dataset))
+con_mat_merged_dir <- file.path(outputdir, "unsupervised", "merge_consmat", paste0("con_mat_merged_", dataset))
 
 
 fnames <- list.files(path = con_mat_merged_dir) %>%
