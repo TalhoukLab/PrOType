@@ -21,5 +21,5 @@ consmat <- file.path(con_mat_dir, paste0("CM_", algs, part_complete, "_", datase
   purrr::transpose() %>%
   purrr::map(~ Reduce(`+`, .))
 
-saveRDS(consmat, file.path(outputdir, "unsupervised", "merge", paste0("con_mat_merged_", dataset), paste0(r, "_", algs, "_consmat_", dataset, ".rds")))
+saveRDS(consmat, file.path(outputdir, "unsupervised", "merge_consmat", paste0("con_mat_merged_", dataset), paste0(r, "_", algs, "_consmat_", dataset, ".rds")))
 cli::cat_line("Finished Writing to file.")
