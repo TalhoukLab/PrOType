@@ -2,54 +2,54 @@
 
 . ./Parameters.sh
 
-##################################################
-########## Execute R scripts for merge ###########
-##################################################
 file_to_submit=()
+
+# Make directories for R script, shell script
+subDir=unsupervised/merge
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-    # get R scripts
-    mkdir -p $workDir/R_file/merge/$dataset
-    mkdir -p $workDir/sh_file/merge/$dataset
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir'/data_pr_'$dataset
 
-    R_merge_final_clust=$workDir/R_file/merge/$dataset/Merge_final_clust.R
-    R_merge_final_consmat=$workDir/R_file/merge/$dataset/Merge_final_consmat.R
+    # Content of R files
+    R_file1=$R_dir/$dataset/merge_final_clust.R
+    echo 'dataset <- "'$dataset'"' > $R_file1
+    echo 'outputdir <- "'$outputDir'"' >> $R_file1
+    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file1
+    echo 'reps <- '$reps >> $R_file1
+    echo 'k <-'$k >> $R_file1
+    echo 'shouldCompute <- '$shouldCompute >> $R_file1
+    echo 'source("R/1-unsupervised/5-merge_clust.R")' >> $R_file1
 
-    mkdir -p $outputDir'/unsupervised/merge/data_pr_'$dataset
+    R_file2=$R_dir/$dataset/merge_final_consmat.R
+    echo 'dataset <- "'$dataset'"' > $R_file2
+    echo 'outputdir <- "'$outputDir'"' >> $R_file2
+    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file2
+    echo 'shouldCompute <- '$shouldCompute >> $R_file2
+    echo 'source("R/1-unsupervised/5-merge_complete_consmat.R")' >> $R_file2
 
-    # Create R scripts
-    echo 'dataset <- "'$dataset'"' > $R_merge_final_clust
-    echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_clust
-    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_clust
-    echo 'reps <- '$reps >> $R_merge_final_clust
-    echo 'k <-'$k >> $R_merge_final_clust
-    echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_clust
-    echo 'source("R/1-unsupervised/5-merge_clust.R")' >> $R_merge_final_clust
+    # Content of sh file
+    sh_file=$sh_dir/$dataset/merge_final.sh
+    echo "Rscript $R_file1" >> $sh_file
+    echo "Rscript $R_file2" >> $sh_file
+    chmod +x $sh_file
 
-    # Create sh scirpts
-    echo 'dataset <- "'$dataset'"' > $R_merge_final_consmat
-    echo 'outputdir <- "'$outputDir'"' >> $R_merge_final_consmat
-    echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_merge_final_consmat
-    echo 'shouldCompute <- '$shouldCompute >> $R_merge_final_consmat
-    echo 'source("R/1-unsupervised/5-merge_complete_consmat.R")' >> $R_merge_final_consmat
-
-    shell_file=$workDir/sh_file/merge/$dataset/merge_final.sh
-
-    echo "echo 'merge_final_clust'" > $shell_file
-    echo "Rscript $R_merge_final_clust" >> $shell_file
-    echo "echo 'merge_final_consmat'" >> $shell_file
-    echo "Rscript $R_merge_final_consmat" >> $shell_file
-
-    chmod +x $shell_file
-
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shell_file)
-        echo -e "$GREEN_TICK Added to queue: $shell_file"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
-        bash $shell_file
+        bash $sh_file
     fi
 done
 
-logDir=$baseLogDir'/unsupervised/merge'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

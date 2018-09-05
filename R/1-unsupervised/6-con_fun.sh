@@ -1,48 +1,42 @@
 #!/bin/bash
 
-##################################################
-############# Input Paremeters for Run ###########
-##################################################
-
 . ./Parameters.sh
 
-# specify consensus metrics to compute
 file_to_submit=()
-##################################################
-############ Execute jobs on cluster #############
-##################################################
+
+# Make directories for R script, shell script
+subDir=unsupervised/consensus
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-
-    mkdir -p $workDir/R_file/consensus/$dataset
-    mkdir -p $workDir/sh_file/consensus/$dataset
-
-    mkdir -p $outputDir'/unsupervised/consensus/'$dataset
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
     for i in "${cons[@]}"; do
-        # execute shell_file to cluster node
+        # Content of R file
+        R_file=$R_dir/$dataset/cons_$i.R
+        echo 'outputDir <- "'$outputDir'"' > $R_file
+        echo 'dataset <- "'$dataset'"' >> $R_file
+        echo 'cons.funs <- "'$i'"'>> $R_file
+        echo "k <- $k" >> $R_file
+        echo 'dir <- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_file
+        echo 'shouldCompute <- '$shouldCompute >> $R_file
+        echo 'source("R/1-unsupervised/6-con_fun.R")' >> $R_file
 
-        # file names
-        R_cons=$workDir/R_file/consensus/$dataset/Create_$i.R
-        sh_cons=$workDir/sh_file/consensus/$dataset/Create_$i.sh
+        # Content of sh file
+        sh_file=$sh_dir/$dataset/cons_$i.sh
+        echo 'Rscript' $R_file > $sh_file
+        chmod +x $sh_file
 
-        mkdir -p $outputDir'/unsupervised/consensus/'$dataset
-
-        # create R scripts
-        echo 'outputDir <- "'$outputDir'"' > $R_cons
-        echo 'dataset <- "'$dataset'"' >> $R_cons
-        echo 'cons.funs <- "'$i'"'>> $R_cons
-        echo "k <- $k" >> $R_cons
-        echo 'dir <- "'$outputDir$dataset'/data_pr_'$dataset'"' >> $R_cons
-        echo 'shouldCompute <- '$shouldCompute >> $R_cons
-        echo 'source("R/1-unsupervised/6-con_fun.R")' >> $R_cons
-
-        # create sh scripts
-        echo 'Rscript' $R_cons > $sh_cons
-        chmod +x $sh_cons
-
+        # Add to queue if qsub exists
         if command -v qsub &>/dev/null; then
-            file_to_submit+=($sh_cons)
-            echo -e "$GREEN_TICK Added to queue: $sh_cons"
+            file_to_submit+=($sh_file)
+            echo -e "$GREEN_TICK Added to queue: $sh_file"
+        else
+            bash $sh_file
         fi
     done
 
@@ -53,7 +47,9 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
-logDir=$baseLogDir'/unsupervised/confun'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
