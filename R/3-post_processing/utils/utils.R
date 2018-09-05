@@ -6,6 +6,36 @@
 source(here::here("assets/utils.R"))
 
 
+# 0 - Compare Reference Outputs -------------------------------------------
+
+#' Compare two objects and show differences if different
+#'
+#' Objects are compared using `all.equal`
+#'
+#' @param path1 path to object 1
+#' @param path2 path to object 2
+#' @param df_set name of objects to compare
+#' @param dataset name of dataset
+check_dataframes <- function(path1, path2, df_set, dataset) {
+  if (file.exists(path1) && file.exists(path2)) {
+    a1 <- readRDS(path1)
+    a2 <- readRDS(path2)
+
+    validation <- all.equal(a1, a2)
+    if (isTRUE(validation)) {
+      cli::cat_line(df_set, " for dataset: ", dataset, " identical")
+    } else {
+      cli::cat_line(df_set, " for dataset: ", dataset, " DIFFERENT")
+      cli::cat_line(validation)
+    }
+  } else if (!file.exists(path1)) {
+    cli::cat_line("Can't check dataset: ", dataset, " missing reference ", df_set)
+  } else if (!file.exists(path2)) {
+    cli::cat_line("Can't check dataset: ", dataset, " missing computed ii ", df_set)
+  }
+}
+
+
 # 1 - Evaluate Batch Effects ----------------------------------------------
 
 #' drop suffix from OTTA ids (last 7 chars)
