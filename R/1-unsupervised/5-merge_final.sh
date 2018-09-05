@@ -34,7 +34,7 @@ for dataset in "${dataSets[@]}"; do
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/merge_final.sh
-    echo "Rscript $R_file1" >> $sh_file
+    echo "Rscript $R_file1" > $sh_file
     echo "Rscript $R_file2" >> $sh_file
     chmod +x $sh_file
 
