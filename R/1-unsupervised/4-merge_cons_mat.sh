@@ -16,7 +16,6 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/$subDir'/con_mat_merged_'$dataset
 
     for r in `seq 1 $((reps / c))`; do
-    #for s in `seq $c $c $reps`; do
         for i in "${algs[@]}"; do
             # Zero-padded iteration of r * c using # digits of reps
             printf -v s "%0${#reps}d" $((r * c))
@@ -28,9 +27,9 @@ for dataset in "${dataSets[@]}"; do
             echo 'c <- '$c >> $R_file
             echo 'r <- '$r >> $R_file
             echo 'reps <- '$reps >> $R_file
-            echo 'k <- '$k >> $R_file
+            echo 'k <- "'$k'"' >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
-            echo 'outputdir <- "'$outputDir'"' >> $R_file
+            echo 'outputDir <- "'$outputDir'"' >> $R_file
             echo 'source("R/1-unsupervised/4-merge_partial_consmat.R")' >> $R_file
 
             # Content of sh file

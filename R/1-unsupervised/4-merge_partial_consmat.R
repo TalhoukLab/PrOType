@@ -1,24 +1,28 @@
 `%>%` <- magrittr::`%>%`
 
-# list all the files in the path
-fnames <- list.files(path = file.path(outputdir, "unsupervised", "clustering", paste0("rds_out_", dataset, "/"))) %>%
+# All raw clustering objects
+fnames <- list.files(path = file.path(outputDir, "unsupervised", "clustering",
+                                      paste0("rds_out_", dataset, "/"))) %>%
   gtools::mixedsort()
-part <- (r * c - (c - 1)):(r * c)
-algF <- unique(grep(algs, fnames, value = TRUE))
-# Get the seeds
-temp <- regmatches(algF, gregexpr("[[:digit:]]+", algF))
-seeds <- as.numeric(purrr::map_chr(temp, `[`, 1))
-part_complete <- seeds[seeds %in% part]
 
+# Extract seeds to merge
+algF <- grep(algs, fnames, value = TRUE)
+seeds <- as.numeric(
+  gsub(paste0(algs, "([[:digit:]]+)_", dataset, ".rds"), "\\1", algF)
+)
+seeds_merge <- (r * c - c + 1):(r * c)
+part_complete <- seeds[seeds %in% seeds_merge]
 
-con_mat_dir <- file.path(outputdir, "unsupervised", "clustering", paste0("con_mat_", dataset))
-consmat <- file.path(con_mat_dir, paste0("CM_", algs, part_complete, "_", dataset, ".rds")) %>%
-  lapply(readRDS) %>%
-  purrr::set_names(part_complete) %>%
-  purrr::map(., ~ purrr::modify_depth(., 2, Matrix::as.matrix)) %>%
-  lapply("[[", as.character(k)) %>%
+# Merge seeds of consensus matrices
+consmat <- file.path(outputDir, "unsupervised", "clustering",
+                     paste0("con_mat_", dataset),
+                     paste0("CM_", algs, part_complete, "_", dataset, ".rds")) %>%
+  purrr::map(~ readRDS(.)[[k]]) %>%
+  purrr::modify_depth(2, Matrix::as.matrix) %>%
   purrr::transpose() %>%
-  purrr::map(~ Reduce(`+`, .))
+  purrr::map(Reduce, f = `+`)
 
-saveRDS(consmat, file.path(outputdir, "unsupervised", "merge_consmat", paste0("con_mat_merged_", dataset), paste0(r, "_", algs, "_consmat_", dataset, ".rds")))
-cli::cat_line("Finished Writing to file.")
+# Write to file
+saveRDS(consmat, file.path(outputDir, "unsupervised", "merge_consmat",
+                           paste0("con_mat_merged_", dataset),
+                           paste0(r, "_", algs, "_consmat_", dataset, ".rds")))
