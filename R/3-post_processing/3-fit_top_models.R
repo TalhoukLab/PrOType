@@ -36,7 +36,7 @@ top_sl_algs <- list.files(
 seed <- readRDS(file.path(dataDir, "seed.rds"))
 
 # Import full normalized data and class labels
-dat <- file.path(outputDir, "genemapping", dataset,
+dat <- file.path(outputDir, "unsupervised", "map_genes", dataset,
                  paste0("npcp-hcNorm_", dat_tr, "_", top_bcm, ".rds")) %>%
   readRDS() %>%
   `rownames<-`(stringr::str_sub(rownames(.), end = -8)) %>%
