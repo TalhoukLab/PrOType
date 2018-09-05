@@ -4,7 +4,7 @@
 source(here::here("R/3-post_processing/utils/utils.R"))
 
 # Test data
-npcp_test <- readRDS(file.path(outputDir, "genemapping", testSet,
+npcp_test <- readRDS(file.path(outputDir, "unsupervised", "map_genes", testSet,
                                paste0("npcp-hcNorm_", testSet, ".rds"))) %>%
   magrittr::set_colnames(make.names(colnames(.)))
 
