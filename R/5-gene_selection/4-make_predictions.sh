@@ -2,41 +2,41 @@
 
 . ./Parameters.sh
 
-echo "Getting Studies"
-Rscript R/5-gene_selection/get_studies.R $outputDir/GeneSelection/tmp/studies.txt
+file_to_submit=()
 
 # Make directories for R script, shell script
-R_dir=$workDir/R_file/gene_selection/predictions
-sh_dir=$workDir/sh_file/gene_selection/predictions
+subDir=gene_selection/predictions
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
 
 # Loop over studies
-file_to_submit=()
-while read study; do
+studies=`Rscript R/5-gene_selection/get_studies.R`
+for study in "${studies[@]}"; do
     # Content of R file
-    R_train=$R_dir/predict_$study.R
-    echo 'study <- "'$study'"' > $R_train
-    echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' >> $R_train
-    echo 'B <- '$numBootstraps >> $R_train
-    echo 'shouldCompute <- '$shouldCompute >> $R_train
-    echo 'outputDir <- "'$outputDir'"' >> $R_train
-    echo 'source("R/5-gene_selection/4-make_predictions.R")' >> $R_train
+    R_file=$R_dir/predict_$study.R
+    echo 'study <- "'$study'"' > $R_file
+    echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' >> $R_file
+    echo 'B <- '$numBootstraps >> $R_file
+    echo 'shouldCompute <- '$shouldCompute >> $R_file
+    echo 'outputDir <- "'$outputDir'"' >> $R_file
+    echo 'source("R/5-gene_selection/4-make_predictions.R")' >> $R_file
 
     # Content of sh file
-    sh_train=$sh_dir/predict_$study.sh
-    echo 'Rscript' $R_train > $sh_train
-    chmod +x $sh_train
+    sh_file=$sh_dir/predict_$study.sh
+    echo 'Rscript' $R_file > $sh_file
+    chmod +x $sh_file
 
     # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($sh_train)
-        echo -e "$GREEN_TICK Added to queue: $sh_train"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     fi
-done < "$outputDir/GeneSelection/tmp/studies.txt"
+done
 
 # Submit to queue if qsub exists, to python otherwise
-logDir=$baseLogDir'/gene_selection/predictions'
+logDir=$baseLogDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else
