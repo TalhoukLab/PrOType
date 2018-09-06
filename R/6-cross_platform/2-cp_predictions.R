@@ -1,5 +1,5 @@
 # Load and map samples and genes between array and NanoString
-source(here::here("R/6-cross_platform/0-map.R"))
+source(here::here("R/6-cross_platform/0-cp_map.R"))
 
 # Read in the model fits
 fits <- readRDS(file.path(outputDir, "gene_selection", "TrainingC1",

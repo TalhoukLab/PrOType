@@ -13,7 +13,7 @@ mkdir -p $outputDir/$subDir
 # Content of R file
 R_file=$R_dir/cp_predictions.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
-echo "source('R/6-cross_platform/2-predictions.R')" >> $R_file
+echo "source('R/6-cross_platform/2-cp_predictions.R')" >> $R_file
 
 # Content of sh file
 sh_file=$sh_dir/cp_predictions.sh

@@ -1,6 +1,6 @@
 # Load and map samples and genes between array and NanoString
 library(ggplot2)
-source(here::here("R/6-cross_platform/0-map.R"))
+source(here::here("R/6-cross_platform/0-cp_map.R"))
 
 input_dir <- file.path(outputDir, "gene_selection", "sumFreq")
 output_dir <- file.path(outputDir, "cross_platform", "analysis")
