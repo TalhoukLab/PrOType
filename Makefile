@@ -12,6 +12,8 @@ supervised: SLtrain SLreduce trainEval supLearn IVsummary
 
 post_processing: compare plot_iv validation
 
+gene_selection: train sum_freqs final_train predict gs_pp part2 final_model
+
 
 # Part 1: unsupervised learning
 
@@ -90,9 +92,26 @@ nanostring:
 
 
 # Part 5: gene selection in full NanoString
-gene_selection:
-	./R/5-gene_selection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
+train:
+	./R/5-gene_selection/1-run_bootstrap.sh $(filter-out $@,$(MAKECMDGOALS))
 
+sum_freqs:
+	./R/5-gene_selection/2-process_bootstrap.sh $(filter-out $@,$(MAKECMDGOALS))
+
+final_train:
+	./R/5-gene_selection/3-run_final_training.sh $(filter-out $@,$(MAKECMDGOALS))
+
+predict:
+	./R/5-gene_selection/4-make_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
+
+gs_pp:
+	./R/5-gene_selection/5-training_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+
+part2:
+	./R/5-gene_selection/6-training_part2.sh $(filter-out $@,$(MAKECMDGOALS))
+
+final_model:
+	./R/5-gene_selection/7-build_final_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Part 6: cross-platform verification
 cross_platform:
