@@ -2,9 +2,8 @@
 library(ggplot2)
 source(here::here("R/6-cross_platform/0-map.R"))
 
-input_dir <- file.path(outputDir, "GeneSelection/output/sumFreq")
-output_dir <- file.path(outputDir, "CrossPlatform/output")
-plot_dir <- file.path(outputDir, "CrossPlatform/plots")
+input_dir <- file.path(outputDir, "gene_selection", "sumFreq")
+output_dir <- file.path(outputDir, "cross_platform", "analysis")
 
 # Determine outliers
 is_outlier <- function(x, y, n = 3) {
@@ -55,14 +54,14 @@ p1 <- ggplot(df_spr, aes(x = nstring.mean, y = array.mean)) +
             colour = "red", size = 3) +
   ggtitle("Nanostring - Array Mean Expression")
 
-ggsave(file.path(plot_dir, "meanexpr.pdf"), p1, width = 7, height = 7)
+ggsave(file.path(output_dir, "meanexpr.pdf"), p1, width = 7, height = 7)
 
 p2 <- ggplot(df_spr, aes(x = concordance_est, y = accuracy)) +
   geom_point() +
   theme_bw() +
   ggtitle("Accuracy and concordance")
 
-ggsave(file.path(plot_dir, "ACCconc.pdf"), p2, width = 7, height = 7)
+ggsave(file.path(output_dir, "ACCconc.pdf"), p2, width = 7, height = 7)
 
 # concordance combination of precision (how tight the points together)
 # and accuracy how close the line is to the identity line
@@ -75,7 +74,7 @@ for (i in seq_len(n_pages)) {
     geom_point() +
     theme_bw() +
     geom_abline(slope = 1, intercept = 0, colour = "blue", size = 1)
-  ggsave(file.path(plot_dir, paste0("bygene_", i, ".pdf")), width = 7, height = 7)
+  ggsave(file.path(output_dir, paste0("bygene_", i, ".pdf")), width = 7, height = 7)
 }
 
 # Reliability summary
