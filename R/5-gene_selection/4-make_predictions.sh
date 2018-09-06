@@ -10,6 +10,7 @@ R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
+mkdir -p $outputDir/$subDir
 
 # Loop over studies
 studies=(`Rscript R/5-gene_selection/get_studies.R`)
@@ -37,6 +38,7 @@ done
 
 # Submit to queue if qsub exists, to python otherwise
 logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else

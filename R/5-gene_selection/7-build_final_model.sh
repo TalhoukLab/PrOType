@@ -2,11 +2,15 @@
 
 . ./Parameters.sh
 
+file_to_submit=()
+
 # Make directories for R script, shell script
-R_dir=$workDir/R_file/gene_selection/build_final_model
-sh_dir=$workDir/sh_file/gene_selection/build_final_model
+subDir=gene_selection/build_final_model
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
+mkdir -p $outputDir/$subDir
 
 # Content of R file
 R_file=$R_dir/build_final_model.R
@@ -19,14 +23,14 @@ echo 'Rscript' $R_file > $sh_file
 chmod +x $sh_file
 
 # Add to queue if qsub exists, submit by python otherwise
-file_to_submit=()
 if command -v qsub &>/dev/null; then
   file_to_submit+=($sh_file)
   echo -e "$GREEN_TICK Added to queue: $sh_file"
 fi
 
 # Submit to queue if qsub exists, to python otherwise
-logDir=$baseLogDir'/gene_selection/build_final_model'
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else
