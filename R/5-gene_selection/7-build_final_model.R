@@ -52,17 +52,18 @@ test3_lab <- test3$lab
 test3_dat <- test3$dat
 
 # Build the final model----
-sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq",
-                              "overallFreqs.csv"),
-                    stringsAsFactors = FALSE) %>%
-  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
-
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
 y <- sl_class(train_lab, x)
-genes <- get_genes(train_dat)
-rf_genes <- make.names(sumFreq$genes)
-final_glist <- head(rf_genes[!rf_genes %in% grm], n_genes) # Final gene list
+sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq",
+                              "overallFreqs.csv"),
+                    stringsAsFactors = FALSE)
+final_glist <- sumFreq %>%
+  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq)) %>%
+  dplyr::pull(genes) %>%
+  make.names() %>%
+  purrr::discard(~ . %in% grm) %>%
+  head(n_genes)
 final_model <- splendid::classification(x[, final_glist], y, algorithms = alg, seed_alg = 2018)
 
 # Test on Overlapping Samples----
