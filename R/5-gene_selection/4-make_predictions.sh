@@ -12,7 +12,7 @@ mkdir -p $R_dir
 mkdir -p $sh_dir
 
 # Loop over studies
-studies=`Rscript R/5-gene_selection/get_studies.R`
+studies=(`Rscript R/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     # Content of R file
     R_file=$R_dir/predict_$study.R

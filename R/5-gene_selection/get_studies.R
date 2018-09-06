@@ -6,4 +6,4 @@ b1 <- readr::read_csv(
   ),
   col_types = readr::cols()
 )
-cat("(", unique(b1[["site"]]), ")\n")
+cat(unique(b1[["site"]]), "\n")
