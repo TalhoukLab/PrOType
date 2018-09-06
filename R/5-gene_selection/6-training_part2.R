@@ -21,8 +21,8 @@ GS_training_files <- c(
 )
 purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
-c1_path <- file.path(outputDir, "GeneSelection/output/TrainingC1")
-plot_dir <- file.path(outputDir, "GeneSelection/plots")
+c1_path <- file.path(outputDir, "gene_selection", "TrainingC1")
+plot_dir <- file.path(outputDir, "gene_selection", "plots")
 
 # Load data----
 # Load the NanoString data and select cut
@@ -57,7 +57,7 @@ study_test1 <- unique(test1_dat$site)
 # Determine Top Genes ----
 cli::cat_line("Determine Top Genes")
 fnames <- list.files(
-  path = file.path(outputDir, "GeneSelection/output/sumFreq"),
+  path = file.path(outputDir, "gene_selection", "sumFreq"),
   pattern = "sumFreq",
   full.names = TRUE
 )
@@ -75,7 +75,7 @@ rf70 <- fnames %>%
   )
 
 # Load the average frequency across all studies
-sumFreq <- read.csv(file.path(outputDir, "GeneSelection/output/sumFreq/overallFreqs.csv"),
+sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq", "overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
   dplyr::arrange(dplyr::desc(rfFreq))
 
@@ -238,7 +238,7 @@ if (refineModel) {
     purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     purrr::map_dbl(purrr::pluck, "overall", "Accuracy")
 
-  pdf(file.path(outputDir, "GeneSelection/plots/Accuracy_alternates.pdf"))
+  pdf(file.path(outputDir, "gene_selection", "plots", "Accuracy_alternates.pdf"))
   plot(
     1:3,
     res_pred,

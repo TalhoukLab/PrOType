@@ -2,7 +2,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
                                 producePlots = TRUE) {
   cli::cat_rule("Evaluating Predictions")
   pred_filenames <-
-    list.files(path = file.path(output_dir, "GeneSelection/output/studyPreds"),
+    list.files(path = file.path(output_dir, "gene_selection", "predictions"),
                full.names = TRUE)
 
   cli::cat_line("Getting training data names")
@@ -31,7 +31,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
     purrr::map(~ t(data.frame(.)))
 
   if (producePlots) {
-    plot_dir <- mkdir(file.path(output_dir, "plots"))
+    plot_dir <- mkdir(file.path(output_dir, "gene_selection", "plots"))
 
     if ("lasso" %in% algs) {
       cli::cat_line("Plotting lasso boxplot")

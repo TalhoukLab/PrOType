@@ -34,7 +34,7 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
                            algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Processing Boot")
   fnames <- list.files(
-    path = file.path(output_dir, "GeneSelection/output/training"),
+    path = file.path(output_dir, "gene_selection", "training"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )
@@ -45,25 +45,25 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
   })
   sumFreq <- data.frame(genes, geneFreq) %>%
     dplyr::arrange(dplyr::desc(rfFreq))
-  sumFreq_dir <- mkdir(file.path(output_dir, "GeneSelection/output/sumFreq"))
+  sumFreq_dir <- mkdir(file.path(output_dir, "gene_selection", "sumFreq"))
   readr::write_csv(sumFreq, file.path(sumFreq_dir, paste0(study, "_sumFreq.csv")))
 }
 
 runFinalTraining <- function(output_dir, study, x, y,
                              algs = c("lasso", "rf", "ada"), seed_alg = 2018) {
   cli::cat_line("Starting Final Training")
-  sumFreq <- readr::read_csv(file.path(output_dir, "GeneSelection/output/sumFreq",
+  sumFreq <- readr::read_csv(file.path(output_dir, "gene_selection", "sumFreq",
                                        paste0(study, "_sumFreq.csv")),
                              col_types = readr::cols())
 
-  final_dir <- mkdir(file.path(output_dir, "GeneSelection/output/finalTraining"))
+  final_dir <- mkdir(file.path(output_dir, "gene_selection", "final_training"))
   args <- tibble::lst(x, y, sumFreq, final_dir, study, seed_alg)
   purrr::walk(algs, ~ purrr::invoke(classify_top_genes, args, alg = .))
 }
 
 classify_top_genes <- function(x, y, sumFreq, outputDir, study, seed_alg, alg,
                                ng = seq(4, 100, 5), shouldCompute=TRUE) {
-  output_file <- file.path(outputDir, "GeneSelection/output/finalTraining", paste0(study, "_final_fit_", alg, ".rds"))
+  output_file <- file.path(outputDir, "gene_selection", "final_training", paste0(study, "_final_fit_", alg, ".rds"))
   if (file.exists(output_file) && !shouldCompute) {
     cli::cat_line("Output already exists.")
   } else {
@@ -84,9 +84,9 @@ classify_top_genes <- function(x, y, sumFreq, outputDir, study, seed_alg, alg,
 makePredictions <- function(output_dir, study, train_dat, train_lab,
                             algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Making Predictions")
-  preds_dir <- mkdir(file.path(output_dir, "GeneSelection/output/studyPreds"))
+  preds_dir <- mkdir(file.path(output_dir, "gene_selection", "predictions"))
   fnames <- list.files(
-    path = file.path(output_dir, "GeneSelection/output/finalTraining"),
+    path = file.path(output_dir, "gene_selection", "final_training"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )

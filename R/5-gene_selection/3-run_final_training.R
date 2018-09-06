@@ -28,7 +28,7 @@ seed_alg <- 2018
 
 cli::cat_line("Running Final Training")
 
-sumFreq <- readr::read_csv(file.path(outputDir, "GeneSelection", "output", "sumFreq", paste0(study, "_sumFreq.csv")),
+sumFreq <- readr::read_csv(file.path(outputDir, "gene_selection", "sumFreq", paste0(study, "_sumFreq.csv")),
                            col_types = readr::cols())
 
 classify_top_genes(x,

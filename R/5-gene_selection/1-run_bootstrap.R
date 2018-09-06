@@ -28,7 +28,7 @@ seed_boot <- 2018
 seed_alg <- 2018
 
 cli::cat_line("Running Bootstrap")
-train_model(file.path(outputDir, "GeneSelection", "output", "training"),
+train_model(file.path(outputDir, "gene_selection", "training"),
             study,
             x,
             y,

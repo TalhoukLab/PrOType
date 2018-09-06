@@ -6,7 +6,7 @@ grm <- "CTHRC1"
 # Load utility functions
 `%>%` <- magrittr::`%>%`
 input_dir <- "assets/data/nstring"
-GS_output_dir <- file.path(outputDir, "GeneSelection/output/finalPredictions")
+GS_output_dir <- file.path(outputDir, "gene_selection", "build_final_model")
 GS_training_dir <- "R/5-gene_selection/scripts"
 GS_training_files <- c(
   "define.R",
@@ -52,7 +52,7 @@ test3_lab <- test3$lab
 test3_dat <- test3$dat
 
 # Build the final model----
-sumFreq <- read.csv(file.path(outputDir, "GeneSelection", "output", "sumFreq",
+sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq",
                               "overallFreqs.csv"),
                     stringsAsFactors = FALSE) %>%
   dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))

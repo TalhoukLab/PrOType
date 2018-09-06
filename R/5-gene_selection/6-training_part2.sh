@@ -5,12 +5,12 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=gene_selection/training_part2
+subDir=gene_selection/TrainingC1
 R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
-mkdir -p $outputDir/plots
+mkdir -p $outputDir/gene_selection/plots
 mkdir -p $outputDir/$subDir
 
 # Content of R file

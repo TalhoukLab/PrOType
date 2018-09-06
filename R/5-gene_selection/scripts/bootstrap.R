@@ -2,7 +2,7 @@ runBootstrap <- function(output_dir, study, x, y, B,
                          algs = c("lasso", "rf", "ada"),
                          seed_boot = 2018, seed_alg = 2018) {
   cli::cat_line("Running Bootstrap")
-  output_dir <- mkdir(file.path(output_dir, "GeneSelection/output/training"))
+  output_dir <- mkdir(file.path(output_dir, "gene_selection", "training"))
   args <- tibble::lst(output_dir, study, x, y, B, seed_boot, seed_alg)
   purrr::walk(algs, ~ purrr::invoke(train_model, args, alg = .))
 }
