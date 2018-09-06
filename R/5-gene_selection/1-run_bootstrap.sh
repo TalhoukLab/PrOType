@@ -17,7 +17,7 @@ studies=(`Rscript R/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     for alg in "${geneSelectionAlgs[@]}"; do
         # Content of R file
-        R_file=$R_dir/boot_$study_$alg.R
+        R_file=$R_dir/boot_${study}_${alg}.R
         echo 'study <- "'$study'"' > $R_file
         echo 'alg <- "'$alg'"' >> $R_file
         echo 'B <- '$numBootstraps >> $R_file
@@ -26,7 +26,7 @@ for study in "${studies[@]}"; do
         echo 'source("R/5-gene_selection/1-run_bootstrap.R")' >> $R_file
 
         # Content of sh file
-        sh_file=$sh_dir/boot_$study_$alg.sh
+        sh_file=$sh_dir/boot_${study}_${alg}.sh
         echo 'Rscript' $R_file > $sh_file
         chmod +x $sh_file
 

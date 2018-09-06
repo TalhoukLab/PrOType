@@ -16,7 +16,7 @@ mkdir -p $outputDir/$subDir
 studies=(`Rscript R/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     # Content of R file
-    R_file=$R_dir/predict_$study.R
+    R_file=$R_dir/predict_${study}.R
     echo 'study <- "'$study'"' > $R_file
     echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' >> $R_file
     echo 'B <- '$numBootstraps >> $R_file
@@ -25,7 +25,7 @@ for study in "${studies[@]}"; do
     echo 'source("R/5-gene_selection/4-make_predictions.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/predict_$study.sh
+    sh_file=$sh_dir/predict_${study}.sh
     echo 'Rscript' $R_file > $sh_file
     chmod +x $sh_file
 
