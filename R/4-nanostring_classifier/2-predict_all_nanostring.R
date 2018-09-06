@@ -6,7 +6,8 @@ source(here::here("R/4-nanostring_classifier/utils/utils.R"))
 # Load vancouver model
 alg <- "adaboost"
 van_mod <-
-  readRDS(file.path(outputDir, "fits", paste0(trainSet, "_", alg, ".rds")))
+  readRDS(file.path(outputDir, "post_processing", "fits",
+                    paste0(trainSet, "_", alg, ".rds")))
 genes <- van_mod[["names"]]
 
 # Load all nanostring data
