@@ -14,6 +14,8 @@ post_processing: compare plot_iv validation
 
 gene_selection: train sum_freqs final_train predict gs_pp part2 final_model
 
+cross_platform: cp_analysis cp_predictions
+
 
 # Part 1: unsupervised learning
 
@@ -113,9 +115,13 @@ part2:
 final_model:
 	./R/5-gene_selection/7-build_final_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
+
 # Part 6: cross-platform verification
-cross_platform:
-	./R/6-cross_platform/run_cross_platform.sh $(filter-out $@,$(MAKECMDGOALS))
+cp_analysis:
+	./R/6-cross_platform/1-cp_analysis.sh $(filter-out $@,$(MAKECMDGOALS))
+
+cp_predictions:
+	./R/6-cross_platform/2-cp_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # ---------- DEBUG CHECKPOINTS ---------
