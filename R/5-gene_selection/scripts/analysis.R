@@ -1,6 +1,6 @@
 runGeneAnalysis <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
-  plot_dir <- file.path(output_dir, "plots")
+  plot_dir <- file.path(output_dir, "GeneSelection", "plots")
   fnames <- list.files(file.path(output_dir, "GeneSelection/output/sumFreq"),
                        pattern = "_sumFreq.csv", full.names = TRUE)
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
