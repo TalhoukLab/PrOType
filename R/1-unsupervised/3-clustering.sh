@@ -1,44 +1,44 @@
 #!/bin/bash
 
-. Parameters.sh
+. ./Parameters.sh
 
-##################################################
-############# Submit jobs to cluster #############
-##################################################
 file_to_submit=()
 
-for dataset in "${dataSets[@]}"; do
-    mkdir -p $workDir/R_file/clust/$dataset
-    mkdir -p $workDir/sh_file/clust/$dataset
+# Make directories for R script, shell script
+subDir=unsupervised/clustering
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
 
-    mkdir -p $outputDir'/unsupervised/clustering/rds_out_'$dataset
-    mkdir -p $outputDir'/unsupervised/clustering/imputed_clust_'$dataset
-    mkdir -p $outputDir'/unsupervised/clustering/con_mat_'$dataset
+for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir'/rds_out_'$dataset
+    mkdir -p $outputDir/$subDir'/imputed_clust_'$dataset
+    mkdir -p $outputDir/$subDir'/con_mat_'$dataset
 
     for s in `seq 1 $reps`; do
         for i in "${algs[@]}"; do
-            # File names for R script, rds output file, shell job script
-
-            R_clust=$workDir/R_file/clust/$dataset/$i$s.R
-            sh_clust=$workDir/sh_file/clust/$dataset/$i$s.sh
-
             # Content of R file
-            echo 'k <-'$k > $R_clust
-            echo 's <-'$s >> $R_clust
-            echo 'algs <- "'$i'"' >> $R_clust
-            echo 'pr <- "cs"' >> $R_clust
-            echo 'dataset <- "'$dataset'"' >> $R_clust
-            echo 'outputdir <- "'$outputDir'"' >> $R_clust
-            echo 'shouldCompute <- '$shouldCompute >> $R_clust
-            echo 'source("R/1-unsupervised/3-clustering.R")' >> $R_clust
+            R_file=$R_dir/$dataset/$i$s.R
+            echo 'k <-'$k > $R_file
+            echo 's <-'$s >> $R_file
+            echo 'algs <- "'$i'"' >> $R_file
+            echo 'pr <- "cs"' >> $R_file
+            echo 'dataset <- "'$dataset'"' >> $R_file
+            echo 'outputdir <- "'$outputDir'"' >> $R_file
+            echo 'shouldCompute <- '$shouldCompute >> $R_file
+            echo 'source("R/1-unsupervised/3-clustering.R")' >> $R_file
 
             # Content of sh file
-            echo 'Rscript' $R_clust > $sh_clust
-            chmod +x $sh_clust
+            sh_file=$sh_dir/$dataset/$i$s.sh
+            echo "Rscript $R_file" > $sh_file
+            chmod +x $sh_file
 
+            # Add to queue if qsub exists
             if command -v qsub &>/dev/null; then
-                file_to_submit+=($sh_clust)
-                echo -e "$GREEN_TICK Added to queue: $sh_clust"
+                file_to_submit+=($sh_file)
+                echo -e "$GREEN_TICK Added to queue: $sh_file"
             fi
         done
     done
@@ -46,12 +46,13 @@ for dataset in "${dataSets[@]}"; do
     if command -v qsub &>/dev/null; then
         :
     else
-        chmod +x assets/submit_local.py
         python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step clust
     fi
 done
 
-logDir=$baseLogDir'/unsupervised/clustering'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

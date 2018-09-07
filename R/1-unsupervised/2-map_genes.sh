@@ -2,38 +2,44 @@
 
 . ./Parameters.sh
 
-#************************************************
-#************* create mapping scripts ***********
-#************************************************
 file_to_submit=()
-for dataset in "${dataSets[@]}"; do
 
-    mkdir -p $workDir/R_file/map/$dataset
-    mkdir -p $workDir/sh_file/map/$dataset
-    mkdir -p $outputDir'/unsupervised/map_genes/'$dataset
+# Make directories for R script, shell script
+subDir=unsupervised/map_genes
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
+for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
     # Content of R file
-    Rname=$workDir/R_file/map/$dataset/map.R
-    echo "dataset <- '"$dataset"'" > $Rname
-    echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', dataset)" >> $Rname
-    echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', dataset)" >> $Rname
-    echo 'shouldCompute <- '$shouldCompute >> $Rname
-    echo "source('R/1-unsupervised/2-map_genes.R')" >> $Rname
-    echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $Rname
+    R_file=$R_dir/$dataset/map_genes.R
+    echo "dataset <- '"$dataset"'" > $R_file
+    echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', dataset)" >> $R_file
+    echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', dataset)" >> $R_file
+    echo 'shouldCompute <- '$shouldCompute >> $R_file
+    echo "source('R/1-unsupervised/2-map_genes.R')" >> $R_file
+    echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $R_file
 
     # Content of sh file
-    shell_file=$workDir/sh_file/map/$dataset/map.sh
-    echo "Rscript $Rname" > $shell_file
-    chmod +x $shell_file
+    sh_file=$sh_dir/$dataset/map_genes.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
 
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shell_file)
-        echo -e "$GREEN_TICK Added to queue: $shell_file"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     fi
 done
 
+# Submit to queue if qsub exists
 shouldWait=FALSE
-logDir=$baseLogDir'/unsupervised/map_genes'
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

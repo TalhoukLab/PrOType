@@ -48,7 +48,7 @@ for dataset in "${dataSets[@]}"; do
     if command -v qsub &>/dev/null; then
         :
     else
-      python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step merge
+        python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step merge
     fi
 done
 

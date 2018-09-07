@@ -4,30 +4,31 @@
 
 echo 'Preparing data'
 
+# Make directories for R script, shell script
+subDir=unsupervised/prep_data
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-
-    echo 'Creating directories for dataset '$dataset
-
-    mkdir -p $workDir'/R_file/prep/'$dataset
-    mkdir -p $workDir'/sh_file/prep/'$dataset
-
-    datadir=$outputDir'/unsupervised/prep_data/'$dataset
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    datadir=$outputDir/$subDir/$dataset
     mkdir -p $datadir
 
-    # File names for R script, rds output file, shell job script
-    Rname=$workDir/R_file/prep/$dataset/prep.R
-    shname=$workDir/sh_file/prep/$dataset/prep.sh
-
     # Content of R file
-    echo 'pr <- "cs"' > $Rname
-    echo 'dataset <- "'$dataset'"' >> $Rname
-    echo 'datadir <- "'$datadir'"' >> $Rname
-    echo 'dpath <- "'$inputDir'"' >> $Rname
-    echo 'source("R/1-unsupervised/1-prep_data.R")' >> $Rname
+    R_file=$R_dir/$dataset/prep_data.R
+    echo 'pr <- "cs"' > $R_file
+    echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'datadir <- "'$datadir'"' >> $R_file
+    echo 'dpath <- "'$inputDir'"' >> $R_file
+    echo 'source("R/1-unsupervised/1-prep_data.R")' >> $R_file
 
-    echo 'Rscript' $Rname > $shname
-    chmod +x $shname
-    $shname
+    # Content of sh file
+    sh_file=$sh_dir/$dataset/prep_data.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
+    $sh_file
 
     echo -e "$GREEN_TICK Data preparation completed for dataset $dataset"
 done
