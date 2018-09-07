@@ -33,7 +33,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
 
   # import training data and final cluster assignments
   cli::cat_line("Reading training data:", algs, "-", reps)
-  npcp <-  readr::read_rds(file.path(outDir, "genemapping", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds")))
+  npcp <-  readr::read_rds(file.path(outDir, "unsupervised", "map_genes", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds")))
   class <- readr::read_rds(file.path(outDir, "unsupervised", "final", dataSet, paste0("all_clusts_", dataSet, ".rds")))
   class.train <- class[["kmodes"]]
 
