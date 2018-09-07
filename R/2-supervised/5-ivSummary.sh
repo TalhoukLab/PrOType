@@ -3,46 +3,47 @@
 . ./Parameters.sh
 
 file_to_submit=()
+
+# Make directories for R script, shell script
+subDir=supervised/iv_summary
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir
 
-	# create scripts and directories
-	mkdir -p $workDir/R_file/supervised/$dataset
-	mkdir -p $workDir/sh_file/supervised/$dataset
+    # Content of R file
+    R_file=$R_dir/$dataset/iv_summary.R
+    echo 'outputDir <- "'$outputDir'"' > $R_file
+    echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'source("R/2-supervised/5-ivSummary.R")' >> $R_file
 
-	Rname=$workDir/R_file/supervised/$dataset/iv.R
-	shname=$workDir/sh_file/supervised/$dataset/iv.sh
+    # Content of sh file
+    sh_file=$sh_dir/$dataset/iv_summary.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
 
-  mkdir -p $outputDir'/supervised/summary/'$dataset
-
-	echo 'outputDir <- "'$outputDir'"' > $Rname
-	echo 'dataset <- "'$dataset'"' >> $Rname
-
-	echo 'source("R/2-supervised/5-ivSummary.R")' >> $Rname
-
-	echo "Rscript $Rname" > $shname
-	chmod +x $shname
-
-	# execute shell script to queue
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shname)
-        echo -e "$GREEN_TICK Added to queue: $shname"
+       file_to_submit+=($sh_file)
+       echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
-        bash $shname
+       bash $sh_file
     fi
 done
 
-logDir=$baseLogDir'/supervised/ivSummary'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
 
-# *************************************************************************
-# Step 3: combine all IV tables into one
-# *************************************************************************
-# create scripts and directories
-mkdir -p $workDir'/R_file/supervised'
-R_combine_name=$workDir'/R_file/supervised/combine.R'
-
-echo 'outputDir <- "'$outputDir'"' >> $R_combine_name
-echo "source('R/2-supervised/5-ivCombine.R')" >> $R_combine_name
-Rscript $R_combine_name
+# Combine all IV summaries
+R_file=$R_dir/iv_combine.R
+echo 'outputDir <- "'$outputDir'"' > $R_file
+echo "source('R/2-supervised/5-ivCombine.R')" >> $R_file
+Rscript $R_file

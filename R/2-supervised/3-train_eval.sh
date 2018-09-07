@@ -2,48 +2,53 @@
 
 . ./Parameters.sh
 
-# extract correct Model directories
-if [ "$normalizeBy" = "Genes" ];
-then
-	mname='Model-hc-genes'
-elif [ "$normalizeBy" = "Samples" ];
-then
-	mname='Model-hc-samples'
-elif [ "$normalizeBy" = "None" ];
-then
-	mname='Model-hc'
+# Normalization type
+if [ "$normalizeBy" = "Genes" ]; then
+    mname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ]; then
+    mname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ]; then
+    mname='Model-hc'
 else
-	echo "A normalization of type Genes, Samples or None must be specified"
+    echo "A normalization of type Genes, Samples or None must be specified"
+    exit 1
 fi
 
+# Make directories for R script, shell script
+subDir=supervised/train_eval
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-    # create R script
-    mkdir -p $workDir/sh_file/train/$dataset
-    mkdir -p $workDir/R_file/train/$dataset
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir
 
-    mkdir -p $outputDir'/supervised/train_eval'
+    # Content of R file
+    R_file=$R_dir/$dataset/train_eval.R
+    echo 'outputDir <- "'$outputDir'"' > $R_file
+    echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'mname <- "'$mname'"' >> $R_file
+    echo 'source("R/2-supervised/3-train_eval.R")' >> $R_file
 
-    Rname=$workDir/R_file/train/$dataset/train_eval.R
-    shell_file=$workDir/sh_file/train/$dataset/train.sh
+    # Content of sh file
+    sh_file=$sh_dir/$dataset/train_eval.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
 
-    echo 'outputDir <- "'$outputDir'"' > $Rname
-    echo 'dataset <- "'$dataset'"' >> $Rname
-    echo 'mname <- "'$mname'"' >> $Rname
-    echo 'source("R/2-supervised/3-train_eval.R")' >> $Rname
-
-    # Run Script
-    echo "Rscript $Rname" > $shell_file
-    chmod +x $shell_file
-
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shell_file)
-        echo -e "$GREEN_TICK Added to queue: $shell_file"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
         bash $shell_file
     fi
 done
 
-logDir=$baseLogDir'/supervised/train_eval'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

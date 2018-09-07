@@ -2,56 +2,60 @@
 
 . ./Parameters.sh
 
-# create R and sh scripts
 file_to_submit=()
-for dataset in "${dataSets[@]}"; do
-    # extract correct Model directories
-    if [ "$normalizeBy" = "Genes" ];
-    then
-        fname='Model-hc-genes'
-    elif [ "$normalizeBy" = "Samples" ];
-    then
-        fname='Model-hc-samples'
-    elif [ "$normalizeBy" = "None" ];
-    then
-        fname='Model-hc'
-    else
-        echo "A normalization of type Genes, Samples or None must be specified"
-    fi
 
-    mkdir -p $outputDir'/supervised/reduce/'$fname'_'$dataset
+# Normalization type
+if [ "$normalizeBy" = "Genes" ]; then
+    fname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ]; then
+    fname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ]; then
+    fname='Model-hc'
+else
+    echo "A normalization of type Genes, Samples or None must be specified"
+    exit 1
+fi
+
+# Make directories for R script, shell script
+subDir=supervised/reduce
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
+for dataset in "${dataSets[@]}"; do
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir/$fname'_'$dataset
 
     for i in "${supervisedAlgs[@]}"; do
-        mkdir -p $workDir/R_file/reduce/$dataset
-        mkdir -p $workDir/sh_file/reduce/$dataset
+        # Content of R file
+        R_file=$R_dir/$dataset/reduce_$i.R
+        echo 'outDir <- "'$outputDir'"' > $R_file
+        echo 'dataSet <- "'${dataset// /'"','"'}'"' >> $R_file
+        echo 'alg <- "'$i'"' >> $R_file
+        echo 'fname <- "'$fname'"' >> $R_file
+        echo 'threshold <- "'$threshold'"' >> $R_file
+        echo 'source("R/2-supervised/2-reduce.R")' >> $R_file
+        echo 'reduce_supervised(dataSet, alg, outDir, fname, threshold)' >> $R_file
 
-        Rname=$workDir/R_file/reduce/$dataset/reduce_$i.R
-        shell_file=$workDir/sh_file/reduce/$dataset/reduce_$i.sh
+        # Content of sh file
+        sh_file=$sh_dir/$dataset/reduce_$i.sh
+        echo 'Rscript' $R_file > $sh_file
+        chmod +x $sh_file
 
-        #Content of R file
-        echo 'outDir <- "'$outputDir'"' > $Rname
-        echo 'dataSet <- "'${dataset// /'"','"'}'"' >> $Rname
-        echo 'alg <- "'$i'"' >> $Rname
-        echo 'fname <- "'$fname'"' >> $Rname
-        echo 'threshold <- "'$threshold'"' >> $Rname
-        echo 'source("R/2-supervised/2-reduce.R")' >> $Rname
-        echo 'reduce_supervised(dataSet, alg, outDir, fname, threshold)' >> $Rname
-
-        # Content of shell script
-        echo 'Rscript' $Rname > $shell_file
-
-        chmod +x $shell_file
-
+        # Add to queue if qsub exists
         if command -v qsub &>/dev/null; then
-            file_to_submit+=($shell_file)
-            echo -e "$GREEN_TICK Added to queue: $shell_file"
+            file_to_submit+=($sh_file)
+            echo -e "$GREEN_TICK Added to queue: $sh_file"
         else
-            bash $shell_file
+            bash $sh_file
         fi
     done
 done
 
-logDir=$baseLogDir'/supervised/reduce'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

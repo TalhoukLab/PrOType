@@ -3,38 +3,44 @@
 . ./Parameters.sh
 
 file_to_submit=()
+
+# Make directories for R script, shell script
+subDir=supervised/ci_sup_lrn
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-
     data_sets=${dataset// /'"','"'}
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir
 
-    # create R script
-    mkdir -p $workDir/R_file/CIsuplearn/$dataset
-    mkdir -p $workDir/sh_file/CIsuplearn/$dataset
+    # Content of R file
+    R_file=$R_dir/$dataset/ci_sup_lrn.R
+    echo 'outputDir <- "'$outputDir'"' > $R_file
+    echo 'fdat <- c("'$data_sets'")' >> $R_file
+    echo "top <- $top" >> $R_file
+    echo 'source("R/2-supervised/4-CIsupLearn.R")' >> $R_file
 
-    Rname=$workDir/R_file/CIsuplearn/$dataset/CIsupLearn.R
-    shell_file=$workDir/sh_file/CIsuplearn/$dataset/CIsupLearn.sh
+    # Content of sh file
+    sh_file=$sh_dir/$dataset/ci_sup_lrn.sh
+    echo "Rscript $R_file" > $sh_file
+    chmod +x $sh_file
 
-    mkdir -p $outputDir'/supervised/ci_sup_lrn/'
-
-    echo 'outputDir <- "'$outputDir'"' > $Rname
-    echo 'fdat <- c("'$data_sets'")' >> $Rname
-    echo "top <- $top" >> $Rname
-    echo 'source("R/2-supervised/4-CIsupLearn.R")' >> $Rname
-
-    # Run Script
-    echo "Rscript $Rname" > $shell_file
-    chmod +x $shell_file
-
+    # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit+=($shell_file)
-        echo -e "$GREEN_TICK Added to queue: $shell_file"
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
-        bash $shell_file
+        bash $sh_file
     fi
 done
 
+# Submit to queue if qsub exists
 shouldWait=FALSE
-logDir=$baseLogDir'/supervised/CIsupLearn'
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi

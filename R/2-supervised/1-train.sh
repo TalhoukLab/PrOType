@@ -2,57 +2,58 @@
 
 . ./Parameters.sh
 
-# specify algs
 file_to_submit=()
+
+# Normalization type
+if [ "$normalizeBy" = "Genes" ]; then
+    fname='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ]; then
+    fname='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ]; then
+    fname='Model-hc'
+else
+    echo "A normalization of type Genes, Samples or None must be specified"
+    exit 1
+fi
+
+# Make directories for R script, shell script
+subDir=supervised/train
+R_dir=$workDir/R_file/$subDir
+sh_dir=$workDir/sh_file/$subDir
+
 for dataset in "${dataSets[@]}"; do
-    # build directories
-
-    if [ "$normalizeBy" = "Genes" ];
-    then
-        fname='Model-hc-genes'
-    elif [ "$normalizeBy" = "Samples" ];
-    then
-        fname='Model-hc-samples'
-    elif [ "$normalizeBy" = "None" ];
-    then
-        fname='Model-hc'
-    else
-        echo "A normalization of type Genes, Samples or None must be specified"
-    fi
-
-    mkdir -p $outputDir'/supervised/train/'$fname'_'$dataset
+    # Make job and output directories for dataset
+    mkdir -p $R_dir/$dataset
+    mkdir -p $sh_dir/$dataset
+    mkdir -p $outputDir/$subDir/$fname'_'$dataset
 
     for s in `seq 1 $supervised_reps`; do
         for i in "${supervisedAlgs[@]}"; do
-            #File names for R script, rds output file, shell job script
-            mkdir -p $workDir/R_file/train/$dataset
-            mkdir -p $workDir/sh_file/train/$dataset
+            # Content of R file
+            R_file=$R_dir/$dataset/$i$s.R
+            echo 'dataSet <- "'$dataset'"' > $R_file
+            echo 'reps <- '$s >> $R_file
+            echo 'algs <- "'$i'"' >> $R_file
+            echo 'inDir <- "'$outputDir$dataset'"' >> $R_file
+            echo 'outDir <- "'$outputDir'"' >> $R_file
+            echo 'normalizeBy <- "'$normalizeBy'"' >> $R_file
+            echo "minVar <- '$minVar'" >> $R_file
+            echo 'normType <- "'$normType'"' >> $R_file
+            echo 'fname <- "'$fname'"' >> $R_file
+            echo 'threshold <- '$threshold >> $R_file
+            echo 'shouldCompute <- '$shouldCompute >> $R_file
+            echo 'source("R/2-supervised/1-train.R")' >> $R_file
+            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_file
 
-            R_train=$workDir/R_file/train/$dataset/$i$s$t.R
-            sh_train=$workDir/sh_file/train/$dataset/$i$s$t.sh
+            # Content of sh file
+            sh_file=$sh_dir/$dataset/$i$s.sh
+            echo 'Rscript' $R_file > $sh_file
+            chmod +x $sh_file
 
-            #Content of R file
-            echo 'dataSet <- "'$dataset'"' > $R_train
-            echo 'reps <- '$s >> $R_train
-            echo 'algs <- "'$i'"' >> $R_train
-            echo 'inDir <- "'$outputDir$dataset'"' >> $R_train
-            echo 'outDir <- "'$outputDir'"' >> $R_train
-            echo 'normalizeBy <- "'$normalizeBy'"' >> $R_train
-            echo "minVar <- '$minVar'" >> $R_train
-            echo 'normType <- "'$normType'"' >> $R_train
-            echo 'fname <- "'$fname'"' >> $R_train
-            echo 'threshold <- '$threshold >> $R_train
-            echo 'shouldCompute <- '$shouldCompute >> $R_train
-            echo 'source("R/2-supervised/1-train.R")' >> $R_train
-            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_train
-
-            # contents of sh file
-            echo 'Rscript' $R_train > $sh_train
-            chmod +x $sh_train
-
+            # Add to queue if qsub exists
             if command -v qsub &>/dev/null; then
-                file_to_submit+=($sh_train)
-                echo -e "$GREEN_TICK Added to queue: $sh_train"
+                file_to_submit+=($sh_file)
+                echo -e "$GREEN_TICK Added to queue: $sh_file"
             fi
         done
     done
@@ -64,7 +65,9 @@ for dataset in "${dataSets[@]}"; do
     fi
 done
 
-logDir=$baseLogDir'/supervised/training'
+# Submit to queue if qsub exists
+logDir=$baseLogDir/$subDir
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
