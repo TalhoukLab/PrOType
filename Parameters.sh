@@ -26,7 +26,7 @@ trainSet2="ov.afc1_cbt"
 testSet="ov.afc2_xpn"
 
 # Gene Selection
-numBootstraps=5 # 500
+numBootstraps=500
 
 # directory inputs
 workDir="/extscratch/shahlab/huntsman/dchiu/workDir_cleanup"
