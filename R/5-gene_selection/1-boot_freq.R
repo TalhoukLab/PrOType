@@ -38,5 +38,11 @@ if (file.exists(output_file) && !shouldCompute) {
   mods <- purrr::pluck(fit, "models")
   freq <- gene_freq(mods, alg, genes, B, ntop)
   readr::write_csv(freq, output_file)
+  if (alg == "lasso") {
+    lasso_by_class <- lasso_freq(fit, genes)
+    readr::write_csv(lasso_by_class,
+                     file.path(outputDir, "gene_selection", "boot_freq",
+                               paste0(study, "_lasso_by_class_freq.csv")))
+  }
 }
 cli::cat_line("Completed ", alg, " bootstrap frequencies")

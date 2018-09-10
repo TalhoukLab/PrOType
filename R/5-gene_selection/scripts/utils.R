@@ -127,6 +127,22 @@ gene_freq <- function(fit, alg, genes, B, ntop = 100) {
     data.frame(genes, .)
 }
 
+# Bootstrap frequencies for each class in lasso
+lasso_freq <- function(fit, genes) {
+  fit %>%
+    purrr::pluck("models", "mlr_lasso") %>%
+    purrr::map(~ {
+      purrr::map2(.[["glmnet.fit"]][["beta"]],
+                  which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
+                  ~ names(which(.x[, .y] != 0)))
+    })
+  by_class <- fit %>%
+    purrr::map(~ purrr::map_dfc(., ~ ifelse(genes %in% ., 1, 0))) %>%
+    purrr::map(function(x) x / length(.)) %>%
+    purrr::reduce(`+`) %>%
+    magrittr::set_rownames(genes)
+}
+
 #******************************************************************
 #Function to determine which genes were used in training
 # Inputs: model fit and algorithm
