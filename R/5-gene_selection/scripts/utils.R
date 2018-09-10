@@ -92,14 +92,14 @@ gene_freq <- function(fit, genes, B) {
     adaboost = {
       order.g <- fit[[alg]] %>%
         purrr::map(~ {
-          .$names <- make.names(.$names)
           maboost::varplot.maboost(.,
                                    plot.it = FALSE,
                                    type = "scores",
-                                   max.var.show = 454)
+                                   max.var.show = 100) %>%
+            names()
         })
       freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% names(tail(., 100)), 1, 0)) %>%
+        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
         dplyr::transmute(adaFreq = purrr::pmap_dbl(., sum))
     },
     mlr_lasso = {
@@ -109,9 +109,10 @@ gene_freq <- function(fit, genes, B) {
                       which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
                       ~ names(which(.x[, .y] != 0)))
         }) %>%
-        purrr::map(Reduce, f = union)
+        purrr::map(purrr::reduce, union) %>%
+        purrr::map(head, 100)
       freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% head(., 100), 1, 0)) %>%
+        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
         dplyr::transmute(lassoFreq = purrr::pmap_dbl(., sum))
     },
     rf = {
@@ -122,12 +123,13 @@ gene_freq <- function(fit, genes, B) {
           } else if (inherits(., "train")) {
             importance <- .[["finalModel"]][["importance"]]
           }
-          data.frame(importance) %>%
-            tibble::rownames_to_column("topVars") %>%
-            dplyr::arrange(dplyr::desc(MeanDecreaseGini))
+          importance %>%
+            magrittr::extract(order(., decreasing = TRUE), ) %>%
+            head(100) %>%
+            names()
         })
       freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% head(.[["topVars"]], 100), 1, 0)) %>%
+        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
         dplyr::transmute(rfFreq = purrr::pmap_dbl(., sum))
     })
   res / B
