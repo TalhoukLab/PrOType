@@ -12,7 +12,7 @@ supervised: SLtrain SLreduce trainEval supLearn IVsummary
 
 post_processing: compare plot_iv validation
 
-gene_selection: train sum_freqs final_train predict gs_pp part2 final_model
+gene_selection: boot_freq sum_freq final_train predict gs_pp part2 final_model
 
 cross_platform: cp_analysis cp_predictions
 
@@ -94,11 +94,11 @@ nanostring:
 
 
 # Part 5: gene selection in full NanoString
-train:
-	./R/5-gene_selection/1-run_bootstrap.sh $(filter-out $@,$(MAKECMDGOALS))
+boot_freq:
+	./R/5-gene_selection/1-boot_freq.sh $(filter-out $@,$(MAKECMDGOALS))
 
-sum_freqs:
-	./R/5-gene_selection/2-process_bootstrap.sh $(filter-out $@,$(MAKECMDGOALS))
+sum_freq:
+	./R/5-gene_selection/2-sum_freq.sh $(filter-out $@,$(MAKECMDGOALS))
 
 final_train:
 	./R/5-gene_selection/3-run_final_training.sh $(filter-out $@,$(MAKECMDGOALS))

@@ -27,18 +27,16 @@ ntop <- 100
 seed_boot <- 2018
 seed_alg <- 2018
 
-cli::cat_line("Running Bootstrap")
-train_model(
-  file.path(outputDir, "gene_selection", "training"),
-  study,
-  x,
-  y,
-  genes,
-  B,
-  ntop,
-  alg,
-  seed_boot,
-  seed_alg,
-  shouldCompute
-)
-cli::cat_line("Finished Bootstrap")
+output_file <- file.path(outputDir, "gene_selection", "boot_freq",
+                         paste0(study, "_freq_", alg, ".csv"))
+if (file.exists(output_file) && !shouldCompute) {
+  cli::cat_line("Output already exists.")
+} else {
+  cli::cat_line("Training ", alg,  " model")
+  fit <- splendid::splendid_model(x, y, match_alg(alg), B, seed_boot, seed_alg)
+  cli::cat_line("Calculating ", alg, " bootstrap frequencies")
+  mods <- purrr::pluck(fit, "models")
+  freq <- boot_freq(mods, alg, genes, B, ntop)
+  readr::write_csv(freq, output_file)
+}
+cli::cat_line("Completed ", alg, " bootstrap frequencies")

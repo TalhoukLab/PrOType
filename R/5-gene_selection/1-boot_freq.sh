@@ -5,12 +5,12 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=gene_selection/run_bootstrap
+subDir=gene_selection/boot_freq
 R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
-mkdir -p $outputDir/gene_selection/training
+mkdir -p $outputDir/gene_selection/boot_freq
 
 # Loop over studies
 studies=(`Rscript R/5-gene_selection/get_studies.R`)
@@ -23,7 +23,7 @@ for study in "${studies[@]}"; do
         echo 'B <- '$numBootstraps >> $R_file
         echo 'shouldCompute <- '$shouldCompute >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
-        echo 'source("R/5-gene_selection/1-run_bootstrap.R")' >> $R_file
+        echo 'source("R/5-gene_selection/1-boot_freq.R")' >> $R_file
 
         # Content of sh file
         sh_file=$sh_dir/boot_${study}_${alg}.sh
@@ -40,9 +40,9 @@ done
 
 # Submit to queue if qsub exists, to python otherwise
 logDir=$baseLogDir/$subDir
-outputDir=$outputDir/
+outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else
-    python assets/submit_local.py --num_parallel 4 --file_location $workDir --step gene_selection_bootstrap
+    python assets/submit_local.py --num_parallel 4 --file_location $workDir --step gs_boot_freq
 fi

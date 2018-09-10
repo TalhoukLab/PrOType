@@ -1,6 +1,6 @@
 train_model <- function(output_dir, study, x, y, genes, B, ntop, alg, seed_boot,
                         seed_alg, shouldCompute = TRUE) {
-  output_file <- file.path(output_dir, paste0(study, "_fit_", alg, ".rds"))
+  output_file <- file.path(output_dir, paste0(study, "_freq_", alg, ".csv"))
   if (file.exists(output_file) && !shouldCompute) {
     cli::cat_line("Output already exists.")
   } else {

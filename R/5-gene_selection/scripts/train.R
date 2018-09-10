@@ -34,7 +34,7 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
                            algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Processing Boot")
   fnames <- list.files(
-    path = file.path(output_dir, "gene_selection", "training"),
+    path = file.path(output_dir, "gene_selection", "boot_freq"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )
@@ -42,7 +42,7 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
     purrr::map(readr::read_csv, col_types = readr::cols()) %>%
     purrr::reduce(dplyr::inner_join, by = "genes") %>%
     dplyr::arrange(dplyr::desc(rfFreq))
-  readr::write_csv(sum_freq, file.path(output_dir, "gene_selection", "sumFreq",
+  readr::write_csv(sum_freq, file.path(output_dir, "gene_selection", "sum_freq",
                                        paste0(study, "_sum_freq.csv")))
 }
 
