@@ -22,7 +22,7 @@ train_dat <- train$dat
 cli::cat_line("Summarizing ", study, " bootstrap frequencies")
 fnames <- list.files(
   path = file.path(outputDir, "gene_selection", "boot_freq"),
-  pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
+  pattern = paste0(study, "_freq_(", paste(algs, collapse = "|"), ")"),
   full.names = TRUE
 )
 sum_freq <- fnames %>%
