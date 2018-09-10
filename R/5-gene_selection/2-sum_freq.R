@@ -29,6 +29,6 @@ sum_freq <- fnames %>%
   purrr::map(readr::read_csv, col_types = readr::cols()) %>%
   purrr::reduce(dplyr::inner_join, by = "genes") %>%
   dplyr::arrange(dplyr::desc(rfFreq))
-readr::write_csv(sum_freq, file.path(output_dir, "gene_selection", "sum_freq",
+readr::write_csv(sum_freq, file.path(outputDir, "gene_selection", "sum_freq",
                                      paste0(study, "_sum_freq.csv")))
 cli::cat_line("Completed ", study, " summary frequencies")
