@@ -111,7 +111,7 @@ gene_freq <- function(fit, genes, B) {
         }) %>%
         purrr::map(Reduce, f = union)
       freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
+        purrr::map_dfc(~ ifelse(genes %in% head(., 100), 1, 0)) %>%
         dplyr::transmute(lassoFreq = purrr::pmap_dbl(., sum))
     },
     rf = {
