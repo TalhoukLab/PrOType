@@ -38,13 +38,16 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )
-  genes <- get_genes(train_dat)
-  geneFreq <- purrr::map(fnames, ~ {
-    m <- readr::read_rds(.)
-    gene_freq(m$models, genes, B)
-  })
-  sumFreq <- data.frame(genes, geneFreq) %>%
-    dplyr::arrange(dplyr::desc(rfFreq))
+  # genes <- get_genes(train_dat)
+  # geneFreq <- purrr::map(fnames, ~ {
+  #   m <- readr::read_rds(.)
+  #   gene_freq(m$models, genes, B)
+  # })
+  # sumFreq <- data.frame(genes, geneFreq) %>%
+  #   dplyr::arrange(dplyr::desc(rfFreq))
+  sum_freq <- fnames %>%
+    purrr::map(readr::read_csv) %>%
+    purrr::reduce(dplyr::inner_join, by = "genes")
   sumFreq_dir <- mkdir(file.path(output_dir, "gene_selection", "sumFreq"))
   readr::write_csv(sumFreq, file.path(sumFreq_dir, paste0(study, "_sumFreq.csv")))
 }

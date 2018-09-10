@@ -80,6 +80,53 @@ load_prediction_labels <- function(nsdat) {
   tibble::lst(published, preds_new)
 }
 
+# Bootstrap frequencies
+# Frequency of gene chosen in top 100 out of B bootstraps
+boot_freq <- function(fit, alg, genes, B, ntop = 100) {
+  alg_name <- match_alg(alg)
+  boot_tops <- switch(
+    alg_name,
+    adaboost = {
+      fit[[alg_name]] %>%
+        purrr::map(
+          maboost::varplot.maboost,
+          plot.it = FALSE,
+          type = "scores",
+          max.var.show = ntop
+        ) %>%
+        purrr::map(names)
+    },
+    mlr_lasso = {
+      fit[[alg_name]] %>%
+        purrr::map(~ {
+          purrr::map2(.[["glmnet.fit"]][["beta"]],
+                      which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
+                      ~ names(which(.x[, .y] != 0)))
+        }) %>%
+        purrr::map(purrr::reduce, union) %>%
+        purrr::map(head, ntop)
+    },
+    rf = {
+      fit[[alg_name]] %>%
+        purrr::map(~ {
+          if (inherits(., "randomForest")) {
+            importance <- .[["importance"]]
+          } else if (inherits(., "train")) {
+            importance <- .[["finalModel"]][["importance"]]
+          }
+          importance %>%
+            magrittr::extract(order(., decreasing = TRUE), ) %>%
+            head(ntop) %>%
+            names()
+        })
+    }
+  )
+  boot_tops %>%
+    purrr::map_dfc(~ ifelse(genes %in% ., 1 / B, 0)) %>%
+    dplyr::transmute(!!dplyr::sym(paste0(alg, "Freq")) := purrr::pmap_dbl(., sum)) %>%
+    data.frame(genes, .)
+}
+
 #******************************************************************
 #Function to extract the number of times the gene is in the TOP 100
 # Inputs: fit output from splendid_model, the algorithm, and the full set of genes
