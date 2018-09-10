@@ -46,10 +46,11 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
   # sumFreq <- data.frame(genes, geneFreq) %>%
   #   dplyr::arrange(dplyr::desc(rfFreq))
   sum_freq <- fnames %>%
-    purrr::map(readr::read_csv) %>%
-    purrr::reduce(dplyr::inner_join, by = "genes")
-  sumFreq_dir <- mkdir(file.path(output_dir, "gene_selection", "sumFreq"))
-  readr::write_csv(sumFreq, file.path(sumFreq_dir, paste0(study, "_sumFreq.csv")))
+    purrr::map(readr::read_csv, col_types = readr::cols()) %>%
+    purrr::reduce(dplyr::inner_join, by = "genes") %>%
+    dplyr::arrange(dplyr::desc(rfFreq))
+  readr::write_csv(sum_freq, file.path(output_dir, "gene_selection", "sumFreq",
+                                       paste0(study, "_sum_freq.csv")))
 }
 
 runFinalTraining <- function(output_dir, study, x, y,
