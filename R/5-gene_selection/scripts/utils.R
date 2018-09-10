@@ -129,14 +129,14 @@ gene_freq <- function(fit, alg, genes, B, ntop = 100) {
 
 # Bootstrap frequencies for each class in lasso
 lasso_freq <- function(fit, genes) {
-  fit %>%
+  by_class_tops <- fit %>%
     purrr::pluck("models", "mlr_lasso") %>%
     purrr::map(~ {
       purrr::map2(.[["glmnet.fit"]][["beta"]],
                   which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
                   ~ names(which(.x[, .y] != 0)))
     })
-  by_class <- fit %>%
+  by_class <- by_class_tops %>%
     purrr::map(~ purrr::map_dfc(., ~ ifelse(genes %in% ., 1, 0))) %>%
     purrr::map(function(x) x / length(.)) %>%
     purrr::reduce(`+`) %>%
