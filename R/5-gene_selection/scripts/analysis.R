@@ -1,8 +1,8 @@
 runGeneAnalysis <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "gene_selection", "plots")
-  fnames <- list.files(file.path(output_dir, "gene_selection", "sumFreq"),
-                       pattern = "_sumFreq.csv", full.names = TRUE)
+  fnames <- list.files(file.path(output_dir, "gene_selection", "sum_freq"),
+                       pattern = "_sum_freq.csv", full.names = TRUE)
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
   if ("lasso" %in% algs) {

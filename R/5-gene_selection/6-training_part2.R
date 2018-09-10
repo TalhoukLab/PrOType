@@ -57,8 +57,8 @@ study_test1 <- unique(test1_dat$site)
 # Determine Top Genes ----
 cli::cat_line("Determine Top Genes")
 fnames <- list.files(
-  path = file.path(outputDir, "gene_selection", "sumFreq"),
-  pattern = "sumFreq",
+  path = file.path(outputDir, "gene_selection", "sum_freq"),
+  pattern = "sum_freq",
   full.names = TRUE
 )
 
@@ -75,7 +75,7 @@ rf70 <- fnames %>%
   )
 
 # Load the average frequency across all studies
-sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq", "overallFreqs.csv"),
+sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sum_freq", "overall_freqs.csv"),
                     stringsAsFactors = FALSE) %>%
   dplyr::arrange(dplyr::desc(rfFreq))
 

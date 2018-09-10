@@ -28,15 +28,18 @@ seed_alg <- 2018
 
 cli::cat_line("Running Final Training")
 
-sumFreq <- readr::read_csv(file.path(outputDir, "gene_selection", "sumFreq", paste0(study, "_sumFreq.csv")),
-                           col_types = readr::cols())
+sum_freq <- readr::read_csv(
+  file = file.path(outputDir, "gene_selection", "sum_freq",
+                   paste0(study, "_sum_freq.csv")),
+  col_types = readr::cols()
+)
 
 classify_top_genes(x,
                    y,
-                   sumFreq,
+                   sum_freq,
                    outputDir,
                    study,
                    seed_alg,
                    alg,
-                   shouldCompute=shouldCompute)
+                   shouldCompute = shouldCompute)
 cli::cat_line("Finished processing bootstrap")

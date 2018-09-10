@@ -49,16 +49,16 @@ runProcessBoot <- function(output_dir, study, train_dat, B,
 runFinalTraining <- function(output_dir, study, x, y,
                              algs = c("lasso", "rf", "ada"), seed_alg = 2018) {
   cli::cat_line("Starting Final Training")
-  sumFreq <- readr::read_csv(file.path(output_dir, "gene_selection", "sumFreq",
-                                       paste0(study, "_sumFreq.csv")),
+  sum_freq <- readr::read_csv(file.path(output_dir, "gene_selection", "sum_freq",
+                                       paste0(study, "_sum_freq.csv")),
                              col_types = readr::cols())
 
   final_dir <- mkdir(file.path(output_dir, "gene_selection", "final_training"))
-  args <- tibble::lst(x, y, sumFreq, final_dir, study, seed_alg)
+  args <- tibble::lst(x, y, sum_freq, final_dir, study, seed_alg)
   purrr::walk(algs, ~ purrr::invoke(classify_top_genes, args, alg = .))
 }
 
-classify_top_genes <- function(x, y, sumFreq, outputDir, study, seed_alg, alg,
+classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
                                ng = seq(4, 100, 5), shouldCompute=TRUE) {
   output_file <- file.path(outputDir, "gene_selection", "final_training", paste0(study, "_final_fit_", alg, ".rds"))
   if (file.exists(output_file) && !shouldCompute) {
@@ -67,7 +67,7 @@ classify_top_genes <- function(x, y, sumFreq, outputDir, study, seed_alg, alg,
     ng %>%
       purrr::set_names(paste0("ng_", .)) %>%
       purrr::map(~ {
-        top_genes <- sumFreq %>%
+        top_genes <- sum_freq %>%
           dplyr::arrange(dplyr::desc(!!dplyr::sym(paste0(alg, "Freq")))) %>%
           dplyr::pull(genes) %>%
           head(.x) %>%

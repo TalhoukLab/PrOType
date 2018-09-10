@@ -55,10 +55,10 @@ test3_dat <- test3$dat
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
 y <- sl_class(train_lab, x)
-sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq",
-                              "overallFreqs.csv"),
+sum_freq <- read.csv(file.path(outputDir, "gene_selection", "sum_freq",
+                              "overall_freqs.csv"),
                     stringsAsFactors = FALSE)
-final_glist <- sumFreq %>%
+final_glist <- sum_freq %>%
   dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq)) %>%
   dplyr::pull(genes) %>%
   make.names() %>%
