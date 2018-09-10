@@ -80,9 +80,9 @@ load_prediction_labels <- function(nsdat) {
   tibble::lst(published, preds_new)
 }
 
-# Bootstrap frequencies
-# Frequency of gene chosen in top 100 out of B bootstraps
-boot_freq <- function(fit, alg, genes, B, ntop = 100) {
+# Gene Frequency
+# Number of times a gene is chosen in the top 100 out of B bootstraps
+gene_freq <- function(fit, alg, genes, B, ntop = 100) {
   alg_name <- match_alg(alg)
   boot_tops <- switch(
     alg_name,
@@ -125,61 +125,6 @@ boot_freq <- function(fit, alg, genes, B, ntop = 100) {
     purrr::map_dfc(~ ifelse(genes %in% ., 1 / B, 0)) %>%
     dplyr::transmute(!!dplyr::sym(paste0(alg, "Freq")) := purrr::pmap_dbl(., sum)) %>%
     data.frame(genes, .)
-}
-
-#******************************************************************
-#Function to extract the number of times the gene is in the TOP 100
-# Inputs: fit output from splendid_model, the algorithm, and the full set of genes
-# output: counts from the bootstrap repeats indicating number of times a gene is in the top 100
-#*****************************************************************
-gene_freq <- function(fit, genes, B) {
-  alg <- names(fit)
-  res <- switch(
-    alg,
-    adaboost = {
-      order.g <- fit[[alg]] %>%
-        purrr::map(~ {
-          maboost::varplot.maboost(.,
-                                   plot.it = FALSE,
-                                   type = "scores",
-                                   max.var.show = 100) %>%
-            names()
-        })
-      freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
-        dplyr::transmute(adaFreq = purrr::pmap_dbl(., sum))
-    },
-    mlr_lasso = {
-      order.g <- fit[[alg]] %>%
-        purrr::map(~ {
-          purrr::map2(.[["glmnet.fit"]][["beta"]],
-                      which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
-                      ~ names(which(.x[, .y] != 0)))
-        }) %>%
-        purrr::map(purrr::reduce, union) %>%
-        purrr::map(head, 100)
-      freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
-        dplyr::transmute(lassoFreq = purrr::pmap_dbl(., sum))
-    },
-    rf = {
-      order.g <- fit[[alg]] %>%
-        purrr::map(~ {
-          if (inherits(., "randomForest")) {
-            importance <- .[["importance"]]
-          } else if (inherits(., "train")) {
-            importance <- .[["finalModel"]][["importance"]]
-          }
-          importance %>%
-            magrittr::extract(order(., decreasing = TRUE), ) %>%
-            head(100) %>%
-            names()
-        })
-      freq.g <- order.g %>%
-        purrr::map_dfc(~ ifelse(genes %in% ., 1, 0)) %>%
-        dplyr::transmute(rfFreq = purrr::pmap_dbl(., sum))
-    })
-  res / B
 }
 
 #******************************************************************
