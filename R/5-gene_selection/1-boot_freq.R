@@ -36,7 +36,7 @@ if (file.exists(output_file) && !shouldCompute) {
   fit <- splendid::splendid_model(x, y, match_alg(alg), B, seed_boot, seed_alg)
   cli::cat_line("Calculating ", alg, " bootstrap frequencies")
   mods <- purrr::pluck(fit, "models")
-  freq <- boot_freq(mods, alg, genes, B, ntop)
+  freq <- gene_freq(mods, alg, genes, B, ntop)
   readr::write_csv(freq, output_file)
 }
 cli::cat_line("Completed ", alg, " bootstrap frequencies")
