@@ -137,10 +137,11 @@ lasso_freq <- function(fit, genes) {
                   ~ names(which(.x[, .y] != 0)))
     })
   by_class <- by_class_tops %>%
-    purrr::map(~ purrr::map_dfc(., ~ ifelse(genes %in% ., 1, 0))) %>%
-    purrr::map(function(x) x / length(.)) %>%
+    purrr::map(function(x)
+      purrr::map_dfc(x, function(y)
+        ifelse(genes %in% y, 1 / length(.), 0))) %>%
     purrr::reduce(`+`) %>%
-    magrittr::set_rownames(genes)
+    data.frame(genes, .)
 }
 
 #******************************************************************
