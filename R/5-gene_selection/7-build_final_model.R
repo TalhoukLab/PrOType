@@ -2,6 +2,7 @@
 n_genes <- 55
 alg <- "rf"
 grm <- "CTHRC1"
+seed <- 2018
 
 # Load utility functions
 `%>%` <- magrittr::`%>%`
@@ -55,16 +56,16 @@ test3_dat <- test3$dat
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
 y <- sl_class(train_lab, x)
-sum_freq <- read.csv(file.path(outputDir, "gene_selection", "sum_freq",
-                              "overall_freqs.csv"),
-                    stringsAsFactors = FALSE)
+sum_freq <-
+  file.path(outputDir, "gene_selection", "sum_freq", "overall_freq.csv") %>%
+  readr::read_csv(col_types = readr::cols())
 final_glist <- sum_freq %>%
   dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq)) %>%
   dplyr::pull(genes) %>%
   make.names() %>%
   purrr::discard(~ . %in% grm) %>%
   head(n_genes)
-final_model <- splendid::classification(x[, final_glist], y, algorithms = alg, seed_alg = 2018)
+final_model <- splendid::classification(x[, final_glist], y, algorithms = alg, seed_alg = seed)
 
 # Test on Overlapping Samples----
 cli::cat_line("Testing the final model on the ", nrow(overlap_dat), " overlapping samples")
