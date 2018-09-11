@@ -20,12 +20,12 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
 
   cli::cat_line("Overall frequencies")
   readr::write_csv(overall,
-                   file.path(output_dir, "gene_selection", "sum_freq", "overall_freqs.csv"))
+                   file.path(output_dir, "gene_selection", "sum_freq", "overall_freq.csv"))
 
   if ("lasso" %in% algs) {
     fnames <- list.files(
       path = file.path(output_dir, "gene_selection", "boot_freq"),
-      pattern = "lasso",
+      pattern = "lasso_by_class",
       full.names = TRUE
     )
     overall_lasso <- overall_freq(fnames)
