@@ -26,9 +26,9 @@ tidy_overlap <- function(data, genes, platform) {
 }
 
 # Load top "n_genes" in classifier
-sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sumFreq",
-                              "overallFreqs.csv"),
-                    stringsAsFactors = FALSE)
+sumFreq <-
+  file.path(outputDir, "gene_selection", "sum_freq", "overall_freq.csv") %>%
+  readr::read_csv(col_types = readr::cols())
 final_glist <- sumFreq %>%
   dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq)) %>%
   dplyr::pull(genes) %>%
