@@ -75,9 +75,10 @@ rf70 <- fnames %>%
   )
 
 # Load the average frequency across all studies
-sumFreq <- read.csv(file.path(outputDir, "gene_selection", "sum_freq", "overall_freqs.csv"),
-                    stringsAsFactors = FALSE) %>%
-  dplyr::arrange(dplyr::desc(rfFreq))
+sumFreq <-
+  file.path(outputDir, "gene_selection", "sum_freq", "overall_freq.csv") %>%
+  readr::read_csv(col_types = readr::cols()) %>%
+  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
 
 # We consider the union of the genes across studies
 genes70 <- Reduce(union, rf70)
