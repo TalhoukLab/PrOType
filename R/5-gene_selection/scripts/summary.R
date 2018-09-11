@@ -24,7 +24,7 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
     )
     genes <- get_genes(train_dat)
     overall_lasso <- fnames %>%
-      purrr::map(readRDS) %>%
+      purrr::map(readr::read_csv, col_types = readr::cols()) %>%
       magrittr::divide_by(length(.)) %>%
       purrr::reduce(`+`) %>%
       tibble::rownames_to_column("genes")
