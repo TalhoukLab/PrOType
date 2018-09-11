@@ -3,9 +3,11 @@ trainModel <- 1
 predOverlap <- 1
 predCut2 <- 1
 refineModel <- 1
+top_study <- 70
 top_overall <- 60
 n_min <- 40
 alg <- "rf"
+seed <- 2018
 
 # Load utility functions
 `%>%` <- magrittr::`%>%`
@@ -63,15 +65,15 @@ fnames <- list.files(
 )
 
 # For each study, we arrange by the most included rf gene proportion and we
-# return the top 70 genes
+# return the top `top_study` genes
 site_names <- table(train_dat$site) %>% paste0(names(.), .)
-rf70 <- fnames %>%
+rf_top <- fnames %>%
   purrr::set_names(site_names) %>%
   purrr::map(
     ~ readr::read_csv(., col_types = readr::cols()) %>%
       dplyr::arrange(dplyr::desc(rfFreq)) %>%
       dplyr::pull(genes) %>%
-      head(70)
+      head(top_study)
   )
 
 # Load the average frequency across all studies
@@ -81,26 +83,26 @@ sumFreq <-
   dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
 
 # We consider the union of the genes across studies
-genes70 <- Reduce(union, rf70)
+genes_union <- Reduce(union, rf_top)
 
-geneRanks_rf <- rf70 %>%
-  purrr::map(match, x = genes70, nomatch = 80) %>%
+gene_ranks_rf <- rf_top %>%
+  purrr::map(match, x = genes_union, nomatch = 80) %>%
   as.data.frame() %>%
-  magrittr::set_rownames(genes70)
+  magrittr::set_rownames(genes_union)
 
 # Generate annotations for rows
 legend_title <- paste0("InTop", top_overall)
 annotation_row <-
-  tibble::tibble(!!legend_title := ifelse(genes70 %in% head(sumFreq$genes, top_overall),
+  tibble::tibble(!!legend_title := ifelse(genes_union %in% head(sumFreq$genes, top_overall),
                                           "yes", "no")) %>%
   as.data.frame() %>%
-  magrittr::set_rownames(genes70)
+  magrittr::set_rownames(genes_union)
 
-cli::cat_line("Plotting heatmap of top 70 rf genes")
+cli::cat_line("Plotting heatmap of top ", top_study, " rf genes")
 
-pdf(file.path(plot_dir, "Heatmap_rf_top70.pdf"))
+pdf(file.path(plot_dir, paste0("Heatmap_rf_top", top_study, ".pdf")))
 pheatmap::pheatmap(
-  mat = geneRanks_rf,
+  mat = gene_ranks_rf,
   annotation_row = annotation_row,
   fontsize_row = 5,
   main = "Random Forest"
@@ -109,17 +111,17 @@ dev.off()
 
 # Train models with different number of genes----
 if (trainModel) {
-  cli::cat_line("Train Model with top ", n_min, "-70 rf genes")
+  cli::cat_line("Train Model with top ", n_min, "-", top_study, " rf genes")
   x <- sl_data(train_dat)
   y <- sl_class(train_lab, x)
   genes <- get_genes(train_dat)
 
-  # Sequence from n_min to length(genes70) adding one gene at a time
-  ng <- seq(n_min, length(genes70), 1) %>% magrittr::set_names(paste0("ng_", .))
+  # Sequence from n_min to length(genes_union) adding one gene at a time
+  ng <- seq(n_min, length(genes_union), 1) %>% magrittr::set_names(paste0("ng_", .))
   rf_genes <- make.names(sumFreq$genes)
   l <- ng %>%
     purrr::map(head, x = rf_genes) %>%
-    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
+    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = seed))
   saveRDS(l, file.path(c1_path, "rf_allc1.rds"))
 }
 
@@ -166,7 +168,7 @@ if (predCut2) {
 
   pdf(file.path(plot_dir, "Accuracy_cut2.pdf"))
   plot(
-    seq(n_min, length(genes70), 1),
+    seq(n_min, length(genes_union), 1),
     res_pred,
     ylim = c(0.9, 1),
     xlab = "Number of Genes",
@@ -191,7 +193,7 @@ if (predCut2) {
     data = byclass.res,
     group = "F1_score",
     main = "F1 Score by class\nby # of genes",
-    xbreaks = seq(n_min, length(genes70), 1),
+    xbreaks = seq(n_min, length(genes_union), 1),
     ylim = c(0.8, 1),
     col_alg = c("red", "forestgreen", "darkslategray3", "darkviolet"),
     show_max = FALSE,
@@ -216,7 +218,7 @@ if (refineModel) {
   topGenes <- list(topGenes_1, topGenes_2, topGenes_3)
 
   fits <- topGenes %>%
-    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = 2018))
+    purrr::map(~ splendid::classification(x[, .], y, algorithms = alg, seed_alg = seed))
   saveRDS(fits, file.path(c1_path, "rf_alternate_c1.rds"))
 
   # test alternate models on cut 2
