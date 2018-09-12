@@ -5,7 +5,7 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=gene_selection/predictions
+subDir=gene_selection/predict
 R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 mkdir -p $R_dir
@@ -22,7 +22,7 @@ for study in "${studies[@]}"; do
     echo 'B <- '$numBootstraps >> $R_file
     echo 'shouldCompute <- '$shouldCompute >> $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
-    echo 'source("R/5-gene_selection/4-make_predictions.R")' >> $R_file
+    echo 'source("R/5-gene_selection/4-predict.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/predict_${study}.sh

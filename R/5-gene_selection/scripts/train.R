@@ -53,14 +53,14 @@ runFinalTraining <- function(output_dir, study, x, y,
                                        paste0(study, "_sum_freq.csv")),
                              col_types = readr::cols())
 
-  final_dir <- mkdir(file.path(output_dir, "gene_selection", "final_training"))
+  final_dir <- mkdir(file.path(output_dir, "gene_selection", "train"))
   args <- tibble::lst(x, y, sum_freq, final_dir, study, seed_alg)
   purrr::walk(algs, ~ purrr::invoke(classify_top_genes, args, alg = .))
 }
 
 classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
                                ng = seq(4, 100, 5), shouldCompute=TRUE) {
-  output_file <- file.path(outputDir, "gene_selection", "final_training", paste0(study, "_final_fit_", alg, ".rds"))
+  output_file <- file.path(outputDir, "gene_selection", "train", paste0(study, "_final_fit_", alg, ".rds"))
   if (file.exists(output_file) && !shouldCompute) {
     cli::cat_line("Output already exists.")
   } else {
@@ -81,9 +81,9 @@ classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
 makePredictions <- function(output_dir, study, train_dat, train_lab,
                             algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Making Predictions")
-  preds_dir <- mkdir(file.path(output_dir, "gene_selection", "predictions"))
+  preds_dir <- mkdir(file.path(output_dir, "gene_selection", "predict"))
   fnames <- list.files(
-    path = file.path(output_dir, "gene_selection", "final_training"),
+    path = file.path(output_dir, "gene_selection", "train"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
     full.names = TRUE
   )

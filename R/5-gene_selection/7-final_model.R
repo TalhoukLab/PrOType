@@ -7,7 +7,7 @@ seed <- 2018
 # Load utility functions
 `%>%` <- magrittr::`%>%`
 input_dir <- "assets/data/nstring"
-GS_output_dir <- file.path(outputDir, "gene_selection", "build_final_model")
+GS_output_dir <- file.path(outputDir, "gene_selection", "final_model")
 GS_training_dir <- "R/5-gene_selection/scripts"
 GS_training_files <- c(
   "define.R",
@@ -52,7 +52,7 @@ test3 <- define_batch(preds_new, nsdat, batch = "b4")
 test3_lab <- test3$lab
 test3_dat <- test3$dat
 
-# Build the final model----
+# Build final model
 cli::cat_line("Build the final model with top ", n_genes, " genes")
 x <- sl_data(train_dat)
 y <- sl_class(train_lab, x)

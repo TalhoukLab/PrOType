@@ -23,7 +23,7 @@ GS_training_files <- c(
 )
 purrr::walk(here::here(GS_training_dir, GS_training_files), source)
 
-c1_path <- file.path(outputDir, "gene_selection", "TrainingC1")
+c1_path <- file.path(outputDir, "gene_selection", "retrain")
 plot_dir <- file.path(outputDir, "gene_selection", "plots")
 
 # Load data----

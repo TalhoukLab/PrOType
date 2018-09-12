@@ -12,7 +12,7 @@ supervised: SLtrain SLreduce trainEval supLearn IVsummary
 
 post_processing: compare plot_iv validation
 
-gene_selection: boot_freq sum_freq final_train predict gs_pp part2 final_model
+gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 
 cross_platform: cp_analysis cp_predictions
 
@@ -100,20 +100,20 @@ boot_freq:
 sum_freq:
 	./R/5-gene_selection/2-sum_freq.sh $(filter-out $@,$(MAKECMDGOALS))
 
-final_train:
-	./R/5-gene_selection/3-run_final_training.sh $(filter-out $@,$(MAKECMDGOALS))
+train:
+	./R/5-gene_selection/3-train.sh $(filter-out $@,$(MAKECMDGOALS))
 
 predict:
-	./R/5-gene_selection/4-make_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/5-gene_selection/4-predict.sh $(filter-out $@,$(MAKECMDGOALS))
 
-gs_pp:
-	./R/5-gene_selection/5-training_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+evaluate:
+	./R/5-gene_selection/5-evaluate.sh $(filter-out $@,$(MAKECMDGOALS))
 
-part2:
-	./R/5-gene_selection/6-training_part2.sh $(filter-out $@,$(MAKECMDGOALS))
+retrain:
+	./R/5-gene_selection/6-retrain.sh $(filter-out $@,$(MAKECMDGOALS))
 
 final_model:
-	./R/5-gene_selection/7-build_final_model.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/5-gene_selection/7-final_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 6: cross-platform verification
