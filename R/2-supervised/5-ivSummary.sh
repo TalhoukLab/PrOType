@@ -37,10 +37,12 @@ done
 
 # Submit to queue if qsub exists
 logDir=$baseLogDir/$subDir
+outputDir2=$outputDir
 outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
+outputDir=$outputDir2
 
 # Combine all IV summaries
 R_file=$R_dir/iv_combine.R
