@@ -23,7 +23,7 @@ eval_files <- algs %>%
   purrr::map(
     list.files,
     path = file.path(outputDir, "supervised", "train",
-                     paste0(fname, "_", dataset)),
+                     paste0(mname, "_", dataset)),
     full.names = TRUE
   )
 # Compute median + 95% CI of evaluations within algorithm and merge
