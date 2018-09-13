@@ -1,11 +1,6 @@
 # Internal Validity Summary
 `%>%` <- magrittr::`%>%`
 
-model <-
-  basename(grep(dataset, list.dirs(
-    path = file.path(outputDir, "supervised", "train"),
-    recursive = FALSE
-  ), value = TRUE))
 df <- list.files(
   path = file.path(outputDir, "supervised", "train_eval"),
   pattern = dataset,
@@ -17,7 +12,8 @@ df <- list.files(
       as.data.frame() %>%
       purrr::set_names(paste0("percentile_", gsub("%", "", names(.)))) %>%
       tibble::rownames_to_column("measure") %>%
-      tibble::add_column(mod = .y, model, .before = 1) %>%
+      tibble::add_column(mod = .y, model = paste(model, dataset, sep = "_"),
+                         .before = 1) %>%
       tidyr::separate(col = model,
                       into = c("normalization", "data", "batch_correction"),
                       sep = "_") %>%

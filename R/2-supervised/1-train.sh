@@ -6,11 +6,11 @@ file_to_submit=()
 
 # Normalization type
 if [ "$normalizeBy" = "Genes" ]; then
-    fname='Model-hc-genes'
+    model='Model-hc-genes'
 elif [ "$normalizeBy" = "Samples" ]; then
-    fname='Model-hc-samples'
+    model='Model-hc-samples'
 elif [ "$normalizeBy" = "None" ]; then
-    fname='Model-hc'
+    model='Model-hc'
 else
     echo "A normalization of type Genes, Samples or None must be specified"
     exit 1
@@ -25,13 +25,13 @@ for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $R_dir/$dataset
     mkdir -p $sh_dir/$dataset
-    mkdir -p $outputDir/$subDir/$fname'_'$dataset
+    mkdir -p $outputDir/$subDir/$dataset
 
     for s in `seq 1 $supervised_reps`; do
         for i in "${supervisedAlgs[@]}"; do
             # Content of R file
             R_file=$R_dir/$dataset/$i$s.R
-            echo 'dataSet <- "'$dataset'"' > $R_file
+            echo 'dataset <- "'$dataset'"' > $R_file
             echo 'reps <- '$s >> $R_file
             echo 'algs <- "'$i'"' >> $R_file
             echo 'inDir <- "'$outputDir$dataset'"' >> $R_file
@@ -39,11 +39,11 @@ for dataset in "${dataSets[@]}"; do
             echo 'normalizeBy <- "'$normalizeBy'"' >> $R_file
             echo "minVar <- '$minVar'" >> $R_file
             echo 'normType <- "'$normType'"' >> $R_file
-            echo 'fname <- "'$fname'"' >> $R_file
+            echo 'model <- "'$model'"' >> $R_file
             echo 'threshold <- '$threshold >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
             echo 'source("R/2-supervised/1-train.R")' >> $R_file
-            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, fname, shouldCompute)' >> $R_file
+            echo 'train_supervised(dataSet, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, model, shouldCompute)' >> $R_file
 
             # Content of sh file
             sh_file=$sh_dir/$dataset/$i$s.sh

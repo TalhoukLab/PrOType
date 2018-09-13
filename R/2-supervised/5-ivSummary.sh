@@ -2,6 +2,18 @@
 
 . ./Parameters.sh
 
+# Normalization type
+if [ "$normalizeBy" = "Genes" ]; then
+    model='Model-hc-genes'
+elif [ "$normalizeBy" = "Samples" ]; then
+    model='Model-hc-samples'
+elif [ "$normalizeBy" = "None" ]; then
+    model='Model-hc'
+else
+    echo "A normalization of type Genes, Samples or None must be specified"
+    exit 1
+fi
+
 file_to_submit=()
 
 # Make directories for R script, shell script
@@ -19,6 +31,7 @@ for dataset in "${dataSets[@]}"; do
     R_file=$R_dir/$dataset/iv_summary.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
+    echo 'model <- "'$model'"' >> $R_file
     echo 'source("R/2-supervised/5-ivSummary.R")' >> $R_file
 
     # Content of sh file

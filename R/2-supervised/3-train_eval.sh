@@ -4,11 +4,11 @@
 
 # Normalization type
 if [ "$normalizeBy" = "Genes" ]; then
-    mname='Model-hc-genes'
+    model='Model-hc-genes'
 elif [ "$normalizeBy" = "Samples" ]; then
-    mname='Model-hc-samples'
+    model='Model-hc-samples'
 elif [ "$normalizeBy" = "None" ]; then
-    mname='Model-hc'
+    model='Model-hc'
 else
     echo "A normalization of type Genes, Samples or None must be specified"
     exit 1
@@ -29,7 +29,7 @@ for dataset in "${dataSets[@]}"; do
     R_file=$R_dir/$dataset/train_eval.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
-    echo 'mname <- "'$mname'"' >> $R_file
+    echo 'model <- "'$model'"' >> $R_file
     echo 'algs <- strsplit("'${supervisedAlgs[@]}'", " ")[[1]]' >> $R_file
     echo 'source("R/2-supervised/3-train_eval.R")' >> $R_file
 
