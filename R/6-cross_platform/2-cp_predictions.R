@@ -2,7 +2,7 @@
 source(here::here("R/6-cross_platform/0-cp_map.R"))
 
 # Read in the model fits
-fits <- readRDS(file.path(outputDir, "gene_selection", "TrainingC1",
+fits <- readRDS(file.path(outputDir, "gene_selection", "retrain",
                           "rf_alternate_c1.rds"))
 output_dir <- file.path(outputDir, "cross_platform", "predictions")
 
