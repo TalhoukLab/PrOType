@@ -30,6 +30,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'mname <- "'$mname'"' >> $R_file
+    echo 'algs <- strsplit("'${supervisedAlgs[@]}'", " ")[[1]]' >> $R_file
     echo 'source("R/2-supervised/3-train_eval.R")' >> $R_file
 
     # Content of sh file
