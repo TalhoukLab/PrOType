@@ -10,7 +10,6 @@ R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 
 for dataset in "${dataSets[@]}"; do
-    data_sets=${dataset// /'"','"'}
     # Make job and output directories for dataset
     mkdir -p $R_dir/$dataset
     mkdir -p $sh_dir/$dataset
@@ -19,7 +18,7 @@ for dataset in "${dataSets[@]}"; do
     # Content of R file
     R_file=$R_dir/$dataset/ci_sup_lrn.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
-    echo 'fdat <- c("'$data_sets'")' >> $R_file
+    echo 'fdat <- "'$dataset'"' >> $R_file
     echo "top <- $top" >> $R_file
     echo 'source("R/2-supervised/4-CIsupLearn.R")' >> $R_file
 

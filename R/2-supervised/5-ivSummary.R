@@ -3,7 +3,7 @@
 
 model <-
   basename(grep(dataset, list.dirs(
-    path = file.path(outputDir, "supervised", "reduce"),
+    path = file.path(outputDir, "supervised", "train"),
     recursive = FALSE
   ), value = TRUE))
 df <- list.files(
