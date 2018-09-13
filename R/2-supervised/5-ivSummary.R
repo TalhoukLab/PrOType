@@ -26,5 +26,5 @@ df <- list.files(
   tibble::as_tibble()
 
 # write results to file
-saveRDS(df, file.path(outputDir, "supervised", "iv_summary", dataset, paste0("iv_summary_", dataset, ".rds")))
-saveRDS(df, file.path(outputDir, "supervised", "iv_summary", dataset, paste0("iv_summary_", dataset, "_threshold.rds")))
+saveRDS(df, file.path(outputDir, "supervised", "iv_summary", paste0("iv_summary_", dataset, ".rds")))
+saveRDS(df, file.path(outputDir, "supervised", "iv_summary", paste0("iv_summary_", dataset, "_threshold.rds")))
