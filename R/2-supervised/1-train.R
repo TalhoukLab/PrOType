@@ -22,45 +22,59 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              fname = "Model", shouldCompute = FALSE) {
-  outputFile <- file.path(outDir, "supervised", "train", paste0(fname, '_', dataSet), paste0(algs, reps, "_", dataSet, ".rds"))
-
-  cli::cat_line("Checking previous input:", outputFile)
-
+  outputFile <- file.path(outDir, "supervised", "train",
+                          paste0(fname, '_', dataSet),
+                          paste0(algs, reps, "_", dataSet, ".rds"))
+  cli::cat_line("Checking previous input: ", outputFile)
   if (file.exists(outputFile) && !shouldCompute) {
-      cli::cat_line("File already exists, skipping.")
-      quit(status = 0)
+    cli::cat_line("File already exists, skipping.")
+    quit(status = 0)
   }
 
-  # import training data and final cluster assignments
-  cli::cat_line("Reading training data:", algs, "-", reps)
-  npcp <-  readr::read_rds(file.path(outDir, "unsupervised", "map_genes", dataSet, paste0("npcp-hcNorm_", dataSet, ".rds")))
-  class <- readr::read_rds(file.path(outDir, "unsupervised", "final", dataSet, paste0("all_clusts_", dataSet, ".rds")))
-  class.train <- class[["kmodes"]]
+  # Import training data and final cluster assignments
+  cli::cat_line("Importing training data and final clusters")
+  npcp <- readRDS(file.path(outDir, "unsupervised", "map_genes", dataSet,
+                            paste0("npcp-hcNorm_", dataSet, ".rds")))
+  class <- readRDS(file.path(outDir, "unsupervised", "final", dataSet,
+                             paste0("all_clusts_", dataSet, ".rds")))
+  class.train <- make.names(class[["kmodes"]])
 
-  cli::cat_line("Normalizing data:", algs, "-", reps)
-  # normalization
+  # Normalization
   if (normalize.by == "None") {
-    cli::cat_line("Normalizing None:", algs, "-", reps)
+    cli::cat_line("No normalization")
     data.train <- npcp %>%
-       diceR::prepare_data(scale = FALSE, min.var = minVar, type = norm.type) %>%
-       as.data.frame()
+      diceR::prepare_data(scale = FALSE,
+                          min.var = minVar,
+                          type = norm.type) %>%
+      as.data.frame()
   } else if (normalize.by == "Genes") {
-    cli::cat_line("Normalizing Genes:", algs, "-", reps)
+    cli::cat_line("Normalizing data by genes")
     data.train <- npcp %>%
-      diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
+      diceR::prepare_data(scale = TRUE,
+                          min.var = minVar,
+                          type = norm.type) %>%
       as.data.frame()
   } else if (normalize.by == "Samples") {
-    cli::cat_line("Normalizing Samples:", algs, "-", reps)
+    cli::cat_line("Normalizing data by samples")
     data.train <- npcp %>%
       t() %>%
-      diceR::prepare_data(scale = TRUE, min.var = minVar, type = norm.type) %>%
+      diceR::prepare_data(scale = TRUE,
+                          min.var = minVar,
+                          type = norm.type) %>%
       t() %>%
       as.data.frame()
   }
 
-  cli::cat_line("Running training algorithms:", algs, "-", reps)
-  # train algorithms
-  sm_args <- list(data = data.train, class = make.names(class.train), n = 1, seed_boot = reps, seed_alg = 1, threshold = threshold)
+  # Splendid model arguments
+  sm_args <- list(
+    data = data.train,
+    class = class.train,
+    n = 1,
+    seed_boot = reps,
+    seed_alg = 1,
+    threshold = threshold
+  )
+  cli::cat_line("Training each supervised learning algorithm")
   sm <- switch(
     algs,
     first = purrr::invoke(splendid::splendid_model, sm_args,
@@ -73,7 +87,7 @@ train_supervised <- function(dataSet, algs, reps, inDir, outDir,
                            algorithms = c("nbayes", "mlr_ridge"))
   )
 
-  cat("Saving output:", algs, "-", reps, "\n")
-  # write evaluations to file
+  # Write evaluations to file
+  cli::cat_line("Writing model evaluations to file")
   readr::write_rds(sm[["evals"]], outputFile)
 }

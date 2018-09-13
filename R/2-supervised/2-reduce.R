@@ -5,32 +5,30 @@
 #' all bootstrap samples for each data set. i.e. 24 indices, 11 algorithms, 100
 #' bootstraps.
 #'
-#' @param dataSet is a data frame with feature columns and samples as rows
+#' @param dataset is a data frame with feature columns and samples as rows
 #' @param alg an algorithm supported by Splendid
-#' @param outDir directory specifying the output location
+#' @param outputDir directory specifying the output location
 #' @return a data frame containing median and 95% confidence interval
 #' @author Last updated on 30/10/2017 by Dustin Johnson. Edited by Derek Chiu.
 `%>%` <- magrittr::`%>%`
-reduce_supervised <- function(dataSet, alg, outDir, fname = "Model", threshold = 0.0) {
-
-  # grep files in directory matching pattern
-  files.in <- list.files(
-    path = file.path(outDir, "supervised", "train", paste0(fname, '_', dataSet)),
-    pattern = paste0(alg, "[0-9]+_", dataSet, ".rds"),
+reduce_supervised <- function(dataset, alg, outputDir, fname = "Model",
+                              threshold = 0.0) {
+  # Evaluations for each rep of alg
+  files <- list.files(
+    path = file.path(outputDir, "supervised", "train",
+                     paste0(fname, "_", dataset)),
+    pattern = paste0(alg, "[0-9]+_", dataset, ".rds"),
     full.names = TRUE
   )
-
-  # import data into memory, keeping only evaluations
-  files.read <- purrr::map(files.in, readRDS)
-
-  # transpose evaluation measures to group by algorithm
-  reduced <- purrr::transpose(files.read)
-
-  # compute median + 95% confidence interval
-  reduced_quantiles <- reduced %>%
-    purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95), na.rm = TRUE))
-
-  # write to file
-  outputFile <- file.path(outDir, "supervised", "reduce", paste0(fname, '_', dataSet), paste0(alg, "_train_eval_", dataSet, ".rds"))
-  readr::write_rds(reduced_quantiles, outputFile)
+  # Compute median + 95% CI for evaluations merged by algorithm
+  eval_quantiles <- files %>%
+    purrr::map(readRDS) %>%
+    purrr::transpose() %>%
+    purrr::map(~ apply(data.frame(.), 1, quantile, c(0.5, 0.05, 0.95),
+                       na.rm = TRUE))
+  # Write evaluations merged by algorithm
+  outputFile <- file.path(outputDir, "supervised", "reduce",
+                          paste0(fname, "_", dataset),
+                          paste0(alg, "_train_eval_", dataset, ".rds"))
+  saveRDS(eval_quantiles, outputFile)
 }

@@ -30,13 +30,13 @@ for dataset in "${dataSets[@]}"; do
     for i in "${supervisedAlgs[@]}"; do
         # Content of R file
         R_file=$R_dir/$dataset/reduce_$i.R
-        echo 'outDir <- "'$outputDir'"' > $R_file
-        echo 'dataSet <- "'${dataset// /'"','"'}'"' >> $R_file
+        echo 'outputDir <- "'$outputDir'"' > $R_file
+        echo 'dataset <- "'$dataset'"' >> $R_file
         echo 'alg <- "'$i'"' >> $R_file
         echo 'fname <- "'$fname'"' >> $R_file
         echo 'threshold <- "'$threshold'"' >> $R_file
         echo 'source("R/2-supervised/2-reduce.R")' >> $R_file
-        echo 'reduce_supervised(dataSet, alg, outDir, fname, threshold)' >> $R_file
+        echo 'reduce_supervised(dataSet, alg, outputDir, fname, threshold)' >> $R_file
 
         # Content of sh file
         sh_file=$sh_dir/$dataset/reduce_$i.sh
