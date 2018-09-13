@@ -1,36 +1,12 @@
+source(here::here("R/5-gene_selection/0-gs_setup.R"))
+
 # Load Parameters
 n_genes <- 55
 alg <- "rf"
 grm <- "CTHRC1"
 seed <- 2018
-
-# Load utility functions
-`%>%` <- magrittr::`%>%`
 input_dir <- "assets/data/nstring"
 GS_output_dir <- file.path(outputDir, "gene_selection", "final_model")
-GS_training_dir <- "R/5-gene_selection/scripts"
-GS_training_files <- c(
-  "define.R",
-  "train.R",
-  "bootstrap.R",
-  "evaluate.R",
-  "summary.R",
-  "analysis.R",
-  "final.R",
-  "utils.R"
-)
-purrr::walk(here::here(GS_training_dir, GS_training_files), source)
-
-# Load data----
-# Load the NanoString data and prediction labels
-nsdat <- load_nanostring()
-pred_labs <- load_prediction_labels(nsdat)
-preds_new <- pred_labs$preds_new
-
-# Define training set (cut1)
-train <- define_batch(preds_new, nsdat, batch = "b1")
-train_dat <- train$dat
-train_lab <- train$lab
 
 # Define overlap
 overlap <- define_overlap(preds_new, nsdat)

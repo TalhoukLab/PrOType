@@ -1,3 +1,5 @@
+source(here::here("R/5-gene_selection/0-gs_setup.R"))
+
 # Load Parameters
 trainModel <- 1
 predOverlap <- 1
@@ -8,36 +10,10 @@ top_overall <- 60
 n_min <- 40
 alg <- "rf"
 seed <- 2018
-
-# Load utility functions
-`%>%` <- magrittr::`%>%`
-GS_training_dir <- "R/5-gene_selection/scripts"
-GS_training_files <- c(
-  "utils.R",
-  "define.R",
-  "train.R",
-  "bootstrap.R",
-  "evaluate.R",
-  "summary.R",
-  "analysis.R"
-)
-purrr::walk(here::here(GS_training_dir, GS_training_files), source)
-
 c1_path <- file.path(outputDir, "gene_selection", "retrain")
 plot_dir <- file.path(outputDir, "gene_selection", "plots")
 
-# Load data----
-# Load the NanoString data and select cut
-nsdat <- load_nanostring()
-
-# Load prediction labels
-pred_labs <- load_prediction_labels(nsdat)
-preds_new <- pred_labs$preds_new
-
-# Compute consensus
-train <- define_batch(preds_new, nsdat, batch = "b1")
-train_dat <- train$dat
-train_lab <- train$lab
+# Compute overlap
 overlap <- define_overlap(preds_new, nsdat)
 overlap_dat <- overlap$dat
 overlap_lab <- overlap$lab
