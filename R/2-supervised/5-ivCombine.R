@@ -2,7 +2,7 @@
 
 # Read in all iv_summary and row bind
 x <- list.files(
-  path = file.path(outputDir, "supervised", "iv_summary"),
+  path = file.path(outputDir, "supervised", "summary"),
   full.names = TRUE,
   recursive = TRUE
 ) %>%
@@ -22,5 +22,5 @@ top_accuracy <- x %>%
 # Write out iv_summary combined
 saveRDS(
   object = x,
-  file = file.path(outputDir, "supervised", "iv_summary", "iv_summary_COMBINED.rds")
+  file = file.path(outputDir, "supervised", "summary", "iv_summary_COMBINED.rds")
 )

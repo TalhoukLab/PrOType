@@ -17,7 +17,7 @@ fi
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=supervised/iv_summary
+subDir=supervised/summary
 R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 
