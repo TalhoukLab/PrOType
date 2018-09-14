@@ -17,5 +17,5 @@ eval_merged <- eval_files %>%
 saveRDS(
   eval_merged,
   file.path(outputDir, "supervised", "merge_eval",
-            paste0("merge_eval", dataset, ".rds"))
+            paste0("merge_eval_", dataset, ".rds"))
 )
