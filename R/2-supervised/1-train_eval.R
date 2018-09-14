@@ -22,7 +22,7 @@ train_supervised <- function(dataset, algs, reps, inDir, outDir,
                              normalize.by = "None", minVar = 0.5,
                              threshold = 0, norm.type = "conventional",
                              model = "Model", shouldCompute = FALSE) {
-  outputFile <- file.path(outDir, "supervised", "train", dataset,
+  outputFile <- file.path(outDir, "supervised", "train_eval", dataset,
                           paste0(algs, reps, "_", dataset, ".rds"))
   cli::cat_line("Checking previous input: ", outputFile)
   if (file.exists(outputFile) && !shouldCompute) {

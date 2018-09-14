@@ -14,9 +14,9 @@ create_ci <- function(df, alg) {
 }
 
 # Sort best
-sort_best <- function(train_eval, top = 5) {
+sort_best <- function(merge_eval, top = 5) {
   cli::cat_line("Combining median evaluation metrics")
-  te <- purrr::map(train_eval, ~ {
+  te <- purrr::map(merge_eval, ~ {
     as.data.frame(.) %>%
       dplyr::mutate(logloss = -logloss) %>%
       t() %>%
@@ -44,9 +44,9 @@ sort_best <- function(train_eval, top = 5) {
 final <- fdat %>%
   purrr::map(~ {
     FinalR_lab <- readRDS(file.path(outputDir, "unsupervised", "final", ., paste0("all_clusts_", ., ".rds")))
-    train_eval <- readRDS(file.path(outputDir, "supervised", "train_eval", paste0("train_eval_", ., ".rds")))
-    bests <- sort_best(train_eval, top = top)
-    ci <- train_eval %>%
+    merge_eval <- readRDS(file.path(outputDir, "supervised", "merge_eval", paste0("merge_eval_", ., ".rds")))
+    bests <- sort_best(merge_eval, top = top)
+    ci <- merge_eval %>%
       purrr::imap(~ {
         data.frame(.x) %>%
           t() %>%

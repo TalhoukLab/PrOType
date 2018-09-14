@@ -5,7 +5,7 @@
 file_to_submit=()
 
 # Make directories for R script, shell script
-subDir=supervised/ci_sup_lrn
+subDir=supervised/top_ci
 R_dir=$workDir/R_file/$subDir
 sh_dir=$workDir/sh_file/$subDir
 
@@ -16,14 +16,14 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/$subDir
 
     # Content of R file
-    R_file=$R_dir/$dataset/ci_sup_lrn.R
+    R_file=$R_dir/$dataset/top_ci.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'fdat <- "'$dataset'"' >> $R_file
     echo "top <- $top" >> $R_file
-    echo 'source("R/2-supervised/4-CIsupLearn.R")' >> $R_file
+    echo 'source("R/2-supervised/3-top_ci.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/$dataset/ci_sup_lrn.sh
+    sh_file=$sh_dir/$dataset/top_ci.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 

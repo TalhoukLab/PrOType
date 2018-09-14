@@ -2,7 +2,7 @@
 `%>%` <- magrittr::`%>%`
 
 df <- list.files(
-  path = file.path(outputDir, "supervised", "train_eval"),
+  path = file.path(outputDir, "supervised", "merge_eval"),
   pattern = dataset,
   full.names = TRUE
 ) %>%

@@ -3,7 +3,7 @@
 eval_files <- algs %>%
   purrr::map(
     list.files,
-    path = file.path(outputDir, "supervised", "train", dataset),
+    path = file.path(outputDir, "supervised", "train_eval", dataset),
     full.names = TRUE
   )
 # Compute median + 95% CI of evaluations within algorithm and merge
@@ -16,6 +16,6 @@ eval_merged <- eval_files %>%
 # Write all evaluations merged
 saveRDS(
   eval_merged,
-  file.path(outputDir, "supervised", "train_eval",
-            paste0("train_eval_", dataset, ".rds"))
+  file.path(outputDir, "supervised", "merge_eval",
+            paste0("merge_eval", dataset, ".rds"))
 )

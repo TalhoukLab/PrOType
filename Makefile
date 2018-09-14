@@ -8,7 +8,8 @@ array: unsupervised supervised post_processing
 
 unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
 
-supervised: SLtrain SLreduce trainEval supLearn IVsummary
+# supervised: SLtrain SLreduce trainEval supLearn IVsummary
+supervised: train_eval merge_eval top_ci iv_summary
 
 post_processing: compare plot_iv validation
 
@@ -51,24 +52,32 @@ FinalClust:
 # Part 2: supervised learning
 
 # Train models and return evaluations
-SLtrain:
-	./R/2-supervised/1-train.sh $(filter-out $@,$(MAKECMDGOALS))
+#SLtrain:
+#	./R/2-supervised/1-train.sh $(filter-out $@,$(MAKECMDGOALS))
+train_eval:
+	./R/2-supervised/1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Combine evaluations across reps
-SLreduce:
-	./R/2-supervised/2-reduce.sh $(filter-out $@,$(MAKECMDGOALS))
+# Merge evaluations across reps and algorithms
+#SLreduce:
+#	./R/2-supervised/2-reduce.sh $(filter-out $@,$(MAKECMDGOALS))
+merge_eval:
+	./R/2-supervised/2-merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Combine all training evaluations
-trainEval:
-	./R/2-supervised/3-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+#trainEval:
+#	./R/2-supervised/3-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Confidence intervals for top supervised learning algorithms
-supLearn:
-	./R/2-supervised/4-CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+#supLearn:
+#	./R/2-supervised/4-CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
+top_ci:
+	./R/2-supervised/3-top_ci.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Internal validation summary
-IVsummary:
-	./R/2-supervised/5-ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+#IVsummary:
+#	./R/2-supervised/5-ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+iv_summary:
+	./R/2-supervised/4-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 3: Post-processing

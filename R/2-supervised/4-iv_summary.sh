@@ -32,7 +32,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'model <- "'$model'"' >> $R_file
-    echo 'source("R/2-supervised/5-ivSummary.R")' >> $R_file
+    echo 'source("R/2-supervised/4-iv_summary.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/iv_summary.sh
@@ -60,5 +60,5 @@ outputDir=$outputDir2
 # Combine all IV summaries
 R_file=$R_dir/iv_combine.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
-echo "source('R/2-supervised/5-ivCombine.R')" >> $R_file
+echo 'source("R/2-supervised/5-combine_ivs.R")' >> $R_file
 Rscript $R_file
