@@ -10,15 +10,21 @@ top_cl_alg <- "kmodes"
 dat_tr <- "ov.afc1"
 
 # Choose batch effect correction by highest variance explained by clustering
-top_bcm <- list.files(
+# Use XPN if pvca not precomputed because of computation time
+pvca_files <- list.files(
   path = file.path(outputDir, "post_processing", "evals"),
   pattern = "pvca",
   full.names = TRUE
-) %>%
-  purrr::set_names(purrr::map_chr(strsplit(basename(.), split = "_"), 2)) %>%
-  purrr::map_dbl(~ readRDS(.)[["dat"]][, 3]) %>%
-  which.max() %>%
-  names()
+)
+if (length(pvca_files) == 0) {
+  top_bcm <- "xpn"
+} else {
+  top_bcm <- pvca_files %>%
+    purrr::set_names(purrr::map_chr(strsplit(basename(.), split = "_"), 2)) %>%
+    purrr::map_dbl(~ readRDS(.)[["dat"]][, 3]) %>%
+    which.max() %>%
+    names()
+}
 
 # Training data for best batch effect correction
 dataset <- paste0(dat_tr, "_", top_bcm)

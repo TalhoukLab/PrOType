@@ -10,7 +10,7 @@ unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
 
 supervised: train_eval merge_eval top_ci iv_summary
 
-post_processing: compare plot_iv validation
+post_processing: compare plot_iv batch_effects validation
 
 gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 
@@ -77,9 +77,13 @@ compare:
 plot_iv:
 	./R/3-post_processing/1-internal_validity_plots.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# evaluate batch effects
+batch_effects:
+	./R/3-post_processing/2-evaluate_batch_effects.sh $(filter-out $@,$(MAKECMDGOALS))
+
 # validate overlap array and cut2 samples
 validation:
-	./R/3-post_processing/2-validation.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/3-post_processing/3-validation.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 4: validate NanoString classifier
