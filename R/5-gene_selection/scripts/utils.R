@@ -103,8 +103,7 @@ gene_freq <- function(fit, alg, genes, B, ntop = 100) {
                       which(.[["glmnet.fit"]][["lambda"]] %in% .[["lambda.1se"]]),
                       ~ names(which(.x[, .y] != 0)))
         }) %>%
-        purrr::map(purrr::reduce, union) %>%
-        purrr::map(head, ntop)
+        purrr::map(purrr::reduce, union)
     },
     rf = {
       fit[[alg_name]] %>%
