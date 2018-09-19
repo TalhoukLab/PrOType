@@ -2,6 +2,8 @@
 
 . ./Parameters.sh
 
+file_to_submit=()
+
 # Make directories for R script, shell script
 subDir=post_processing
 R_dir=$workDir/R_file/$subDir
@@ -27,7 +29,7 @@ for dataset in "${trainSets[@]}"; do
 
     # Add to queue if qsub exists
     if command -v qsub &>/dev/null; then
-        file_to_submit=($sh_file)
+        file_to_submit+=($sh_file)
         echo -e "$GREEN_TICK Added to queue: $sh_file"
     else
         bash $sh_file
