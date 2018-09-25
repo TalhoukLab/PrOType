@@ -25,7 +25,7 @@ function njobs() {
 # Total time when last job has completed.
 # Reference: https://www.linuxquestions.org/questions/linux-newbie-8/time-difference-calculation-4175459414/
 function elapsed() {
-  if [[ `njobs $1` > 0 ]]; then
+  if [[ `njobs $1 $2` > 0 ]]; then
     first=`qstatu $1 $2 | awk '{print $7}' | head -n 1`
   else
     first=$3
@@ -57,14 +57,14 @@ for shname in "${file_to_submit[@]}"; do
 
 	# Check current max job limit
   mkdir -p $logDir
-  startQLength=`njobs $user`
+  startQLength=`njobs $user $user`
   curr_max_submit=$(($maxQueueLength - $startQLength))
 
   # Job submission
   if command -v qsub &>/dev/null; then
       # Ensure no jobs are submitted if current max job limit is reached
       while [[ "$currQLength" -ge "$curr_max_submit" ]]; do
-        currQLength=`njobs $user`
+        currQLength=`njobs $user $user`
         echo -e "$BLUE_BULLET Waiting on: ${currQLength} jobs to complete before submitting job"
         sleep 30s
       done
