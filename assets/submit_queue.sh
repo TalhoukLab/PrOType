@@ -41,6 +41,9 @@ function elapsed() {
 jtotal=${#file_to_submit[@]}
 echo -e "$BLUE_BULLET Total jobs: $jtotal"
 
+# Store start time
+start=$(date +"%T")
+
 # Step 1: Loop over array of shell scripts and submit batch jobs
 for shname in "${file_to_submit[@]}"; do
 	# Check if data set was specified
@@ -79,9 +82,6 @@ if command -v qsub &>/dev/null; then
 else
   currQLength=0
 fi
-
-# Store start time
-start=$(date +"%T")
 
 while [[ $currQLength > 0 && shouldWait ]]; do
     currQLength=`njobs $user`
