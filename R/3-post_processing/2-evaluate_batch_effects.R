@@ -68,7 +68,8 @@ saveRDS(pca_df, file.path(outputDir, "post_processing", "evals",
 
 # PCA plots
 p1 <- plotly::plot_ly(data = pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
-                      type = "scatter3d", mode = "markers", color = ~batch1)
+                      type = "scatter3d", mode = "markers", color = ~batch1,
+                      colors = "Set2")
 htmlwidgets::saveWidget(
   widget = p1,
   file = file.path(outputDir, "post_processing", "plots",
@@ -77,7 +78,8 @@ htmlwidgets::saveWidget(
 )
 
 p2 <- plotly::plot_ly(data = pca_df, x = ~PC2, y = ~PC1, z = ~PC3,
-                      type = "scatter3d", mode = "markers", color = ~batch2)
+                      type = "scatter3d", mode = "markers", color = ~batch2,
+                      colors = "Set3")
 htmlwidgets::saveWidget(
   widget = p2,
   file = file.path(outputDir, "post_processing", "plots",
