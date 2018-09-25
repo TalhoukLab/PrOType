@@ -70,8 +70,7 @@ for shname in "${file_to_submit[@]}"; do
       done
 
       # Submit shell script to queue without extra verbosity using variable qq
-		  qcmd="qsub -V -p -1 -l mem_free=$mem_free -l mem_token=$mem_token -l h_vmem=$h_vmem -e $logDir -o $logDir -q all.q $shname"
-      qq=`$qcmd`
+		  qcmd=$(qsub -V -p -1 -l mem_free=$mem_free -l mem_token=$mem_token -l h_vmem=$h_vmem -e $logDir -o $logDir -q all.q $shname)
       jobid=$(echo $qcmd | awk '{print $3}')
       jobarray+=($jobid)
       echo -e "$GREEN_TICK Submitted to queue: $shname"
