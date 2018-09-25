@@ -59,7 +59,7 @@ source_of_var <- function(ann_mat, dat_mat, batch_factors,
   phenoData <- new("AnnotatedDataFrame", data = ann_mat)
   MASet <- Biobase::ExpressionSet(assayData = data.matrix(dat_mat),
                                   phenoData = phenoData)
-  pvca::pvcaBatchAssess(MASet, batch_factors, pct_threshold)
+  suppressWarnings(pvca::pvcaBatchAssess(MASet, batch_factors, pct_threshold))
 }
 
 #' Plot PVCA Object
