@@ -8,7 +8,7 @@ ddir <- file.path(outputdir, "unsupervised", "consensus", dataset)
 cdat <- readRDS(file.path(outputdir, "unsupervised", "prep_data", dataset, paste0("cdat_", dataset, ".rds")))
 
 # Read in the consensus matrices
-cons.mat <- readRDS(file.path(outputdir, "unsupervised", "data_pr_", dataset, paste0("Final_CM_", dataset, ".rds")))
+cons.mat <- readRDS(file.path(outputdir, "unsupervised", "data_pr", dataset, paste0("Final_CM_", dataset, ".rds")))
 
 # Obtain HC from each algorithm and relabel
 cl.mat <- purrr::map(cons.mat, hc, k = 4) %>%
