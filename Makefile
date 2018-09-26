@@ -6,7 +6,7 @@ all: array nanostring gene_selection cross_platform
 # Intermediate targets
 array: unsupervised supervised post_processing
 
-unsupervised: prep_data map_genes cluster CMmerge merge ConFun FinalClust
+unsupervised: prep_data map_genes cluster consmat merge_clust merge_cm con_fun final_clust
 
 supervised: train_eval merge_eval top_ci iv_summary
 
@@ -31,21 +31,26 @@ map_genes:
 cluster:
 	./R/1-unsupervised/3-clustering.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Consensus matrices
+consmat:
+	./R/1-unsupervised/4-consmat.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Merge cluster assignments
+merge_clust:
+	./R/1-unsupervised/5-merge_clust.sh $(filter-out $@,$(MAKECMDGOALS))
+
 # Merge consensus matrices
-CMmerge:
-	./R/1-unsupervised/4-merge_cons_mat.sh $(filter-out $@,$(MAKECMDGOALS))
+merge_cm:
+	./R/1-unsupervised/6a-merge_cm_partial.sh $(filter-out $@,$(MAKECMDGOALS)) && \
+	./R/1-unsupervised/6b-merge_cm_complete.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Merge cluster assignments and all consensus matrices
-merge:
-	./R/1-unsupervised/5-merge_final.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Calculate ensembles
-ConFun:
-	./R/1-unsupervised/6-con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
+# Calculate consensus function ensembles
+con_fun:
+	./R/1-unsupervised/7-con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Final clusters and internal validitiy indices
-FinalClust:
-	./R/1-unsupervised/7-final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
+final_clust:
+	./R/1-unsupervised/8-final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 2: supervised learning

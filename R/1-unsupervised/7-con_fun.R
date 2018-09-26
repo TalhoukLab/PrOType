@@ -1,11 +1,13 @@
 `%>%` <- magrittr::`%>%`
 
-# inputs: ndat, cons.funs, k, dir
+# inputs: ndat, cons.funs, k
 source(here::here("R/1-unsupervised/utils.R"))
 
 # Read in completed E and consensus matrices
-Ecomp <- readRDS(file.path(outputDir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Ecomp_", dataset, ".rds")))
-CM <- readRDS(file.path(outputDir, "unsupervised", "merge", paste0("data_pr_", dataset), paste0("Final_CM_", dataset, ".rds")))
+Ecomp <- readRDS(file.path(outputDir, "unsupervised", "data_pr_", dataset,
+                           paste0("Ecomp_", dataset, ".rds")))
+CM <- readRDS(file.path(outputDir, "unsupervised", "data_pr_", dataset,
+                        paste0("Final_CM_", dataset, ".rds")))
 
 # Obtain HC from each algorithm and relabel for LCE
 cl.mat <- purrr::map(CM, hc, k = k) %>%
@@ -27,4 +29,5 @@ Consensus <- switch(
   LCEasrs = hc(diceR::asrs(cl.mat, dc = 0.8), k = k)
 )
 
-saveRDS(Consensus, file.path(outputDir, "unsupervised", "consensus", dataset, paste0("cons_", cons.funs, "_", dataset, ".rds")))
+saveRDS(Consensus, file.path(outputDir, "unsupervised", "consensus", dataset,
+                             paste0("cons_", cons.funs, "_", dataset, ".rds")))

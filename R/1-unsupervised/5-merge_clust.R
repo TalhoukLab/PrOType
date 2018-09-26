@@ -32,13 +32,12 @@ multMerge <- function(path, alg, dataset) {
 }
 
 # Write directory
-writeDir <- file.path(outputDir, "unsupervised", "merge",
-                      paste0("data_pr_", dataset))
+writeDir <- file.path(outputDir, "unsupervised", "data_pr", dataset)
 
 # Merge the raw clustering
 cli::cat_line("Merging raw clustering")
 raw_path <- file.path(outputDir, "unsupervised", "clustering",
-                      paste0("rds_out_", dataset))
+                      "raw_clust", dataset)
 E <- algs %>%
   purrr::map(multMerge, path = raw_path, dataset = dataset) %>%
   abind::abind(along = 3)
@@ -47,7 +46,7 @@ saveRDS(E, file = file.path(writeDir, paste0("E_", dataset, ".rds")))
 # Merge KNN-imputed clustering
 cli::cat_line("Merging KNN-imputed clustering")
 imputed_path <- file.path(outputDir, "unsupervised", "clustering",
-                          paste0("imputed_clust_", dataset))
+                          "imputed_clust", dataset)
 E_knn <- algs %>%
   purrr::map(multMerge, path = imputed_path, dataset = dataset) %>%
   abind::abind(along = 3)

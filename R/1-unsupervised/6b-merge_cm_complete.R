@@ -9,8 +9,7 @@ multMergeCM <- function(path, alg) {
 }
 
 # Path of partially merged consensus matrices
-consmat_path <- file.path(outputDir, "unsupervised", "merge_consmat",
-                          paste0("con_mat_merged_", dataset))
+consmat_path <- file.path(outputDir, "unsupervised", "merge_cm", dataset)
 
 # Flatten after merge to get one consensus matrix per algorithm
 consmatF <- algs %>%
@@ -18,6 +17,5 @@ consmatF <- algs %>%
   purrr::flatten()
 
 # Write to file
-saveRDS(consmatF, file.path(outputDir, "unsupervised", "merge",
-                            paste0("data_pr_", dataset),
+saveRDS(consmatF, file.path(outputDir, "unsupervised", "data_pr", dataset,
                             paste0("Final_CM_", dataset, ".rds")))
