@@ -26,7 +26,6 @@ for dataset in "${dataSets[@]}"; do
             echo 'alg <- "'$alg'"' >> $R_file
             echo 'c <- '$c >> $R_file
             echo 'r <- '$r >> $R_file
-            echo 'reps <- '$reps >> $R_file
             echo 'k <- "'$k'"' >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file

@@ -13,9 +13,6 @@ for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $R_dir/$dataset
     mkdir -p $sh_dir/$dataset
-    # mkdir -p $outputDir/$subDir'/rds_out_'$dataset
-    # mkdir -p $outputDir/$subDir'/imputed_clust_'$dataset
-    # mkdir -p $outputDir/$subDir'/con_mat_'$dataset
     mkdir -p $outputDir/$subDir'/raw_clust/'$dataset
     mkdir -p $outputDir/$subDir'/imputed_clust/'$dataset
 
