@@ -4,9 +4,9 @@
 source(here::here("R/1-unsupervised/utils.R"))
 
 # Read in completed E and consensus matrices
-Ecomp <- readRDS(file.path(outputDir, "unsupervised", "data_pr_", dataset,
+Ecomp <- readRDS(file.path(outputDir, "unsupervised", "data_pr", dataset,
                            paste0("Ecomp_", dataset, ".rds")))
-CM <- readRDS(file.path(outputDir, "unsupervised", "data_pr_", dataset,
+CM <- readRDS(file.path(outputDir, "unsupervised", "data_pr", dataset,
                         paste0("Final_CM_", dataset, ".rds")))
 
 # Obtain HC from each algorithm and relabel for LCE
