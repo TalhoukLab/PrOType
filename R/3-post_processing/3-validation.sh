@@ -40,6 +40,7 @@ fi
 
 # Submit to queue if qsub exists
 logDir=$baseLogDir/$subDir
+outputDir="$outputDir/$subDir/fits $outputDir/$subDir/evals $outputDir/$subDir/plots $outputDir/$subDir/predictions"
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
