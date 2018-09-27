@@ -57,6 +57,6 @@ fi
 
 # Combine all IV summaries
 R_file=$R_dir/iv_combine.R
-echo 'outputDir <- "'$(dirname $outputDir)'"' > $R_file
+echo 'outputDir <- "'$(dirname $(dirname $outputDir))'"' > $R_file
 echo 'source("R/2-supervised/5-combine_ivs.R")' >> $R_file
 Rscript $R_file
