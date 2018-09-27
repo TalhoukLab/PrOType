@@ -104,8 +104,8 @@ done
 # Step 3: Verbose printouts
 err_msg $logDir
 echo -e "$GREEN_BULLET Logs written to \"${logDir}\""
-if [[ -z '$outputDir' ]]; then
-  echo -e "$GREEN_BULLET Outputs written to \"${outputDir}\""
-else
+if [[ -z "$outputDir" ]]; then
   echo -e "$GREEN_BULLET No outputs written"
+else
+  echo -e "$GREEN_BULLET Outputs written to \"${outputDir}\""
 fi
