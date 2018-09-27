@@ -29,9 +29,9 @@ testSet="ov.afc2_xpn"
 numBootstraps=500
 
 # directory inputs
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir_cleanup"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs_cleanup"
+workDir="/extscratch/shahlab/huntsman/dchiu/workDir_final"
+outputDir="/extscratch/shahlab/huntsman/dchiu/outputs_final"
 inputDir="/home/dchiu/Projects/PrOType/raw_data"
-baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs_cleanup"
+baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs_final"
 
 . ./assets/dev_params.sh
