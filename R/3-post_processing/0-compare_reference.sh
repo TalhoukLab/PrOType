@@ -31,6 +31,7 @@ fi
 
 # Submit to queue if qsub exists
 logDir=$baseLogDir/$subDir
+outputDir=""
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 fi
