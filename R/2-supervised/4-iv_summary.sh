@@ -25,7 +25,7 @@ for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
     mkdir -p $R_dir/$dataset
     mkdir -p $sh_dir/$dataset
-    mkdir -p $outputDir/$subDir
+    mkdir -p $outputDir/$subDir/$dataset
 
     # Content of R file
     R_file=$R_dir/$dataset/iv_summary.R
