@@ -31,7 +31,7 @@ dataset <- paste0(dat_tr, "_", top_bcm)
 
 # Choose top 5 supervised learning algorithms by rank aggregated evaluations
 top_sl_algs <- list.files(
-  path = file.path(outputDir, "supervised", "ci_sup_lrn"),
+  path = file.path(outputDir, "supervised", "top_ci"),
   pattern = dataset,
   full.names = TRUE
 ) %>%
