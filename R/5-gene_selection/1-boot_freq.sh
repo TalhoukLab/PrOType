@@ -15,27 +15,25 @@ mkdir -p $outputDir/gene_selection/boot_freq
 # Loop over studies
 studies=(`Rscript R/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
-    for alg in "${geneSelectionAlgs[@]}"; do
-        # Content of R file
-        R_file=$R_dir/boot_${study}_${alg}.R
-        echo 'study <- "'$study'"' > $R_file
-        echo 'alg <- "'$alg'"' >> $R_file
-        echo 'B <- '$numBootstraps >> $R_file
-        echo 'shouldCompute <- '$shouldCompute >> $R_file
-        echo 'outputDir <- "'$outputDir'"' >> $R_file
-        echo 'source("R/5-gene_selection/1-boot_freq.R")' >> $R_file
+    # Content of R file
+    R_file=$R_dir/boot_${study}.R
+    echo 'study <- "'$study'"' > $R_file
+    echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' >> $R_file
+    echo 'B <- '$numBootstraps >> $R_file
+    echo 'shouldCompute <- '$shouldCompute >> $R_file
+    echo 'outputDir <- "'$outputDir'"' >> $R_file
+    echo 'source("R/5-gene_selection/1-boot_freq.R")' >> $R_file
 
-        # Content of sh file
-        sh_file=$sh_dir/boot_${study}_${alg}.sh
-        echo 'Rscript' $R_file > $sh_file
-        chmod +x $sh_file
+    # Content of sh file
+    sh_file=$sh_dir/boot_${study}.sh
+    echo 'Rscript' $R_file > $sh_file
+    chmod +x $sh_file
 
-        # Add to queue if qsub exists
-        if command -v qsub &>/dev/null; then
-            file_to_submit+=($sh_file)
-            echo -e "$GREEN_TICK Added to queue: $sh_file"
-        fi
-    done
+    # Add to queue if qsub exists
+    if command -v qsub &>/dev/null; then
+        file_to_submit+=($sh_file)
+        echo -e "$GREEN_TICK Added to queue: $sh_file"
+    fi
 done
 
 # Submit to queue if qsub exists, to python otherwise

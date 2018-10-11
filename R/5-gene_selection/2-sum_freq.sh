@@ -17,7 +17,7 @@ mkdir -p $outputDir/gene_selection/sum_freq
 studies=(`Rscript R/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     # Content of R file
-    R_file=$R_dir/boot_${study}.R
+    R_file=$R_dir/sum_${study}.R
     echo 'study <- "'$study'"' > $R_file
     echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' >> $R_file
     echo 'B <- '$numBootstraps >> $R_file
@@ -26,7 +26,7 @@ for study in "${studies[@]}"; do
     echo 'source("R/5-gene_selection/2-sum_freq.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/boot_${study}.sh
+    sh_file=$sh_dir/sum_${study}.sh
     echo 'Rscript' $R_file > $sh_file
     chmod +x $sh_file
 
