@@ -170,6 +170,24 @@ x.replicates_and_Xsite <- prepare_samples(nanostring_data_replicates_and_Xsite_2
 replicates_and_Xsite_predictions <- predict_samples(final_model, x.replicates_and_Xsite)
 readr::write_csv(replicates_and_Xsite_predictions, file.path(GS_output_dir, "replicates_and_Xsite_predictions.csv"))
 
+# Technical Replicate Samples distribution (for Supplementary B.5)
+tech_dist <- nanostring_data_replicates_and_Xsite_20160915 %>%
+  tidyr::separate(
+    col = `OTTA ID`,
+    into = c("ottaID", "type"),
+    sep = "_(?=[^_|LT]+$)",
+    fill = "right"
+  ) %>%
+  tidyr::replace_na(list(type = "O")) %>%
+  dplyr::count(ottaID) %>%
+  dplyr::count(n)
+# # A tibble: 3 x 2
+#       n    nn
+#   <int> <int>
+# 1     2    95
+# 2     3    42
+# 3     4     7
+
 # Compare NanoString and Replicates_and_Xsite_samples
 pred_compare <- dplyr::inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
 dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
