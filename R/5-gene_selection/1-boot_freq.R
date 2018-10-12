@@ -6,7 +6,7 @@ y <- sl_class(train_lab, x)
 genes <- get_genes(train_dat)
 ntop <- 100
 seed_boot <- 2018
-seed_alg <- 2018
+seed_alg <- NULL
 
 for (alg in algs) {
   output_file <- file.path(outputDir, "gene_selection", "boot_freq",
@@ -16,6 +16,7 @@ for (alg in algs) {
   } else {
     cli::cat_line("Training ", alg,  " model")
     fit <- splendid::splendid_model(x, y, match_alg(alg), B, seed_boot, seed_alg)
+    saveRDS(fit, file.path(outputDir, "gene_selection", "tmp", paste0(study, "_fit_", alg, ".rds")))
     cli::cat_line("Calculating ", alg, " bootstrap frequencies")
     mods <- purrr::pluck(fit, "models")
     freq <- gene_freq(mods, alg, genes, B, ntop)
