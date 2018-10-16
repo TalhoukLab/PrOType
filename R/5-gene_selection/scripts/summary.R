@@ -6,7 +6,8 @@ overall_freq <- function(files) {
     purrr::map(tibble::column_to_rownames, "genes") %>%
     purrr::map(function(x) x / length(.)) %>%
     purrr::reduce(`+`) %>%
-    tibble::rownames_to_column("genes")
+    tibble::rownames_to_column("genes") %>%
+    dplyr::mutate_at(-1, round, digits = 5)
 }
 
 writeSummaryFreqs <- function(output_dir, train_dat, algs) {
