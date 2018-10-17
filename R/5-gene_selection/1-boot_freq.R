@@ -14,7 +14,6 @@ if (file.exists(output_file) && !shouldCompute) {
 } else {
   cli::cat_line("Training ", alg,  " model")
   fit <- splendid::splendid_model(x, y, match_alg(alg), B, seed_boot, seed_alg)
-  saveRDS(fit, file.path(outputDir, "gene_selection", "tmp", paste0(study, "_fit_", alg, ".rds")))
   cli::cat_line("Calculating ", alg, " bootstrap frequencies")
   mods <- purrr::pluck(fit, "models")
   freq <- gene_freq(mods, alg, genes, B, ntop)
