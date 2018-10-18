@@ -18,7 +18,7 @@ R_file=$R_dir/validation.R
 echo 'trainSet <- "'$trainSet'"' > $R_file
 echo 'testSet <- "'$testSet'"' >> $R_file
 echo 'outputDir <- "'$outputDir'"' >> $R_file
-echo 'dataDir <- "assets/data"' >> $R_file
+echo 'dataDir <- "data"' >> $R_file
 echo 'source("R/3-post_processing/3-fit_top_models.R")' >> $R_file
 echo 'source("R/3-post_processing/4-validate_array.R")' >> $R_file
 echo 'source("R/3-post_processing/5-predict_C2.R")' >> $R_file

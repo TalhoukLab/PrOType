@@ -29,7 +29,7 @@ map_to_nano <- function(dataSet, inputDir, outputDir, shouldCompute) {
 
   # Perform mapping according to affy
   # Join mapping table with data table and take median of any repeat probe IDs
-  df <- readr::read_csv(file.path("assets", "data", "hgnc", "HGNC-Affymetrix-NanoString-OTTA_Map.csv"), col_types = readr::cols()) %>%
+  df <- readr::read_csv(here::here("data", "hgnc", "HGNC-Affymetrix-NanoString-OTTA_Map.csv"), col_types = readr::cols()) %>%
     dplyr::filter(!is.na(`NanoString ProbeID`)) %>%
     dplyr::select(-index) %>%
     magrittr::set_names(c("nanoID", "affy.probe", "symbol", "symbol.single", "nanostring.probeID", "housekeeping")) %>%

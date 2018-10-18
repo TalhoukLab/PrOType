@@ -19,7 +19,7 @@ for dataset in "${trainSets[@]}"; do
     R_file=$R_dir/batch_effects_$dataset.R
     echo 'dataset <- "'$dataset'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
-    echo 'dataDir <- "assets/data"' >> $R_file
+    echo 'dataDir <- "data"' >> $R_file
     echo 'source("R/3-post_processing/2-evaluate_batch_effects.R")' >> $R_file
 
     # Content of sh file

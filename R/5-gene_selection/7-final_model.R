@@ -5,7 +5,7 @@ n_genes <- 55
 alg <- "rf"
 grm <- "CTHRC1"
 seed <- 2018
-input_dir <- "assets/data/nstring"
+input_dir <- "data/nstring"
 GS_output_dir <- file.path(outputDir, "gene_selection", "final_model")
 
 # Define overlap

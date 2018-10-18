@@ -13,7 +13,7 @@ mkdir -p $sh_dir
 R_file=$R_dir/check_baseline.R
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' > $R_file
 echo 'outputDir <- "'$outputDir'"' >> $R_file
-echo 'dataDir <- "assets/data"' >> $R_file
+echo 'dataDir <- "data"' >> $R_file
 echo 'source("R/3-post_processing/0-compare_reference.R")' >> $R_file
 
 # Content of sh file

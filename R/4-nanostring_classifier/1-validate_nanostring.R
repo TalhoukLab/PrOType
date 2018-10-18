@@ -12,10 +12,10 @@ all_fits <- list.files(file.path(outputDir, "post_processing", "fits"),
 
 # Import overlap nanostring samples (remove 1 case without ottaID match)
 cli::cat_line("Importing overlap nanostring samples")
-overlaps <- load_overlap(dir = "assets/data/nstring") %>%
+overlaps <- load_overlap(dir = "data/nstring") %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
 data_overlap_nstring <-
-  import_nstring_overlap(dir = "assets/data/nstring",
+  import_nstring_overlap(dir = "data/nstring",
                          osamples = overlaps[["ottaID"]])
 
 # Predict overlap nstring samples and combine with published

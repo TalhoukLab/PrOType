@@ -74,7 +74,7 @@ This document outlines the input/outputs from each step (R file) of the pipeline
 ### GeneMapping.R
 - Inputs
 	* {outputDir}/{dataset}/{data_pr_{dataset}/tdat_{dataset}.rds
-	* assets/data/HGNC-Affymetrix-NanoString-OTTA_Map.csv
+	* data/hgnc/HGNC-Affymetrix-NanoString-OTTA_Map.csv
 - Outputs
 	* {outputDir}/{dataset}/{data_pr_{dataset}/npcp-hcNorm_{dataset}.rds
 	* {outputDir}/{dataset}/{data_pr_{dataset}/tdat_mapped_{dataset}.rds

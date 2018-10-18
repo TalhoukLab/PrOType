@@ -12,7 +12,7 @@ genes <- van_mod[["names"]]
 
 # Load all nanostring data
 cli::cat_line("Loading all nanostring data")
-nsdat <- load_nstring_all(dir = "assets/data/nstring", genes = genes)
+nsdat <- load_nstring_all(dir = "data/nstring", genes = genes)
 
 # Predict all nanostring data
 cli::cat_line("Predicting all nanostring data")

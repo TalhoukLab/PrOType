@@ -23,7 +23,7 @@ match_alg <- function(alg) {
 #*****************************************************************
 load_nanostring <- function(cut = "all") {
   clinical_vars <- 3:37
-  nstring_dir <- "assets/data/nstring"
+  nstring_dir <- "data/nstring"
   # import cut 1 nanostring
   c1 <- readr::read_csv(
     file = here::here(nstring_dir, "nanostring_classifier_data_batch1_20170217_updated.csv"),
@@ -65,12 +65,12 @@ load_nanostring <- function(cut = "all") {
 # Load published subtype data (and merged with prediction labels)
 load_prediction_labels <- function(nsdat) {
   cli::cat_line("Loading Prediction Labels")
-  preds <- read.csv(here::here("assets/data/nstring/predictions.csv"),
+  preds <- read.csv(here::here("data/nstring/predictions.csv"),
                     stringsAsFactors = FALSE)
   if (!all(nsdat$`OTTA.ID` %in% preds$ottaID)) {
     stop("Missing OTTA ID cases")
   }
-  published <- read.csv(here::here("assets/data/nstring/Subtype_Original.csv"),
+  published <- read.csv(here::here("data/nstring/Subtype_Original.csv"),
                         stringsAsFactors = FALSE) %>%
     dplyr::select(ottaID, published) %>%
     dplyr::mutate_at("published", make.names)

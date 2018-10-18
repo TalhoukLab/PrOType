@@ -1,7 +1,7 @@
 # Load utility functions
 source(here::here("R/5-gene_selection/scripts/utils.R"))
-nstring_path <- "assets/data/nstring"
-array_path <- "assets/data/array/OverlapSet"
+nstring_path <- "data/nstring"
+array_path <- "data/array/OverlapSet"
 
 # Load data
 # Load prediction labels and find overlapping samples where there is agreement
