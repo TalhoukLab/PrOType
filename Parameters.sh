@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # data information
-#dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
 dataSets=(ov.afc1_cbt ov.afc1_xpn)
 shouldCompute=FALSE
 
 # Unsupervised parameters
 reps=1000
 k=4
-c=50 # use for determining splitting criterion
+c=50
 
 # Supervised parameters
 supervised_reps=500
@@ -29,9 +28,9 @@ testSet="ov.afc2_xpn"
 numBootstraps=500
 
 # directory inputs
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir_final"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs_final"
+workDir="/extscratch/shahlab/huntsman/dchiu/workDir"
+outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
 inputDir="/home/dchiu/Projects/PrOType/raw_data"
-baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs_final"
+baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
 
 . ./assets/dev_params.sh
