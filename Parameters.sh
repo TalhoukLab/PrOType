@@ -1,14 +1,13 @@
 #!/bin/bash
 
 # data information
-#dataSets=(ov.afc1_xpn ov.afc1_cbt ov.afc2_xpn ov.afc2_cbt)
 dataSets=(ov.afc1_cbt ov.afc1_xpn)
-shouldCompute=TRUE
+shouldCompute=FALSE
 
 # Unsupervised parameters
 reps=1000
 k=4
-c=50 # use for determining splitting criterion
+c=50
 
 # Supervised parameters
 supervised_reps=500
@@ -25,10 +24,13 @@ trainSet="ov.afc1_xpn"
 trainSet2="ov.afc1_cbt"
 testSet="ov.afc2_xpn"
 
+# Gene Selection
+numBootstraps=500
+
 # directory inputs
-workDir="/home/dchiu/Projects/PrOType/array_classifier/1_cluster_pipeline/"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs/"
-inputDir="/home/dchiu/Projects/PrOType/raw_data/"
-logDir="/extscratch/shahlab/huntsman/dchiu/logs/"
+workDir="/extscratch/shahlab/huntsman/dchiu/workDir"
+outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
+inputDir="/home/dchiu/Projects/PrOType/raw_data"
+baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
 
 . ./assets/dev_params.sh

@@ -1,84 +1,146 @@
-# Makefile to test parallel pipeline
-all: clustering post_processing nanostring gene_selection
+# Makefile to run PrOType pipeline
 
-# ------------- PART 1 ----------------
-Unsupervised: files cluster CMmerge merge ConFun FinalClust
+# Run full pipeline
+all: array nanostring gene_selection cross_platform
 
-Genemapping: map
+# Intermediate targets
+array: unsupervised supervised post_processing
 
-Supervised: SLtrain SLreduce
+unsupervised: prep_data map_genes cluster consmat merge_clust merge_cm con_fun final_clust
 
-IVSummary: trainEval supLearn IVsummary
+supervised: train_eval merge_eval top_ci iv_summary
 
-clustering: Unsupervised Genemapping Supervised IVSummary
+post_processing: compare plot_iv batch_effects validation
+
+gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
+
+cross_platform: cp_analysis cp_predictions
+
+
+# Part 1: unsupervised learning
 
 # Prepare data (pre-processing and filtering)
 prep_data:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/1-prep_data.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Create scripts needed for pipeline
-files:	prep_data
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/CreateScripts.sh $(filter-out $@,$(MAKECMDGOALS))
+# Map genes to NanoString
+map_genes:
+	./R/1-unsupervised/2-map_genes.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Running consensus clustering on the queue
+# Consensus clustering
 cluster:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/subJobs.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/1-unsupervised/3-clustering.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Merge consensus matrices on the queue (not used)
-CMmerge:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/MergeConsMat.sh $(filter-out $@,$(MAKECMDGOALS))
+# Consensus matrices
+consmat:
+	./R/1-unsupervised/4-consmat.sh $(filter-out $@,$(MAKECMDGOALS))
 
-merge:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/MergeFinal.sh $(filter-out $@,$(MAKECMDGOALS))
+# Merge cluster assignments
+merge_clust:
+	./R/1-unsupervised/5-merge_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
-ConFun:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/ConFun.sh $(filter-out $@,$(MAKECMDGOALS))
+# Merge consensus matrices
+merge_cm:
+	./R/1-unsupervised/6a-merge_cm_partial.sh $(filter-out $@,$(MAKECMDGOALS)) && \
+	./R/1-unsupervised/6b-merge_cm_complete.sh $(filter-out $@,$(MAKECMDGOALS))
 
-FinalClust:
-	./array_classifier/1_cluster_pipeline/1_Unsupervised/FinalClust.sh $(filter-out $@,$(MAKECMDGOALS))
+# Calculate consensus function ensembles
+con_fun:
+	./R/1-unsupervised/7-con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
 
-map:
-	./array_classifier/1_cluster_pipeline/2_Genemapping/map.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Create scripts needed for SL pipeline
-SLfiles:
-	./array_classifier/1_cluster_pipeline/3_Supervised/CreateSLScripts.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# Run scripts to train models
-SLtrain: SLfiles
-	./array_classifier/1_cluster_pipeline/3_Supervised/train.sh $(filter-out $@,$(MAKECMDGOALS))
-
-SLreduce:
-	./array_classifier/1_cluster_pipeline/3_Supervised/reduce.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# return internal validation summary
-trainEval:
-	./array_classifier/1_cluster_pipeline/4_IVSummary/train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# return internal validation summary
-supLearn:
-	./array_classifier/1_cluster_pipeline/4_IVSummary/CIsupLearn.sh $(filter-out $@,$(MAKECMDGOALS))
-
-# return internal validation summary
-IVsummary:
-	./array_classifier/1_cluster_pipeline/4_IVSummary/ivSummary.sh $(filter-out $@,$(MAKECMDGOALS))
+# Final clusters and internal validitiy indices
+final_clust:
+	./R/1-unsupervised/8-final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 2 -------------
-post_processing:
-	./array_classifier/2_post_processing/run_post_processing.sh $(filter-out $@,$(MAKECMDGOALS))
+# Part 2: supervised learning
 
+# Train models and return evaluations
+train_eval:
+	./R/2-supervised/1-train_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Merge evaluations across reps and algorithms
+merge_eval:
+	./R/2-supervised/2-merge_eval.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Confidence intervals for top supervised learning algorithms
+top_ci:
+	./R/2-supervised/3-top_ci.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Internal validation summary
+iv_summary:
+	./R/2-supervised/4-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# Part 3: Post-processing
+
+# compare reference outputs
+compare:
+	./R/3-post_processing/0-compare_reference.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# internal validity plots
+plot_iv:
+	./R/3-post_processing/1-internal_validity_plots.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# evaluate batch effects
+batch_effects:
+	./R/3-post_processing/2-evaluate_batch_effects.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# validate overlap array and cut2 samples
+validation:
+	./R/3-post_processing/3-validation.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# Part 4: validate NanoString classifier
+
+# NanoString overlap validation and prediction
 nanostring:
-	./nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
+	./R/4-nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# ----------- PART 4 -------------
-gene_selection:
-	./GeneSelection/run_gene_selection.sh $(filter-out $@,$(MAKECMDGOALS))
+# Part 5: gene selection in full NanoString
+boot_freq:
+	./R/5-gene_selection/1-boot_freq.sh $(filter-out $@,$(MAKECMDGOALS))
+
+sum_freq:
+	./R/5-gene_selection/2-sum_freq.sh $(filter-out $@,$(MAKECMDGOALS))
+
+train:
+	./R/5-gene_selection/3-train.sh $(filter-out $@,$(MAKECMDGOALS))
+
+predict:
+	./R/5-gene_selection/4-predict.sh $(filter-out $@,$(MAKECMDGOALS))
+
+evaluate:
+	./R/5-gene_selection/5-evaluate.sh $(filter-out $@,$(MAKECMDGOALS))
+
+retrain:
+	./R/5-gene_selection/6-retrain.sh $(filter-out $@,$(MAKECMDGOALS))
+
+final_model:
+	./R/5-gene_selection/7-final_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
+# Part 6: cross-platform verification
+cp_analysis:
+	./R/6-cross_platform/1-cp_analysis.sh $(filter-out $@,$(MAKECMDGOALS))
+
+cp_predictions:
+	./R/6-cross_platform/2-cp_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# ---------- DEBUG CHECKPOINTS ---------
+from-Unsupervised: Unsupervised from-Supervised
+
+from-Supervised: Supervised from-IVSummary
+
+from-IVSummary: IVSummary from-post_processing
+
+from-post_processing: post_processing gene_selection
+
+
+# Clean target
 %:
 		@:
 clean:
-		rm -rf ./TCGA; #rm -rf /Users/atalhouk/Desktop/HGSCdata/outputs/TCGA
-
+	./assets/clean.sh

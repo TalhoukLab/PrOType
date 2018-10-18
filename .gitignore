@@ -1,13 +1,6 @@
-array_classifier/1_cluster_pipeline/R_file/*
-array_classifier/1_cluster_pipeline/ov.*/
-array_classifier/1_cluster_pipeline/raw_data
-GeneSelection/outputs/
-raw_data/
-.idea/
 .Rproj.user
 .Rhistory
 .RData
-.Ruserdata
 .DS_Store
-nanostring
+raw_data/
 packrat/lib*/
