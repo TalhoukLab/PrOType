@@ -22,17 +22,31 @@ Please follow the manual below to run the pipeline on your system. Raw data can 
 
 ## Installation
 
+### Docker
+
 PrOType can be run in a preconfigured Docker container. This will allow for a reproducible environment across different machines and operating systems. To install docker on your machine see the official docs: https://docs.docker.com/install/
 
-Once Docker is installed, navigate to the PrOType project directory on your machine then run: `docker image build -f Dockerfile -t protype:latest .` to build the image on your machine. This may take some time. After the image has been built, you can start a container with:
+Once Docker is installed, navigate to the PrOType project directory on your machine then run
 
-`docker run -it --rm protype:latest bash` 
+`docker image build -f Dockerfile -t protype:latest .`
 
-For more information on running docker containers, see the official docs: https://docs.docker.com/engine/reference/run/
+to build the image on your machine (this may take some time). After the image has been built, you can start a container with
 
-Inside the docker container run `git clone https://github.com/AlineTalhouk/PrOType.git` and navigate to the `PrOType` directory.
+`docker run -it --rm protype:latest bash`
 
-The `Dockerfile` is already configured with all the dependencies and tools you'll need to run PrOType.
+Inside the docker container, run `git clone https://github.com/AlineTalhouk/PrOType.git` and navigate to the `PrOType` directory. The `Dockerfile` is already configured with all the dependencies and tools you'll need to run PrOType. For more information on running docker containers, see the official docs: https://docs.docker.com/engine/reference/run/
+
+### Packrat
+
+We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will intialize. Run
+
+`packrat::restore()`
+
+to restore all packages listed in `packrat/packrat.lock` from their package sources in `packrat/src/` (this will also take some time).
+
+The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to copy the project to the server location, and then open `R` at the project root. To share the pipeline with a collaborator, send them the output of
+
+`packrat::bundle()`
 
 ## Software Requirements
 
@@ -43,7 +57,7 @@ The `Dockerfile` is already configured with all the dependencies and tools you'l
 
 ## Usage
 
-Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See `Makefile` for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
+Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See `Makefile` for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
 
 The pipeline is broken into the following analyses:
 
