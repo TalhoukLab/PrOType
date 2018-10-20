@@ -34,3 +34,4 @@ inputDir="/home/dchiu/Projects/PrOType/raw_data"
 baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
 
 . ./assets/dev_params.sh
+. ./assets/check.sh
