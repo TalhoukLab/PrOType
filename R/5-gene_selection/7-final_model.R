@@ -8,6 +8,15 @@ seed <- 2018
 input_dir <- "data/nstring"
 GS_output_dir <- file.path(outputDir, "gene_selection", "final_model")
 
+# Load additional datasets
+Nanostring_ARL_all_samples_all_gnes_20180607 <- readxl::read_excel(file.path(input_dir, "Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
+nanostring_data_BRO_HET_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_BRO HET.test_20160915.xlsx"))
+nanostring_data_cell_lines_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_cell lines_20160915.xlsx"))
+nanostring_data_LAX_VAN_OM_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_LAX VAN OM.test_20160915.xlsx"))
+nanostring_data_ARL_paired_samples_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_ARL paired samples_20160915.xlsx"))
+nanostring_data_Rep_BIO_samples_20160916 <- readxl::read_excel(file.path(input_dir, "nanostring data_Rep.BIO samples_20160916.xlsx"))
+nanostring_data_replicates_and_Xsite_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_replicates and Xsite_20160915.xlsx"))
+
 # Define overlap
 overlap <- define_overlap(preds_new, nsdat)
 overlap_dat <- overlap$dat
@@ -97,9 +106,10 @@ write.csv(Final_Predictions, file.path(GS_output_dir, "Final_Predictions.csv"))
 write.csv(final_glist, file.path(GS_output_dir, "final_glist.csv"))
 saveRDS(final_model, file.path(GS_output_dir, "final_model.rds"))
 
-# Predict ARL NanoString samples----
-x.arl.raw <- readxl::read_excel(file.path(input_dir, "Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
-x.arl <- prepare_samples(x.arl.raw)
+# Predict additional NanoString samples----
+
+# ARL
+x.arl <- prepare_samples(Nanostring_ARL_all_samples_all_gnes_20180607)
 arl_predictions <- predict_samples(final_model, x.arl)
 readr::write_csv(arl_predictions, file.path(GS_output_dir, "arl_predictions.csv"))
 
@@ -108,10 +118,7 @@ pred_compare <- dplyr::inner_join(Final_Predictions, arl_predictions, by = "otta
 dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 140/140 agree
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
-# Predict additional NanoString samples----
-
 # BRO_HET_test
-nanostring_data_BRO_HET_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_BRO HET.test_20160915.xlsx"))
 x.bro_het_test <- prepare_samples(nanostring_data_BRO_HET_test_20160915)
 bro_het_test_predictions <- predict_samples(final_model, x.bro_het_test)
 readr::write_csv(bro_het_test_predictions, file.path(GS_output_dir, "bro_het_test_predictions.csv"))
@@ -122,7 +129,6 @@ dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 28/28 agr
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # cell_lines
-nanostring_data_cell_lines_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_cell lines_20160915.xlsx"))
 x.cell_lines <- prepare_samples(nanostring_data_cell_lines_20160915)
 cell_lines_predictions <- predict_samples(final_model, x.cell_lines)
 readr::write_csv(cell_lines_predictions, file.path(GS_output_dir, "cell_lines_predictions.csv"))
@@ -132,7 +138,6 @@ pred_compare <- dplyr::inner_join(Final_Predictions, cell_lines_predictions, by 
 nrow(pred_compare) # zero overlapping samples
 
 # LAX_VAN_OM_test
-nanostring_data_LAX_VAN_OM_test_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_LAX VAN OM.test_20160915.xlsx"))
 x.lax_van_om_test <- prepare_samples(nanostring_data_LAX_VAN_OM_test_20160915)
 lax_van_om_test_predictions <- predict_samples(final_model, x.lax_van_om_test)
 readr::write_csv(lax_van_om_test_predictions, file.path(GS_output_dir, "lax_van_om_test_predictions.csv"))
@@ -143,7 +148,6 @@ dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 48/48 agr
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # ARL_paired_samples
-nanostring_data_ARL_paired_samples_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_ARL paired samples_20160915.xlsx"))
 x.arl_paried_samples <- prepare_samples(nanostring_data_ARL_paired_samples_20160915)
 arl_paired_samples_predictions <- predict_samples(final_model, x.arl_paried_samples)
 readr::write_csv(arl_paired_samples_predictions, file.path(GS_output_dir, "arl_paired_samples_predictions.csv"))
@@ -154,7 +158,6 @@ dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 26/26 agr
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # Rep_BIO_samples
-nanostring_data_Rep_BIO_samples_20160916 <- readxl::read_excel(file.path(input_dir, "nanostring data_Rep.BIO samples_20160916.xlsx"))
 x.rep_bio_samples <- prepare_samples(nanostring_data_Rep_BIO_samples_20160916)
 rep_bio_samples_predictions <- predict_samples(final_model, x.rep_bio_samples)
 readr::write_csv(rep_bio_samples_predictions, file.path(GS_output_dir, "rep_bio_samples_predictions.csv"))
@@ -165,12 +168,16 @@ dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 38/38 agr
 identical(pred_compare$predicted, pred_compare$prediction) # verify identical
 
 # Replicates_and_Xsite_samples
-nanostring_data_replicates_and_Xsite_20160915 <- readxl::read_excel(file.path(input_dir, "nanostring data_replicates and Xsite_20160915.xlsx"))
 x.replicates_and_Xsite <- prepare_samples(nanostring_data_replicates_and_Xsite_20160915)
 replicates_and_Xsite_predictions <- predict_samples(final_model, x.replicates_and_Xsite)
 readr::write_csv(replicates_and_Xsite_predictions, file.path(GS_output_dir, "replicates_and_Xsite_predictions.csv"))
 
-# Technical Replicate Samples distribution (for Supplementary B.5)
+# Compare NanoString and Replicates_and_Xsite_samples
+pred_compare <- dplyr::inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
+dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
+identical(pred_compare$predicted, pred_compare$prediction) # verify identical
+
+# Technical Replicate Samples distribution (for Supplementary B.5) ----
 tech_dist <- nanostring_data_replicates_and_Xsite_20160915 %>%
   tidyr::separate(
     col = `OTTA ID`,
@@ -187,8 +194,3 @@ tech_dist <- nanostring_data_replicates_and_Xsite_20160915 %>%
 # 1     2    95
 # 2     3    42
 # 3     4     7
-
-# Compare NanoString and Replicates_and_Xsite_samples
-pred_compare <- dplyr::inner_join(Final_Predictions, replicates_and_Xsite_predictions, by = "ottaID")
-dplyr::summarize(pred_compare, agree = sum(predicted == prediction)) # 120/120 agree
-identical(pred_compare$predicted, pred_compare$prediction) # verify identical
