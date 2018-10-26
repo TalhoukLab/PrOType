@@ -32,10 +32,10 @@ test2 <- define_batch(preds_new, nsdat, batch = "b3")
 test2_lab <- test2$lab
 test2_dat <- test2$dat
 
-# Define test 3 (cut4)
+# Define test 3 (cut4) (remove ARL samples)
 test3 <- define_batch(preds_new, nsdat, batch = "b4")
-test3_lab <- test3$lab
-test3_dat <- test3$dat
+test3_lab <- test3$lab %>% dplyr::filter(!ottaID %in% Nanostring_ARL_all_samples_all_gnes_20180607[["OTTA ID"]])
+test3_dat <- test3$dat %>% dplyr::filter(!OTTA.ID %in% Nanostring_ARL_all_samples_all_gnes_20180607[["OTTA ID"]])
 
 # Build final model
 cli::cat_line("Build the final model with top ", n_genes, " genes")
