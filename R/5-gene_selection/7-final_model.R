@@ -52,6 +52,14 @@ final_glist <- sum_freq %>%
   head(n_genes)
 final_model <- splendid::classification(x[, final_glist], y, algorithms = alg, seed_alg = seed)
 
+# Test on Cut 1 (training data) ----
+cli::cat_line("Testing the final model on the ", nrow(train_dat), " cut 1 samples")
+x.new <- sl_data(train_dat)
+y.new <- sl_class(train_lab, x.new)
+
+train_lab$prediction <- splendid::prediction(final_model, x.new[, final_glist], y.new)
+train_eval <- caret::confusionMatrix(train_lab$prediction, train_lab$Adaboost.xpn)
+
 # Test on Overlapping Samples----
 cli::cat_line("Testing the final model on the ", nrow(overlap_dat), " overlapping samples")
 x.new <- sl_data(overlap_dat)
