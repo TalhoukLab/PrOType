@@ -1,11 +1,9 @@
 #!/usr/bin/env bash
 
-# Developer params
-dataSets=($trainSet $trainSet2 $testSet)
+# Developer parameters
+shouldCompute=FALSE
 algs=(nmfbrunet nmflee distalgs rest)
 cons=(majority kmodes CSPA LCEcts LCEsrs LCEasrs)
-referenceClass="majority"
-classificationAlgs=(adaboost rf mlr_ridge mlr_lasso)
 supervisedAlgs=(first second third fourth)
 geneSelectionAlgs=(lasso rf ada)
 
