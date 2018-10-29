@@ -57,7 +57,7 @@ The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to
 
 ## Usage
 
-Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See `Makefile` for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
+Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See [`Makefile`](https://github.com/AlineTalhouk/PrOType/blob/master/Makefile) for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
 
 The pipeline is broken into the following analyses:
 
