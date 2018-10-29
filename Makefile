@@ -17,7 +17,7 @@ gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 cross_platform: cp_analysis cp_predictions
 
 
-# Part 1: unsupervised learning
+# Part 1: Unsupervised Learning
 
 # Prepare data (pre-processing and filtering)
 prep_data:
@@ -48,12 +48,12 @@ merge_cm:
 con_fun:
 	./R/1-unsupervised/7-con_fun.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Final clusters and internal validitiy indices
+# Final clusters and internal validity indices
 final_clust:
 	./R/1-unsupervised/8-final_clust.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# Part 2: supervised learning
+# Part 2: Supervised Learning
 
 # Train models and return evaluations
 train_eval:
@@ -67,76 +67,77 @@ merge_eval:
 top_ci:
 	./R/2-supervised/3-top_ci.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Internal validation summary
+# Internal validation summary and combined across datasets
 iv_summary:
 	./R/2-supervised/4-iv_summary.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 3: Post-processing
 
-# compare reference outputs
+# Compare reference outputs
 compare:
 	./R/3-post_processing/0-compare_reference.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# internal validity plots
+# Internal validity plots
 plot_iv:
 	./R/3-post_processing/1-internal_validity_plots.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# evaluate batch effects
+# Evaluate batch effects
 batch_effects:
 	./R/3-post_processing/2-evaluate_batch_effects.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# validate overlap array and cut2 samples
+# Validate overlap array and cut 2 samples
 validation:
 	./R/3-post_processing/3-validation.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# Part 4: validate NanoString classifier
+# Part 4: Validate NanoString classifier
 
 # NanoString overlap validation and prediction
 nanostring:
 	./R/4-nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
-# Part 5: gene selection in full NanoString
+# Part 5: Gene Selection in full NanoString
+
+# Bootstrap frequencies of top selected genes
 boot_freq:
 	./R/5-gene_selection/1-boot_freq.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Summarized frequencies across studies
 sum_freq:
 	./R/5-gene_selection/2-sum_freq.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Train models using top genes
 train:
 	./R/5-gene_selection/3-train.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Predict left out study using trained models
 predict:
 	./R/5-gene_selection/4-predict.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Evaluate predictions using gene analysis, visualizations
 evaluate:
 	./R/5-gene_selection/5-evaluate.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Retrain models using top genes with finer granularity
 retrain:
 	./R/5-gene_selection/6-retrain.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Fit a final model and predict all NanoString and external data
 final_model:
 	./R/5-gene_selection/7-final_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 6: cross-platform verification
+
+# Analyze cross-platform
 cp_analysis:
 	./R/6-cross_platform/1-cp_analysis.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Predict cross-platform
 cp_predictions:
 	./R/6-cross_platform/2-cp_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
-
-
-# ---------- DEBUG CHECKPOINTS ---------
-from-Unsupervised: Unsupervised from-Supervised
-
-from-Supervised: Supervised from-IVSummary
-
-from-IVSummary: IVSummary from-post_processing
-
-from-post_processing: post_processing gene_selection
 
 
 # Clean target
