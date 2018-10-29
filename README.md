@@ -1,91 +1,79 @@
 # PrOType
 
-Molecular Classification of Ovarian Cancer
+The Predictor of Ovarian Cancer Type
 
-This is a repository of all the necessary scripts to run the Vancouver analysis of the molecular subtypes of High Grade Serous Ovarian Carcinoma. 
+This repository contains all the data and scripts used to run the Vancouver analysis of the molecular subtypes of High Grade Serous Carcinoma.
 
-![Caption for the picture.](assets/studyDesign.png)
-
-In order to successfully run the scripts on this repository you need to download the data folder (provided by us) to your local machine .
+![Study Design](assets/study_design.png)
 
 ## Introduction
 
-This documentation will guide you through the process of running the array classification pipeline, which entails the following:
+This documentation will guide you through the process of running the full pipeline, which includes the following components:
 
-1. `1_cluster_pipeline`: performs consensus clustering to determine HGSC subtypes using an unsupervised ensemble  method and performs supervised analysis to classify these subtypes, all of which are conducted in a computer cluster environment sequentially. 
-2. `2_post_processing`: validates the top performing classifiers for different batch correction methods (XPN and CBT) and selects the candidate model to be used for prediction on Nanostring.
+1. **Unsupervised Learning**: use consensus clustering to determine HGSC subtypes using an unsupervised ensemble method
+2. **Supervised Learning**: uses cluster assignments from previous step to classify new samples and learn the best supervised algorithm
+3. **Post Processing**: validates top performing classifiers for different batch correction methods (XPN and CBT), and selects the
+candidate model for predicting NanoString samples based on validating on overlap data
+4. **NanoString Classifier**: uses candidate model to predict full NanoString data and output predicted subtypes
+5. **Gene Selection**: select top genes based on training batch 1 of NanoString data and make final model predictions
+6. **Cross Platform**: cross platform comparisons and evaluations
 
-Please follow the manual below to run the pipeline on your system.
-
-Data required by the pipeline is provided upon request.
-
-# TODO: ------------------------
-
-To reproduce the full analysis the scripts should be run in a sequential order as follows:
-
-1. `array_classifier`: performs the unsupervised analysis on the array data and uses the discovery labels to train several models and perform the array validation above.
-2. `nanostring_classifier`: performs the validation of the classifier on the NanoString data in the first validation and compares the labels. Subtype is assigned to the entire NanoString dataset.
-
-# TODO: -----------------------------------
+Please follow the manual below to run the pipeline on your system. Raw data can be provided upon request.
 
 ## Installation
 
 ### Docker
 
-PrOType is able to run in a preconfigured Docker container.  This will allow for a repeatable environment accross different machines and computing environments.
+PrOType can be run in a preconfigured Docker container. This will allow for a reproducible environment across different machines and operating systems. To install docker on your machine see the official docs: https://docs.docker.com/install/
 
+Once Docker is installed, navigate to the PrOType project directory on your machine then run
 
+`docker image build -f Dockerfile -t protype:latest .`
 
-To install docker on your machine see the official docs: https://docs.docker.com/install/
+to build the image on your machine (this may take some time). After the image has been built, you can start a container with
 
+`docker run -it --rm protype:latest bash`
 
+Inside the docker container, run `git clone https://github.com/AlineTalhouk/PrOType.git` and navigate to the `PrOType` directory. The `Dockerfile` is already configured with all the dependencies and tools you'll need to run PrOType. For more information on running docker containers, see the official docs: https://docs.docker.com/engine/reference/run/
 
-Once Docker is installed, navigate to `/PrOType` on your machine then run: `docker image build -f Dockerfile -t protype:latest .` 
+### Packrat
 
-to build the image on your machine.  This may take some time.  After this has finished, you can start a container with:
+We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will intialize. Run
 
-`docker run -it --rm protype:latest bash` 
+`packrat::restore()`
 
-For more information on running docker containers, see the official docs: https://docs.docker.com/engine/reference/run/
+to restore all packages listed in `packrat/packrat.lock` from their package sources in `packrat/src/` (this will also take some time).
 
-Now we just need the code!
+The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to copy the project to the server location, and then run the various `make` targets at the project root. This ensures that packages loaded from bash calls to `Rscript` use the packrat private library instead of the system library. To share the pipeline with a collaborator, send them the output of
 
-Inside the docker container run `git clone https://github.com/AlineTalhouk/PrOType.git` and navigate inside the `PrOType` directory.
+`packrat::bundle()`
 
+## Software Requirements
 
-
-The Dockerfile is already configured with all the dependencies and tools you'll need to run PrOType.  You can now continue to the `Usage` section of this README.
-
-
+- Linux environment (distribution CentOS 5.4 was used)
+- R version 3.5.1
+- git
+- GNU make
 
 ## Usage
 
-PrOType has a series of multi-step 'tasks',  (outlined below) that can be combined to perform the full analysis.
+Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See `Makefile` for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
 
+The pipeline is broken into the following analyses:
 
+- All Array Analysis
+  - Unsupervised clustering using `diceR`
+  - Supervised classification using `splendid`
+  - Post-Processing
+- NanoString Analysis
+  - Full prediction of NanoString data
+- Gene Selection
+  - Reduced gene list
+  - Predict final model
+- Cross Platform
 
-The tasks and their steps are as follows:
+To use alternative options than the default pipeline parameters, modify the relevant fields in `Parameters.sh`.
 
-- Clustering
-  - Unsupervised Clustering
-  - Genemapping
-  - Supervised
-  - IV Summary
-- Post Processing
-- Nanostring Classification
-- Reduced GeneList
-- Final Nanostring Model
+## Additional Resources
 
-### Clustering
-
-To run clustering, open the `Parameters.sh` file and edit the section for `Supervised, Unsupervised, and Data` parameters.  Once that is setup the way you want it, run `make clustering`.
-
-
-
-### Post Processing
-
-To run post-processing, open the `Parameters.sh` file and edit the section for ` Data` parameters, assuming you didn't configure them for `Clustering`. Once that is setup the way you want it, run `make post_processing`.
-
-### Nanostring Classifier
-
-To run post-processing, open the `Parameters.sh` file and edit the section for ` Data` parameters, assuming you didn't configure them for `Post Processing`.  Once that is setup the way you want it, run `make nanostring`.
+Documentation about the study, I/O breakdown can be found in the `docs/` directory. Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the `assets/` directory.
