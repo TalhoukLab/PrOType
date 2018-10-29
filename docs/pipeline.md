@@ -54,8 +54,8 @@ The NanoString classifier uses the top array classifier to predict and validate 
 The gene selection pipeline selects a minimal set of genes for the final model used to predict molecular subtypes of HGSC. We adopt a combination of bootstrap resampling and a leave one study out approach. Run the gene selection pipeline with `make gene_selection`.
 
 An initial data setup occurs:
-    - We select samples from NanoString cut 1 where there was consensus between the TCGA model predictions (using random forest) and the overall array model predictions (using Adaboost)
-    - We exclude "overlapping samples", which are samples that have RNA expression on both the array and the NanoString platform
+  - We select samples from NanoString cut 1 where there was consensus between the TCGA model predictions (using random forest) and the overall array model predictions (using Adaboost)
+  - We exclude "overlapping samples", which are samples that have RNA expression on both the array and the NanoString platform
 
 Then iterating over each study:
 
@@ -66,9 +66,9 @@ Then iterating over each study:
 5. `5-evaluate:`: Compare predictions with the gold standard consensus labels, make plots of overall and by-class accuracy and F1-score, analyze genes ranked as important by each study.
 
 The second part of the gene selection pipeline employs a different setup:
-    - Define two test cohorts: "overlapping samples", which are samples that have RNA expression on both the array and the NanoString platform, and cut 2 test samples
-    - Consider the top 59 genes from each frequency list which were generated in the previous step.
-    - Take the union of all the top 59 lists (we highlight on a heatmap which of these would be in the top 59 form the average overall frequency list); this results in ~ 77 genes
+  - Define two test cohorts: "overlapping samples", which are samples that have RNA expression on both the array and the NanoString platform, and cut 2 test samples
+  - Consider the top 59 genes from each frequency list which were generated in the previous step.
+  - Take the union of all the top 59 lists (we highlight on a heatmap which of these would be in the top 59 form the average overall frequency list); this results in ~ 77 genes
 
 6. `6-retrain`: Retrain model with more granularity.
     - Train models using random forest only, going from the top 50 to the top 70 genes adding one gene at a time based on frequency
