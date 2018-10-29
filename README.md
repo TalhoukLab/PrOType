@@ -72,8 +72,10 @@ The pipeline is broken into the following analyses:
   - Predict final model
 - Cross Platform
 
-To use alternative options than the default pipeline parameters, modify the relevant fields in `Parameters.sh`.
+For a more detailed description of the pipeline, see [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/pipeline.md).
+
+To use alternative options than the default pipeline parameters, modify the relevant fields in `Parameters.sh`. Read more about the various parameters [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/parameters.md).
 
 ## Additional Resources
 
-Documentation about the study, I/O breakdown can be found in the `docs/` directory. Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the `assets/` directory.
+A tree visualization of the file structure can be found [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/files.md). Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the [`assets/`](https://github.com/AlineTalhouk/PrOType/tree/master/assets) directory.
