@@ -57,7 +57,7 @@ The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to
 
 ## Usage
 
-Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See `Makefile` for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
+Most of the PrOType pipeline is run using a Sun Grid Engine by distributing batch jobs to worker nodes via `qsub`, thus employing a parallel computing environment. To run the full pipeline, run `make all`. Separate sections of the pipeline can be run by running their respective make targets. See [`Makefile`](https://github.com/AlineTalhouk/PrOType/blob/master/Makefile) for all target names. The user is encouraged to run `make` in a terminal multiplexer such as `screen` or `tmux` so that computationally expensive operations can continue to run in an embedded server and not be killed by server timeouts.
 
 The pipeline is broken into the following analyses:
 
@@ -72,8 +72,10 @@ The pipeline is broken into the following analyses:
   - Predict final model
 - Cross Platform
 
-To use alternative options than the default pipeline parameters, modify the relevant fields in `Parameters.sh`.
+For a more detailed description of the pipeline, see [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/pipeline.md).
+
+To use alternative options than the default pipeline parameters, modify the relevant fields in `Parameters.sh`. Read more about the various parameters [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/parameters.md).
 
 ## Additional Resources
 
-Documentation about the study, I/O breakdown can be found in the `docs/` directory. Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the `assets/` directory.
+A tree visualization of the file structure can be found [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/files.md). Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the [`assets/`](https://github.com/AlineTalhouk/PrOType/tree/master/assets) directory.
