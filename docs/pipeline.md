@@ -44,14 +44,14 @@ The `3-post_processing` pipeline validates the top performing classifiers for di
 
 ## NanoString Classifier
 
-The NanoString classifier uses the top array classifier to predict and validate NanoString data. Run the NanoString classifier with `make nanostring`.
+The NanoString classifier `4-nanostring_classifier` uses the top array classifier to predict and validate NanoString data. Run the NanoString classifier with `make nanostring`.
 
 1. `1-validate_nanostring`: The optimal model and batch-correction method are validated on the overlapping samples between Affymetrix and Nanostring. Evaluation between array, NanoString, and published labels is conducted.
 2. `2-predict_all_nanostring`: The optimal model (adaboost) is used to predict all samples of NanoString (batch 1-4)
 
 ## Gene Selection
 
-The gene selection pipeline selects a minimal set of genes for the final model used to predict molecular subtypes of HGSC. We adopt a combination of bootstrap resampling and a leave one study out approach. Run the gene selection pipeline with `make gene_selection`.
+The `5-gene_selection` pipeline selects a minimal set of genes for the final model used to predict molecular subtypes of HGSC. We adopt a combination of bootstrap resampling and a leave one study out approach. Run the gene selection pipeline with `make gene_selection`.
 
 An initial data setup occurs:
   - We select samples from NanoString cut 1 where there was consensus between the TCGA model predictions (using random forest) and the overall array model predictions (using Adaboost)
@@ -79,7 +79,7 @@ The second part of the gene selection pipeline employs a different setup:
 
 ## Cross-Platform
 
-The cross-platform pipeline evaluates expression level of the same genes (and the same samples) measured using NanoString and measured using Affymetrix array. It also evaluates the locked down model on NanoString and on Array and compares the prediction across platforms. Run the cross-platform pipeline using `run cross_platform`.
+The `6-cross_platform` pipeline evaluates expression level of the same genes (and the same samples) measured using NanoString and measured using Affymetrix array. It also evaluates the locked down model on NanoString and on Array and compares the prediction across platforms. Run the cross-platform pipeline using `run cross_platform`.
 
 Both steps below first load and map samples and genes between array and NanoString using `0-cp_map.R`.
 
