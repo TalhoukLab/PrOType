@@ -44,7 +44,7 @@ We use `packrat` as a package management system to keep track of precise version
 
 to restore all packages listed in `packrat/packrat.lock` from their package sources in `packrat/src/` (this will also take some time).
 
-The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to copy the project to the server location, and then open `R` at the project root. To share the pipeline with a collaborator, send them the output of
+The easiest way to run `PrOType` on a Linux server is to use `git` or `rsync` to copy the project to the server location, and then run the various `make` targets at the project root. This ensures that packages loaded from bash calls to `Rscript` use the packrat private library instead of the system library. To share the pipeline with a collaborator, send them the output of
 
 `packrat::bundle()`
 
