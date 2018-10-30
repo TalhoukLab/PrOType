@@ -1,7 +1,7 @@
 # Gene Selection setup ----------------------------------------------------
 
 # Load utility functions
-GS_training_dir <- "R/5-gene_selection/scripts"
+GS_training_dir <- "pipeline/5-gene_selection/scripts"
 GS_training_files <- c(
   "define.R",
   "train.R",

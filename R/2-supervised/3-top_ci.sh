@@ -20,7 +20,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'fdat <- "'$dataset'"' >> $R_file
     echo "top <- $top" >> $R_file
-    echo 'source("R/2-supervised/3-top_ci.R")' >> $R_file
+    echo 'source("pipeline/2-supervised/3-top_ci.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/top_ci.sh

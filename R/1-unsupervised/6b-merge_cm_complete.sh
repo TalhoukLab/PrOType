@@ -20,7 +20,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file
     echo 'shouldCompute <- '$shouldCompute >> $R_file
-    echo 'source("R/1-unsupervised/6b-merge_cm_complete.R")' >> $R_file
+    echo 'source("pipeline/1-unsupervised/6b-merge_cm_complete.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/merge_cm.sh

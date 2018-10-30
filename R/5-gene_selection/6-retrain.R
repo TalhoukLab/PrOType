@@ -1,4 +1,4 @@
-source(here::here("R/5-gene_selection/0-gs_setup.R"))
+source(here::here("pipeline/5-gene_selection/0-gs_setup.R"))
 
 # Load Parameters
 trainModel <- 1

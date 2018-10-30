@@ -13,7 +13,7 @@ mkdir -p $sh_dir
 mkdir -p $outputDir/gene_selection/boot_freq
 
 # Loop over studies
-studies=(`Rscript R/5-gene_selection/get_studies.R`)
+studies=(`Rscript pipeline/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     for alg in "${geneSelectionAlgs[@]}"; do
         # Content of R file
@@ -31,7 +31,7 @@ for study in "${studies[@]}"; do
         fi
         echo 'shouldCompute <- '$shouldCompute >> $R_file
         echo 'outputDir <- "'$outputDir'"' >> $R_file
-        echo 'source("R/5-gene_selection/1-boot_freq.R")' >> $R_file
+        echo 'source("pipeline/5-gene_selection/1-boot_freq.R")' >> $R_file
 
         # Content of sh file
         sh_file=$sh_dir/boot_${study}_${alg}.sh

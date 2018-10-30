@@ -1,7 +1,7 @@
 # Compare reference outputs -----------------------------------------------
 
 # Load utility functions
-source(here::here("R/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils/utils.R"))
 
 # Compare computed outputs against reference outputs from lockdown run
 for (dataset in datasets) {

@@ -15,7 +15,7 @@ mkdir -p $outputDir/$subDir/plots
 R_file=$R_dir/plot_iv.R
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' > $R_file
 echo 'outputDir <- "'$outputDir'"' >> $R_file
-echo 'source("R/3-post_processing/1-internal_validity_plots.R")' >> $R_file
+echo 'source("pipeline/3-post_processing/1-internal_validity_plots.R")' >> $R_file
 
 # Content of sh file
 sh_file=$sh_dir/plot_iv.sh

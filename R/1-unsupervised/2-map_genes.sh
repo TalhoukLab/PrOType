@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', dataset)" >> $R_file
     echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', dataset)" >> $R_file
     echo 'shouldCompute <- '$shouldCompute >> $R_file
-    echo "source('R/1-unsupervised/2-map_genes.R')" >> $R_file
+    echo 'source("pipeline/1-unsupervised/2-map_genes.R")' >> $R_file
     echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $R_file
 
     # Content of sh file

@@ -21,7 +21,7 @@ for dataset in "${dataSets[@]}"; do
     echo "dataset <- '"$dataset"'" >> $R_file
     echo "referenceClass <- '"$referenceClass"'" >> $R_file
     echo 'shouldCompute <- '$shouldCompute >> $R_file
-    echo "source('R/1-unsupervised/8-final_clust.R')" >> $R_file
+    echo 'source("pipeline/1-unsupervised/8-final_clust.R")' >> $R_file
 
     # Content of sh file
     sh_file=$R_dir/$dataset/final_clust.sh

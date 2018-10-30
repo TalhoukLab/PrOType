@@ -11,7 +11,7 @@
 #' @return a data frame with nanostring probe as feature and same number of
 #'   sample as X
 #' @author Last updated on 27/10/2017 by Dustin Johnson. Edited by Derek Chiu.
-source(here::here("R/1-unsupervised/utils.R"))
+source(here::here("pipeline/1-unsupervised/utils.R"))
 map_to_nano <- function(dataSet, inputDir, outputDir, shouldCompute) {
   tdat <- readRDS(file.path(inputDir, paste0("tdat_", dataSet, ".rds")))
   x <- data.frame(t(tdat))

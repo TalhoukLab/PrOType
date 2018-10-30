@@ -26,7 +26,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'dataset <- "'$dataset'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
-            echo 'source("R/1-unsupervised/3-clustering.R")' >> $R_file
+            echo 'source("pipeline/1-unsupervised/3-clustering.R")' >> $R_file
 
             # Content of sh file
             sh_file=$sh_dir/$dataset/clustering_$alg$s.sh

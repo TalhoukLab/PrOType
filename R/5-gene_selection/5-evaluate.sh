@@ -17,7 +17,7 @@ R_file=$R_dir/evaluate.R
 echo 'algs <- strsplit("'${geneSelectionAlgs[@]}'", " ")[[1]]' > $R_file
 echo 'shouldCompute <- '$shouldCompute >> $R_file
 echo 'outputDir <- "'$outputDir'"' >> $R_file
-echo 'source("R/5-gene_selection/5-evaluate.R")' >> $R_file
+echo 'source("pipeline/5-gene_selection/5-evaluate.R")' >> $R_file
 
 # Content of sh file
 sh_file=$sh_dir/evaluate.sh

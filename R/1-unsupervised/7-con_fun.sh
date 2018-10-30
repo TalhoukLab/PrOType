@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'cons.funs <- "'$i'"'>> $R_file
         echo "k <- $k" >> $R_file
         echo 'shouldCompute <- '$shouldCompute >> $R_file
-        echo 'source("R/1-unsupervised/7-con_fun.R")' >> $R_file
+        echo 'source("pipeline/1-unsupervised/7-con_fun.R")' >> $R_file
 
         # Content of sh file
         sh_file=$sh_dir/$dataset/cons_$i.sh

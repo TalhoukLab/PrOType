@@ -1,4 +1,4 @@
-source(here::here("R/1-unsupervised/utils.R"))
+source(here::here("pipeline/1-unsupervised/utils.R"))
 
 # Read in completed E and consensus matrices
 Ecomp <- readRDS(file.path(outputDir, "unsupervised", "data_pr", dataset,

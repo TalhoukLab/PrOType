@@ -1,4 +1,4 @@
-source(here::here("R/1-unsupervised/utils.R"))
+source(here::here("pipeline/1-unsupervised/utils.R"))
 
 raw_name <- file.path(outputDir, "unsupervised", "clustering", "raw_clust",
                       dataset, paste0("E_", alg, s, "_", dataset))

@@ -42,7 +42,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'model <- "'$model'"' >> $R_file
             echo 'threshold <- '$threshold >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
-            echo 'source("R/2-supervised/1-train_eval.R")' >> $R_file
+            echo 'source("pipeline/2-supervised/1-train_eval.R")' >> $R_file
             echo 'train_supervised(dataset, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, model, shouldCompute)' >> $R_file
 
             # Content of sh file

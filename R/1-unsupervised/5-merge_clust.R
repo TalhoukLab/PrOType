@@ -1,4 +1,4 @@
-source(here::here("R/1-unsupervised/utils.R"))
+source(here::here("pipeline/1-unsupervised/utils.R"))
 
 multMerge <- function(path, alg, dataset) {
   # Extract seeds to merge

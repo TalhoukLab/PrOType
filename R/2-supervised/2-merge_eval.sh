@@ -31,7 +31,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'model <- "'$model'"' >> $R_file
     echo 'algs <- strsplit("'${supervisedAlgs[@]}'", " ")[[1]]' >> $R_file
-    echo 'source("R/2-supervised/2-merge_eval.R")' >> $R_file
+    echo 'source("pipeline/2-supervised/2-merge_eval.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/merge_eval.sh

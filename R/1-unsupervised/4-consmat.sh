@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'alg <- "'$alg'"' >> $R_file
             echo 'dataset <- "'$dataset'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
-            echo 'source("R/1-unsupervised/4-consmat.R")' >> $R_file
+            echo 'source("pipeline/1-unsupervised/4-consmat.R")' >> $R_file
 
             # Content of sh file
             sh_file=$sh_dir/$dataset/consmat_$alg$s.sh

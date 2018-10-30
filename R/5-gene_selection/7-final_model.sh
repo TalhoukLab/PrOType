@@ -15,7 +15,7 @@ mkdir -p $outputDir/$subDir
 # Content of R file
 R_file=$R_dir/final_model.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
-echo 'source("R/5-gene_selection/7-final_model.R")' >> $R_file
+echo 'source("pipeline/5-gene_selection/7-final_model.R")' >> $R_file
 
 # Content of sh file
 sh_file=$sh_dir/final_model.sh

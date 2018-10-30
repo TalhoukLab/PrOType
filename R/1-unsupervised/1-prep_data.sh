@@ -22,7 +22,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'datadir <- "'$datadir'"' >> $R_file
     echo 'dpath <- "'$inputDir'"' >> $R_file
-    echo 'source("R/1-unsupervised/1-prep_data.R")' >> $R_file
+    echo 'source("pipeline/1-unsupervised/1-prep_data.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/$dataset/prep_data.sh

@@ -1,5 +1,5 @@
 # Load utility functions
-source(here::here("R/5-gene_selection/scripts/utils.R"))
+source(here::here("pipeline/5-gene_selection/scripts/utils.R"))
 nstring_path <- "data/nstring"
 array_path <- "data/array/OverlapSet"
 

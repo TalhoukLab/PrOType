@@ -1,6 +1,6 @@
 # Load and map samples and genes between array and NanoString
 library(ggplot2)
-source(here::here("R/6-cross_platform/0-cp_map.R"))
+source(here::here("pipeline/6-cross_platform/0-cp_map.R"))
 
 # Load Parameters
 output_dir <- file.path(outputDir, "cross_platform", "analysis")

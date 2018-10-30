@@ -14,7 +14,7 @@ mkdir -p $outputDir/$subDir
 mkdir -p $outputDir/gene_selection/sum_freq
 
 # Loop over studies
-studies=(`Rscript R/5-gene_selection/get_studies.R`)
+studies=(`Rscript pipeline/5-gene_selection/get_studies.R`)
 for study in "${studies[@]}"; do
     # Content of R file
     R_file=$R_dir/sum_${study}.R
@@ -23,7 +23,7 @@ for study in "${studies[@]}"; do
     echo 'B <- '$numBootstraps >> $R_file
     echo 'shouldCompute <- '$shouldCompute >> $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
-    echo 'source("R/5-gene_selection/2-sum_freq.R")' >> $R_file
+    echo 'source("pipeline/5-gene_selection/2-sum_freq.R")' >> $R_file
 
     # Content of sh file
     sh_file=$sh_dir/sum_${study}.sh

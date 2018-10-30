@@ -1,7 +1,7 @@
 # Predict C2 --------------------------------------------------------------
 
 # Load utility functions
-source(here::here("R/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils/utils.R"))
 
 # Test data
 npcp_test <- readRDS(file.path(outputDir, "unsupervised", "map_genes", testSet,
