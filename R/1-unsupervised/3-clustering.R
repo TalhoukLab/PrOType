@@ -15,7 +15,7 @@ cc_args <- tibble::lst(
   nk = k,
   reps = 1,
   prep.data = "none",
-  seed.data = s,
+  seed.data = as.integer(s),
   file.name = raw_name
 )
 

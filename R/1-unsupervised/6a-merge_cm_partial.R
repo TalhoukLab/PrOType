@@ -1,11 +1,15 @@
 source(here::here("R/1-unsupervised/utils.R"))
 
 # Extract seeds to merge
-seeds_merge <- (r * c - c + 1):(r * c)
+s <- stringr::str_pad(
+  string = (as.integer(r) * c - c + 1):(as.integer(r) * c),
+  width = nchar(reps),
+  pad = 0
+)
 
 # Merge seeds of consensus matrices
 consmat <- file.path(outputDir, "unsupervised", "consmat", dataset,
-                     paste0("cm_", alg, seeds_merge, "_", dataset, ".rds")) %>%
+                     paste0("cm_", alg, s, "_", dataset, ".rds")) %>%
   purrr::map(~ readRDS(.)[[k]]) %>%
   purrr::modify_depth(2, Matrix::as.matrix) %>%
   purrr::transpose() %>%

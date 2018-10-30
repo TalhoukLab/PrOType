@@ -16,12 +16,12 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $outputDir/$subDir'/raw_clust/'$dataset
     mkdir -p $outputDir/$subDir'/imputed_clust/'$dataset
 
-    for s in `seq 1 $reps`; do
+    for s in $(seq -f "%0${#reps}g" 1 $reps); do
         for alg in "${algs[@]}"; do
             # Content of R file
             R_file=$R_dir/$dataset/clustering_$alg$s.R
             echo 'k <- '$k > $R_file
-            echo 's <- '$s >> $R_file
+            echo 's <- "'$s'"' >> $R_file
             echo 'alg <- "'$alg'"' >> $R_file
             echo 'dataset <- "'$dataset'"' >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file

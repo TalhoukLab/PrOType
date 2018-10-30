@@ -15,24 +15,23 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $sh_dir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
-    for r in `seq 1 $((reps / c))`; do
+    n=$((reps / c)) # number of splits
+    for r in $(seq -f "%0${#n}g" 1 $n); do
         for alg in "${algs[@]}"; do
-            # Zero-padded iteration of r * c using # digits of reps
-            printf -v s "%0${#reps}d" $((r * c))
-
             # Content of R file
-            R_file=$R_dir/$dataset/merge_cm_$alg$s.R
+            R_file=$R_dir/$dataset/merge_cm_$alg$r.R
             echo 'dataset <- "'$dataset'"' > $R_file
             echo 'alg <- "'$alg'"' >> $R_file
+            echo 'reps <- '$reps >> $R_file
             echo 'c <- '$c >> $R_file
-            echo 'r <- '$r >> $R_file
+            echo 'r <- "'$r'"' >> $R_file
             echo 'k <- "'$k'"' >> $R_file
             echo 'shouldCompute <- '$shouldCompute >> $R_file
             echo 'outputDir <- "'$outputDir'"' >> $R_file
             echo 'source("R/1-unsupervised/6a-merge_cm_partial.R")' >> $R_file
 
             # Content of sh file
-            sh_file=$sh_dir/$dataset/merge_cm_$alg$s.sh
+            sh_file=$sh_dir/$dataset/merge_cm_$alg$r.sh
             echo "Rscript $R_file" > $sh_file
             chmod +x $sh_file
 
