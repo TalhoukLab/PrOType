@@ -27,13 +27,13 @@ for dataset in "${dataSets[@]}"; do
     mkdir -p $sh_dir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
-    for s in `seq 1 $supervised_reps`; do
-        for i in "${supervisedAlgs[@]}"; do
+    for s in $(seq -f "%0${#supervised_reps}g" 1 $supervised_reps); do
+        for alg in "${supervisedAlgs[@]}"; do
             # Content of R file
-            R_file=$R_dir/$dataset/$i$s.R
+            R_file=$R_dir/$dataset/$alg$s.R
             echo 'dataset <- "'$dataset'"' > $R_file
-            echo 'reps <- '$s >> $R_file
-            echo 'algs <- "'$i'"' >> $R_file
+            echo 'reps <- "'$s'"' >> $R_file
+            echo 'algs <- "'$alg'"' >> $R_file
             echo 'inDir <- "'$outputDir$dataset'"' >> $R_file
             echo 'outDir <- "'$outputDir'"' >> $R_file
             echo 'normalizeBy <- "'$normalizeBy'"' >> $R_file
@@ -46,7 +46,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'train_supervised(dataset, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, model, shouldCompute)' >> $R_file
 
             # Content of sh file
-            sh_file=$sh_dir/$dataset/$i$s.sh
+            sh_file=$sh_dir/$dataset/$alg$s.sh
             echo 'Rscript' $R_file > $sh_file
             chmod +x $sh_file
 

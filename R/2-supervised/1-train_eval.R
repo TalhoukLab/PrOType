@@ -69,7 +69,7 @@ train_supervised <- function(dataset, algs, reps, inDir, outDir,
     data = data.train,
     class = class.train,
     n = 1,
-    seed_boot = reps,
+    seed_boot = as.integer(reps),
     seed_alg = 1,
     threshold = threshold
   )
