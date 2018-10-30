@@ -1,4 +1,3 @@
-`%>%` <- magrittr::`%>%`
 source(here::here("assets/utils.R"))
 
 #' Default hc from diceR but with data matrix as input

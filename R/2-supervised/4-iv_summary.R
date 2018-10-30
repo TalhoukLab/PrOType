@@ -1,5 +1,4 @@
-# Internal Validity Summary
-`%>%` <- magrittr::`%>%`
+source(here::here("assets/utils.R"))
 
 df <- list.files(
   path = file.path(outputDir, "supervised", "merge_eval"),

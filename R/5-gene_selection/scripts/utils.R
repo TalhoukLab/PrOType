@@ -1,4 +1,4 @@
-`%>%` <- magrittr::`%>%`
+source(here::here("assets/utils.R"))
 
 mkdir <- function(dir) {
   if (!dir.exists(dir)) {

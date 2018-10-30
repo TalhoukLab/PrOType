@@ -1,6 +1,3 @@
-`%>%` <- magrittr::`%>%`
-
-# inputs: ndat, cons.funs, k
 source(here::here("R/1-unsupervised/utils.R"))
 
 # Read in completed E and consensus matrices

@@ -1,4 +1,5 @@
-`%>%` <- magrittr::`%>%`
+source(here::here("assets/utils.R"))
+
 # All evaluation files
 eval_files <- algs %>%
   purrr::map(

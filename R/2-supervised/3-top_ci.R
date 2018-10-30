@@ -1,5 +1,4 @@
-# Functions ---------------------------------------------------------------
-`%>%` <- magrittr::`%>%`
+source(here::here("assets/utils.R"))
 
 # Create CIs
 create_ci <- function(df, alg) {

@@ -1,7 +1,6 @@
 # NanoString utility functions -------------------------------
 
 # Load packages and project wide utility functions
-library(purrr)
 source(here::here("assets/utils.R"))
 
 

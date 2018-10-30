@@ -1,3 +1,6 @@
+#' Attach pipe for global project use
+`%>%` <- magrittr::`%>%`
+
 #' Build label mapping
 #'
 #' Map numeric labels to HGSC subtypes for each batch effect correction method
