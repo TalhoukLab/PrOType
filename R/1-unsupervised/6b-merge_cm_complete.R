@@ -2,7 +2,7 @@ source(here::here("R/1-unsupervised/utils.R"))
 
 # Merge consensus matrices across all seeds
 multMergeCM <- function(path, alg) {
-  sort_filenames(path = path, pattern = alg, full.names = TRUE) %>%
+  list.files(path = path, pattern = alg, full.names = TRUE) %>%
     purrr::map(readRDS) %>%
     purrr::transpose() %>%
     purrr::map(Reduce, f = `+`)

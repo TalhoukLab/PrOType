@@ -2,7 +2,7 @@ source(here::here("R/1-unsupervised/utils.R"))
 
 multMerge <- function(path, alg, dataset) {
   # Extract seeds to merge
-  fnames <- sort_filenames(path = path, pattern = alg, full.names = TRUE)
+  fnames <- list.files(path = path, pattern = alg, full.names = TRUE)
   seeds <- seed_from_file(fnames, alg, dataset)
 
   # Combine reps that succeeded for alg
