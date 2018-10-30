@@ -38,7 +38,7 @@ Inside the docker container, run `git clone https://github.com/AlineTalhouk/PrOT
 
 ### Packrat
 
-We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will intialize. Run
+We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will initialize. Run
 
 `packrat::restore()`
 
