@@ -117,4 +117,3 @@ h_vmem="8G"
 - `mem_free`: amount of free memory currently available
 - `mem_token`: amount of memory intended for consumption
 - `h_vmem`: total virtual memory allowed for a job
-
