@@ -22,10 +22,9 @@ map_to_nano <- function(dataSet, inputDir, outputDir, shouldCompute) {
                          paste0("npcp-hcNorm_", dataSet, ".rds"))
 
   if (file.exists(tdat_mapped_outfile) && file.exists(npcp_out) && !shouldCompute) {
-    cli::cat_line("File already exists. Skipping.")
-    quit(status = 0)
+    cli::cat_line("File already exists, skipping.")
+    q("no", 0, FALSE)
   }
-
 
   # Perform mapping according to affy
   # Join mapping table with data table and take median of any repeat probe IDs

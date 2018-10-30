@@ -4,8 +4,8 @@ raw_name <- file.path(outputDir, "unsupervised", "clustering", "raw_clust",
                       dataset, paste0("E_", alg, s, "_", dataset))
 
 if (file.exists(paste0(raw_name, ".rds")) && !shouldCompute) {
-  cli::cat_line("File already exists, skipping")
-  quit(status = 0)
+  cli::cat_line("File already exists, skipping.")
+  q("no", 0, FALSE)
 }
 
 cdat <- readRDS(file.path(outputDir, "unsupervised", "prep_data",

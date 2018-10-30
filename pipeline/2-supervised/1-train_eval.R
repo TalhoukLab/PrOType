@@ -27,7 +27,7 @@ train_supervised <- function(dataset, algs, reps, inDir, outDir,
   cli::cat_line("Checking previous input: ", outputFile)
   if (file.exists(outputFile) && !shouldCompute) {
     cli::cat_line("File already exists, skipping.")
-    quit(status = 0)
+    q("no", 0, FALSE)
   }
 
   # Import training data and final cluster assignments
