@@ -297,7 +297,7 @@ classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
           make.names()
         splendid::classification(x[, top_genes], y, match_alg(alg), seed_alg = seed_alg)
       }) %>%
-      readr::write_rds(output_file)
+      saveRDS(output_file)
   }
 }
 
@@ -323,12 +323,12 @@ predict_top_genes <- function(output_dir, study, train_dat, train_lab,
       sp_alg <- match_alg(a)
       a %>%
         grep(fnames, value = TRUE) %>%
-        readr::read_rds() %>%
+        readRDS() %>%
         purrr::set_names(paste(sp_alg, names(.), sep = "_")) %>%
         purrr::map(~ splendid::prediction(., x_new[, which_genes(., sp_alg)], y_new) %>%
                      purrr::set_names(rownames(x_new)))
     })
-  readr::write_rds(mod.pred, file.path(preds_dir, paste0(study, "_mod_pred.rds")))
+  saveRDS(mod.pred, file.path(preds_dir, paste0(study, "_mod_pred.rds")))
 }
 
 
@@ -345,7 +345,7 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
   l <- pred_filenames %>%
     purrr::set_names(site_names) %>%
-    purrr::map(readr::read_rds) %>%
+    purrr::map(readRDS) %>%
     purrr::modify_depth(2, data.frame) %>%
     purrr::transpose() %>%
     purrr::map_at("lasso", purrr::modify_depth, 2,

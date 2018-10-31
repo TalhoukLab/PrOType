@@ -371,7 +371,7 @@ import_array_overlap <- function(dir = "data", osamples) {
   overlap_array <- c("tcga", "gse") %>%
     purrr::map_df(
       ~ file.path(dir, "OverlapSet", paste0("validation_", ., ".rds")) %>%
-        readr::read_rds() %>%
+        readRDS() %>%
         tibble::rownames_to_column("sampleID")
     ) %>%
     dplyr::filter(sampleID %in% osamples) %>%

@@ -88,5 +88,5 @@ train_supervised <- function(dataset, algs, reps, inDir, outDir,
 
   # Write evaluations to file
   cli::cat_line("Writing model evaluations to file")
-  readr::write_rds(sm[["evals"]], outputFile)
+  saveRDS(sm[["evals"]], outputFile)
 }

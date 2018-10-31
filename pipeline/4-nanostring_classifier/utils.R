@@ -15,7 +15,7 @@ source(here::here("assets/utils.R"))
 #'   column from `load_overlap()`
 import_nstring_overlap <- function(dir = "data", osamples) {
   overlap_nanostring <- file.path(dir, "nanostring_aocs_tcga.rds") %>%
-    readr::read_rds() %>%
+    readRDS() %>%
     tibble::rownames_to_column("ottaID") %>%
     dplyr::filter(ottaID %in% osamples) %>%
     tibble::column_to_rownames("ottaID") %>%
