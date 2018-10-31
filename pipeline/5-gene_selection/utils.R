@@ -267,7 +267,7 @@ classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
 makePredictions <- function(output_dir, study, train_dat, train_lab,
                             algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Making Predictions")
-  preds_dir <- mkdir(file.path(output_dir, "gene_selection", "predict"))
+  preds_dir <- file.path(output_dir, "gene_selection", "predict")
   fnames <- list.files(
     path = file.path(output_dir, "gene_selection", "train"),
     pattern = paste0(study, ".*(", paste(algs, collapse = "|"), ")"),
@@ -327,7 +327,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
     purrr::map(~ t(data.frame(.)))
 
   if (producePlots) {
-    plot_dir <- mkdir(file.path(output_dir, "gene_selection", "plots"))
+    plot_dir <- file.path(output_dir, "gene_selection", "plots")
 
     if ("lasso" %in% algs) {
       cli::cat_line("Plotting lasso figures")
