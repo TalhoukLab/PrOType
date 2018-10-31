@@ -94,8 +94,12 @@ h_vmem="8G"
 - `numBootstraps`: number of bootstrap samples to run gene selection algorithms on
 
 ## Directory
+- `user`: your user name on a Linux distribution
+- `rootDir`: root directory where all project files are written to
 - `inputDir`: input directory where raw data exists for clustering.
 - `scriptDir`: script directory where R and bash scripts exist. Used to submit batch jobs to the queue.
+- `RDir`: subdirectory of `scriptDir` for R scripts
+- `shDir`: subdirectory of `scriptDir` for bash scripts
 - `outputDir`: output directory where outputs are written to.
 - `logDir`: log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
 
@@ -107,7 +111,6 @@ h_vmem="8G"
 - `geneSelectionAlgs`: gene selection algorithms
 
 ## Bash
-- `user`: your user name on a Linux distribution
 - `RPath`: path to R executable. This parameter is robust to aliases set to `R`.
 - `GREEN_TICK`: green tick printed during job submission to indicate success.
 - `GREEN_BULLET`: green bullet printed at end of job submission to indicate completion of task.
