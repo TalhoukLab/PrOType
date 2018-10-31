@@ -74,7 +74,7 @@ The logs directory `baseLogDir` will have the following file structure:
 
 ## Scripts
 
-The scripts directory `workDir` will have the following file structure:
+The scripts directory `scriptDir` will have the following file structure:
 
 ```
 |-- R_file

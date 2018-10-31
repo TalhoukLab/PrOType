@@ -6,8 +6,8 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=gene_selection/boot_freq
-R_dir=$workDir/R_file/$subDir
-sh_dir=$workDir/sh_file/$subDir
+R_dir=$scriptDir/R_file/$subDir
+sh_dir=$scriptDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
 mkdir -p $outputDir/gene_selection/boot_freq
@@ -52,5 +52,5 @@ outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else
-    python assets/submit_local.py --num_parallel 4 --file_location $workDir --step gs_boot_freq
+    python assets/submit_local.py --num_parallel 4 --file_location $scriptDir --step gs_boot_freq
 fi

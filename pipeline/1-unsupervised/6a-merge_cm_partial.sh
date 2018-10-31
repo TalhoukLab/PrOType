@@ -6,8 +6,8 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/merge_cm
-R_dir=$workDir/R_file/$subDir
-sh_dir=$workDir/sh_file/$subDir
+R_dir=$scriptDir/R_file/$subDir
+sh_dir=$scriptDir/sh_file/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
@@ -46,7 +46,7 @@ for dataset in "${dataSets[@]}"; do
     if command -v qsub &>/dev/null; then
         :
     else
-        python assets/submit_local.py --num_parallel 4 --file_location $workDir$dataset --step merge
+        python assets/submit_local.py --num_parallel 4 --file_location $scriptDir$dataset --step merge
     fi
 done
 

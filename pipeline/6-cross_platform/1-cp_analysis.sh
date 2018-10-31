@@ -4,8 +4,8 @@
 
 # Make directories for R script, shell script
 subDir=cross_platform/analysis
-R_dir=$workDir/R_file/$subDir
-sh_dir=$workDir/sh_file/$subDir
+R_dir=$scriptDir/R_file/$subDir
+sh_dir=$scriptDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
 mkdir -p $outputDir/$subDir

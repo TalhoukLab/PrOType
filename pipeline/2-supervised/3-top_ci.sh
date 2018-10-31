@@ -6,8 +6,8 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=supervised/top_ci
-R_dir=$workDir/R_file/$subDir
-sh_dir=$workDir/sh_file/$subDir
+R_dir=$scriptDir/R_file/$subDir
+sh_dir=$scriptDir/sh_file/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset

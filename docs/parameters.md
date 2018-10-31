@@ -29,9 +29,9 @@ top=5
 numBootstraps=500
 
 # Directory parameters
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
 inputDir="/home/dchiu/Projects/PrOType/raw_data"
+scriptDir="/extscratch/shahlab/huntsman/dchiu/scripts"
+outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
 baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
 ```
 
@@ -91,9 +91,9 @@ h_vmem="8G"
 - `numBootstraps`: number of bootstrap samples to run gene selection algorithms on
 
 ## Directory
-- `workDir`: working directory where R and bash scripts exist. Used to submit batch jobs to the queue.
-- `outputDir`: output directory where outputs will be written to.
 - `inputDir`: input directory where raw data exists for clustering.
+- `scriptDir`: script directory where R and bash scripts exist. Used to submit batch jobs to the queue.
+- `outputDir`: output directory where outputs will be written to.
 - `baseLogDir`: base log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
 
 ## Developer

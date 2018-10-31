@@ -6,8 +6,8 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=gene_selection/train
-R_dir=$workDir/R_file/$subDir
-sh_dir=$workDir/sh_file/$subDir
+R_dir=$scriptDir/R_file/$subDir
+sh_dir=$scriptDir/sh_file/$subDir
 mkdir -p $R_dir
 mkdir -p $sh_dir
 mkdir -p $outputDir/$subDir
@@ -44,5 +44,5 @@ outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh
 else
-    python assets/submit_local.py --num_parallel 4 --file_location $workDir --step gene_selection_final_training
+    python assets/submit_local.py --num_parallel 4 --file_location $scriptDir --step gene_selection_final_training
 fi
