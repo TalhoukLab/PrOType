@@ -6,20 +6,20 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/clustering
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir'/raw_clust/'$dataset
     mkdir -p $outputDir/$subDir'/imputed_clust/'$dataset
 
     for s in $(seq -f "%0${#reps}g" 1 $reps); do
         for alg in "${algs[@]}"; do
             # Content of R file
-            R_file=$R_dir/$dataset/clustering_$alg$s.R
+            R_file=$RSubDir/$dataset/clustering_$alg$s.R
             echo 'k <- '$k > $R_file
             echo 's <- "'$s'"' >> $R_file
             echo 'alg <- "'$alg'"' >> $R_file
@@ -29,7 +29,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'source("pipeline/1-unsupervised/3-clustering.R")' >> $R_file
 
             # Content of sh file
-            sh_file=$sh_dir/$dataset/clustering_$alg$s.sh
+            sh_file=$shSubDir/$dataset/clustering_$alg$s.sh
             echo "Rscript $R_file" > $sh_file
             chmod +x $sh_file
 

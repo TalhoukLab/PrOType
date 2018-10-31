@@ -6,24 +6,24 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=post_processing
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
-mkdir -p $R_dir
-mkdir -p $sh_dir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
+mkdir -p $RSubDir
+mkdir -p $shSubDir
 mkdir -p $outputDir/$subDir/evals
 mkdir -p $outputDir/$subDir/plots
 
 trainSets=($trainSet $trainSet2)
 for dataset in "${trainSets[@]}"; do
     # Content of R file
-    R_file=$R_dir/batch_effects_$dataset.R
+    R_file=$RSubDir/batch_effects_$dataset.R
     echo 'dataset <- "'$dataset'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'dataDir <- "data"' >> $R_file
     echo 'source("pipeline/3-post_processing/2-evaluate_batch_effects.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/batch_effects_$dataset.sh
+    sh_file=$shSubDir/batch_effects_$dataset.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 

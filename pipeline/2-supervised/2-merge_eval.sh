@@ -16,17 +16,17 @@ fi
 
 # Make directories for R script, shell script
 subDir=supervised/merge_eval
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir
 
     # Content of R file
-    R_file=$R_dir/$dataset/merge_eval.R
+    R_file=$RSubDir/$dataset/merge_eval.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'dataset <- "'$dataset'"' >> $R_file
     echo 'model <- "'$model'"' >> $R_file
@@ -34,7 +34,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'source("pipeline/2-supervised/2-merge_eval.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/$dataset/merge_eval.sh
+    sh_file=$shSubDir/$dataset/merge_eval.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 

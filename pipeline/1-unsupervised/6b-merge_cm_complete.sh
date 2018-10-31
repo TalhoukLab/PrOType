@@ -6,16 +6,16 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/data_pr
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
-    R_file=$R_dir/$dataset/merge_cm.R
+    R_file=$RSubDir/$dataset/merge_cm.R
     echo 'dataset <- "'$dataset'"' > $R_file
     echo 'outputDir <- "'$outputDir'"' >> $R_file
     echo 'algs <- strsplit("'${algs[@]}'", " ")[[1]]' >> $R_file
@@ -23,7 +23,7 @@ for dataset in "${dataSets[@]}"; do
     echo 'source("pipeline/1-unsupervised/6b-merge_cm_complete.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/$dataset/merge_cm.sh
+    sh_file=$shSubDir/$dataset/merge_cm.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 

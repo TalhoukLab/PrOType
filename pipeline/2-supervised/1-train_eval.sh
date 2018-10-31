@@ -18,19 +18,19 @@ fi
 
 # Make directories for R script, shell script
 subDir=supervised/train_eval
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
     for s in $(seq -f "%0${#supervised_reps}g" 1 $supervised_reps); do
         for alg in "${supervisedAlgs[@]}"; do
             # Content of R file
-            R_file=$R_dir/$dataset/$alg$s.R
+            R_file=$RSubDir/$dataset/$alg$s.R
             echo 'dataset <- "'$dataset'"' > $R_file
             echo 'reps <- "'$s'"' >> $R_file
             echo 'algs <- "'$alg'"' >> $R_file
@@ -46,7 +46,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'train_supervised(dataset, algs, reps, inDir, outDir, normalizeBy, minVar, threshold, normType, model, shouldCompute)' >> $R_file
 
             # Content of sh file
-            sh_file=$sh_dir/$dataset/$alg$s.sh
+            sh_file=$shSubDir/$dataset/$alg$s.sh
             echo 'Rscript' $R_file > $sh_file
             chmod +x $sh_file
 

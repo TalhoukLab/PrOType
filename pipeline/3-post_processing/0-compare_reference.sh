@@ -4,20 +4,20 @@
 
 # Make directories for R script, shell script
 subDir=post_processing
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
-mkdir -p $R_dir
-mkdir -p $sh_dir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
+mkdir -p $RSubDir
+mkdir -p $shSubDir
 
 # Content of R file
-R_file=$R_dir/check_baseline.R
+R_file=$RSubDir/check_baseline.R
 echo 'datasets <- c("'$trainSet'", "'$trainSet2'")' > $R_file
 echo 'outputDir <- "'$outputDir'"' >> $R_file
 echo 'dataDir <- "data"' >> $R_file
 echo 'source("pipeline/3-post_processing/0-compare_reference.R")' >> $R_file
 
 # Content of sh file
-sh_file=$sh_dir/check_baseline.sh
+sh_file=$shSubDir/check_baseline.sh
 echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
 

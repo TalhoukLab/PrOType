@@ -6,18 +6,18 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/consensus
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
     for i in "${cons[@]}"; do
         # Content of R file
-        R_file=$R_dir/$dataset/cons_$i.R
+        R_file=$RSubDir/$dataset/cons_$i.R
         echo 'outputDir <- "'$outputDir'"' > $R_file
         echo 'dataset <- "'$dataset'"' >> $R_file
         echo 'cons.funs <- "'$i'"'>> $R_file
@@ -26,7 +26,7 @@ for dataset in "${dataSets[@]}"; do
         echo 'source("pipeline/1-unsupervised/7-con_fun.R")' >> $R_file
 
         # Content of sh file
-        sh_file=$sh_dir/$dataset/cons_$i.sh
+        sh_file=$shSubDir/$dataset/cons_$i.sh
         echo "Rscript $R_file" > $sh_file
         chmod +x $sh_file
 

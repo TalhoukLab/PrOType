@@ -6,24 +6,24 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=supervised/top_ci
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir
 
     # Content of R file
-    R_file=$R_dir/$dataset/top_ci.R
+    R_file=$RSubDir/$dataset/top_ci.R
     echo 'outputDir <- "'$outputDir'"' > $R_file
     echo 'fdat <- "'$dataset'"' >> $R_file
     echo "top <- $top" >> $R_file
     echo 'source("pipeline/2-supervised/3-top_ci.R")' >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/$dataset/top_ci.sh
+    sh_file=$shSubDir/$dataset/top_ci.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 

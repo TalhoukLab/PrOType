@@ -6,20 +6,20 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/merge_cm
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
     n=$((reps / c)) # number of splits
     for r in $(seq -f "%0${#n}g" 1 $n); do
         for alg in "${algs[@]}"; do
             # Content of R file
-            R_file=$R_dir/$dataset/merge_cm_$alg$r.R
+            R_file=$RSubDir/$dataset/merge_cm_$alg$r.R
             echo 'dataset <- "'$dataset'"' > $R_file
             echo 'alg <- "'$alg'"' >> $R_file
             echo 'reps <- '$reps >> $R_file
@@ -31,7 +31,7 @@ for dataset in "${dataSets[@]}"; do
             echo 'source("pipeline/1-unsupervised/6a-merge_cm_partial.R")' >> $R_file
 
             # Content of sh file
-            sh_file=$sh_dir/$dataset/merge_cm_$alg$r.sh
+            sh_file=$shSubDir/$dataset/merge_cm_$alg$r.sh
             echo "Rscript $R_file" > $sh_file
             chmod +x $sh_file
 

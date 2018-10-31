@@ -6,17 +6,17 @@ file_to_submit=()
 
 # Make directories for R script, shell script
 subDir=unsupervised/map_genes
-R_dir=$scriptDir/R_file/$subDir
-sh_dir=$scriptDir/sh_file/$subDir
+RSubDir=$RDir/$subDir
+shSubDir=$shDir/$subDir
 
 for dataset in "${dataSets[@]}"; do
     # Make job and output directories for dataset
-    mkdir -p $R_dir/$dataset
-    mkdir -p $sh_dir/$dataset
+    mkdir -p $RSubDir/$dataset
+    mkdir -p $shSubDir/$dataset
     mkdir -p $outputDir/$subDir/$dataset
 
     # Content of R file
-    R_file=$R_dir/$dataset/map_genes.R
+    R_file=$RSubDir/$dataset/map_genes.R
     echo "dataset <- '"$dataset"'" > $R_file
     echo "inputDir <- file.path('"$outputDir"', '"unsupervised"', '"prep_data"', dataset)" >> $R_file
     echo "outputDir <- file.path('"$outputDir"', '"unsupervised"', '"map_genes"', dataset)" >> $R_file
@@ -25,7 +25,7 @@ for dataset in "${dataSets[@]}"; do
     echo "map_to_nano(dataset, inputDir, outputDir, shouldCompute)" >> $R_file
 
     # Content of sh file
-    sh_file=$sh_dir/$dataset/map_genes.sh
+    sh_file=$shSubDir/$dataset/map_genes.sh
     echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 
