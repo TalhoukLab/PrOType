@@ -29,7 +29,7 @@ rootDir="/extscratch/shahlab/huntsman"
 inputDir=$rootDir/$user"/Projects/PrOType/raw_data"
 scriptDir=$rootDir/$user"/scripts"
 outputDir=$rootDir/$user"/outputs"
-baseLogDir=$rootDir/$user"/logs"
+logDir=$rootDir/$user"/logs"
 
 . ./assets/dev_params.sh
 . ./assets/check.sh

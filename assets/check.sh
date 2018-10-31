@@ -23,7 +23,7 @@ if [ "$outputDir" = "" ]; then
 fi
 
 # Specify the log directory. If empty, logout.
-if [ "$baseLogDir" = "" ]; then
+if [ "$logDir" = "" ]; then
   echo "Log directory must be specified"
 	exit 1
 fi

@@ -30,7 +30,7 @@ if command -v qsub &>/dev/null; then
 fi
 
 # Submit to queue if qsub exists, to python otherwise
-logDir=$baseLogDir/$subDir
+logDir=$logDir/$subDir
 outputDir=$outputDir/$subDir
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh

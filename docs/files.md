@@ -42,7 +42,7 @@ The outputs directory `outputDir` will have the following file structure:
 
 ## Logs
 
-The logs directory `baseLogDir` will have the following file structure:
+The logs directory `logDir` will have the following file structure:
 
 ```
 |-- cross_platform

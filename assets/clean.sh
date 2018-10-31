@@ -3,4 +3,4 @@
 . ./Parameters.sh
 rm -r $scriptDir
 rm -r $outputDir
-rm -r $baseLogDir
+rm -r $logDir

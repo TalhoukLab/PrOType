@@ -37,7 +37,7 @@ for dataset in "${trainSets[@]}"; do
 done
 
 # Submit to queue if qsub exists
-logDir=$baseLogDir/$subDir
+logDir=$logDir/$subDir
 outputDir="$outputDir/$subDir/evals $outputDir/$subDir/plots"
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh

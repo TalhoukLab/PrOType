@@ -33,7 +33,7 @@ else
 fi
 
 # Submit to queue
-logDir=$baseLogDir/$subDir
+logDir=$logDir/$subDir
 outputDir="$outputDir/gene_selection/plots $outputDir/gene_selection/sum_freq"
 if command -v qsub &>/dev/null; then
     . ./assets/submit_queue.sh

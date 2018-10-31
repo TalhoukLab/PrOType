@@ -34,7 +34,7 @@ rootDir="/extscratch/shahlab/huntsman"
 inputDir=$rootDir/$user"/Projects/PrOType/raw_data"
 scriptDir=$rootDir/$user"/scripts"
 outputDir=$rootDir/$user"/outputs"
-baseLogDir=$rootDir/$user"/logs"
+logDir=$rootDir/$user"/logs"
 ```
 
 ## Developer Parameters
@@ -94,8 +94,8 @@ h_vmem="8G"
 ## Directory
 - `inputDir`: input directory where raw data exists for clustering.
 - `scriptDir`: script directory where R and bash scripts exist. Used to submit batch jobs to the queue.
-- `outputDir`: output directory where outputs will be written to.
-- `baseLogDir`: base log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
+- `outputDir`: output directory where outputs are written to.
+- `logDir`: log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
 
 ## Developer
 - `shouldCompute`: should outputs be computed if they already exist from previous runs of the pipeline?
