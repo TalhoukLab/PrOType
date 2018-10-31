@@ -47,7 +47,7 @@ for dataset in "${dataSets[@]}"; do
 
             # Content of sh file
             sh_file=$shSubDir/$dataset/$alg$s.sh
-            echo 'Rscript' $R_file > $sh_file
+            echo "Rscript $R_file" > $sh_file
             chmod +x $sh_file
 
             # Add to queue if qsub exists

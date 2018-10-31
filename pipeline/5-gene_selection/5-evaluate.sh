@@ -21,7 +21,7 @@ echo 'source("pipeline/5-gene_selection/5-evaluate.R")' >> $R_file
 
 # Content of sh file
 sh_file=$shSubDir/evaluate.sh
-echo 'Rscript' $R_file > $sh_file
+echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
 
 # Add to queue if qsub exists, submit by bash otherwise

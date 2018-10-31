@@ -26,7 +26,7 @@ for study in "${studies[@]}"; do
 
     # Content of sh file
     sh_file=$shSubDir/predict_${study}.sh
-    echo 'Rscript' $R_file > $sh_file
+    echo "Rscript $R_file" > $sh_file
     chmod +x $sh_file
 
     # Add to queue if qsub exists

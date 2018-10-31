@@ -19,7 +19,7 @@ echo 'source("pipeline/5-gene_selection/7-final_model.R")' >> $R_file
 
 # Content of sh file
 sh_file=$shSubDir/final_model.sh
-echo 'Rscript' $R_file > $sh_file
+echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
 
 # Add to queue if qsub exists, submit by python otherwise
