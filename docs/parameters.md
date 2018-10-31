@@ -29,10 +29,12 @@ top=5
 numBootstraps=500
 
 # Directory parameters
-inputDir="/home/dchiu/Projects/PrOType/raw_data"
-scriptDir="/extscratch/shahlab/huntsman/dchiu/scripts"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
-baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
+user="$(whoami)"
+rootDir="/extscratch/shahlab/huntsman"
+inputDir=$rootDir/$user"/Projects/PrOType/raw_data"
+scriptDir=$rootDir/$user"/scripts"
+outputDir=$rootDir/$user"/outputs"
+baseLogDir=$rootDir/$user"/logs"
 ```
 
 ## Developer Parameters
@@ -48,7 +50,6 @@ supervisedAlgs=(first second third fourth)
 geneSelectionAlgs=(lasso rf ada)
 
 # Bash parameters
-user="$(whoami)"
 RPath="$(which R | sort | tail -n 1)"
 GREEN_TICK='\033[0;32m\xe2\x9c\x94\033[0m'
 GREEN_BULLET='\033[0;32m\xe2\x80\xa2\033[0m'
