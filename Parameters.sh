@@ -24,7 +24,7 @@ top=5
 numBootstraps=500
 
 # Directory parameters
-inputDir="/home/dchiu/Projects/PrOType/raw_data"
+inputDir="/extscratch/shahlab/huntsman/dchiu/Projects/PrOType/raw_data"
 scriptDir="/extscratch/shahlab/huntsman/dchiu/scripts"
 outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
 baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
