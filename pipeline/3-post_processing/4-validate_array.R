@@ -1,7 +1,7 @@
 # Validate overlapping array data -----------------------------------------
 
 # Load utility functions
-source(here::here("pipeline/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils.R"))
 
 # Import cut 1 fits on top models
 all_fits <- list.files(file.path(outputDir, "post_processing", "fits"),

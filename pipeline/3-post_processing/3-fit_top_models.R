@@ -1,7 +1,7 @@
 # Fit top models on full cut1 data ----------------------------------------
 
 # Load utility functions
-source(here::here("pipeline/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils.R"))
 
 # Choose kmodes clustering algorithm
 top_cl_alg <- "kmodes"

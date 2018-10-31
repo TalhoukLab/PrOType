@@ -1,7 +1,7 @@
 # Internal Validity Plots -------------------------------------------------
 
 # Load utility functions
-source(here::here("pipeline/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils.R"))
 
 # Store common plotting arguments
 plot_args <- list(dir = outputDir, datasets = datasets, print = FALSE)

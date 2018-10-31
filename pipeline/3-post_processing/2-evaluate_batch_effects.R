@@ -2,7 +2,7 @@
 
 # Load packages and utility functions
 suppressPackageStartupMessages(library(Biobase))
-source(here::here("pipeline/3-post_processing/utils/utils.R"))
+source(here::here("pipeline/3-post_processing/utils.R"))
 
 # Create mapping, read in data and clusters
 # Load the cases and label the cuts

@@ -1,7 +1,7 @@
 # Predict all nanostring data ---------------------------------------------
 
 # Load utility functions
-source(here::here("pipeline/4-nanostring_classifier/utils/utils.R"))
+source(here::here("pipeline/4-nanostring_classifier/utils.R"))
 
 # Load vancouver model
 alg <- "adaboost"
