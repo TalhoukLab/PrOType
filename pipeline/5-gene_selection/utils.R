@@ -80,17 +80,63 @@ sl_class <- function(train_lab, data) {
     dplyr::pull(Adaboost.xpn)
 }
 
-
-
-# 1 - Bootstrap Frequencies -----------------------------------------------
-
-get_genes <- function(data) {
-  purrr::discard(colnames(data), ~ . %in% c("OTTA.ID", "site", "cut"))
+#******************************************************************
+#Function to determine which genes were used in training
+# Inputs: model fit and algorithm
+# output: gene list
+#*****************************************************************
+which_genes <- function(fits, algo) {
+  genes <- switch(
+    algo,
+    mlr_lasso = fits$glmnet.fit$beta[[1]]@Dimnames[[1]],
+    rf = if (inherits(fits, "randomForest")) {
+      rownames(fits$importance)
+    } else if (inherits(fits, "train")) {
+      rownames(fits$finalModel$importance)
+    },
+    adaboost = fits$names
+  )
+  make.names(genes)
 }
 
-match_alg <- function(alg) {
-  switch(alg, lasso = "mlr_lasso", rf = "rf", ada = "adaboost")
+loso_plot <- function(file_name, data, group, main,
+                      xlab = "#genes", ylab = "F1 Score",
+                      xbreaks = seq(4, 100, 5), ylim = c(0, 1),
+                      col_alg = c("red", "blue", "green"), col_max = "black",
+                      show_max = TRUE, legend_border = TRUE) {
+  pdf(file_name)
+  plot(
+    1,
+    type = "n",
+    xlim = range(xbreaks),
+    ylim = ylim,
+    xlab = xlab,
+    ylab = ylab,
+    main = main
+  )
+  col_alg <- tail(col_alg, length(data))
+  purrr::walk2(data, col_alg, ~ {
+    points(xbreaks, .x[[group]], pch = 18, col = .y)
+    max_ind <- which.max(.x[[group]])
+    if (show_max) {
+      points(xbreaks[max_ind], .x[[group]][[max_ind]], pch = 19, col = col_max)
+    }
+  })
+  legend("bottomright",
+         pch = 18,
+         purrr::imap_chr(data, ~ {
+           max_ind <- which.max(.x[[group]])
+           paste0(.y, " ", round(.x[[group]][[max_ind]], 2),
+                  " #", xbreaks[max_ind])
+         }),
+         col = col_alg,
+         bty = ifelse(legend_border, "o", "n"))
+  dev.off()
 }
+
+
+# 0 - Setup ---------------------------------------------------------------
+
 
 #******************************************************************
 # Load Nanostring data - all batches
@@ -156,6 +202,17 @@ load_prediction_labels <- function(nsdat) {
   tibble::lst(published, preds_new)
 }
 
+
+# 1 - Bootstrap Frequencies -----------------------------------------------
+
+get_genes <- function(data) {
+  purrr::discard(colnames(data), ~ . %in% c("OTTA.ID", "site", "cut"))
+}
+
+match_alg <- function(alg) {
+  switch(alg, lasso = "mlr_lasso", rf = "rf", ada = "adaboost")
+}
+
 # Gene Frequency
 # Number of times a gene is chosen in the top 100 out of B bootstraps
 gene_freq <- function(fit, alg, genes, B, ntop = 100) {
@@ -219,24 +276,7 @@ lasso_freq <- function(fit, genes) {
     data.frame(genes, .)
 }
 
-#******************************************************************
-#Function to determine which genes were used in training
-# Inputs: model fit and algorithm
-# output: gene list
-#*****************************************************************
-which_genes <- function(fits, algo) {
-  genes <- switch(
-    algo,
-    mlr_lasso = fits$glmnet.fit$beta[[1]]@Dimnames[[1]],
-    rf = if (inherits(fits, "randomForest")) {
-      rownames(fits$importance)
-    } else if (inherits(fits, "train")) {
-      rownames(fits$finalModel$importance)
-    },
-    adaboost = fits$names
-  )
-  make.names(genes)
-}
+
 
 
 # 3 - Train on Top Genes --------------------------------------------------
@@ -389,40 +429,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
   }
 }
 
-loso_plot <- function(file_name, data, group, main,
-                      xlab = "#genes", ylab = "F1 Score",
-                      xbreaks = seq(4, 100, 5), ylim = c(0, 1),
-                      col_alg = c("red", "blue", "green"), col_max = "black",
-                      show_max = TRUE, legend_border = TRUE) {
-  pdf(file_name)
-  plot(
-    1,
-    type = "n",
-    xlim = range(xbreaks),
-    ylim = ylim,
-    xlab = xlab,
-    ylab = ylab,
-    main = main
-  )
-  col_alg <- tail(col_alg, length(data))
-  purrr::walk2(data, col_alg, ~ {
-    points(xbreaks, .x[[group]], pch = 18, col = .y)
-    max_ind <- which.max(.x[[group]])
-    if (show_max) {
-      points(xbreaks[max_ind], .x[[group]][[max_ind]], pch = 19, col = col_max)
-    }
-  })
-  legend("bottomright",
-         pch = 18,
-         purrr::imap_chr(data, ~ {
-           max_ind <- which.max(.x[[group]])
-           paste0(.y, " ", round(.x[[group]][[max_ind]], 2),
-                  " #", xbreaks[max_ind])
-         }),
-         col = col_alg,
-         bty = ifelse(legend_border, "o", "n"))
-  dev.off()
-}
+
 
 overall_freq <- function(files) {
   files %>%
