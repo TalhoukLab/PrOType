@@ -304,7 +304,7 @@ classify_top_genes <- function(x, y, sum_freq, outputDir, study, seed_alg, alg,
 
 # 4 - Predictions ---------------------------------------------------------
 
-makePredictions <- function(output_dir, study, train_dat, train_lab,
+predict_top_genes <- function(output_dir, study, train_dat, train_lab,
                             algs = c("lasso", "rf", "ada")) {
   cli::cat_line("Making Predictions")
   preds_dir <- file.path(output_dir, "gene_selection", "predict")
@@ -334,8 +334,8 @@ makePredictions <- function(output_dir, study, train_dat, train_lab,
 
 # 5 - Evaluate Results ----------------------------------------------------
 
-evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
-                                producePlots = TRUE) {
+evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
+                                 producePlots = TRUE) {
   cli::cat_rule("Evaluating Predictions")
   pred_filenames <-
     list.files(path = file.path(output_dir, "gene_selection", "predict"),
@@ -429,21 +429,7 @@ evaluatePredictions <- function(output_dir, train_dat, train_lab, algs,
   }
 }
 
-
-
-overall_freq <- function(files) {
-  files %>%
-    purrr::map(readr::read_csv, col_types = readr::cols()) %>%
-    purrr::map(dplyr::arrange, .data$genes) %>%
-    purrr::map(as.data.frame) %>%
-    purrr::map(tibble::column_to_rownames, "genes") %>%
-    purrr::map(function(x) x / length(.)) %>%
-    purrr::reduce(`+`) %>%
-    tibble::rownames_to_column("genes") %>%
-    dplyr::mutate_at(-1, round, digits = 5)
-}
-
-writeSummaryFreqs <- function(output_dir, train_dat, algs) {
+summarize_freqs <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Calculating summary frequencies")
   fnames <- list.files(
     path = file.path(output_dir, "gene_selection", "sum_freq"),
@@ -470,7 +456,19 @@ writeSummaryFreqs <- function(output_dir, train_dat, algs) {
   }
 }
 
-runGeneAnalysis <- function(output_dir, train_dat, algs) {
+overall_freq <- function(files) {
+  files %>%
+    purrr::map(readr::read_csv, col_types = readr::cols()) %>%
+    purrr::map(dplyr::arrange, .data$genes) %>%
+    purrr::map(as.data.frame) %>%
+    purrr::map(tibble::column_to_rownames, "genes") %>%
+    purrr::map(function(x) x / length(.)) %>%
+    purrr::reduce(`+`) %>%
+    tibble::rownames_to_column("genes") %>%
+    dplyr::mutate_at(-1, round, digits = 5)
+}
+
+analyze_genes <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "gene_selection", "plots")
   fnames <- list.files(file.path(output_dir, "gene_selection", "sum_freq"),
