@@ -1,3 +1,6 @@
+#' Attach pipe for global project use
+`%>%` <- magrittr::`%>%`
+
 #' Build label mapping
 #'
 #' Map numeric labels to HGSC subtypes for each batch effect correction method
@@ -45,8 +48,8 @@ load_overlap <- function(dir = "data") {
     dplyr::mutate(published = factor(make.names(published)))
 }
 
-should_compute <- function(force_recompute, workdir, output_file) {
-  target_file <- file.path(workdir, "file_cache.rds")
+should_compute <- function(force_recompute, scriptdir, output_file) {
+  target_file <- file.path(scriptdir, "file_cache.rds")
   has_changed <- FALSE
   if (file.exists(target_file)) {
     lck <- filelock::lock(target_file)
@@ -57,8 +60,8 @@ should_compute <- function(force_recompute, workdir, output_file) {
   return(force_recompute || has_changed)
 }
 
-update_cache <- function(workdir, output_file) {
-  target_file <- file.path(workdir, "file_cache.rds")
+update_cache <- function(scriptdir, output_file) {
+  target_file <- file.path(scriptdir, "file_cache.rds")
   if (file.exists(target_file)) {
     lck <- filelock::lock(target_file)
     file_cache <- readRDS(target_file)

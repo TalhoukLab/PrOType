@@ -38,7 +38,7 @@ Inside the docker container, run `git clone https://github.com/AlineTalhouk/PrOT
 
 ### Packrat
 
-We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will intialize. Run
+We use `packrat` as a package management system to keep track of precise versions of all R package dependencies used in PrOType. After you have cloned PrOType to your local machine and open `PrOType.Rproj`, the packrat bootstrap installation will initialize. Run
 
 `packrat::restore()`
 
@@ -79,3 +79,5 @@ To use alternative options than the default pipeline parameters, modify the rele
 ## Additional Resources
 
 A tree visualization of the file structure can be found [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/files.md). Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the [`assets/`](https://github.com/AlineTalhouk/PrOType/tree/master/assets) directory.
+
+A Web Tool of the PrOType pipeline is hosted at https://dchiu911.shinyapps.io/PrOType. This shiny app allows you to visualize quality control metrics, view normalized data, and predict new NanoString samples using our final model.

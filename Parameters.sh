@@ -24,10 +24,14 @@ top=5
 numBootstraps=500
 
 # Directory parameters
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
-inputDir="/home/dchiu/Projects/PrOType/raw_data"
-baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
+user="$(whoami)"
+rootDir="/extscratch/shahlab/huntsman"/$user
+inputDir=$rootDir"/Projects/PrOType/raw_data"
+scriptDir=$rootDir"/scripts"
+RDir=$scriptDir"/R"
+shDir=$scriptDir"/sh"
+outputDir=$rootDir"/outputs"
+logDir=$rootDir"/logs"
 
 . ./assets/dev_params.sh
 . ./assets/check.sh

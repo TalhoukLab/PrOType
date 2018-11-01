@@ -10,9 +10,9 @@ function is_pos_int() {
   fi
 }
 
-# Specify the working directory. If empty, logout.
-if [ "$workDir" = "" ]; then
-  echo "Working directory must be specified"
+# Specify the script directory. If empty, logout.
+if [ "$scriptDir" = "" ]; then
+  echo "Script directory must be specified"
 	exit 1
 fi
 
@@ -23,7 +23,7 @@ if [ "$outputDir" = "" ]; then
 fi
 
 # Specify the log directory. If empty, logout.
-if [ "$baseLogDir" = "" ]; then
+if [ "$logDir" = "" ]; then
   echo "Log directory must be specified"
 	exit 1
 fi

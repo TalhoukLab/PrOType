@@ -29,10 +29,14 @@ top=5
 numBootstraps=500
 
 # Directory parameters
-workDir="/extscratch/shahlab/huntsman/dchiu/workDir"
-outputDir="/extscratch/shahlab/huntsman/dchiu/outputs"
-inputDir="/home/dchiu/Projects/PrOType/raw_data"
-baseLogDir="/extscratch/shahlab/huntsman/dchiu/logs"
+user="$(whoami)"
+rootDir="/extscratch/shahlab/huntsman"/$user
+inputDir=$rootDir"/Projects/PrOType/raw_data"
+scriptDir=$rootDir"/scripts"
+RDir=$scriptDir"/R"
+shDir=$scriptDir"/sh"
+outputDir=$rootDir"/outputs"
+logDir=$rootDir"/logs"
 ```
 
 ## Developer Parameters
@@ -48,7 +52,6 @@ supervisedAlgs=(first second third fourth)
 geneSelectionAlgs=(lasso rf ada)
 
 # Bash parameters
-user="$(whoami)"
 RPath="$(which R | sort | tail -n 1)"
 GREEN_TICK='\033[0;32m\xe2\x9c\x94\033[0m'
 GREEN_BULLET='\033[0;32m\xe2\x80\xa2\033[0m'
@@ -91,10 +94,14 @@ h_vmem="8G"
 - `numBootstraps`: number of bootstrap samples to run gene selection algorithms on
 
 ## Directory
-- `workDir`: working directory where R and bash scripts exist. Used to submit batch jobs to the queue.
-- `outputDir`: output directory where outputs will be written to.
+- `user`: your user name on a Linux distribution
+- `rootDir`: root directory where all project files are written to
 - `inputDir`: input directory where raw data exists for clustering.
-- `baseLogDir`: base log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
+- `scriptDir`: script directory where R and bash scripts exist. Used to submit batch jobs to the queue.
+- `RDir`: subdirectory of `scriptDir` for R scripts
+- `shDir`: subdirectory of `scriptDir` for bash scripts
+- `outputDir`: output directory where outputs are written to.
+- `logDir`: log directory where queue logs are written to. Logs are written in a directory hierarchy similar to `outputDir`.
 
 ## Developer
 - `shouldCompute`: should outputs be computed if they already exist from previous runs of the pipeline?
@@ -104,7 +111,6 @@ h_vmem="8G"
 - `geneSelectionAlgs`: gene selection algorithms
 
 ## Bash
-- `user`: your user name on a Linux distribution
 - `RPath`: path to R executable. This parameter is robust to aliases set to `R`.
 - `GREEN_TICK`: green tick printed during job submission to indicate success.
 - `GREEN_BULLET`: green bullet printed at end of job submission to indicate completion of task.
@@ -117,4 +123,3 @@ h_vmem="8G"
 - `mem_free`: amount of free memory currently available
 - `mem_token`: amount of memory intended for consumption
 - `h_vmem`: total virtual memory allowed for a job
-

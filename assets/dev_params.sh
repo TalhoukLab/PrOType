@@ -8,7 +8,6 @@ supervisedAlgs=(first second third fourth)
 geneSelectionAlgs=(lasso rf ada)
 
 # Bash parameters
-user="$(whoami)"
 RPath="$(which R | sort | tail -n 1)"
 GREEN_TICK='\033[0;32m\xe2\x9c\x94\033[0m'
 GREEN_BULLET='\033[0;32m\xe2\x80\xa2\033[0m'

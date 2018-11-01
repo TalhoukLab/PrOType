@@ -42,7 +42,7 @@ The outputs directory `outputDir` will have the following file structure:
 
 ## Logs
 
-The logs directory `baseLogDir` will have the following file structure:
+The logs directory `logDir` will have the following file structure:
 
 ```
 |-- cross_platform
@@ -74,7 +74,7 @@ The logs directory `baseLogDir` will have the following file structure:
 
 ## Scripts
 
-The scripts directory `workDir` will have the following file structure:
+The scripts directory `scriptDir` will have the following file structure:
 
 ```
 |-- R_file
