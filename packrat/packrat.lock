@@ -69,6 +69,12 @@ Version: 0.0.3
 Hash: cd7cdf55dde64ded98a7d8d0621c9242
 Requires: CVST, kernlab
 
+Package: DT
+Source: CRAN
+Version: 0.4
+Hash: a6e844446350a7128c734516fa8215e3
+Requires: crosstalk, htmltools, htmlwidgets, magrittr
+
 Package: Formula
 Source: CRAN
 Version: 1.2-3
@@ -143,6 +149,12 @@ Package: Rcpp
 Source: CRAN
 Version: 0.12.17
 Hash: d2eff4634ccd7aca030c540ad805ac4a
+
+Package: RcppArmadillo
+Source: CRAN
+Version: 0.9.100.5.0
+Hash: d8fe4e7bcf4a83a459cca3a77eac299b
+Requires: Rcpp
 
 Package: RcppEigen
 Source: CRAN
@@ -280,6 +292,12 @@ Version: 6.0-80
 Hash: 88490fd9d54172040103d1b9a8a517f2
 Requires: ModelMetrics, foreach, ggplot2, plyr, recipes, reshape2,
     withr
+
+Package: ccaPP
+Source: CRAN
+Version: 0.3.2
+Hash: f42c1967c466264c3536f98a7921aebc
+Requires: Rcpp, RcppArmadillo, pcaPP, robustbase
 
 Package: cellranger
 Source: CRAN
@@ -586,8 +604,8 @@ Requires: Rcpp, digest
 
 Package: htmlwidgets
 Source: CRAN
-Version: 1.2
-Hash: de18b75f31630089b22e30d4b188cfbe
+Version: 1.3
+Hash: 17a2248b5e40383a1cb1a4e4cb5f9c7a
 Requires: htmltools, jsonlite, yaml
 
 Package: httpuv
@@ -782,6 +800,21 @@ Source: CRAN
 Version: 1.0-8
 Hash: 09985635b09071a1d81d6811b92846ea
 
+Package: nanostringr
+Source: github
+Version: 0.2.2
+Hash: 61ec49328cab35946a1220cd807c89ed
+Requires: assertthat, ccaPP, dplyr, magrittr, purrr, readr, rlang,
+    tibble
+GithubRepo: nanostringr
+GithubUsername: OVCARE
+GithubRef: master
+GithubSha1: a66da64573c276ee0c940d9ab1b54fd325f5a6df
+RemoteHost: api.github.com
+RemoteRepo: nanostringr
+RemoteUsername: OVCARE
+RemoteSha: a66da64573c276ee0c940d9ab1b54fd325f5a6df
+
 Package: nloptr
 Source: CRAN
 Version: 1.0.4
@@ -825,6 +858,12 @@ Version: 1.2-2
 Hash: dc6770d82e9eb7571d52d7bbc05faee0
 Requires: Formula, inum, libcoin, mvtnorm
 
+Package: pcaPP
+Source: CRAN
+Version: 1.9-73
+Hash: 1b0887187cbe45f9997e70502af52ac5
+Requires: mvtnorm
+
 Package: pheatmap
 Source: CRAN
 Version: 1.0.10
@@ -855,12 +894,21 @@ Version: 0.2.0
 Hash: 81a8008a5e7858552503935f1abe48aa
 
 Package: plotly
-Source: CRAN
-Version: 4.7.1
-Hash: 18d2de809bf346363cd4ee7a587d58bf
+Source: github
+Version: 4.8.0.9000
+Hash: fed05a26d1f51d0caee2442675c85579
 Requires: RColorBrewer, base64enc, crosstalk, data.table, digest,
     dplyr, ggplot2, hexbin, htmltools, htmlwidgets, httr, jsonlite,
-    lazyeval, magrittr, purrr, scales, tibble, tidyr, viridisLite
+    lazyeval, magrittr, promises, purrr, rlang, scales, tibble, tidyr,
+    viridisLite
+GithubRepo: plotly
+GithubUsername: ropensci
+GithubRef: master
+GithubSha1: 7031a25474f0dc275d20897810682c530cd1fbf3
+RemoteHost: api.github.com
+RemoteRepo: plotly
+RemoteUsername: ropensci
+RemoteSha: 7031a25474f0dc275d20897810682c530cd1fbf3
 
 Package: plyr
 Source: CRAN
@@ -1027,6 +1075,18 @@ Version: 1.1.0
 Hash: ab653b45dba6dc82eef68fb1e18a3b1a
 Requires: R6, crayon, digest, htmltools, httpuv, jsonlite, later, mime,
     promises, rlang, sourcetools, xtable
+
+Package: shinyjs
+Source: CRAN
+Version: 1.0
+Hash: ea95f751025e50227a96100be35e970b
+Requires: digest, htmltools, jsonlite, shiny
+
+Package: shinythemes
+Source: CRAN
+Version: 1.1.1
+Hash: d15f59eaa7a9a0668cea3af7f477820c
+Requires: shiny
 
 Package: sigclust
 Source: CRAN
