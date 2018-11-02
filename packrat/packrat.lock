@@ -495,8 +495,8 @@ Requires: Rcpp, dplyr, ggplot2, gtable, lazyeval, scales, tweenr, units
 
 Package: ggplot2
 Source: CRAN
-Version: 3.0.0
-Hash: 8332448b76ff31472a1bf6dd31fcddb1
+Version: 3.1.0
+Hash: ef541b05dda10b209d509b5bbaf46ea3
 Requires: digest, gtable, lazyeval, plyr, reshape2, rlang, scales,
     tibble, viridisLite, withr
 
@@ -810,10 +810,6 @@ GithubRepo: nanostringr
 GithubUsername: OVCARE
 GithubRef: master
 GithubSha1: a66da64573c276ee0c940d9ab1b54fd325f5a6df
-RemoteHost: api.github.com
-RemoteRepo: nanostringr
-RemoteUsername: OVCARE
-RemoteSha: a66da64573c276ee0c940d9ab1b54fd325f5a6df
 
 Package: nloptr
 Source: CRAN
