@@ -377,7 +377,8 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
       dev.off()
 
       pdf(file.path(plot_dir, "lasso_boxplot.pdf"))
-      boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso")
+      boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
+              xlab = "# Genes", y = "Accuracy")
       dev.off()
     }
     if ("rf" %in% algs) {
@@ -388,7 +389,8 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
       dev.off()
 
       pdf(file.path(plot_dir, "rf_boxplot.pdf"))
-      boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest")
+      boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest",
+              xlab = "# Genes", y = "Accuracy")
       dev.off()
     }
 
