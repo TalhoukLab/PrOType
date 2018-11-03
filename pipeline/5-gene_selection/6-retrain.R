@@ -66,20 +66,12 @@ gene_ranks_rf <- rf_top %>%
   as.data.frame() %>%
   magrittr::set_rownames(genes_union)
 
-# Generate annotations for rows
-legend_title <- paste0("InTop", top_overall)
-annotation_row <-
-  tibble::tibble(!!legend_title := ifelse(genes_union %in% head(sumFreq$genes, top_overall),
-                                          "yes", "no")) %>%
-  as.data.frame() %>%
-  magrittr::set_rownames(genes_union)
-
+# Heatmap for top rf genes
 cli::cat_line("Plotting heatmap of top ", top_study, " rf genes")
 
 pdf(file.path(plot_dir, paste0("Heatmap_rf_top", top_study, ".pdf")))
 pheatmap::pheatmap(
   mat = gene_ranks_rf,
-  annotation_row = annotation_row,
   fontsize_row = 5,
   main = "Random Forest"
 )
