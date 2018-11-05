@@ -511,16 +511,16 @@ analyze_genes <- function(output_dir, train_dat, algs) {
         readr::read_csv(file = ., col_types = readr::cols()) %>%
           dplyr::arrange(dplyr::desc(rfFreq)) %>%
           dplyr::pull(genes) %>%
-          head(60)
+          head(70)
       })
 
     rf_union <- Reduce(union, rf_top)
     rf_ranks <- rf_top %>%
-      purrr::map(match, x = rf_union, nomatch = 70) %>%
+      purrr::map(match, x = rf_union, nomatch = 80) %>%
       as.data.frame() %>%
       magrittr::set_rownames(rf_union)
 
-    pdf(file.path(plot_dir, "rf60_heatmap.pdf"))
+    pdf(file.path(plot_dir, "rf70_heatmap2.pdf"))
     pheatmap::pheatmap(rf_ranks, fontsize_row = 6, main = "Random Forest")
     dev.off()
   }
