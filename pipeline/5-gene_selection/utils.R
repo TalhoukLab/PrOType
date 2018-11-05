@@ -99,12 +99,11 @@ which_genes <- function(fits, algo) {
   make.names(genes)
 }
 
-loso_plot <- function(file_name, data, group, main,
+loso_plot <- function(data, group, main,
                       xlab = "#genes", ylab = "F1 Score",
                       xbreaks = seq(4, 100, 5), ylim = c(0, 1),
                       col_alg = c("red", "blue", "green"), col_max = "black",
                       show_max = TRUE, legend_border = TRUE) {
-  pdf(file_name)
   plot(
     1,
     type = "n",
@@ -131,7 +130,6 @@ loso_plot <- function(file_name, data, group, main,
          }),
          col = col_alg,
          bty = ifelse(legend_border, "o", "n"))
-  dev.off()
 }
 
 
@@ -403,13 +401,14 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
           purrr::map_dbl(~ .[["overall"]]["Accuracy"]) %>%
           list(Accuracy = .)
       })
+    pdf(file.path(plot_dir, "LOSO_accuracy.pdf"))
     loso_plot(
-      file_name = file.path(plot_dir, "LOSO_accuracy.pdf"),
       data = oacc,
       group = "Accuracy",
       main = "Overall Accuracy\n by # of genes",
       ylab = "Accuracy"
     )
+    dev.off()
 
     # F1 Score by class
     byclass <- l_train %>%
@@ -423,11 +422,14 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
       })
     f1_args <- c("C1-MES", "C2-IMM", "C4-DIF", "C5-PRO") %>%
       purrr::map(~ list(
-        file_name = file.path(plot_dir, paste0("LOSO_F1_", ., ".pdf")),
         group = paste("Class:", .),
         main = paste0("F1 Score for ", ., "\nby # of genes")
       ))
+    pdf(file.path(plot_dir, "LOSO_F1.pdf"))
+    par(mfrow = c(2, 2))
     purrr::walk(f1_args, ~ purrr::invoke(loso_plot, ., data = byclass))
+    dev.off()
+    par(mfrow = c(1, 1))
   }
 }
 

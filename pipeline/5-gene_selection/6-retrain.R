@@ -156,8 +156,8 @@ if (predCut2) {
       strsplit(names(.), split = " "), 2
     )))
 
+  pdf(file.path(plot_dir, "F1score_cut2_byclass.pdf"))
   loso_plot(
-    file_name = file.path(plot_dir, "F1score_cut2_byclass.pdf"),
     data = byclass.res,
     group = "F1_score",
     main = "F1 Score by class\nby # of genes",
@@ -167,6 +167,7 @@ if (predCut2) {
     show_max = FALSE,
     legend_border = FALSE
   )
+  dev.off()
 }
 
 # Refine model by removing problematic genes ----
@@ -229,8 +230,8 @@ if (refineModel) {
     purrr::map(~ list(F1_score = unlist(.))) %>%
     purrr::set_names(gsub("\\.", "-", purrr::map_chr(strsplit(names(.), split = " "), 2)))
 
+  pdf(file.path(plot_dir, "F1score_alternates.pdf"))
   loso_plot(
-    file_name = file.path(plot_dir, "F1score_alternates.pdf"),
     data = byclass.res,
     group = "F1_score",
     main = "F1 Score by class\nby # of genes",
@@ -240,6 +241,7 @@ if (refineModel) {
     show_max = FALSE,
     legend_border = FALSE
   )
+  dev.off()
 
   colnames(rf)[2] <- "Label"
   readr::write_csv(rf, file.path(c1_path, "cut2_pred_alternates_table.csv"))
