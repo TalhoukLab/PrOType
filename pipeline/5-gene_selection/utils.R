@@ -381,6 +381,7 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
         width = 7,
         height = 11
       )
+      dev.off()
 
       cli::cat_line("Plotting accuracy boxplots")
       pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"), height = 11)
