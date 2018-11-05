@@ -370,9 +370,9 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
     if (all(c("lasso", "rf") %in% algs)) {
       cli::cat_line("Plotting accuracy heatmaps")
       p1 <-
-        pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
+        pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso", silent = TRUE)
       p2 <-
-        pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
+        pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest", silent = TRUE)
       plist <- list(p1[["gtable"]], p2[["gtable"]])
       p <- purrr::invoke(gridExtra::arrangeGrob, plist)
       ggplot2::ggsave(
