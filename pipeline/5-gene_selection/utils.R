@@ -369,14 +369,14 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
 
     if (all(c("lasso", "rf") %in% algs)) {
       cli::cat_line("Plotting accuracy heatmaps")
-      pdf(file.path(plot_dir, "Accuracy_heatmaps.pdf"))
+      pdf(file.path(plot_dir, "Accuracy_heatmaps.pdf"), height = 11)
       par(mfrow = c(2, 1))
       pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
       pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
       dev.off()
 
       cli::cat_line("Plotting accuracy boxplots")
-      pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"))
+      pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"), height = 11)
       par(mfrow = c(2, 1))
       boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
               xlab = "# Genes", ylab = "Accuracy")
@@ -443,7 +443,7 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
         group = paste("Class:", .),
         main = paste0("F1 Score for ", ., "\nby # of genes")
       ))
-    pdf(file.path(plot_dir, "LOSO_F1.pdf"))
+    pdf(file.path(plot_dir, "LOSO_F1.pdf"), height = 11)
     par(mfrow = c(2, 2))
     purrr::walk(f1_args, ~ purrr::invoke(loso_plot, ., data = byclass))
     dev.off()
