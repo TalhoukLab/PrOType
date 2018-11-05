@@ -392,31 +392,6 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
       dev.off()
     }
 
-    # if ("lasso" %in% algs) {
-    #   cli::cat_line("Plotting lasso figures")
-    #
-    #   pdf(file.path(plot_dir, "lasso_heatmap.pdf"))
-    #   pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
-    #   dev.off()
-    #
-    #   pdf(file.path(plot_dir, "lasso_boxplot.pdf"))
-    #   boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
-    #           xlab = "# Genes", ylab = "Accuracy")
-    #   dev.off()
-    # }
-    # if ("rf" %in% algs) {
-    #   cli::cat_line("Plotting rf figures")
-    #
-    #   pdf(file.path(plot_dir, "rf_heatmap.pdf"))
-    #   pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
-    #   dev.off()
-    #
-    #   pdf(file.path(plot_dir, "rf_boxplot.pdf"))
-    #   boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest",
-    #           xlab = "# Genes", ylab = "Accuracy")
-    #   dev.off()
-    # }
-
     cli::cat_line("Producing loso plots")
     # Overall accuracy
     oacc <- l_train %>%
