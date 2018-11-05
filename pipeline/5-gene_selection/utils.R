@@ -369,11 +369,13 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
 
     if (all(c("lasso", "rf") %in% algs)) {
       cli::cat_line("Plotting accuracy heatmaps")
-      pdf(file.path(plot_dir, "Accuracy_heatmaps.pdf"), height = 11)
-      par(mfrow = c(2, 1))
-      pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
-      pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
-      dev.off()
+      p1 <-
+        pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
+      p2 <-
+        pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
+      plist <- list(p1[["gtable"]], p2[["gtable"]])
+      p <- purrr::invoke(gridExtra::grid.arrange, plist)
+      ggplot2::ggsave(file.path(plot_dir, "Accuracy_heatmaps.pdf"), p, height = 11)
 
       cli::cat_line("Plotting accuracy boxplots")
       pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"), height = 11)
