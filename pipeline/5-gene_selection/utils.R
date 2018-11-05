@@ -429,7 +429,6 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
     par(mfrow = c(2, 2))
     purrr::walk(f1_args, ~ purrr::invoke(loso_plot, ., data = byclass))
     dev.off()
-    par(mfrow = c(1, 1))
   }
 }
 
