@@ -499,48 +499,53 @@ overall_freq <- function(files) {
 analyze_genes <- function(output_dir, train_dat, algs) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "gene_selection", "plots")
-  fnames <- list.files(file.path(output_dir, "gene_selection", "sum_freq"),
-                       pattern = "_sum_freq.csv", full.names = TRUE)
+  fnames <- list.files(
+    path = file.path(output_dir, "gene_selection", "sum_freq"),
+    pattern = "sum_freq",
+    full.names = TRUE
+  )
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
   if ("lasso" %in% algs) {
-    cli::cat_line("lasso")
-    lasso30 <- purrr::map(fnames, ~ {
-      readr::read_csv(file = ., col_types = readr::cols()) %>%
-        dplyr::arrange(dplyr::desc(lassoFreq)) %>%
-        dplyr::pull(genes) %>%
-        head(30)
-    }) %>%
-      purrr::set_names(site_names)
+    cli::cat_line("lasso30")
+    lasso_top <- fnames %>%
+      purrr::set_names(site_names) %>%
+      purrr::map(~ {
+        readr::read_csv(file = ., col_types = readr::cols()) %>%
+          dplyr::arrange(dplyr::desc(lassoFreq)) %>%
+          dplyr::pull(genes) %>%
+          head(30)
+      })
 
-    genes30 <- Reduce(union, lasso30)
-    geneRanks_lasso <- lasso30 %>%
-      purrr::map(match, x = genes30, nomatch = 50) %>%
+    lasso_union <- Reduce(union, lasso_top)
+    lasso_ranks <- lasso_top %>%
+      purrr::map(match, x = lasso_union, nomatch = 50) %>%
       as.data.frame() %>%
-      magrittr::set_rownames(genes30)
+      magrittr::set_rownames(lasso_union)
 
     pdf(file.path(plot_dir, "lasso30_heatmap.pdf"))
-    pheatmap::pheatmap(geneRanks_lasso, fontsize_row = 7, main = "Lasso")
+    pheatmap::pheatmap(lasso_ranks, fontsize_row = 7, main = "Lasso")
     dev.off()
   }
   if ("rf" %in% algs) {
     cli::cat_line("rf60")
-    rf60 <- purrr::map(fnames, ~ {
-      readr::read_csv(file = ., col_types = readr::cols()) %>%
-        dplyr::arrange(dplyr::desc(rfFreq)) %>%
-        dplyr::pull(genes) %>%
-        head(60)
-    }) %>%
-      purrr::set_names(site_names)
+    rf_top <- fnames %>%
+      purrr::set_names(site_names) %>%
+      purrr::map(~ {
+        readr::read_csv(file = ., col_types = readr::cols()) %>%
+          dplyr::arrange(dplyr::desc(rfFreq)) %>%
+          dplyr::pull(genes) %>%
+          head(60)
+      })
 
-    genes60 <- Reduce(union, rf60)
-    geneRanks_rf <- rf60 %>%
-      purrr::map(match, x = genes60, nomatch = 70) %>%
+    rf_union <- Reduce(union, rf_top)
+    rf_ranks <- rf_top %>%
+      purrr::map(match, x = rf_union, nomatch = 70) %>%
       as.data.frame() %>%
-      magrittr::set_rownames(genes60)
+      magrittr::set_rownames(rf_union)
 
     pdf(file.path(plot_dir, "rf60_heatmap.pdf"))
-    pheatmap::pheatmap(geneRanks_rf, fontsize_row = 6, main = "Random Forest")
+    pheatmap::pheatmap(rf_ranks, fontsize_row = 6, main = "Random Forest")
     dev.off()
   }
 }

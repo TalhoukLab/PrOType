@@ -29,6 +29,12 @@ test1_dat <- test1$dat
 # Get studies from test set
 study_test1 <- unique(test1_dat$site)
 
+# Load the average frequency across all studies
+sumFreq <-
+  file.path(outputDir, "gene_selection", "sum_freq", "overall_freq.csv") %>%
+  readr::read_csv(col_types = readr::cols()) %>%
+  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
+
 
 # Run the analysis----
 
@@ -39,42 +45,31 @@ fnames <- list.files(
   pattern = "sum_freq",
   full.names = TRUE
 )
+site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
 # For each study, we arrange by the most included rf gene proportion and we
 # return the top `top_study` genes
-site_names <- table(train_dat$site) %>% paste0(names(.), .)
 rf_top <- fnames %>%
   purrr::set_names(site_names) %>%
-  purrr::map(
-    ~ readr::read_csv(., col_types = readr::cols()) %>%
+  purrr::map(~ {
+    readr::read_csv(file = ., col_types = readr::cols()) %>%
       dplyr::arrange(dplyr::desc(rfFreq)) %>%
       dplyr::pull(genes) %>%
       head(top_study)
-  )
-
-# Load the average frequency across all studies
-sumFreq <-
-  file.path(outputDir, "gene_selection", "sum_freq", "overall_freq.csv") %>%
-  readr::read_csv(col_types = readr::cols()) %>%
-  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq))
+  })
 
 # We consider the union of the genes across studies
-genes_union <- Reduce(union, rf_top)
-
-gene_ranks_rf <- rf_top %>%
-  purrr::map(match, x = genes_union, nomatch = 80) %>%
+rf_union <- Reduce(union, rf_top)
+rf_ranks <- rf_top %>%
+  purrr::map(match, x = rf_union, nomatch = 80) %>%
   as.data.frame() %>%
-  magrittr::set_rownames(genes_union)
+  magrittr::set_rownames(rf_union)
 
 # Heatmap for top rf genes
 cli::cat_line("Plotting heatmap of top ", top_study, " rf genes")
 
-pdf(file.path(plot_dir, paste0("Heatmap_rf_top", top_study, ".pdf")))
-pheatmap::pheatmap(
-  mat = gene_ranks_rf,
-  fontsize_row = 5,
-  main = "Random Forest"
-)
+pdf(file.path(plot_dir, paste0("rf", top_study, "_heatmap.pdf")))
+pheatmap::pheatmap(rf_ranks, fontsize_row = 5, main = "Random Forest")
 dev.off()
 
 # Train models with different number of genes----
@@ -84,8 +79,8 @@ if (trainModel) {
   y <- sl_class(train_lab, x)
   genes <- get_genes(train_dat)
 
-  # Sequence from n_min to length(genes_union) adding one gene at a time
-  ng <- seq(n_min, length(genes_union), 1) %>% magrittr::set_names(paste0("ng_", .))
+  # Sequence from n_min to length(rf_union) adding one gene at a time
+  ng <- seq(n_min, length(rf_union), 1) %>% magrittr::set_names(paste0("ng_", .))
   rf_genes <- make.names(sumFreq$genes)
   l <- ng %>%
     purrr::map(head, x = rf_genes) %>%
@@ -136,7 +131,7 @@ if (predCut2) {
 
   pdf(file.path(plot_dir, "Accuracy_cut2.pdf"))
   plot(
-    seq(n_min, length(genes_union), 1),
+    seq(n_min, length(rf_union), 1),
     res_pred,
     ylim = c(0.9, 1),
     xlab = "Number of Genes",
@@ -161,7 +156,7 @@ if (predCut2) {
     data = byclass.res,
     group = "F1_score",
     main = "F1 Score by class\nby # of genes",
-    xbreaks = seq(n_min, length(genes_union), 1),
+    xbreaks = seq(n_min, length(rf_union), 1),
     ylim = c(0.8, 1),
     col_alg = c("red", "forestgreen", "darkslategray3", "darkviolet"),
     show_max = FALSE,
