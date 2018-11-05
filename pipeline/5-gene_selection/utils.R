@@ -375,7 +375,12 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
         pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
       plist <- list(p1[["gtable"]], p2[["gtable"]])
       p <- purrr::invoke(gridExtra::grid.arrange, plist)
-      ggplot2::ggsave(file.path(plot_dir, "Accuracy_heatmaps.pdf"), p, height = 11)
+      ggplot2::ggsave(
+        file.path(plot_dir, "Accuracy_heatmaps.pdf"),
+        p,
+        width = 7,
+        height = 11
+      )
 
       cli::cat_line("Plotting accuracy boxplots")
       pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"), height = 11)
