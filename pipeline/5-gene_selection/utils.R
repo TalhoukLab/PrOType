@@ -367,30 +367,48 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
   if (producePlots) {
     plot_dir <- file.path(output_dir, "gene_selection", "plots")
 
-    if ("lasso" %in% algs) {
-      cli::cat_line("Plotting lasso figures")
-
-      pdf(file.path(plot_dir, "lasso_heatmap.pdf"))
+    if (all(c("lasso", "rf") %in% algs)) {
+      cli::cat_line("Plotting accuracy heatmaps")
+      pdf(file.path(plot_dir, "Accuracy_heatmaps.pdf"))
+      par(mfrow = c(2, 1))
       pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
-      dev.off()
-
-      pdf(file.path(plot_dir, "lasso_boxplot.pdf"))
-      boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
-              xlab = "# Genes", ylab = "Accuracy")
-      dev.off()
-    }
-    if ("rf" %in% algs) {
-      cli::cat_line("Plotting rf figures")
-
-      pdf(file.path(plot_dir, "rf_heatmap.pdf"))
       pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
       dev.off()
 
-      pdf(file.path(plot_dir, "rf_boxplot.pdf"))
+      cli::cat_line("Plotting accuracy boxplots")
+      pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"))
+      par(mfrow = c(2, 1))
+      boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
+              xlab = "# Genes", ylab = "Accuracy")
       boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest",
               xlab = "# Genes", ylab = "Accuracy")
       dev.off()
     }
+
+    # if ("lasso" %in% algs) {
+    #   cli::cat_line("Plotting lasso figures")
+    #
+    #   pdf(file.path(plot_dir, "lasso_heatmap.pdf"))
+    #   pheatmap::pheatmap(res[["lasso"]], main = "Accuracy By Study - Lasso")
+    #   dev.off()
+    #
+    #   pdf(file.path(plot_dir, "lasso_boxplot.pdf"))
+    #   boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
+    #           xlab = "# Genes", ylab = "Accuracy")
+    #   dev.off()
+    # }
+    # if ("rf" %in% algs) {
+    #   cli::cat_line("Plotting rf figures")
+    #
+    #   pdf(file.path(plot_dir, "rf_heatmap.pdf"))
+    #   pheatmap::pheatmap(res[["rf"]], main = "Accuracy By Study - Random Forest")
+    #   dev.off()
+    #
+    #   pdf(file.path(plot_dir, "rf_boxplot.pdf"))
+    #   boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest",
+    #           xlab = "# Genes", ylab = "Accuracy")
+    #   dev.off()
+    # }
 
     cli::cat_line("Producing loso plots")
     # Overall accuracy
