@@ -485,8 +485,8 @@ analyze_genes <- function(output_dir, train_dat, algs,
 
   cli::cat_line("Plotting heatmap of top ", n_lasso,
                 " lasso genes and heatmap of top ", n_rf, " rf genes")
-
-  if ("lasso" %in% algs) {
+  if (all(c("lasso", "rf") %in% algs)) {
+    # Top lasso genes
     lasso_top <- fnames %>%
       purrr::set_names(site_names) %>%
       purrr::map(~ {
@@ -495,18 +495,13 @@ analyze_genes <- function(output_dir, train_dat, algs,
           dplyr::pull(genes) %>%
           head(n_lasso)
       })
-
     lasso_union <- Reduce(union, lasso_top)
     lasso_ranks <- lasso_top %>%
       purrr::map(match, x = lasso_union, nomatch = 50) %>%
       as.data.frame() %>%
       magrittr::set_rownames(lasso_union)
 
-    pdf(file.path(plot_dir, paste0("lasso", n_lasso, "_heatmap.pdf")))
-    pheatmap::pheatmap(lasso_ranks, fontsize_row = 7, main = "Lasso")
-    dev.off()
-  }
-  if ("rf" %in% algs) {
+    # Top rf genes
     rf_top <- fnames %>%
       purrr::set_names(site_names) %>%
       purrr::map(~ {
@@ -515,16 +510,26 @@ analyze_genes <- function(output_dir, train_dat, algs,
           dplyr::pull(genes) %>%
           head(n_rf)
       })
-
     rf_union <- Reduce(union, rf_top)
     rf_ranks <- rf_top %>%
       purrr::map(match, x = rf_union, nomatch = 80) %>%
       as.data.frame() %>%
       magrittr::set_rownames(rf_union)
 
-    pdf(file.path(plot_dir, paste0("rf", n_rf, "_heatmap2.pdf")))
-    pheatmap::pheatmap(rf_ranks, fontsize_row = 6, main = "Random Forest")
-    dev.off()
+    # Combine heatmaps
+    p1 <- lasso_ranks %>%
+      pheatmap::pheatmap(fontsize_row = 7, main = "Lasso", silent = TRUE) %>%
+      purrr::pluck("gtable")
+    p2 <- rf_ranks %>%
+      pheatmap::pheatmap(fontsize_row = 6, main = "Random Forest", silent = TRUE) %>%
+      purrr::pluck("gtable")
+    p <- purrr::invoke(gridExtra::arrangeGrob, list(p1, p2))
+    ggplot2::ggsave(
+      filename = file.path(plot_dir, "top_genes_heatmaps.pdf"),
+      plot = p,
+      width = 7,
+      height = 11
+    )
   }
 }
 

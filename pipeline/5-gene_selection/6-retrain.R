@@ -60,21 +60,10 @@ rf_top <- fnames %>%
 
 # We consider the union of the genes across studies
 rf_union <- Reduce(union, rf_top)
-rf_ranks <- rf_top %>%
-  purrr::map(match, x = rf_union, nomatch = 80) %>%
-  as.data.frame() %>%
-  magrittr::set_rownames(rf_union)
-
-# Heatmap for top rf genes
-cli::cat_line("Plotting heatmap of top ", top_study, " rf genes")
-
-pdf(file.path(plot_dir, paste0("rf", top_study, "_heatmap.pdf")))
-pheatmap::pheatmap(rf_ranks, fontsize_row = 5, main = "Random Forest")
-dev.off()
 
 # Train models with different number of genes----
 if (trainModel) {
-  cli::cat_line("Train Model with top ", n_min, "-", top_study, " rf genes")
+  cli::cat_line("Train Model with top ", n_min, "-", length(rf_union), " rf genes")
   x <- sl_data(train_dat)
   y <- sl_class(train_lab, x)
   genes <- get_genes(train_dat)
