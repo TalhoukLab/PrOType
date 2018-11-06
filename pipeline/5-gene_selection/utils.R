@@ -370,10 +370,10 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
     if (all(c("lasso", "rf") %in% algs)) {
       cli::cat_line("Plotting accuracy heatmaps")
       p1 <- res[["lasso"]] %>%
-        pheatmap::pheatmap(main - "Accuracy By Study - Lasso", silent = TRUE) %>%
+        pheatmap::pheatmap(main = "Accuracy By Study - Lasso", silent = TRUE) %>%
         purrr::pluck("gtable")
       p2 <- res[["rf"]] %>%
-        pheatmap::pheatmap(main - "Accuracy By Study - Random Forest", silent = TRUE) %>%
+        pheatmap::pheatmap(main = "Accuracy By Study - Random Forest", silent = TRUE) %>%
         purrr::pluck("gtable")
       p <- purrr::invoke(gridExtra::arrangeGrob, list(p1, p2))
       ggplot2::ggsave(
@@ -472,7 +472,8 @@ overall_freq <- function(files) {
     dplyr::mutate_at(-1, round, digits = 5)
 }
 
-analyze_genes <- function(output_dir, train_dat, algs) {
+analyze_genes <- function(output_dir, train_dat, algs,
+                          n_lasso = 30, n_rf = 70) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "gene_selection", "plots")
   fnames <- list.files(
@@ -482,15 +483,17 @@ analyze_genes <- function(output_dir, train_dat, algs) {
   )
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
+  cli::cat_line("Plotting heatmap of top ", n_lasso,
+                " lasso genes and heatmap of top ", n_rf, " rf genes")
+
   if ("lasso" %in% algs) {
-    cli::cat_line("lasso30")
     lasso_top <- fnames %>%
       purrr::set_names(site_names) %>%
       purrr::map(~ {
         readr::read_csv(file = ., col_types = readr::cols()) %>%
           dplyr::arrange(dplyr::desc(lassoFreq)) %>%
           dplyr::pull(genes) %>%
-          head(30)
+          head(n_lasso)
       })
 
     lasso_union <- Reduce(union, lasso_top)
@@ -499,19 +502,18 @@ analyze_genes <- function(output_dir, train_dat, algs) {
       as.data.frame() %>%
       magrittr::set_rownames(lasso_union)
 
-    pdf(file.path(plot_dir, "lasso30_heatmap.pdf"))
+    pdf(file.path(plot_dir, paste0("lasso", n_lasso, "_heatmap.pdf")))
     pheatmap::pheatmap(lasso_ranks, fontsize_row = 7, main = "Lasso")
     dev.off()
   }
   if ("rf" %in% algs) {
-    cli::cat_line("rf60")
     rf_top <- fnames %>%
       purrr::set_names(site_names) %>%
       purrr::map(~ {
         readr::read_csv(file = ., col_types = readr::cols()) %>%
           dplyr::arrange(dplyr::desc(rfFreq)) %>%
           dplyr::pull(genes) %>%
-          head(70)
+          head(n_rf)
       })
 
     rf_union <- Reduce(union, rf_top)
@@ -520,7 +522,7 @@ analyze_genes <- function(output_dir, train_dat, algs) {
       as.data.frame() %>%
       magrittr::set_rownames(rf_union)
 
-    pdf(file.path(plot_dir, "rf70_heatmap2.pdf"))
+    pdf(file.path(plot_dir, paste0("rf", n_rf, "_heatmap2.pdf")))
     pheatmap::pheatmap(rf_ranks, fontsize_row = 6, main = "Random Forest")
     dev.off()
   }
