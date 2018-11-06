@@ -140,7 +140,7 @@ if (predCut2) {
       strsplit(names(.), split = " "), 2
     )))
 
-  pdf(file.path(plot_dir, "F1score_cut2_byclass.pdf"))
+  pdf(file.path(plot_dir, "F1_cut2_byclass.pdf"))
   loso_plot(
     data = byclass.res,
     group = "F1_score",
@@ -214,7 +214,7 @@ if (refineModel) {
     purrr::map(~ list(F1_score = unlist(.))) %>%
     purrr::set_names(gsub("\\.", "-", purrr::map_chr(strsplit(names(.), split = " "), 2)))
 
-  pdf(file.path(plot_dir, "F1score_alternates.pdf"))
+  pdf(file.path(plot_dir, "F1_alternates.pdf"))
   loso_plot(
     data = byclass.res,
     group = "F1_score",
