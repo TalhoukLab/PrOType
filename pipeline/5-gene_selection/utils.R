@@ -418,10 +418,9 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
           purrr::map(caret::confusionMatrix, data = alg[["Adaboost.xpn"]]) %>%
           purrr::map(~ .[["byClass"]][, "F1"]) %>%
           purrr::transpose() %>%
-          purrr::map(unlist) %>%
-          purrr::set_names(gsub("\\.", "-", names(.)))
+          purrr::map(unlist)
       })
-    f1_args <- c("C1-MES", "C2-IMM", "C4-DIF", "C5-PRO") %>%
+    f1_args <- c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO") %>%
       purrr::map(~ list(
         group = paste("Class:", .),
         main = paste0("F1 Score for ", ., "\nby # of genes")

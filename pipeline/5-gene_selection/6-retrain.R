@@ -136,9 +136,7 @@ if (predCut2) {
     purrr::map(~ .[["byClass"]][, "F1"]) %>%
     purrr::transpose() %>%
     purrr::map(~ list(F1_score = unlist(.))) %>%
-    purrr::set_names(gsub("\\.", "-", purrr::map_chr(
-      strsplit(names(.), split = " "), 2
-    )))
+    purrr::set_names(purrr::map_chr(strsplit(names(.), split = " "), 2))
 
   pdf(file.path(plot_dir, "F1_cut2_byclass.pdf"))
   loso_plot(
