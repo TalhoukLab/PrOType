@@ -77,7 +77,7 @@ ui <- fluidPage(
       br(), br(),
 
       # OVCARE logo and link to website
-      a(img(src = "ovcare_logo.png"),
+      a(img(src = "ovcare_logo.png", width = "400"),
         href = "http://www.ovcare.ca/",
         target = "_blank")
     ),
