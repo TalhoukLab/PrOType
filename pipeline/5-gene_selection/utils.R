@@ -387,9 +387,9 @@ evaluate_predictions <- function(output_dir, train_dat, train_lab, algs,
       pdf(file.path(plot_dir, "Accuracy_boxplots.pdf"), height = 11)
       par(mfrow = c(2, 1))
       boxplot(res[["lasso"]], names = seq(4, 94, 5), main = "Lasso",
-              xlab = "# Genes", ylab = "Accuracy")
+              xlab = "# Genes", ylab = "Accuracy per Study")
       boxplot(res[["rf"]], names = seq(4, 94, 5), main = "Random Forest",
-              xlab = "# Genes", ylab = "Accuracy")
+              xlab = "# Genes", ylab = "Accuracy per Study")
       dev.off()
     }
 
