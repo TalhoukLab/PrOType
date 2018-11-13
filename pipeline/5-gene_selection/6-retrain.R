@@ -128,6 +128,11 @@ if (predCut2) {
     main = "Prediction Accuracy on Cut 2\nas a Function of Number of Genes",
     pch = 19
   )
+  legend("bottomright",
+         pch = 19,
+         c(paste0("Min = ", min(res_pred), " #", which.min(res_pred)),
+           paste0("Max = ", max(res_pred), " #", which.max(res_pred))),
+         bty = "n")
   dev.off()
 
   byclass.res <- rf %>%
