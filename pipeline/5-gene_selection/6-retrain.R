@@ -130,8 +130,8 @@ if (predCut2) {
   )
   legend("bottomright",
          pch = 19,
-         c(paste0("Min = ", min(res_pred), " #", which.min(res_pred)),
-           paste0("Max = ", max(res_pred), " #", which.max(res_pred))),
+         c(paste0("Min = ", round(min(res_pred), 2), " #", which.min(res_pred)),
+           paste0("Max = ", round(max(res_pred), 2), " #", which.max(res_pred))),
          bty = "n")
   dev.off()
 
