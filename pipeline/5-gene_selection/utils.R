@@ -471,8 +471,7 @@ overall_freq <- function(files) {
     dplyr::mutate_at(-1, round, digits = 5)
 }
 
-analyze_genes <- function(output_dir, train_dat, algs,
-                          n_lasso = 30, n_rf = 70) {
+analyze_genes <- function(output_dir, train_dat, algs, n = 50) {
   cli::cat_rule("Running Gene analysis")
   plot_dir <- file.path(output_dir, "gene_selection", "plots")
   fnames <- list.files(
@@ -482,8 +481,7 @@ analyze_genes <- function(output_dir, train_dat, algs,
   )
   site_names <- table(train_dat$site) %>% paste0(names(.), .)
 
-  cli::cat_line("Plotting heatmap of top ", n_lasso,
-                " lasso genes and heatmap of top ", n_rf, " rf genes")
+  cli::cat_line("Plotting heatmaps of top ", n, " lasso genes and rf genes")
   if (all(c("lasso", "rf") %in% algs)) {
     # Top lasso genes
     lasso_top <- fnames %>%
@@ -492,11 +490,11 @@ analyze_genes <- function(output_dir, train_dat, algs,
         readr::read_csv(file = ., col_types = readr::cols()) %>%
           dplyr::arrange(dplyr::desc(lassoFreq)) %>%
           dplyr::pull(genes) %>%
-          head(n_lasso)
+          head(n)
       })
     lasso_union <- Reduce(union, lasso_top)
     lasso_ranks <- lasso_top %>%
-      purrr::map(match, x = lasso_union, nomatch = 50) %>%
+      purrr::map(match, x = lasso_union) %>%
       as.data.frame() %>%
       magrittr::set_rownames(lasso_union)
 
@@ -507,20 +505,22 @@ analyze_genes <- function(output_dir, train_dat, algs,
         readr::read_csv(file = ., col_types = readr::cols()) %>%
           dplyr::arrange(dplyr::desc(rfFreq)) %>%
           dplyr::pull(genes) %>%
-          head(n_rf)
+          head(n)
       })
     rf_union <- Reduce(union, rf_top)
     rf_ranks <- rf_top %>%
-      purrr::map(match, x = rf_union, nomatch = 80) %>%
+      purrr::map(match, x = rf_union) %>%
       as.data.frame() %>%
       magrittr::set_rownames(rf_union)
 
     # Combine heatmaps
     p1 <- lasso_ranks %>%
-      pheatmap::pheatmap(fontsize_row = 7, main = "Lasso", silent = TRUE) %>%
+      pheatmap::pheatmap(main = "Lasso",
+                         fontsize_row = 6, silent = TRUE, na_col = "grey20") %>%
       purrr::pluck("gtable")
     p2 <- rf_ranks %>%
-      pheatmap::pheatmap(fontsize_row = 6, main = "Random Forest", silent = TRUE) %>%
+      pheatmap::pheatmap(main = "Random Forest",
+                         fontsize_row = 6, silent = TRUE, na_col = "grey20") %>%
       purrr::pluck("gtable")
     p <- purrr::invoke(gridExtra::arrangeGrob, list(p1, p2))
     ggplot2::ggsave(
