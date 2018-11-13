@@ -516,7 +516,7 @@ analyze_genes <- function(output_dir, train_dat, algs, n = 50) {
     # Combine heatmaps
     p1 <- lasso_ranks %>%
       pheatmap::pheatmap(main = "Lasso",
-                         fontsize_row = 6, silent = TRUE, na_col = "grey20", cluster_rows = FALSE) %>%
+                         fontsize_row = 4, silent = TRUE, na_col = "grey20", cluster_rows = FALSE) %>%
       purrr::pluck("gtable")
     p2 <- rf_ranks %>%
       pheatmap::pheatmap(main = "Random Forest",
