@@ -492,11 +492,17 @@ analyze_genes <- function(output_dir, train_dat, algs, n = 50) {
           dplyr::pull(genes) %>%
           head(n)
       })
+    # Union of top genes across studies
     lasso_union <- Reduce(union, lasso_top)
+    # Ranked genes by match in the union
     lasso_ranks <- lasso_top %>%
       purrr::map(match, x = lasso_union) %>%
       as.data.frame() %>%
       magrittr::set_rownames(lasso_union)
+    # Distance matrix using a dummy missing value
+    lasso_dist <- lasso_top %>%
+      purrr::map_df(match, x = lasso_union, nomatch = 99) %>%
+      dist()
 
     # Top rf genes
     rf_top <- fnames %>%
@@ -507,20 +513,36 @@ analyze_genes <- function(output_dir, train_dat, algs, n = 50) {
           dplyr::pull(genes) %>%
           head(n)
       })
+    # Union of top genes across studies
     rf_union <- Reduce(union, rf_top)
+    # Ranked genes by match in the union
     rf_ranks <- rf_top %>%
       purrr::map(match, x = rf_union) %>%
       as.data.frame() %>%
       magrittr::set_rownames(rf_union)
+    # Distance matrix using a dummy missing value
+    rf_dist <- rf_top %>%
+      purrr::map_df(match, x = rf_union, nomatch = 99) %>%
+      dist()
 
     # Combine heatmaps
     p1 <- lasso_ranks %>%
-      pheatmap::pheatmap(main = "Lasso",
-                         fontsize_row = 4, silent = TRUE, na_col = "grey20", cluster_rows = FALSE) %>%
+      pheatmap::pheatmap(
+        main = "Lasso",
+        fontsize_row = 4,
+        silent = TRUE,
+        na_col = "grey20",
+        clustering_distance_rows = lasso_dist
+      ) %>%
       purrr::pluck("gtable")
     p2 <- rf_ranks %>%
-      pheatmap::pheatmap(main = "Random Forest",
-                         fontsize_row = 6, silent = TRUE, na_col = "grey20", cluster_rows = FALSE) %>%
+      pheatmap::pheatmap(
+        main = "Random Forest",
+        fontsize_row = 6,
+        silent = TRUE,
+        na_col = "grey20",
+        clustering_distance_rows = rf_dist
+      ) %>%
       purrr::pluck("gtable")
     p <- purrr::invoke(gridExtra::arrangeGrob, list(p1, p2))
     ggplot2::ggsave(
