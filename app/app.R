@@ -37,15 +37,15 @@ ui <- fluidPage(
       # Uploads section
       h5(strong("Uploads")),
 
-      # Import reference pools
+      # Import reference pool RCC files from a single directory
       fileInput(inputId = "pools",
-                label = "Upload reference pools file",
+                label = "Upload reference pool RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
 
-      # Import RCC files from a single directory
-      fileInput(inputId = "rccs",
-                label = "Upload RCC files",
+      # Import sample RCC files from a single directory
+      fileInput(inputId = "samples",
+                label = "Upload sample RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
 
@@ -198,9 +198,9 @@ server <- function(input, output, session) {
 
   # Read in all RCC chip files and combine count data
   dat <- reactive({
-    req(input$rccs)
-    input$rccs$datapath %>%
-      purrr::set_names(tools::file_path_sans_ext(input$rccs$name)) %>%
+    req(input$samples)
+    input$samples$datapath %>%
+      purrr::set_names(tools::file_path_sans_ext(input$samples$name)) %>%
       purrr::map(nanostringr::parse_counts) %>%
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
@@ -209,9 +209,9 @@ server <- function(input, output, session) {
 
   # Read in all RCC chip files and combine attribute data
   exp <- reactive({
-    req(input$rccs)
-    input$rccs$datapath %>%
-      purrr::set_names(tools::file_path_sans_ext(input$rccs$name)) %>%
+    req(input$samples)
+    input$samples$datapath %>%
+      purrr::set_names(tools::file_path_sans_ext(input$samples$name)) %>%
       purrr::map(nanostringr::parse_attributes) %>%
       purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
       dplyr::rename(sample = File.Name)
@@ -230,7 +230,7 @@ server <- function(input, output, session) {
 
   # Slider to control signal to noise ratio
   output$sn <- renderUI({
-    req(input$rccs)
+    req(input$samples)
     sliderInput(
       inputId = "sn",
       label = "Signal to Noise Ratio",
@@ -255,7 +255,7 @@ server <- function(input, output, session) {
 
   # Normalize to HK genes and correct for BE before prediction
   Ynorm <- reactive({
-    req(input$rccs)
+    req(input$samples)
     withProgress(message = "Normalizing data", {
       # Normalize data to housekeeping genes
       dat_norm <- nanostringr::HKnorm(as.data.frame(dat()))
@@ -454,7 +454,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "predict",
-      condition = !is.null(input$rccs) && length(Ynorm()) > 0
+      condition = !is.null(input$samples) && length(Ynorm()) > 0
     )
   })
 
@@ -462,7 +462,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_data",
-      condition = !is.null(input$rccs) && length(Ynorm()) > 0
+      condition = !is.null(input$samples) && length(Ynorm()) > 0
     )
   })
 
@@ -470,7 +470,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_qc",
-      condition = !is.null(input$rccs) && length(qc()) > 0
+      condition = !is.null(input$samples) && length(qc()) > 0
     )
   })
 
@@ -478,12 +478,12 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_pred",
-      condition = !is.null(input$rccs) && length(dat_preds()) > 0
+      condition = !is.null(input$samples) && length(dat_preds()) > 0
     )
   })
 
   # Switch to QC Plots tab when raw data has been imported
-  observeEvent(input$rccs, {
+  observeEvent(input$samples, {
     updateTabsetPanel(session, "tabset", selected = "Plots")
   })
 
