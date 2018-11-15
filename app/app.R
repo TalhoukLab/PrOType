@@ -115,18 +115,22 @@ ui <- fluidPage(
                  br(),
                  h4("Reference Pools"),
                  p("Batch effect correction requires two reference pools. The
-                    Vancouver CodeSet 3 reference pools is always used as the
-                    first reference. Import a CSV file that contains reference
-                    pools 'Pool1', 'Pool2', 'Pool3' as the second reference."),
+                   Vancouver CodeSet 3 reference pools are always used as the
+                   first reference. Place reference pool RCC files in a single
+                   directory and import them as the second reference. Note that
+                   these RCC file names must have 'Pool' in them. The imported
+                   reference pools use the proportion of pools 1-3 in
+                   Vancouver CodeSet 3 to compute a weighted average before
+                   batch effect correction."),
                  br(),
-                 h4("RCC Files"),
+                 h4("Samples"),
                  p("Using your operating system's file explorer/finder, import
-                   RCC files you wish analyze. In the current implementation,
-                   files cannot be selected from multiple directories. For
-                   example, if there are 8 chip folders with 12 RCC files each,
-                   all 96 RCC files must be placed in a single directory first.
-                   Files can then be imported using a 'Select All' and 'Open' in
-                   your file chooser dialog box."),
+                   sample RCC files you wish analyze. In the current
+                   implementation, files cannot be selected from multiple
+                   directories. For example, if there are 8 chip folders with 12
+                   RCC files each, all 96 RCC files must be placed in a single
+                   directory first. Files can then be imported using a
+                   'Select All' and 'Open' in your file chooser dialog box."),
                  p("After import, the data is normalized to housekeeping genes",
                    em("and"),
                    "to the reference pools for batch effect correction and
@@ -139,18 +143,17 @@ ui <- fluidPage(
                    normalized data to your local machine."),
                  br(),
                  h4("Quality Control Metrics"),
-                 p("To compute NanoString QC metrics, click the",
-                   code("Run NanoString QC"), "button and the data will be
-                   displayed under the", strong("QC"), ">", strong("Table"),
-                   "tab."),
+                 p("NanoString QC metrics are automatically computed after
+                   sample RCC files are imported. Two visualizations are
+                   displayed under the", strong("QC"), ">", strong("Plots"),
+                   "tab: signal to noise ratio vs. percentage of genes detected,
+                   binding density vs. limit of detection. Both plots colour
+                   points by their respective flag. The plots contain
+                   interactive components such as zoom, pan, hover, and
+                   download. The QC data metrics are displayed under the",
+                   strong("QC"), ">", strong("Table"), "tab."),
                  p("The", icon("download"), code("QC"), "button downloads the
                    QC data to your local machine."),
-                 p("Two visualizations are displayed under the", strong("QC"),
-                   ">", strong("Plots"), "tab: signal to noise ratio vs.
-                   percentage of genes detected, binding density vs. limit of
-                   detection. Both plots colour points by their respective
-                   flag. The plots contain interactive components such as
-                   zoom, pan, hover, and download."),
                  br(),
                  h4("Model Prediction"),
                  p("To predict NanoString samples, click the",
