@@ -40,7 +40,8 @@ ui <- fluidPage(
       # Import reference pools
       fileInput(inputId = "pools",
                 label = "Upload reference pools file",
-                accept = ".csv"),
+                accept = c(".RCC", ".rcc"),
+                multiple = TRUE),
 
       # Import RCC files from a single directory
       fileInput(inputId = "rccs",
@@ -180,8 +181,19 @@ server <- function(input, output, session) {
   pools_ref2 <- reactive({
     req(input$pools)
     input$pools$datapath %>%
-      read.csv(row.names = "Name") %>%
-      dplyr::rename(Pool1A = Pool.A, Pool2B = Pool.B, Pool3C = Pool.C)
+      purrr::set_names(tools::file_path_sans_ext(input$pools$name)) %>%
+      purrr::map(nanostringr::parse_counts) %>%
+      purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
+      purrr::reduce(dplyr::inner_join,
+                    by = c("Code.Class", "Name", "Accession")) %>%
+      purrr::set_names(gsub(" ", "", names(.))) %>%
+      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
+      dplyr::rename_at(
+        .vars = grep("Pool[A-Z]", names(.)),
+        .funs = ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
+      ) %>%
+      as.data.frame() %>%
+      nanostringr::HKnorm()
   })
 
   # Read in all RCC chip files and combine count data
