@@ -5,6 +5,7 @@ library(ggplot2)
 `%>%` <- magrittr::`%>%`
 alg <- "rf"
 seed <- 2018
+weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 
 # Load Vancouver CS3 pools (ref 1), training data/labels, and gene frequencies
 pools_ref1 <- readRDS("data/van_pools_cs3.rds")
@@ -180,7 +181,7 @@ server <- function(input, output, session) {
     req(input$pools)
     input$pools$datapath %>%
       read.csv(row.names = "Name") %>%
-      dplyr::select(Pool1, Pool2, Pool3)
+      dplyr::rename(Pool1A = Pool.A, Pool2B = Pool.B, Pool3C = Pool.C)
   })
 
   # Read in all RCC chip files and combine count data
@@ -251,7 +252,15 @@ server <- function(input, output, session) {
       mR1 <-
         tibble::enframe(rowMeans(pools_ref1), name = "Name", value = "expR1")
       mR2 <-
-        tibble::enframe(rowMeans(pools_ref2()), name = "Name", value = "expR2")
+        weights %>%
+        purrr::imap_dfc(~ {
+          df <- dplyr::select(pools_ref2(), dplyr::matches(.y))
+          tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
+        }) %>%
+        dplyr::transmute(
+          Name,
+          expR2 = rowSums(dplyr::select(., dplyr::contains("Pool")))
+        )
 
       # Combine samples with batch effect (difference in means)
       Y <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
