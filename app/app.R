@@ -37,15 +37,9 @@ ui <- fluidPage(
       # Uploads section
       h5(strong("Uploads")),
 
-      # Import reference pool RCC files from a single directory
-      fileInput(inputId = "pools",
-                label = "Upload reference pool RCC files",
-                accept = c(".RCC", ".rcc"),
-                multiple = TRUE),
-
-      # Import sample RCC files from a single directory
-      fileInput(inputId = "samples",
-                label = "Upload sample RCC files",
+      # Import reference pool and sample RCC files from a single directory
+      fileInput(inputId = "rcc",
+                label = "Upload RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
 
@@ -113,29 +107,27 @@ ui <- fluidPage(
                    The following information is intended to help you use the
                    app's various features."),
                  br(),
-                 h4("Reference Pools"),
+                 h4("Upload RCC files"),
                  p("Batch effect correction requires two reference pools. The
                    Vancouver CodeSet 3 reference pools are always used as the
-                   first reference. Place reference pool RCC files in a single
-                   directory and import them as the second reference. Note that
-                   these RCC file names must have 'Pool' in them. The imported
-                   reference pools use the proportion of pools 1-3 in
-                   Vancouver CodeSet 3 to compute a weighted average before
-                   batch effect correction."),
-                 br(),
-                 h4("Samples"),
+                   first reference. The imported reference pools use the
+                   proportion of pools 1-3 in Vancouver CodeSet 3 to compute a
+                   weighted average before batch effect correction. Note that
+                   these reference pool RCCs must have 'Pool' in their file
+                   names."),
                  p("Using your operating system's file explorer/finder, import
-                   sample RCC files you wish analyze. In the current
-                   implementation, files cannot be selected from multiple
-                   directories. For example, if there are 8 chip folders with 12
-                   RCC files each, all 96 RCC files must be placed in a single
-                   directory first. Files can then be imported using a
-                   'Select All' and 'Open' in your file chooser dialog box."),
+                   all reference pool", em("and"), "sample RCC files you wish to
+                   analyze. In the current implementation, files cannot be
+                   selected from multiple directories. For example, if there are
+                   6 reference pools and 10 chips with 12 samples each, all 126
+                   RCC files must be placed in a single directory first. Files
+                   can then be imported using a 'Select All' and 'Open' in your
+                   file chooser dialog box."),
                  p("After import, the data is normalized to housekeeping genes",
                    em("and"),
                    "to the reference pools for batch effect correction and
                    displayed in the", strong("Data"), "tab.
-                   Some metadata is displayed in the sidebar:
+                   Some metadata is displayed in the", strong("Summary"), "tab:
                    the number of normalized genes common to both reference
                    pools, the original total number of genes, and the total
                    number of samples imported."),
@@ -182,9 +174,11 @@ server <- function(input, output, session) {
 
   # Reference 2: imported pools
   pools_ref2 <- reactive({
-    req(input$pools)
-    input$pools$datapath %>%
-      purrr::set_names(tools::file_path_sans_ext(input$pools$name)) %>%
+    req(input$rcc)
+    input$rcc %>%
+      dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
+      tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
@@ -201,9 +195,11 @@ server <- function(input, output, session) {
 
   # Read in all RCC chip files and combine count data
   dat <- reactive({
-    req(input$samples)
-    input$samples$datapath %>%
-      purrr::set_names(tools::file_path_sans_ext(input$samples$name)) %>%
+    req(input$rcc)
+    input$rcc %>%
+      dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
+      tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
@@ -212,9 +208,11 @@ server <- function(input, output, session) {
 
   # Read in all RCC chip files and combine attribute data
   exp <- reactive({
-    req(input$samples)
-    input$samples$datapath %>%
-      purrr::set_names(tools::file_path_sans_ext(input$samples$name)) %>%
+    req(input$rcc)
+    input$rcc %>%
+      dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
+      tibble::deframe() %>%
       purrr::map(nanostringr::parse_attributes) %>%
       purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
       dplyr::rename(sample = File.Name)
@@ -233,7 +231,7 @@ server <- function(input, output, session) {
 
   # Slider to control signal to noise ratio
   output$sn <- renderUI({
-    req(input$samples)
+    req(input$rcc)
     sliderInput(
       inputId = "sn",
       label = "Signal to Noise Ratio",
@@ -258,7 +256,7 @@ server <- function(input, output, session) {
 
   # Normalize to HK genes and correct for BE before prediction
   Ynorm <- reactive({
-    req(input$samples)
+    req(input$rcc)
     withProgress(message = "Normalizing data", {
       # Normalize data to housekeeping genes
       dat_norm <- nanostringr::HKnorm(as.data.frame(dat()))
@@ -457,7 +455,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "predict",
-      condition = !is.null(input$samples) && length(Ynorm()) > 0
+      condition = !is.null(input$rcc) && length(Ynorm()) > 0
     )
   })
 
@@ -465,7 +463,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_data",
-      condition = !is.null(input$samples) && length(Ynorm()) > 0
+      condition = !is.null(input$rcc) && length(Ynorm()) > 0
     )
   })
 
@@ -473,7 +471,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_qc",
-      condition = !is.null(input$samples) && length(qc()) > 0
+      condition = !is.null(input$rcc) && length(qc()) > 0
     )
   })
 
@@ -481,12 +479,12 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(
       id = "dl_pred",
-      condition = !is.null(input$samples) && length(dat_preds()) > 0
+      condition = !is.null(input$rcc) && length(dat_preds()) > 0
     )
   })
 
   # Switch to QC Plots tab when raw data has been imported
-  observeEvent(input$samples, {
+  observeEvent(input$rcc, {
     updateTabsetPanel(session, "tabset", selected = "Plots")
   })
 
