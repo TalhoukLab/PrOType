@@ -37,7 +37,7 @@ pred_overlap_array <- readRDS(file.path(outputDir, "post_processing",
 # Combine overlapping array and nstring predictions
 pred_all <- purrr::map2(pred_overlap_array, pred_overlap_nstring, combine_pred)
 
-# Evaluate all overlap results using splendid and caret
+# Evaluate all overlap results
 cli::cat_line("Evaluating overlap array and nanostring predictions")
 eval_dir <- file.path(outputDir, "nanostring", "evals")
 eval_overlap_all <- purrr::map(pred_all, evaluate_all) %>%
@@ -45,3 +45,11 @@ eval_overlap_all <- purrr::map(pred_all, evaluate_all) %>%
     eval_dir, paste0("eval_overlap_all_", .y, ".rds")
   )))
 saveRDS(eval_overlap_all, file.path(eval_dir, "eval_overlap_all.rds"))
+
+# Evaluate consensus results
+cli::cat_line("Evaluating consensus and published predictions")
+eval_consensus <- purrr::map(pred_all, evaluate_consensus) %>%
+  purrr::iwalk(~ saveRDS(.x, file.path(
+    eval_dir, paste0("eval_consensus_", .y, ".rds")
+  )))
+saveRDS(eval_consensus, file.path(eval_dir, "eval_consensus.rds"))

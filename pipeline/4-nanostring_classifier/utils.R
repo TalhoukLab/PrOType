@@ -71,6 +71,26 @@ evaluate_all <- function(data) {
   )
 }
 
+#' Evaluate consensus and published
+#'
+#' Evaluate array and nanostring consensus labels with published labels
+#'
+#' @param data tibble of published labels, predicted overlap array labels, and
+#'   predicted overlap nanostring labels. Uses output from `combine_pred()`.
+evaluate_consensus <- function(data) {
+  data <- data %>%
+    dplyr::filter(array == nstring) %>%
+    dplyr::transmute(published, consensus = array)
+  p <- data[["published"]]
+  c <- data[["consensus"]]
+  list(
+    published_vs_consensus = list(
+      metrics = splendid::evaluation(p, c),
+      confmat = caret::confusionMatrix(c, p)
+    )
+  )
+}
+
 
 # 2 - Predict All Nanostring ----------------------------------------------
 
