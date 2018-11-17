@@ -85,7 +85,6 @@ evaluate_consensus <- function(data) {
   c <- data[["consensus"]]
   list(
     published_vs_consensus = list(
-      metrics = splendid::evaluation(p, c),
       confmat = caret::confusionMatrix(c, p)
     )
   )
