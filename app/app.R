@@ -184,7 +184,8 @@ server <- function(input, output, session) {
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
       purrr::set_names(gsub(" ", "", names(.))) %>%
-      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.)))
+      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
+      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
     # Special renaming system if there are pools indexed by letters
     if (any(grepl("Pool[A-Z]", pools))) {
       pools <- pools %>%
@@ -206,7 +207,8 @@ server <- function(input, output, session) {
       purrr::map(nanostringr::parse_counts) %>%
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
-                    by = c("Code.Class", "Name", "Accession"))
+                    by = c("Code.Class", "Name", "Accession")) %>%
+      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
   })
 
   # Read in all RCC chip files and combine attribute data
