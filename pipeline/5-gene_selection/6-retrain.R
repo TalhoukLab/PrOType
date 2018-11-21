@@ -118,9 +118,11 @@ if (predCut2) {
     purrr::map(caret::confusionMatrix, rf[["Adaboost.xpn"]]) %>%
     purrr::map_dbl(purrr::pluck, "overall", "Accuracy")
 
+  x_acc <- seq(n_min, length(rf_union), 1)
+
   pdf(file.path(plot_dir, "Accuracy_cut2.pdf"))
   plot(
-    seq(n_min, length(rf_union), 1),
+    x_acc,
     res_pred,
     ylim = c(0.9, 1),
     xlab = "Number of Genes",
@@ -130,8 +132,8 @@ if (predCut2) {
   )
   legend("bottomright",
          pch = 19,
-         c(paste0("Min = ", round(min(res_pred), 2), " #", which.min(res_pred)),
-           paste0("Max = ", round(max(res_pred), 2), " #", which.max(res_pred))),
+         c(paste0("Min = ", round(min(res_pred), 2), " #", x_acc[which.min(res_pred)]),
+           paste0("Max = ", round(max(res_pred), 2), " #", x_acc[which.max(res_pred)])),
          bty = "n")
   dev.off()
 
