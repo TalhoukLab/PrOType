@@ -175,7 +175,7 @@ server <- function(input, output, session) {
   # Reference 2: imported pools
   pools_ref2 <- reactive({
     req(input$rcc)
-    input$rcc %>%
+    pools <- input$rcc %>%
       dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
@@ -184,13 +184,16 @@ server <- function(input, output, session) {
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
       purrr::set_names(gsub(" ", "", names(.))) %>%
-      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
-      dplyr::rename_at(
-        .vars = grep("Pool[A-Z]", names(.)),
-        .funs = ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
-      ) %>%
-      as.data.frame() %>%
-      nanostringr::HKnorm()
+      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.)))
+    # Special renaming system if there are pools indexed by letters
+    if (any(grepl("Pool[A-Z]", test))) {
+      pools <- pools %>%
+        dplyr::rename_at(
+          grep("Pool[A-Z]", names(.)),
+          ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
+        )
+    }
+    nanostringr::HKnorm(as.data.frame(pools))
   })
 
   # Read in all RCC chip files and combine count data
