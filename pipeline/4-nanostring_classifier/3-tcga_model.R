@@ -8,7 +8,7 @@ source(here::here("pipeline/4-nanostring_classifier/utils.R"))
 # Load raw data
 load(here::here("data/nstring/tcga_data_with_molsubtypes.rda")) # eset
 load(here::here("data/nstring/otta_exp_data.rdata")) # otta.eset
-dat <- readr::read_csv(here::here("data/nstring/OTTA_Cohorts_20171103_AFFY_MA.csv"))
+dat <- readr::read_csv(here::here("data/nstring/OTTA_Cohorts_20171103_AFFY_MA.csv"), col_types = readr::cols())
 
 # Random forest parameters
 trees <- 1000
