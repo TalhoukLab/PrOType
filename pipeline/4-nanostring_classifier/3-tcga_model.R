@@ -59,6 +59,7 @@ readr::write_csv(tcga_pred, file.path(outputDir, "nanostring", "predictions",
 
 # Probabilities
 tcga_probs <- as.data.frame(attr(pred, "prob")) %>%
+  `colnames<-`(c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")) %>%
   tibble::rownames_to_column("ottaID") %>%
   tibble::as_tibble()
 readr::write_csv(tcga_probs, file.path(outputDir, "nanostring", "predictions",
