@@ -21,7 +21,6 @@ echo 'source("pipeline/4-nanostring_classifier/2-all_array_model.R")' >> $R_file
 sh_file=$shSubDir/all_array_model.sh
 echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
-Rscript $R_file
 
 # Add to queue if qsub exists
 if command -v qsub &>/dev/null; then

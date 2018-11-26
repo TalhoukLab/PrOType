@@ -22,7 +22,6 @@ echo 'source("pipeline/4-nanostring_classifier/1-validate_nanostring.R")' >> $R_
 sh_file=$shSubDir/validate_nanostring.sh
 echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
-Rscript $R_file
 
 # Add to queue if qsub exists
 if command -v qsub &>/dev/null; then
