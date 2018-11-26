@@ -42,23 +42,24 @@ tcga_model <-
   randomForest(subtype ~ ., data = tcga_dat, ntree = trees, mtry = m)
 
 # Prediction on OTTA data using TCGA model (seed needed to break prob ties)
+cli::cat_line("Predicting full nanostring data using TCGA model")
 set.seed(21)
 pred <- splendid::prediction(tcga_model, otta_dat)
 
 # Predictions
 tcga_pred <- tibble::tibble(ottaID = rownames(otta_dat)) %>%
   dplyr::mutate(preds = pred %>% {
-    dplyr::case_when(. == "C1" ~ "C1-MES",
-                     . == "C2" ~ "C2-IMM",
-                     . == "C4" ~ "C4-DIF",
-                     . == "C5" ~ "C5-PRO")
+    dplyr::case_when(. == "C1" ~ "C1.MES",
+                     . == "C2" ~ "C2.IMM",
+                     . == "C4" ~ "C4.DIF",
+                     . == "C5" ~ "C5.PRO")
   })
-saveRDS(tcga_pred, file.path(outputDir, "nanostring", "predictions",
-                             "tcga_pred.csv"))
+readr::write_csv(tcga_pred, file.path(outputDir, "nanostring", "predictions",
+                                      "tcga_pred.csv"))
 
 # Probabilities
 tcga_probs <- as.data.frame(attr(pred, "prob")) %>%
   tibble::rownames_to_column("ottaID") %>%
   tibble::as_tibble()
-saveRDS(tcga_probs, file.path(outputDir, "nanostring", "predictions",
-                              "tcga_probs.csv"))
+readr::write_csv(tcga_probs, file.path(outputDir, "nanostring", "predictions",
+                                       "tcga_probs.csv"))
