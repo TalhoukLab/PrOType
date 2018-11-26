@@ -1,8 +1,10 @@
 # Predict NanoString data using TCGA model --------------------------------
 
 # Load packages and utility functions
-suppressPackageStartupMessages(library(Biobase))
-library(randomForest)
+suppressPackageStartupMessages({
+  library(Biobase)
+  library(randomForest)
+})
 source(here::here("pipeline/4-nanostring_classifier/utils.R"))
 
 # Load raw data
