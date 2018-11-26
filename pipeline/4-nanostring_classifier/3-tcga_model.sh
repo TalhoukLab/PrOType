@@ -3,12 +3,12 @@
 . ./Parameters.sh
 
 # Make directories for R script, shell script
-subDir=nanostring/predictions
+subDir=nanostring
 RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 mkdir -p $RSubDir
 mkdir -p $shSubDir
-mkdir -p $outputDir/$subDir
+mkdir -p $outputDir/$subDir/predictions
 
 # Content of R file
 R_file=$RSubDir/tcga_model.R
