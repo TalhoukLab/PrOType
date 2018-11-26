@@ -12,6 +12,8 @@ supervised: train_eval merge_eval top_ci iv_summary
 
 post_processing: compare plot_iv batch_effects validation
 
+nanostring: ns_validate ns_all_array ns_tcga
+
 gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 
 cross_platform: cp_analysis cp_predictions
@@ -93,9 +95,17 @@ validation:
 
 # Part 4: Validate NanoString classifier
 
-# NanoString overlap validation and prediction
-nanostring:
-	./pipeline/4-nanostring_classifier/run_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
+# NanoString overlap validation
+ns_validate:
+	./pipeline/4-nanostring_classifier/1-validate_nanostring.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Predict NanoString data using all-array model
+ns_all_array:
+	./pipeline/4-nanostring_classifier/2-all_array_model.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Predict NanoString data using TCGA model
+ns_tcga:
+	./pipeline/4-nanostring_classifier/3-tcga_model.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Part 5: Gene Selection in full NanoString
