@@ -327,7 +327,7 @@ server <- function(input, output, session) {
   output$dl_data <- downloadHandler(
     filename = "normalized_data.csv",
     content = function(file) {
-      readr::write_csv(Ynorm(), file)
+      readr::write_csv(tibble::rownames_to_column(Ynorm(), "sample"), file)
     }
   )
 
