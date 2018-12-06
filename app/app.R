@@ -292,7 +292,8 @@ server <- function(input, output, session) {
         dplyr::select(-c(be, Code.Class, Accession)) %>%
         apply(2, `+`, Y[["be"]]) %>%
         t() %>%
-        magrittr::extract(, final_glist, drop = FALSE)
+        magrittr::extract(, final_glist, drop = FALSE) %>%
+        as.data.frame()
     })
   })
 
@@ -326,7 +327,7 @@ server <- function(input, output, session) {
   output$dl_data <- downloadHandler(
     filename = "normalized_data.csv",
     content = function(file) {
-      readr::write_csv(as.data.frame(Ynorm()), file)
+      readr::write_csv(Ynorm(), file)
     }
   )
 
