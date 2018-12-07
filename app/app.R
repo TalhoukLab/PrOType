@@ -435,36 +435,24 @@ server <- function(input, output, session) {
   },
   caption = "Prediction Frequencies")
 
-  # Enable NanoString prediction when files are imported and normalized data exists
+  # Enable NanoString prediction when files are imported
   observe({
-    shinyjs::toggleState(
-      id = "predict",
-      condition = !is.null(input$rcc) && length(Ynorm()) > 0
-    )
+    shinyjs::toggleState(id = "predict", !is.null(input$rcc))
   })
 
-  # Enable data download when files are imported and normalized data exists
+  # Enable data download when files are imported
   observe({
-    shinyjs::toggleState(
-      id = "dl_data",
-      condition = !is.null(input$rcc) && length(Ynorm()) > 0
-    )
+    shinyjs::toggleState(id = "dl_data", !is.null(input$rcc))
   })
 
-  # Enable QC download when files are imported and QC exists
+  # Enable QC download when files are imported
   observe({
-    shinyjs::toggleState(
-      id = "dl_qc",
-      condition = !is.null(input$rcc) && length(qc()) > 0
-    )
+    shinyjs::toggleState(id = "dl_qc", !is.null(input$rcc))
   })
 
-  # Enable predictions download when files are imported and predictions exist
+  # Enable predictions download when files are imported and predictions clicked
   observe({
-    shinyjs::toggleState(
-      id = "dl_pred",
-      condition = !is.null(input$rcc) && length(dat_preds()) > 0
-    )
+    shinyjs::toggleState(id = "dl_pred", !is.null(input$rcc) && input$predict)
   })
 
   # Switch to QC Plots tab when raw data has been imported
