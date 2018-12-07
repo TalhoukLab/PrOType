@@ -208,7 +208,8 @@ server <- function(input, output, session) {
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
+      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
+      as.data.frame()
   })
 
   # Read in all RCC chip files and combine attribute data
@@ -220,7 +221,8 @@ server <- function(input, output, session) {
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_attributes) %>%
       purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
-      dplyr::rename(sample = File.Name)
+      dplyr::rename(sample = File.Name) %>%
+      as.data.frame()
   })
 
   # Print normalized genes common in references, total genes, total samples
@@ -251,8 +253,8 @@ server <- function(input, output, session) {
   qc <- reactive({
     req(input$sn)
     nanostringr::NanoStringQC(
-      raw = as.data.frame(dat()),
-      exp = as.data.frame(exp()),
+      raw = dat(),
+      exp = exp(),
       detect = 50,
       sn = input$sn
     ) %>%
@@ -264,7 +266,7 @@ server <- function(input, output, session) {
     req(input$rcc)
     withProgress(message = "Normalizing data", {
       # Normalize data to housekeeping genes
-      dat_norm <- nanostringr::HKnorm(as.data.frame(dat()))
+      dat_norm <- nanostringr::HKnorm(dat())
 
       # Calculate mean gene expression for references
       mR1 <-
@@ -350,9 +352,7 @@ server <- function(input, output, session) {
     } else {
       dat <- Ynorm()[, , drop = FALSE]
     }
-    top_dat <- dat %>%
-      as.data.frame() %>%
-      tibble::rownames_to_column("sample")
+    top_dat <- tibble::rownames_to_column(dat, "sample")
     top_dat %>%
       DT::datatable(rownames = FALSE,
                     selection = "none",
