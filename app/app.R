@@ -347,12 +347,7 @@ server <- function(input, output, session) {
 
   # Preview of normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
-    if (ncol(Ynorm()) > 6) {
-      dat <- Ynorm()[, 1:6, drop = FALSE]
-    } else {
-      dat <- Ynorm()[, , drop = FALSE]
-    }
-    top_dat <- tibble::rownames_to_column(dat, "sample")
+    top_dat <- tibble::rownames_to_column(Ynorm()[, 1:6], "sample")
     top_dat %>%
       DT::datatable(rownames = FALSE,
                     selection = "none",
