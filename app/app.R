@@ -419,8 +419,7 @@ server <- function(input, output, session) {
   # Class frequencies
   output$freqs <- renderTable({
     table(dat_preds()[["pred"]]) %>%
-      as.data.frame() %>%
-      purrr::set_names(c("Class", "Freq"))
+      tibble::enframe(name = "Class", value = "Freq")
   },
   caption = "Prediction Frequencies")
 
