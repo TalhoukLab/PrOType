@@ -347,13 +347,12 @@ server <- function(input, output, session) {
 
   # Preview of normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
-    top_dat <- tibble::rownames_to_column(Ynorm()[, 1:6], "sample")
-    top_dat %>%
+    Ynorm()[, 1:6] %>%
+      tibble::rownames_to_column("sample") %>%
       DT::datatable(rownames = FALSE,
                     selection = "none",
                     caption = "Preview of normalized data") %>%
-      DT::formatRound(columns = seq_len(ncol(top_dat))[-1],
-                      digits = 2)
+      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2)
   })
 
   # NanoString QC data as DataTable
