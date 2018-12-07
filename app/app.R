@@ -361,10 +361,7 @@ server <- function(input, output, session) {
       DT::datatable(rownames = FALSE,
                     selection = "none",
                     caption = "Quality Control data") %>%
-      DT::formatRound(
-        columns = c("perFOV", "lod", "llod", "pergd", "averageHK", "sn"),
-        digits = 2
-      )
+      DT::formatRound(columns = lapply(qc(), class) == "numeric", digits = 2)
   })
 
   ## NanoString QC Plots
@@ -404,10 +401,8 @@ server <- function(input, output, session) {
       DT::datatable(rownames = FALSE,
                     selection = "none",
                     caption = "Sample predictions and probabilities") %>%
-      DT::formatRound(
-        columns = grep("sample|pred", names(dat_preds()), invert = TRUE),
-        digits = 3
-      )
+      DT::formatRound(columns = lapply(dat_preds(), class) == "numeric",
+                      digits = 3)
   })
 
   # QC Summary of the flags failed and passed
