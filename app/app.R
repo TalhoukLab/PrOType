@@ -300,27 +300,23 @@ server <- function(input, output, session) {
   # Train final model and predict NanoString samples
   dat_preds <- reactive({
     req(input$predict)
-    if (length(isolate(Ynorm())) == 0) {
-      return(NULL)
-    } else {
-      withProgress(message = "Predicting samples", {
-        final_model <- splendid::classification(
-          data = train_dat[, isolate(colnames(Ynorm())), drop = FALSE],
-          class = train_lab,
-          algorithms = alg,
-          seed = seed
-        )
-        set.seed(1)
-        dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
-        data.frame(
-          dat_probs,
-          entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
-          pred = as.character(predict(final_model, isolate(Ynorm())))
-        ) %>%
-          tibble::rownames_to_column("sample") %>%
-          tibble::as_tibble()
-      })
-    }
+    withProgress(message = "Predicting samples", {
+      final_model <- splendid::classification(
+        data = train_dat[, isolate(colnames(Ynorm())), drop = FALSE],
+        class = train_lab,
+        algorithms = alg,
+        seed = seed
+      )
+      set.seed(1)
+      dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
+      data.frame(
+        dat_probs,
+        entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
+        pred = as.character(predict(final_model, isolate(Ynorm())))
+      ) %>%
+        tibble::rownames_to_column("sample") %>%
+        tibble::as_tibble()
+    })
   })
 
   # Download normalized data to local CSV file
@@ -349,9 +345,7 @@ server <- function(input, output, session) {
 
   # Preview of normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
-    if (length(Ynorm()) == 0) {
-      return(NULL)
-    } else if (ncol(Ynorm()) > 6) {
+    if (ncol(Ynorm()) > 6) {
       dat <- Ynorm()[, 1:6, drop = FALSE]
     } else {
       dat <- Ynorm()[, , drop = FALSE]
@@ -369,18 +363,14 @@ server <- function(input, output, session) {
 
   # NanoString QC data as DataTable
   output$qc_table <- DT::renderDataTable({
-    if (length(qc()) == 0) {
-      return(NULL)
-    } else {
-      qc() %>%
-        DT::datatable(rownames = FALSE,
-                      selection = "none",
-                      caption = "Quality Control data") %>%
-        DT::formatRound(
-          columns = c("perFOV", "lod", "llod", "pergd", "averageHK", "sn"),
-          digits = 2
-        )
-    }
+    qc() %>%
+      DT::datatable(rownames = FALSE,
+                    selection = "none",
+                    caption = "Quality Control data") %>%
+      DT::formatRound(
+        columns = c("perFOV", "lod", "llod", "pergd", "averageHK", "sn"),
+        digits = 2
+      )
   })
 
   ## NanoString QC Plots
@@ -416,44 +406,32 @@ server <- function(input, output, session) {
 
   # Predicted probabilities and classes as DataTable
   output$preds <- DT::renderDataTable({
-    if (length(Ynorm()) == 0) {
-      return(NULL)
-    } else {
-      dat_preds() %>%
-        DT::datatable(rownames = FALSE,
-                      selection = "none",
-                      caption = "Sample predictions and probabilities") %>%
-        DT::formatRound(
-          columns = grep("sample|pred", names(dat_preds()), invert = TRUE),
-          digits = 3
-        )
-    }
+    dat_preds() %>%
+      DT::datatable(rownames = FALSE,
+                    selection = "none",
+                    caption = "Sample predictions and probabilities") %>%
+      DT::formatRound(
+        columns = grep("sample|pred", names(dat_preds()), invert = TRUE),
+        digits = 3
+      )
   })
 
   # QC Summary of the flags failed and passed
   output$qc_summary <- renderTable({
-    if (length(Ynorm()) == 0) {
-      return(NULL)
-    } else {
-      qc() %>%
-        dplyr::select(dplyr::matches("Flag")) %>%
-        purrr::map(table) %>%
-        purrr::invoke(rbind, .) %>%
-        as.data.frame() %>%
-        tibble::rownames_to_column("Flag")
-    }
+    qc() %>%
+      dplyr::select(dplyr::matches("Flag")) %>%
+      purrr::map(table) %>%
+      purrr::invoke(rbind, .) %>%
+      as.data.frame() %>%
+      tibble::rownames_to_column("Flag")
   },
   caption = "QC Summary")
 
   # Class frequencies
   output$freqs <- renderTable({
-    if (length(Ynorm()) == 0) {
-      return(NULL)
-    } else {
-      table(dat_preds()[["pred"]]) %>%
-        as.data.frame() %>%
-        purrr::set_names(c("Class", "Freq"))
-    }
+    table(dat_preds()[["pred"]]) %>%
+      as.data.frame() %>%
+      purrr::set_names(c("Class", "Freq"))
   },
   caption = "Prediction Frequencies")
 
