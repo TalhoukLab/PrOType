@@ -1,7 +1,10 @@
 # Evaluate Batch Effects --------------------------------------------------
 
 # Load packages and utility functions
-suppressPackageStartupMessages(library(Biobase))
+suppressPackageStartupMessages({
+  library(Biobase)
+  library(ggplot2)
+})
 source(here::here("pipeline/3-post_processing/utils.R"))
 
 # Create mapping, read in data and clusters
@@ -50,10 +53,13 @@ saveRDS(pvcaObj, file.path(outputDir, "post_processing", "evals",
                            paste0(dataset, "_pvcaObj.rds")))
 
 # PVCA Plot
-pdf(file.path(outputDir, "post_processing", "plots",
-              paste0(dataset, "_pvca.pdf")))
-pvca_plot(pvcaObj, "#91B0A8", dataset)
-dev.off()
+p <- pvca_plot(
+  pvcaObj = pvcaObj,
+  color = "#91B0A8",
+  title = paste("PVCA estimation for", toupper(strsplit(dataset, "_")[[1]][2]))
+)
+ggsave(file.path(outputDir, "post_processing", "plots",
+                 paste0(dataset, "_pvca.pdf")), p)
 
 # Compute PCA Object for first 3 PC's
 pca <- prcomp_n(tdat, n = 3)

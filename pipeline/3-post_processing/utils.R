@@ -66,15 +66,28 @@ source_of_var <- function(ann_mat, dat_mat, batch_factors,
 #' @param color barplot color
 #' @param title plot title
 pvca_plot <- function(pvcaObj, color = "blue", title = "") {
-  par(oma = c(1, 0.5, 1, 1), mar = c(5.1, 7.6, 4.1, 0.1))
-  # "Weighted average proportion variance"
-  bp <- barplot(sort(pvcaObj$dat), horiz = TRUE, col = color, main = title,
-                xlab = "", ylab = "", xlim = c(0, 1.1), border = "white",
-                space = 1, las = 1)
-  axis(2, at = bp, labels = pvcaObj$label[order(pvcaObj$dat)], ylab = "",
-       cex.axis = 0.8, las = 2)
-  values <- paste0(round(sort(pvcaObj$dat) * 100, 1), "%")
-  text(sort(pvcaObj$dat), bp, labels = values, pos = 4, cex = 0.8)
+  pdat <- pvcaObj %>%
+    rbind.data.frame() %>%
+    dplyr::arrange(dat) %>%
+    dplyr::mutate(
+      label = forcats::fct_inorder(stringr::str_replace_all(
+        string = label,
+        pattern = c("clust:CohortLabel" = "Cluster/Cohort Interaction",
+                    "CohortLabel" = "Cohort",
+                    "clust" = "Cluster",
+                    "resid" = "Residual")
+      )),
+      values = paste0(round(dat * 100, 1), "%")
+    )
+  ggplot(pdat, aes(x = label, y = dat)) +
+    geom_col(fill = color) +
+    geom_text(aes(label = values), hjust = -0.5) +
+    labs(x = "Source of Batch Effect",
+         y = "Weighted Average Proportion Variance",
+         title = title) +
+    lims(y = c(0, 1.1)) +
+    coord_flip() +
+    theme_bw()
 }
 
 #' Fast PCA for only the first n PC's
