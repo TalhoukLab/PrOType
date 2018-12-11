@@ -186,8 +186,9 @@ server <- function(input, output, session) {
       purrr::set_names(gsub(" ", "", names(.))) %>%
       purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
       dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
+
     # Special renaming system if there are pools indexed by letters
-    if (any(grepl("Pool[A-Z]", pools))) {
+    if (any(grepl("Pool[A-Z]", names(pools)))) {
       pools <- pools %>%
         dplyr::rename_at(
           grep("Pool[A-Z]", names(.)),
