@@ -20,10 +20,11 @@ build_mapping <- function(train.set) {
 #' Load overlapping samples with their published class labels
 #'
 #' Combines TCGA and GSE overlapping samples. Samples with published label
-#' "n/a" are removed.
+#' "n/a" can be removed.
 #'
 #' @param dir directory for mapped TCGA and GSE overlapping samples
-load_overlap <- function(dir = "data") {
+#' @param keep_pub logical; if `TRUE`, published samples are kept
+load_overlap <- function(dir = "data", keep_pub = FALSE) {
   # TCGA overlap
   tcga.mapped <- file.path(dir, "TCGA_sampleIDs_OTTA-Mapped.csv") %>%
     readr::read_csv(col_types = readr::cols()) %>%
@@ -42,10 +43,11 @@ load_overlap <- function(dir = "data") {
       published = `MOL-SUBTYPE-NAME (published)`
     )
 
-  # combine & drop NAs
+  # combine & conditionally drop published cases
   dplyr::bind_rows(tcga.mapped, gse.mapped) %>%
-    dplyr::filter(published != "n/a") %>%
-    dplyr::mutate(published = factor(make.names(published)))
+    dplyr::filter(if (keep_pub) TRUE else mapped[["published"]] != "n/a") %>%
+    dplyr::mutate(published = forcats::fct_recode(make.names(published),
+                                                  NULL = "n.a"))
 }
 
 should_compute <- function(force_recompute, scriptdir, output_file) {

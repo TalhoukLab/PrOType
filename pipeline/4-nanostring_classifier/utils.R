@@ -55,14 +55,27 @@ evaluate_all <- function(data) {
   p <- data[["published"]]
   a <- data[["array"]]
   n <- data[["nstring"]]
+  is_pub <- !is.na(p)
+
+  pp <- p[is_pub]
+  ap <- a[is_pub]
+  attributes(ap) <- attributes(a)
+  attr(ap, "prob") <- attr(ap, "prob")[is_pub, ]
+  attr(ap, "class.thres") <- attr(ap, "class.thres")[is_pub]
+
+  np <- n[is_pub]
+  attributes(np) <- attributes(n)
+  attr(np, "prob") <- attr(np, "prob")[is_pub, ]
+  attr(np, "class.thres") <- attr(np, "class.thres")[is_pub]
+
   list(
     published_vs_array = list(
-      metrics = splendid::evaluation(p, a),
-      confmat = caret::confusionMatrix(a, p)
+      metrics = splendid::evaluation(pp, ap),
+      confmat = caret::confusionMatrix(ap, pp)
     ),
     published_vs_nstring = list(
-      metrics = splendid::evaluation(p, n),
-      confmat = caret::confusionMatrix(n, p)
+      metrics = splendid::evaluation(pp, np),
+      confmat = caret::confusionMatrix(np, pp)
     ),
     array_vs_nstring = list(
       metrics = splendid::evaluation(a, n),

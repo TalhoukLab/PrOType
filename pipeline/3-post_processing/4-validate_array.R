@@ -12,7 +12,7 @@ all_fits <- list.files(file.path(outputDir, "post_processing", "fits"),
 
 # Import overlap array samples (remove 1 case without ottaID match)
 cli::cat_line("Importing overlap array samples")
-overlaps <- load_overlap(dir = "data/nstring") %>%
+overlaps <- load_overlap(dir = "data/nstring", keep_pub = TRUE) %>%
   dplyr::filter(sampleID != "OV_GSE9891_GSM249786_X60174.CEL.gz")
 data_overlap_array <-
   import_array_overlap(dir = "data/array",
