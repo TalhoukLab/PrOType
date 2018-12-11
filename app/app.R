@@ -183,11 +183,13 @@ server <- function(input, output, session) {
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
+      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
       purrr::set_names(gsub(" ", "", names(.))) %>%
       purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name))
+      tibble::set_tidy_names(quiet = TRUE)
+
     # Special renaming system if there are pools indexed by letters
-    if (any(grepl("Pool[A-Z]", pools))) {
+    if (any(grepl("Pool[A-Z]", names(pools)))) {
       pools <- pools %>%
         dplyr::rename_at(
           grep("Pool[A-Z]", names(.)),
