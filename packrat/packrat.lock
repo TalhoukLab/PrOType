@@ -386,9 +386,10 @@ Hash: 931f9972deae0f205e1c78a51f33149b
 
 Package: broom
 Source: CRAN
-Version: 0.4.4
-Hash: dc14fe971ee0fdd4e22b5b1d11611a37
-Requires: dplyr, plyr, psych, reshape2, stringr, tidyr
+Version: 0.5.1
+Hash: f170bc989c523e039487511e87c1854f
+Requires: backports, dplyr, generics, purrr, reshape2, stringr, tibble,
+    tidyr
 
 Package: caTools
 Source: CRAN
@@ -689,6 +690,11 @@ Source: CRAN
 Version: 2.18.0
 Hash: f4fdf56bd81ae3e1d42379678b472a34
 Requires: gtools
+
+Package: generics
+Source: CRAN
+Version: 0.0.2
+Hash: 4aaf002dd434e8c854611c5d11a1d58e
 
 Package: geometry
 Source: CRAN
