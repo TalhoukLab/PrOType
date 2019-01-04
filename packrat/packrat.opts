@@ -4,7 +4,7 @@ print.banner.on.startup: auto
 vcs.ignore.lib: TRUE
 vcs.ignore.src: FALSE
 external.packages: 
-local.repos: 
+local.repos: ~/Documents/Bitbucket/packages
 load.external.packages.on.startup: TRUE
 ignored.packages: 
 ignored.directories:
@@ -16,3 +16,4 @@ snapshot.fields:
     Imports
     Depends
     LinkingTo
+symlink.system.packages: TRUE
