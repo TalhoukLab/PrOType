@@ -4,6 +4,8 @@ output:
     reference_docx: styles.docx
     fig_height: 5
     fig_width: 7
+params:
+  outputDir: outputDir
 ---
 
 # B.6 Pre-processing, Batch Effect, QC and Normalization of the NanoString Data
@@ -24,25 +26,10 @@ library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 load(here("data/expCS.rda"))
+load(here("data/exp_CS3_all.rda"))
 load(here("data/cs3.norm.rda"))
 
-fig_path <- "pipeline/7-supplementary/figures/B06"
-
-# Load otta datasets: CodeSet 3 gene expression and annotation data
-data(rawOTTA, annot, package = "otta")
-cs3 <- rawOTTA
-exp0 <- annot %>%
-  purrr::set_names(gsub("RCC\\.", "", names(.))) %>%
-  magrittr::inset(, "geneRLF", as.character(factor(
-    x = .[["geneRLF"]],
-    labels = c("HL1", "HL2", "HL3", "HuRef", "CS3", "mini", "CS1", "CS2")
-  )))
-
-# Run NanoString QC on CS3
-exp_CS3_all <- exp0 %>%
-  dplyr::filter(geneRLF == "CS3") %>%
-  magrittr::inset(, "File.Name", paste0("X", .[["File.Name"]])) %>%
-  nanostringr::NanoStringQC(raw = cs3, exp = ., detect = 50, sn = 170)
+fig_path <- file.path(params$outputDir, "supplementary/figures/B06")
 ```
 
 ## QC Table
@@ -127,7 +114,7 @@ p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
 print(p)
-ggsave(here(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
 ```
 
 ## Reference Pools Over Time
@@ -173,7 +160,7 @@ p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
 print(p)
-ggsave(here(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
 ```
 
 ## Data Consistency of Cross-Site Controls Across Sites
@@ -285,7 +272,7 @@ p <- ggplot(all_metrics, aes(Expression)) +
   theme(panel.grid.minor = element_blank())
 
 print(p)
-ggsave(here(fig_path, "cc_hist.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "cc_hist.pdf"), p, width = 7, height = 5)
 ```
 
 Concordance Measures:
@@ -310,7 +297,7 @@ purrr::walk(all_xsites, ~ {
 })
 dev.print(
   pdf,
-  here(fig_path, "avg_scatter.pdf"),
+  file.path(fig_path, "avg_scatter.pdf"),
   width = 7,
   height = 10
 )
