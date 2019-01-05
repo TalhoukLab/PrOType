@@ -1,0 +1,375 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx
+---
+
+# B.10 Development of a Clinically Applicable Assay
+
+```{r setup_B10, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis",
+	fig.show = "asis"
+)
+```
+
+```{r load_B10}
+library(randomForest)
+library(pander)
+library(ggplot2)
+library(fs)
+library(magrittr)
+library(here)
+source(here("pipeline/7-supplementary/utils.R"))
+
+panderOptions("table.split.table", Inf)
+
+n_genes <- 55
+grm <- "CTHRC1"
+
+raw_ns <- load_nanostring()
+final_model <- readRDS(here("data/final_model.rds"))
+final_preds <- readr::read_csv(here("data/Final_Predictions.csv"),
+                               col_types = list("X1" = readr::col_skip()))
+arl_samples <- 
+  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
+sum_freq <-
+  readr::read_csv(here("data/overallFreqs.csv"), col_types = readr::cols())
+all_pred <- readr::read_csv(here("data/predictions.csv"),
+                            col_types = list("X1" = readr::col_skip()))
+array_probs <- readr::read_csv(here("data/array_probs.csv"),
+                               col_types = list("X1" = readr::col_skip()))
+tcga_probs <- readr::read_csv(here("data/tcga_probs.csv"),
+                              col_types = list("X1" = readr::col_skip()))
+
+fig_path <- "pipeline/7-supplementary/figures/B10"
+pdf_files <- dir_ls(path = here(fig_path), regexp = "pdf$")
+```
+
+## LOSO plots, boxplots, heatmaps
+
+```{r reorder}
+# order used in B10
+filenames <- c(
+  "LOSO_accuracy",
+  "LOSO_F1",
+  "Accuracy_boxplots",
+  "top_genes_heatmaps",
+  "Accuracy_cut2",
+  "F1_cut2_byclass"
+)
+embed_files <- pdf_files[match(filenames, path_ext_remove(path_file(pdf_files)))]
+```
+
+```{r graphics}
+knitr::include_graphics(embed_files)
+```
+
+```{r pred_labs, include=FALSE}
+# Prediction data
+pred_labs <- load_prediction_labels(raw_ns)
+preds_new <- pred_labs[["preds_new"]]
+
+# Final gene list
+final_glist <- sum_freq %>%
+  dplyr::arrange(dplyr::desc(rfFreq), dplyr::desc(lassoFreq)) %>%
+  dplyr::pull(genes) %>%
+  make.names() %>%
+  purrr::discard(~ . %in% grm) %>%
+  head(n_genes)
+```
+
+## _Table SB7_ Comparison of final model predictions with consensus labels from the training set (group 1)
+
+```{r cut1, include=FALSE}
+# Define cut1
+cut1 <- define_batch(preds_new, raw_ns, batch = "b1")
+cut1_dat <- cut1[["dat"]]
+cut1_lab <- cut1[["lab"]]
+
+x.new <- sl_data(cut1_dat)[final_glist]
+y.new <- sl_class(cut1_lab, x.new)
+
+cut1_cm <- cut1_lab %>%
+  dplyr::transmute(
+    `Predicted with Final Model` = splendid::prediction(final_model, x.new, y.new),
+    `Consensus Label` = Adaboost.xpn
+  ) %>%
+  table() %>%
+  caret::confusionMatrix()
+```
+
+### A - Confusion Matrix
+
+```{r cut1_confmat}
+pandoc.table(ftable(cut1_cm[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r cut1_overall_metrics}
+cut1_ov_metrics <- confmat_metrics(cut1_cm, metrics = "overall")
+pandoc.table(cut1_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r cut1_by-class_metrics}
+cut1_bc_metrics <- confmat_metrics(cut1_cm, metrics = "byclass")
+pandoc.table(cut1_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB8_ Comparison of final model predictions with consensus labels from the confirmation set (group 2)
+
+```{r cut2, include=FALSE}
+# Define cut2 excluding overlap
+cut2 <- define_batch(preds_new, raw_ns, batch = "b2")
+cut2_dat <- cut2[["dat"]]
+cut2_lab <- cut2[["lab"]]
+
+x.new <- sl_data(cut2_dat)[final_glist]
+y.new <- sl_class(cut2_lab, x.new)
+
+cut2_cm <- cut2_lab %>%
+  dplyr::transmute(
+    `Predicted with Final Model` = splendid::prediction(final_model, x.new, y.new),
+    `Consensus Label` = Adaboost.xpn
+  ) %>%
+  table() %>%
+  caret::confusionMatrix()
+```
+
+### A - Confusion Matrix
+
+```{r cut2_confmat}
+pandoc.table(ftable(cut2_cm[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r cut2_overall_metrics}
+cut2_ov_metrics <- confmat_metrics(cut2_cm, metrics = "overall")
+pandoc.table(cut2_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r cut2_by-class_metrics}
+cut2_bc_metrics <- confmat_metrics(cut2_cm, metrics = "byclass")
+pandoc.table(cut2_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB9_ Comparison of final model predictions with consensus labels from the first validation set (group 3)
+
+```{r cut3, include=FALSE}
+# Define cut3
+cut3 <- define_batch(preds_new, raw_ns, batch = "b3")
+cut3_dat <- cut3[["dat"]]
+cut3_lab <- cut3[["lab"]]
+
+x.new <- sl_data(cut3_dat)[final_glist]
+y.new <- sl_class(cut3_lab, x.new)
+
+cut3_cm <- cut3_lab %>%
+  dplyr::transmute(
+    `Predicted with Final Model` = splendid::prediction(final_model, x.new, y.new),
+    `Consensus Label` = Adaboost.xpn
+  ) %>%
+  table() %>%
+  caret::confusionMatrix()
+```
+
+### A - Confusion Matrix
+
+```{r cut3_confmat}
+pandoc.table(ftable(cut3_cm[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r cut3_overall_metrics}
+cut3_ov_metrics <- confmat_metrics(cut3_cm, metrics = "overall")
+pandoc.table(cut3_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r cut3_by-class_metrics}
+cut3_bc_metrics <- confmat_metrics(cut3_cm, metrics = "byclass")
+pandoc.table(cut3_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB10_ Comparison of final model predictions with consensus labels from the second validation set (group 4)
+
+```{r cut4, include=FALSE}
+# Define cut4 (remove ARL samples)
+cut4 <- define_batch(preds_new, raw_ns, batch = "b4")
+cut4_dat <- cut4[["dat"]] %>% dplyr::filter(!OTTA.ID %in% arl_samples[["OTTA ID"]])
+cut4_lab <- cut4[["lab"]] %>% dplyr::filter(!ottaID %in% arl_samples[["OTTA ID"]])
+
+x.new <- sl_data(cut4_dat)[final_glist]
+y.new <- sl_class(cut4_lab, x.new)
+
+cut4_cm <- cut4_lab %>%
+  dplyr::transmute(
+    `Predicted with Final Model` = splendid::prediction(final_model, x.new, y.new),
+    `Consensus Label` = Adaboost.xpn
+  ) %>%
+  table() %>%
+  caret::confusionMatrix()
+```
+
+### A - Confusion Matrix
+
+```{r cut4_confmat}
+pandoc.table(ftable(cut4_cm[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r cut4_overall_metrics}
+cut4_ov_metrics <- confmat_metrics(cut4_cm, metrics = "overall")
+pandoc.table(cut4_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r cut4_by-class_metrics}
+cut4_bc_metrics <- confmat_metrics(cut4_cm, metrics = "byclass")
+pandoc.table(cut4_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB11_ Comparison of final model predictions with consensus labels from the overlap set 
+
+```{r overlap, include=FALSE}
+# Define overlap
+overlap <- define_overlap(preds_new, raw_ns)
+overlap_dat <- overlap[["dat"]]
+overlap_lab <- overlap[["lab"]]
+
+x.new <- sl_data(overlap_dat)[final_glist]
+y.new <- sl_class(overlap_lab, x.new)
+
+overlap_cm <- overlap_lab %>%
+  dplyr::transmute(
+    `Predicted with Final Model` = splendid::prediction(final_model, x.new, y.new),
+    `Consensus Label` = Adaboost.xpn
+  ) %>%
+  table() %>%
+  caret::confusionMatrix()
+```
+
+### A - Confusion Matrix
+
+```{r overlap_confmat}
+pandoc.table(ftable(overlap_cm[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r overlap_overall_metrics}
+overlap_ov_metrics <- confmat_metrics(overlap_cm, metrics = "overall")
+pandoc.table(overlap_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r overlap_by-class_metrics}
+overlap_bc_metrics <- confmat_metrics(overlap_cm, metrics = "byclass")
+pandoc.table(overlap_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## Entropy Analysis for Final Predictions
+
+```{r entropy_setup}
+# Merge probabilities and predictions
+compare_probs <-
+  dplyr::inner_join(array_probs,
+                    tcga_probs,
+                    by = "ottaID",
+                    suffix = c("_array", "_tcga")) %>% 
+  dplyr::inner_join(all_pred, by = "ottaID") %>% 
+  dplyr::inner_join(final_preds, by = "ottaID") %>%
+  dplyr::filter(!ottaID %in% arl_samples[["OTTA ID"]]) %>% 
+  dplyr::rename(predicted_array = Adaboost.xpn,
+                predicted_tcga = TCGA.Predicted.Subtype,
+                predicted_final = final) %>%
+  dplyr::rename_at(c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO"),
+                   ~ paste0(., "_final")) %>%
+  dplyr::mutate_at(c("predicted_array", "predicted_tcga"), make.names) %>% 
+  dplyr::select(-all_array, -TCGA, -published, -consensus, -prediction)
+
+# Compute entropies
+entropy_probs <- compare_probs %>%
+  dplyr::transmute(
+    ottaID,
+    entropy_array = apply(.[grep("(?<!predicted)_array", names(.), perl = TRUE)], 1,
+                          entropy::entropy, unit = "log2"),
+    entropy_tcga = apply(.[grep("(?<!predicted)_tcga", names(.), perl = TRUE)], 1,
+                         entropy::entropy, unit = "log2"),
+    entropy_final = apply(.[grep("(?<!predicted)_final", names(.), perl = TRUE)], 1,
+                         entropy::entropy, unit = "log2"),
+    predicted_array,
+    predicted_tcga,
+    predicted_final,
+    match = factor(
+      ifelse(predicted_array == predicted_tcga, "Consensus", "Non-Consensus"),
+      levels = c("Consensus", "Non-Consensus")
+    )
+  ) %>%
+  dplyr::mutate_at(dplyr::vars(dplyr::contains("entropy")), round, digits = 3)
+```
+
+### Mann-Whitney U Test
+
+```{r entropy_mwu_final}
+mwu_final <- wilcox.test(entropy_final ~ match, entropy_probs) %>%
+  broom::tidy() %>% 
+  dplyr::mutate(p.value = ifelse(p.value < 0.001, "< 0.001", p.value))
+pandoc.table(mwu_final)
+```
+
+### Boxplot Comparisons
+
+```{r entropy_boxplot_final}
+entropy_probs_grouped <- entropy_probs %>% 
+  tidyr::gather(key = Data, value = Entropy, 2:4) %>% 
+  tidyr::gather(key = Prediction, value = Subtype, 2:4) %>% 
+  dplyr::mutate(Data = factor(
+    dplyr::case_when(
+      Data == "entropy_array" ~ "All Array",
+      Data == "entropy_tcga" ~ "TCGA",
+      Data == "entropy_final" ~ "Final",
+      TRUE ~ NA_character_
+    ),
+    levels = c("All Array", "TCGA", "Final")
+  )) %>% 
+  dplyr::filter(Data == "Final")
+```
+
+```{r entropy_boxplot_final_data, fig.height=5, fig.width=7}
+p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
+  geom_boxplot() +
+  ggtitle("Entropy Comparison of Final Prediction Labels") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+
+print(p)
+ggsave(here(fig_path, "entropy_boxplot_final_data.pdf"), p, width = 7, height = 5)
+```
+
+```{r entropy_boxplot_final_subtypes, fig.height=5, fig.width=7}
+p <- ggplot(entropy_probs_grouped, aes(Subtype, Entropy, fill = match)) +
+  geom_boxplot() +
+  ggtitle("Entropy Comparison of Final Prediction Labels by Subtype") +
+  scale_fill_brewer(palette = "Set2") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+
+print(p)
+ggsave(here(fig_path, "entropy_boxplot_final_subtypes.pdf"), p, width = 7, height = 5)
+```

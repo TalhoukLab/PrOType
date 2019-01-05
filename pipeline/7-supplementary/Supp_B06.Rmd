@@ -1,0 +1,317 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx
+    fig_height: 5
+    fig_width: 7
+---
+
+# B.6 Pre-processing, Batch Effect, QC and Normalization of the NanoString Data
+
+```{r setup_B06, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis"
+)
+```
+
+```{r load_B06}
+# Load packages, helpers, data inputs
+library(ggplot2)
+library(magrittr)
+library(here)
+source(here("pipeline/7-supplementary/utils.R"))
+load(here("data/expCS.rda"))
+load(here("data/cs3.norm.rda"))
+
+fig_path <- "pipeline/7-supplementary/figures/B06"
+
+# Load otta datasets: CodeSet 3 gene expression and annotation data
+data(rawOTTA, annot, package = "otta")
+cs3 <- rawOTTA
+exp0 <- annot %>%
+  purrr::set_names(gsub("RCC\\.", "", names(.))) %>%
+  magrittr::inset(, "geneRLF", as.character(factor(
+    x = .[["geneRLF"]],
+    labels = c("HL1", "HL2", "HL3", "HuRef", "CS3", "mini", "CS1", "CS2")
+  )))
+
+# Run NanoString QC on CS3
+exp_CS3_all <- exp0 %>%
+  dplyr::filter(geneRLF == "CS3") %>%
+  magrittr::inset(, "File.Name", paste0("X", .[["File.Name"]])) %>%
+  nanostringr::NanoStringQC(raw = cs3, exp = ., detect = 50, sn = 170)
+```
+
+## QC Table
+
+- **Sample Quality** fails if either **Limit of Detection** or **Signal to Noise** fail
+- **Overall QC** fails if either **Smallest Positive Control**, **Imaging**, or **Linearity** fail
+
+```{r qc_filter}
+# Final QC table with ARL samples removed (and keep only PrOType)
+arl_dat <-
+  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
+
+# Filter QC samples
+exp_CS3_final <- exp_CS3_all %>%
+  dplyr::mutate(
+    ottaID = magrittr::inset(
+      ottaID,
+      match("X20151128_OTTA047AOCSH_TAOC10308_08", File.Name),
+      "TAOC10303"
+    ),
+    lodFlag = factor(ifelse(pergd < 50, "Failed", "Passed")),
+    snFlag = factor(ifelse(sn < 170, "Failed", "Passed"))
+  ) %>%
+  dplyr::anti_join(arl_dat, by = "File.Name")
+```
+
+```{r qc_table}
+# QC Table flag counts
+counts <- exp_CS3_final %>%
+  dplyr::group_by(nanostring.site) %>%
+  dplyr::summarize(
+    `Imaging Failures` = sum(imagingFlag == "Failed"),
+    `Linearity Failures` = sum(linFlag == "Failed"),
+    `Smallest PC Failures` = sum(spcFlag == "Failed"),
+    `Limit of Detection Failures` = sum(lodFlag == "Failed"),
+    `Signal to Noise Failures` = sum(snFlag == "Failed"),
+    `Sample Quality Failures` = sum(normFlag == "Failed"),
+    `Overall QC Failures` = sum(QCFlag == "Failed")
+  ) %>% 
+  as.data.frame() %>% 
+  tibble::column_to_rownames("nanostring.site") %>% 
+  cbind(`Total Samples Run` = as.numeric(table(exp_CS3_final[["nanostring.site"]])), .) %>% 
+  rbind(Total = colSums(.), .) %>% 
+  t()
+
+# QC Table flag percentages
+pcts <- rbind(
+  `Total Samples Run` = round(counts[1, ] / counts[1, 1], 3) * 100,
+  round(counts[-1, ] %*% diag(1 / counts[1, ]), 3) * 100
+) %>% 
+  apply(1:2, function(x) paste0("(", format(x, nsmall = 1), "%)"))
+
+# Combined counts and pcts. Custom bolding and line break
+counts[] <- matrix(paste(counts, pcts))
+rownames(counts)[c(1, 7, 8)] <- paste0("**", rownames(counts)[c(1, 7, 8)], "**")
+counts <- rbind(counts[1:6, ], "<br>", counts[7:8, ])
+
+pander::pandoc.table(
+  counts,
+  justify = "lrrrr",
+  emphasize.rownames = FALSE,
+  split.tables = Inf
+)
+```
+
+## Signal/Noise vs % Genes Detected
+
+```{r snr_vs_pergd}
+# SNR vs %GD
+p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
+  geom_point() +
+  geom_hline(yintercept = 50, linetype = "dashed") +
+  geom_vline(xintercept = 170, color = "brown", size = 1) +
+  lims(x = c(0, 5000)) +
+  labs(x = "Signal/Noise Ratio",
+       y = "Percent of Genes Detected",
+       title = "Signal/Noise vs % Genes Detected") +
+  theme_bw() +
+  theme(panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank()) +
+  scale_color_discrete(name = "Site",
+                       labels = c("Melbourne", "San Francisco", "Vancouver"))
+
+print(p)
+ggsave(here(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
+```
+
+## Reference Pools Over Time
+
+```{r pools_data}
+# Pools data
+pools <- expCS %>% 
+  dplyr::filter(sample.type %in% c("XSITE.ORIG", "XSITE.FOR", "POOL"),
+                geneRLF == "CS3") %>% 
+  dplyr::mutate(ref.type = factor(dplyr::case_when(
+    POOL1 == "Yes" ~ "POOL 1",
+    POOL2 == "Yes" ~ "POOL 2",
+    POOL3 == "Yes" ~ "POOL 3",
+    cross.site.control == "Yes" ~ "Cross Site",
+    TRUE ~ NA_character_
+  ))) %>% 
+  dplyr::filter(ref.type != "Cross Site") %>% 
+  dplyr::mutate(
+    nanostring.date = as.Date(nanostring.date),
+    averageHK = log2(averageHK),
+    nanostring.site = dplyr::case_when(
+      nanostring.site == "AOC" ~ "Melbourne",
+      nanostring.site == "USC" ~ "San Francisco",
+      TRUE ~ "Vancouver"
+    )
+  )
+```
+
+```{r pools_gx_time}
+# Reference pools gx across site and time
+p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
+  geom_point() +
+  stat_smooth(method = "lm", se = FALSE) +
+  facet_grid(vars(ref.type), vars(nanostring.site)) +
+  labs(x = "Time",
+       y = "Average Expression (log2)",
+       title = "CodeSet3 Reference Pool Expression across Site and Time") +
+  lims(y = c(13, 19)) +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  scale_x_date(date_breaks = "3 months", date_labels =  "%b %Y") +
+  scale_color_discrete(name = "Site",
+                       labels = c("Melbourne", "San Francisco", "Vancouver"))
+
+print(p)
+ggsave(here(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
+```
+
+## Data Consistency of Cross-Site Controls Across Sites
+
+```{r cross-site}
+# Cross site
+cross.site <- expCS %>% 
+  dplyr::filter(sample.type %in%
+                  c("Cross site", "XSITE.ORIG", "XSITE.FOR", "POOL")) %>% 
+  dplyr::mutate(ref.type = factor(dplyr::case_when(
+    POOL1 == "Yes" ~ "POOL 1",
+    POOL2 == "Yes" ~ "POOL 2",
+    POOL3 == "Yes" ~ "POOL 3",
+    cross.site.control == "Yes" ~ "Cross Site",
+    TRUE ~ NA_character_
+  ))) %>% 
+  dplyr::filter(geneRLF == "CS3",
+                ref.type == "Cross Site",
+                summaryID != "TVAN20681") %>% 
+  dplyr::mutate(nanostring.site = factor(dplyr::case_when(
+    nanostring.site == "AOC" ~ "Melbourne",
+    nanostring.site == "USC" ~ "San Francisco",
+    TRUE ~ "Vancouver"
+  )))
+```
+
+```{r cross-site-each-site}
+# Cross-site for each site
+VanRefs.gx <- cross.site %>% 
+  dplyr::filter(nanostring.site == "Vancouver") %>% 
+  dplyr::arrange(summaryID) %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+
+AOCRefs.gx <- cross.site %>% 
+  dplyr::filter(nanostring.site == "Melbourne") %>% 
+  dplyr::arrange(summaryID) %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+
+USCRefs.gx <- cross.site %>% 
+  dplyr::filter(nanostring.site == "San Francisco") %>% 
+  dplyr::arrange(summaryID) %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+```
+
+```{r pools-each-site}
+# Pools for each site
+vanpools <- pools %>% 
+  dplyr::filter(nanostring.site == "Vancouver") %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+
+AOCpools <- pools %>% 
+  dplyr::filter(nanostring.site == "Melbourne") %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+
+USCpools <- pools %>% 
+  dplyr::filter(nanostring.site == "San Francisco") %>% 
+  dplyr::pull(File.Name) %>% 
+  dplyr::select(cs3.norm, .)
+```
+
+```{r norm}
+# Everything is calibrated to Vancouver
+AOCRefs.gx2 <- 
+  t(nanostringr::refMethod(t(AOCRefs.gx), t(vanpools), t(AOCpools)))
+USCRefs.gx2 <-
+  t(nanostringr::refMethod(t(USCRefs.gx), t(vanpools), t(USCpools)))
+```
+
+```{r cc_combine}
+# Combinations of cross-site gene expression
+sites <- c("USC", "AOC", "VAN")
+all_xsites <- combn(sites, 2) %>% 
+  tibble::as_tibble() %>% 
+  purrr::set_names(purrr::map_chr(., paste, collapse = "_vs_"))
+
+# Combined gene expression
+all_gx <- list(USCRefs.gx2, AOCRefs.gx2, VanRefs.gx) %>% 
+  purrr::set_names(sites) %>% 
+  purrr::map(~ as.data.frame(t(.)))
+
+# Concordance measures for all genes averaged across samples
+all_metrics <- all_xsites %>% 
+  purrr::imap_dfr(~ {
+    purrr::pmap_dfr(all_gx[.x], ~ {
+      R2 <- cor(.x, .y) ^ 2
+      ccc <- epiR::epi.ccc(.x, .y)
+      Ca <- purrr::pluck(ccc, "C.b")
+      Rc <- purrr::pluck(ccc, "rho.c", "est")
+      tibble::lst(R2, Ca, Rc)
+    }) %>% 
+      dplyr::mutate(Sites = .y)
+  }) %>% 
+  tidyr::gather(key = "Metric", value = "Expression", -Sites)
+```
+
+```{r cc_hist}
+# Plot all combinations of cross-site concordance measure histograms
+p <- ggplot(all_metrics, aes(Expression)) +
+  geom_histogram(bins = 30, fill = "blue") +
+  facet_grid(rows = vars(Sites), cols = vars(Metric), scales = "free_x") +
+  labs(y = "Count",
+       title = "Cross-Site Concordance Measure Distributions") +
+  theme_bw() +
+  theme(panel.grid.minor = element_blank())
+
+print(p)
+ggsave(here(fig_path, "cc_hist.pdf"), p, width = 7, height = 5)
+```
+
+Concordance Measures:
+
+- Ca: coefficient of accuracy
+- R2: squared Pearson's correlation coefficient
+- Rc: Lin's concordance correlation
+
+```{r avg_scatter, fig.height=10, results='hide'}
+# Combined averaged gene expression
+all_gx_avg <- purrr::map_dfr(all_gx, rowMeans)
+par(mfrow = c(3, 1))
+purrr::walk(all_xsites, ~ {
+  nanostringr::CCplot(
+    method1 = all_gx_avg[[.[1]]],
+    method2 = all_gx_avg[[.[2]]],
+    xlabel = .[1],
+    ylabel = .[2],
+    title = paste("Average Concordance Correlation for", .[1], "vs", .[2]),
+    Ptype = "scatter"
+  )
+})
+dev.print(
+  pdf,
+  here(fig_path, "avg_scatter.pdf"),
+  width = 7,
+  height = 10
+)
+```

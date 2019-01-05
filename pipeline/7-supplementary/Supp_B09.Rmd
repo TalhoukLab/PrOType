@@ -1,0 +1,46 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx
+---
+
+# B.9 Data Breakdown for Downstream Analysis
+
+```{r setup_B09, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis"
+)
+```
+
+```{r load_B09}
+library(pander)
+library(magrittr)
+library(here)
+source(here("pipeline/7-supplementary/utils.R"))
+
+raw_ns <- load_nanostring()
+arl_samples <- 
+  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
+all_pred <- readr::read_csv(here("data/predictions.csv"),
+                            col_types = list("X1" = readr::col_skip()))
+```
+
+## Labelled Samples with All-Array and TCGA Models
+
+```{r data_breakdown}
+counts <- raw_ns %>% 
+  dplyr::rename(ottaID = OTTA.ID) %>% 
+  dplyr::filter(!ottaID %in% arl_samples[["OTTA ID"]]) %>% 
+  dplyr::inner_join(all_pred, by = "ottaID") %>% 
+  dplyr::group_by(cut) %>% 
+  dplyr::summarize(
+    studies = dplyr::n_distinct(site),
+    n = n(),
+    agreement = sum(Adaboost.xpn == TCGA.Predicted.Subtype)
+  )
+pandoc.table(counts,
+             caption = "Summary of All-Array and TCGA studies, cases, and gold-standard labels by dataset")
+```

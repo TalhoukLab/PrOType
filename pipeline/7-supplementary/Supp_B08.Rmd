@@ -1,0 +1,123 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx
+params:
+  path: "data"
+---
+
+# B.8 Platform Portability of the Array Classifier
+
+```{r setup_B08, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis"
+)
+```
+
+```{r load_B08}
+library(pander)
+library(magrittr)
+library(here)
+source(here("pipeline/7-supplementary/utils.R"))
+
+panderOptions("table.split.table", Inf)
+```
+
+## _Table SB4:_ All-array model portability comparing predictions on NanoString to predictions on Array.
+
+```{r aa_ns}
+eval_overlap_all <- readRDS(here("data", "eval_overlap_all.rds"))
+aa_ns_pred <- eval_overlap_all %>% 
+  purrr::pluck("adaboost", "array_vs_nstring", "confmat")
+```
+
+### A - Confusion Matrix
+
+```{r aa_ns_confmat}
+aa_ns_tab <- aa_ns_pred %>% 
+  purrr::pluck("table")
+names(dimnames(aa_ns_tab)) <- c("Predicted from NanoString",
+                                "Predicted from Array")
+pandoc.table(ftable(aa_ns_tab))
+```
+
+### B - Overall Metrics
+
+```{r aa_ns_overall_metrics}
+aa_ns_ov <- confmat_metrics(aa_ns_pred, metrics = "overall")
+pandoc.table(aa_ns_ov)
+```
+
+### C - By-Class Metrics
+
+```{r aa_ns_by-class_metrics}
+aa_ns_bc <- confmat_metrics(aa_ns_pred, metrics = "byclass")
+pandoc.table(aa_ns_bc, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB5:_ TCGA model portability comparing predictions on NanoString to predictions on Array.
+
+### A - Confusion Matrix
+
+```{r tcga_ns_confmat}
+tcga_ns_tab <- matrix(
+  c(21, 2, 1, 2, 1, 7, 2, 1, 1, 7, 19, 1, 0, 1, 1, 18),
+  nrow = 4, 
+  byrow = TRUE,
+  dimnames = list(
+    `Predicted from NanoString` = c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO"),
+    `Predicted from Array` = c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
+  )
+) %>% 
+  as.table()
+tcga_ns_confmat <- caret::confusionMatrix(tcga_ns_tab)
+pandoc.table(ftable(tcga_ns_confmat[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r tcga_ns_overall_metrics}
+tcga_ns_confmat_ov_metrics <- confmat_metrics(tcga_ns_confmat, metrics = "overall")
+pandoc.table(tcga_ns_confmat_ov_metrics)
+```
+
+### C - By-Class Metrics
+
+```{r tcga_ns_by-class_metrics}
+tcga_ns_confmat_bc_metrics <- confmat_metrics(tcga_ns_confmat, metrics = "byclass")
+pandoc.table(tcga_ns_confmat_bc_metrics, keep.trailing.zeros = TRUE)
+```
+
+## _Table SB6:_: Comparing consensus samples predictions with published labels.
+
+```{r cons_pub}
+eval_consensus <- readRDS(here("data", "eval_consensus.rds"))
+cons_pred <- eval_consensus %>% 
+  purrr::pluck("adaboost", "published_vs_consensus", "confmat")
+```
+
+### A - Confusion Matrix
+
+```{r cons_pub_confmat}
+cons_tab <- cons_pred %>% 
+  purrr::pluck("table")
+names(dimnames(cons_tab)) <- c("Consensus Labels", "Published Labels")
+pandoc.table(ftable(cons_tab))
+```
+
+### B - Overall Metrics
+
+```{r cons_pub_overall_metrics}
+cons_ov <- confmat_metrics(cons_pred, metrics = "overall")
+pandoc.table(cons_ov)
+```
+
+### C - By-Class Metrics
+
+```{r cons_pub_by-class_metrics}
+cons_bc <- confmat_metrics(cons_pred, metrics = "byclass")
+pandoc.table(cons_bc, keep.trailing.zeros = TRUE)
+```

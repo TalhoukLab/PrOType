@@ -1,0 +1,283 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx 
+    fig_height: 5
+    fig_width: 7
+---
+
+# C.1 Technical Variability and Potential Sources of Bias
+
+```{r setup_C01, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis"
+)
+```
+
+```{r load_C01}
+# Load packages, helpers, data inputs
+library(ggplot2)
+library(pander)
+library(magrittr)
+library(here)
+source(here("pipeline/7-supplementary/utils.R"))
+
+panderOptions("table.split.table", Inf)
+
+# Cleaned data: split into original, replicates, and Xsites
+dat_raw <- readxl::read_excel(here("data/nstring/nanostring data_replicates and Xsite_20160915.xlsx"))
+dat <- readr::read_csv(here("data/replicates_and_Xsite_predictions.csv"))
+dat_clean <- dat %>%
+  tidyr::separate(col = ottaID,
+                  into = c("ottaID", "type"),
+                  sep = "_(?=[^_|LT]+$)",
+                  fill = "right") %>%
+  tidyr::replace_na(list(type = "O"))
+
+# Filter samples by type
+original_samples <- dat_clean %>% dplyr::filter(type == "O")
+replicate_samples <- dat_clean %>% dplyr::filter(type == "R")
+Xsite_samples <- dat_clean %>% dplyr::filter(type == "X1")
+
+fig_path <- "pipeline/7-supplementary/figures/C01"
+```
+
+## C.1.1 Within CodeSet Replication
+
+## _Table SC1_: Comparison of within site replicates on 100 samples
+
+```{r o_vs_r_combine}
+# Compare original vs replicate predictions
+compare_OR <- dplyr::inner_join(original_samples,
+                                replicate_samples,
+                                by = "ottaID",
+                                suffix = c("_O", "_R")) %>% 
+  dplyr::filter(!grepl("LT|ARL", ottaID))
+```
+
+### A - Confusion Matrix
+
+```{r o_vs_r_confmat}
+confmat_OR <- compare_OR %>% 
+  with(., table(
+    `Predicted Replicates` = predicted_R,
+    `Final Originals` = predicted_O
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_OR[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r o_vs_r_overall_metrics}
+ov_OR <- confmat_metrics(confmat_OR, metrics = "overall")
+pandoc.table(ov_OR)
+```
+
+### C - By-Class Metrics
+
+```{r o_vs_r_by-class_metrics}
+bc_OR <- confmat_metrics(confmat_OR, metrics = "byclass")
+pandoc.table(bc_OR, keep.trailing.zeros = TRUE)
+```
+
+```{r o_vs_r_entropy}
+# Compute original vs replicate entropy
+entropy_OR <- compare_OR %>%
+  dplyr::transmute(
+    ottaID,
+    entropy_O = apply(.[grep("(?<!type|predicted)_O", names(.), perl = TRUE)], 1,
+                        entropy::entropy, unit = "log2"),
+    entropy_R = apply(.[grep("(?<!type|predicted)_R", names(.), perl = TRUE)], 1,
+                        entropy::entropy, unit = "log2"),
+    match = factor(ifelse(predicted_O == predicted_R, "Agree", "Disagree"),
+                   levels = c("Agree", "Disagree"))
+  ) %>%
+  dplyr::mutate_at(dplyr::vars(dplyr::contains("entropy")), round, digits = 3)
+readr::write_csv(entropy_OR, here("pipeline/7-supplementary/tables/entropy_O_vs_R.csv"))
+
+# Plot original vs replicate concordance
+p <- ggplot(entropy_OR, aes(entropy_O, entropy_R, color = match)) +
+  geom_point(alpha = 0.5) +
+  geom_abline(linetype = "dashed") +
+  scale_color_discrete(drop = FALSE) +
+  labs(x = "Entropy of Original Samples",
+       y = "Entropy of Replicate Samples",
+       title = "Entropy Comparison of Within CodeSet Replicates") +
+  theme_bw() +
+  theme(legend.title = element_blank())
+
+print(p)
+ggsave(here(fig_path, "entropy_O_vs_R.pdf"), p, width = 7, height = 5)
+```
+
+## C.1.2 Cross-site Replication
+
+```{r o_vs_x_samples}
+# Samples with original and Xsite
+OX_samples <- dat_clean %>%
+  dplyr::filter(grepl("O|X", type)) %>%
+  dplyr::count(ottaID) %>%
+  dplyr::filter(n == 3) %>% 
+  dplyr::pull(ottaID) %>% 
+  paste(collapse = "|")
+```
+
+```{r o_vs_x_pred}
+# OX samples predictions matched to site
+OX_pred <- dat_raw %>%
+  dplyr::select(ottaID = `OTTA ID`, File.Name) %>% 
+  dplyr::filter(!grepl("_R", ottaID), grepl(OX_samples, ottaID)) %>%
+  dplyr::mutate(
+    site = File.Name %>% 
+      substring(18, 20) %>% {
+        dplyr::case_when(. == "n31" ~ "AOC",
+                         . %in% c("ip3", "mus") ~ "USC",
+                         TRUE ~ .)
+      }
+  ) %>% 
+  dplyr::inner_join(dat, by = "ottaID") %>%
+  dplyr::transmute(
+    ottaID = gsub("_X.*", "", ottaID),
+    site,
+    predicted
+  ) %>%
+  tidyr::spread(site, predicted) %>% 
+  as.data.frame() %>% 
+  tibble::column_to_rownames("ottaID")
+```
+
+```{r o_vs_x_fk, results='markup'}
+# Fleiss' Kappa
+OX_fk <- irr::kappam.fleiss(OX_pred)
+irr::print.irrlist(OX_fk)
+```
+
+## C.1.3 Cross CodeSet Replication
+
+```{r cross_codeset}
+# Load OTTA predictions from different codesets, extract IDs and predictions
+otta_2015 <-
+  readr::read_csv(here("data/Final_Predictions.csv")) %>%
+  dplyr::select(ottaID, pred_2015 = final)
+otta_2017 <-
+  readr::read_csv(here("data/nano2_ns_predictions.csv")) %>%
+  dplyr::transmute(
+    ottaID = gsub("-N1", "", stringr::str_split_fixed(sample, pattern = "_", n = 4)[, 3]),
+    pred_2017 = pred
+  ) %>% 
+  dplyr::filter(ottaID != "TUKO00487")
+otta_2018 <-
+  readr::read_csv(here("data/nano3_ns_predictions.csv")) %>%
+  dplyr::transmute(
+    ottaID = stringr::str_split_fixed(sample, pattern = "_", n = 4)[, 3],
+    pred_2018 = pred
+  )
+```
+
+## _Table SC2_: Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Mixed" CodeSet
+
+### A - Confusion Matrix
+
+```{r 15_v_17_confmat}
+confmat_1517 <-
+  dplyr::inner_join(otta_2015, otta_2017, by = "ottaID") %>% 
+  with(., table(
+    `Predicted Mixed CodeSet Replicate Labels` = pred_2017,
+    `Predicted Original Labels` = pred_2015
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_1517[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r 15_v_17_overall_metrics}
+ov_1517 <- confmat_metrics(confmat_1517, metrics = "overall")
+pandoc.table(ov_1517)
+```
+
+### C - By-Class Metrics
+
+```{r 15_v_17_by-class_metrics}
+bc_1517 <- confmat_metrics(confmat_1517, metrics = "byclass")
+pandoc.table(bc_1517, keep.trailing.zeros = TRUE)
+```
+
+## _Table SC3:_ Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Classifier Only" CodeSet
+
+### A - Confusion Matrix
+
+```{r 15_v_18_confmat}
+confmat_1518 <-
+  dplyr::inner_join(otta_2015, otta_2018, by = "ottaID") %>% 
+  with(., table(
+    `Predicted Classifier Only Labels` = pred_2018,
+    `Predicted Original Labels` = pred_2015
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_1518[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r 15_v_18_overall_metrics}
+ov_1518 <- confmat_metrics(confmat_1518, metrics = "overall")
+pandoc.table(ov_1518)
+```
+
+### C - By-Class Metrics
+
+```{r 15_v_18_by-class_metrics}
+bc_1518 <- confmat_metrics(confmat_1518, metrics = "byclass")
+pandoc.table(bc_1518, keep.trailing.zeros = TRUE)
+```
+
+## _Table SC4:_ Comparison of predictions from the "OTTA Mixed" CodeSet with the "OTTA Classifier Only" Codeset
+
+### A - Confusion Matrix
+
+```{r 17_v_18_confmat}
+confmat_1718 <-
+  dplyr::inner_join(otta_2017, otta_2018, by = "ottaID") %>% 
+  with(., table(
+    `Predicted Classifer Only CodeSet Labels` = pred_2018,
+    `Predicted Mixed CodeSet Labels` = pred_2017
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_1718[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r 17_v_18_overall_metrics}
+ov_1718 <- confmat_metrics(confmat_1718, metrics = "overall")
+pandoc.table(ov_1718)
+```
+
+### C - By-Class Metrics
+
+```{r 17_v_18_by-class_metrics}
+bc_1718 <- confmat_metrics(confmat_1718, metrics = "byclass")
+pandoc.table(bc_1718, keep.trailing.zeros = TRUE)
+```
+
+## Fleiss' Kappa
+
+The Fleiss' Kappa was calculated for the 98 unique samples common between the OTTA original CodeSet and OTTA Mixed CodeSet, across all three CodeSets.
+
+```{r cross_codeset_fk, results='markup'}
+# Fleiss' Kappa
+cc_all <- otta_2015 %>% 
+  dplyr::inner_join(otta_2017, by = "ottaID") %>% 
+  dplyr::left_join(otta_2018, by = "ottaID") %>% 
+  tidyr::replace_na(list(pred_2018 = "Missing")) %>%
+  as.data.frame() %>% 
+  dplyr::distinct() %>% 
+  tibble::column_to_rownames("ottaID")
+cc_fk <- irr::kappam.fleiss(cc_all)
+irr::print.irrlist(cc_fk)
+```
