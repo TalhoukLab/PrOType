@@ -3,6 +3,8 @@ title: "Supplementary A: Molecular Classifier Development on Legacy Gene Express
 output:
   word_document:
     reference_docx: styles.docx
+params:
+  outputDir: outputDir
 ---
 
 ```{r setup_A, include=FALSE}

@@ -2,6 +2,8 @@
 output:
   word_document:
     reference_docx: styles.docx
+params:
+  outputDir: outputDir
 ---
 
 # A.5 Class Prediction
@@ -65,11 +67,17 @@ pandoc.table(aocs_confmat_bc_metrics, keep.trailing.zeros = TRUE)
 
 ```{r aa_kmodes}
 # All-array samples
-aa_dat <- readRDS(here("data/npcp-hcNorm_ov.afc1_xpn.rds"))
+aa_dat <- readRDS(file.path(
+  params$outputDir,
+  "unsupervised/map_genes/ov.afc1_xpn/npcp-hcNorm_ov.afc1_xpn.rds"
+))
 aa_samples <- gsub("_", "-", stringr::str_sub(rownames(aa_dat), 15, 26))
 
 # All-array kmodes clustering labels
-aa_clusts <- readRDS(here("data/all_clusts_ov.afc1_xpn.rds"))
+aa_clusts <- readRDS(file.path(
+  params$outputDir,
+  "unsupervised/final/ov.afc1_xpn/all_clusts_ov.afc1_xpn.rds"
+))
 aa_kmodes <- aa_clusts %>% 
   dplyr::transmute(
     sample = aa_samples,
