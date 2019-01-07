@@ -28,6 +28,7 @@ library(dplyr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
+panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
 # Cleaned data: split into original, replicates, and Xsites

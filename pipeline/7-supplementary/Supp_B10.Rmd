@@ -26,6 +26,7 @@ library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
+panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
 n_genes <- 55
