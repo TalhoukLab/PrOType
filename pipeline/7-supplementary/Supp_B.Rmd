@@ -5,6 +5,8 @@ output:
     reference_docx: styles.docx
     fig_height: 5
     fig_width: 7
+params:
+  outputDir: outputDir
 ---
 
 ```{r setup_B, include=FALSE}

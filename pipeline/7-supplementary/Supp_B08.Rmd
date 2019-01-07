@@ -3,7 +3,7 @@ output:
   word_document:
     reference_docx: styles.docx
 params:
-  path: "data"
+  outputDir: outputDir
 ---
 
 # B.8 Platform Portability of the Array Classifier
@@ -29,7 +29,7 @@ panderOptions("table.split.table", Inf)
 ## _Table SB4:_ All-array model portability comparing predictions on NanoString to predictions on Array.
 
 ```{r aa_ns}
-eval_overlap_all <- readRDS(here("data", "eval_overlap_all.rds"))
+eval_overlap_all <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_overlap_all.rds"))
 aa_ns_pred <- eval_overlap_all %>% 
   purrr::pluck("adaboost", "array_vs_nstring", "confmat")
 ```
@@ -94,7 +94,7 @@ pandoc.table(tcga_ns_confmat_bc_metrics, keep.trailing.zeros = TRUE)
 ## _Table SB6:_: Comparing consensus samples predictions with published labels.
 
 ```{r cons_pub}
-eval_consensus <- readRDS(here("data", "eval_consensus.rds"))
+eval_consensus <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_consensus.rds"))
 cons_pred <- eval_consensus %>% 
   purrr::pluck("adaboost", "published_vs_consensus", "confmat")
 ```

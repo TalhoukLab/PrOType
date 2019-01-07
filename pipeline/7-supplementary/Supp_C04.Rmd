@@ -2,6 +2,8 @@
 output:
   word_document:
     reference_docx: styles.docx
+params:
+  outputDir: outputDir
 ---
 
 # C.4 Genes in the Classifier
@@ -27,16 +29,17 @@ source(here("pipeline/7-supplementary/utils-pathway.R"))
 n_genes <- 55
 grm <- "CTHRC1"
 
-pdat_raw <- readr::read_csv(here("data/boxplotorder.csv"))
+pdat_raw <- readr::read_csv(here("data/supp/boxplotorder.csv"))
 raw_ns <- load_nanostring()
-final_preds <- readr::read_csv(here("data/Final_Predictions.csv"),
+final_preds <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/Final_Predictions.csv"),
                                col_types = list("X1" = readr::col_skip()))
 arl_samples <- 
   readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
-sum_freq <-
-  readr::read_csv(here("data/overallFreqs.csv"), col_types = readr::cols())
+sum_freq <- 
+  readr::read_csv(file.path(params$outputDir, "gene_selection/sum_freq/overall_freq.csv"),
+                  col_types = readr::cols())
 
-fig_path <- "pipeline/7-supplementary/figures/C04"
+fig_path <- file.path(params$outputDir, "supplementary/figures/C04")
 ```
 
 ## Network Diagrams
@@ -73,7 +76,7 @@ gg_combined <- create_ggraph(
   title = "Gene Pathways"
 )
 print(gg_combined)
-ggsave(here(fig_path, "pathways_graph_combined.pdf"), gg_combined,
+ggsave(file.path(fig_path, "pathways_graph_combined.pdf"), gg_combined,
        width = 8, height = 10)
 ```
 
@@ -89,7 +92,7 @@ gg_subtype <- create_ggraph(
   facet = "subtype"
 )
 print(gg_subtype)
-ggsave(here(fig_path, "pathways_graph_by_subtype.pdf"), gg_subtype,
+ggsave(file.path(fig_path, "pathways_graph_by_subtype.pdf"), gg_subtype,
        width = 8, height = 10)
 ```
 
@@ -105,7 +108,7 @@ gg_direction <- create_ggraph(
   facet = "direction"
 )
 print(gg_direction)
-ggsave(here(fig_path, "pathways_graph_by_direction.pdf"), gg_direction,
+ggsave(file.path(fig_path, "pathways_graph_by_direction.pdf"), gg_direction,
        width = 8, height = 10)
 ```
 
@@ -125,7 +128,7 @@ hm_ga <- pheatmap::pheatmap(
   fontsize_col = 6,
   main = "Gene Pathways Heatmap"
 )
-ggsave(here(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
+ggsave(file.path(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
 
 gene_order <- hm_ga %>% 
   purrr::pluck("tree_col") %>% 
@@ -155,8 +158,14 @@ final_glist_ordered <- gene_order %>%
 
 ```{r gene_ex_aa, fig.height=11, fig.width=11}
 # Data and class (all-array)
-raw_aa <- readRDS(here("data/npcp-hcNorm_ov.afc1_xpn.rds"))
-class_aa <- readRDS(here("data/all_clusts_ov.afc1_xpn.rds")) %>%
+raw_aa <- readRDS(file.path(
+  params$outputDir,
+  "unsupervised/map_genes/ov.afc1_xpn/npcp-hcNorm_ov.afc1_xpn.rds"
+))
+class_aa <- readRDS(file.path(
+  params$outputDir,
+  "unsupervised/final/ov.afc1_xpn/all_clusts_ov.afc1_xpn.rds"
+)) %>%
   purrr::pluck("kmodes")
 
 # Joined data (all-array)
@@ -194,7 +203,7 @@ pp_aa <- ggpubr::compare_means(
   dplyr::inner_join(me_aa, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_aa, here("pipeline/7-supplementary/tables/aa_pairwise_pvals.csv"))
+readr::write_csv(pp_aa, file.path(params$outputDir, "supplementary/tables/aa_pairwise_pvals.csv"))
 
 # Largest global p-value (all-array)
 max_gp_aa <- ggpubr::compare_means(
@@ -224,7 +233,7 @@ p_aa <- ggplot(dat_aa, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
 print(p_aa)
-ggsave(here(fig_path, "boxplot_subtype_aa.pdf"), p_aa, width = 11, height = 11)
+ggsave(file.path(fig_path, "boxplot_subtype_aa.pdf"), p_aa, width = 11, height = 11)
 ```
 
 ### NanoString
@@ -263,7 +272,7 @@ pp_ns <- ggpubr::compare_means(
   dplyr::inner_join(me_ns, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_ns, here("pipeline/7-supplementary/tables/ns_pairwise_pvals.csv"))
+readr::write_csv(pp_ns, file.path(params$outputDir, "supplementary/tables/ns_pairwise_pvals.csv"))
 
 # Largest global p-value (NanoString)
 max_gp_ns <- ggpubr::compare_means(
@@ -292,7 +301,7 @@ p_ns <- ggplot(dat_ns, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
 print(p_ns)
-ggsave(here(fig_path, "boxplot_subtype_ns.pdf"), p_ns, width = 11, height = 11)
+ggsave(file.path(fig_path, "boxplot_subtype_ns.pdf"), p_ns, width = 11, height = 11)
 ```
 
 ### TCGA
@@ -347,7 +356,7 @@ pp_tcga <- ggpubr::compare_means(
   dplyr::inner_join(me_tcga, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_tcga, here("pipeline/7-supplementary/tables/tcga_pairwise_pvals.csv"))
+readr::write_csv(pp_tcga, file.path(params$outputDir, "supplementary/tables/tcga_pairwise_pvals.csv"))
 
 # Largest global p-value (TCGA)
 max_gp_tcga <- ggpubr::compare_means(
@@ -377,5 +386,5 @@ p_tcga <- ggplot(dat_tcga, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
 print(p_tcga)
-ggsave(here(fig_path, "boxplot_subtype_tcga.pdf"), p_tcga, width = 11, height = 11)
+ggsave(file.path(fig_path, "boxplot_subtype_tcga.pdf"), p_tcga, width = 11, height = 11)
 ```

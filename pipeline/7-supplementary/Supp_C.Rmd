@@ -4,6 +4,8 @@ output:
   word_document:
     reference_docx: styles.docx
     fig_width: 7
+params:
+  outputDir: outputDir
 ---
 
 ```{r setup_C, include=FALSE}

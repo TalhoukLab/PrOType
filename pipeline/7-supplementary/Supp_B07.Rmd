@@ -2,6 +2,8 @@
 output:
   word_document:
     reference_docx: styles.docx
+params:
+  outputDir: outputDir
 ---
 
 # B.7 Subtype Assignment in the NanoString Data
@@ -29,28 +31,27 @@ n_genes <- 55
 grm <- "CTHRC1"
 
 raw_ns <- load_nanostring()
-final_model <- readRDS(here("data/final_model.rds"))
+final_model <- readRDS(file.path(params$outputDir, "gene_selection/final_model/final_model.rds"))
 arl_samples <- 
   readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
-sum_freq <-
-  readr::read_csv(here("data/overallFreqs.csv"), col_types = readr::cols())
-all_pred <- readr::read_csv(here("data/predictions.csv"),
+sum_freq <- 
+  readr::read_csv(file.path(params$outputDir, "gene_selection/sum_freq/overall_freq.csv"),
+                  col_types = readr::cols())
+all_pred <- readr::read_csv(here("data/nstring/predictions.csv"),
                             col_types = list("X1" = readr::col_skip()))
-array_probs <- readr::read_csv(here("data/array_probs.csv"),
-                               col_types = list("X1" = readr::col_skip()))
-tcga_probs <- readr::read_csv(here("data/tcga_probs.csv"),
-                              col_types = list("X1" = readr::col_skip()))
-final_preds <- readr::read_csv(here("data/Final_Predictions.csv"),
+array_probs <- readr::read_csv(file.path(params$outputDir, "nanostring/predictions/aa_probs.csv"))
+tcga_probs <- readr::read_csv(file.path(params$outputDir, "nanostring/predictions/tcga_probs.csv"))
+final_preds <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/Final_Predictions.csv"),
                                col_types = list("X1" = readr::col_skip()))
 b1 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch1_20170217_updated.csv"))
 b2 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch2_20170221.csv"))
 b3 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch3_20170307_updated_NCO.csv"))
 b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170512.csv"))
-as_dat <- readxl::read_excel(here("data/Predictions_Anatomical_18DEC2018MA.xlsx"))
-nec_dat <- readxl::read_excel(here("data/FinalSubtype_AnalyticFile.xlsx"))
-cd8_dat <- readxl::read_excel(here("data/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
+nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"))
+cd8_dat <- readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
 
-fig_path <- "pipeline/7-supplementary/figures/B07"
+fig_path <- file.path(params$outputDir, "supplementary/figures/B07")
 ```
 
 ## Agreement between All-Array and TCGA
@@ -159,7 +160,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga, color = match)) +
   aa_vs_tcga_args
 
 print(p)
-ggsave(here(fig_path, "entropy_scatterplot_agree.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_scatterplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
 ```{r entropy_scatterplot_pred_aa, fig.height=5, fig.width=7}
@@ -170,7 +171,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   aa_vs_tcga_args
 
 print(p)
-ggsave(here(fig_path, "entropy_scatterplot_pred_aa.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_scatterplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
 ```{r entropy_scatterplot_pred_tcga, fig.height=5, fig.width=7}
@@ -181,7 +182,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   aa_vs_tcga_args
 
 print(p)
-ggsave(here(fig_path, "entropy_scatterplot_pred_tcga.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_scatterplot_pred_tcga.pdf"), p, width = 7, height = 5)
 ```
 
 #### Boxplot Comparison
@@ -209,7 +210,7 @@ p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   theme(legend.title = element_blank())
 
 print(p)
-ggsave(here(fig_path, "entropy_boxplot_agree.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_boxplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
 ```{r entropy_boxplot_pred_aa, fig.height=5, fig.width=7}
@@ -223,7 +224,7 @@ p <- entropy_probs_grouped %>%
   theme(legend.title = element_blank())
 
 print(p)
-ggsave(here(fig_path, "entropy_boxplot_pred_aa.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_boxplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
 ```{r entropy_boxplot_pred_tcga, fig.height=5, fig.width=7}
@@ -237,7 +238,7 @@ p <- entropy_probs_grouped %>%
   theme(legend.title = element_blank())
 
 print(p)
-ggsave(here(fig_path, "entropy_boxplot_pred_tcga.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "entropy_boxplot_pred_tcga.pdf"), p, width = 7, height = 5)
 ```
 
 ## Survival
@@ -472,7 +473,7 @@ km_aa <- purrr::list_merge(
 plots_km_aa <- km_aa %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "All OTTA (All-Array Model)")
-ggsave(here(fig_path, "km_all_array.pdf"), plots_km_aa, width = 7, height = 10)
+ggsave(file.path(fig_path, "km_all_array.pdf"), plots_km_aa, width = 7, height = 10)
 ```
 
 ```{r km_tcga, fig.height=10, fig.width=7}
@@ -486,7 +487,7 @@ km_tcga <- purrr::list_merge(
 plots_km_tcga <- km_tcga %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "All OTTA (TCGA Model)")
-ggsave(here(fig_path, "km_tcga.pdf"), plots_km_tcga, width = 7, height = 10)
+ggsave(file.path(fig_path, "km_tcga.pdf"), plots_km_tcga, width = 7, height = 10)
 ```
 
 ```{r km_conc, fig.height=10, fig.width=7}
@@ -500,7 +501,7 @@ km_conc <- purrr::list_merge(
 plots_km_conc <- km_conc %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Concordant Samples")
-ggsave(here(fig_path, "km_conc.pdf"), plots_km_conc, width = 7, height = 10)
+ggsave(file.path(fig_path, "km_conc.pdf"), plots_km_conc, width = 7, height = 10)
 ```
 
 ```{r km_disc_all_array, fig.height=10, fig.width=7}
@@ -514,7 +515,7 @@ km_disc_aa <- purrr::list_merge(
 plots_km_disc_aa <- km_disc_aa %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Discordant Samples (All-Array Model)")
-ggsave(here(fig_path, "km_disc_all_array.pdf"), plots_km_disc_aa, width = 7, height = 10)
+ggsave(file.path(fig_path, "km_disc_all_array.pdf"), plots_km_disc_aa, width = 7, height = 10)
 ```
 
 ```{r km_disc_tcga, fig.height=10, fig.width=7}
@@ -528,5 +529,5 @@ km_disc_tcga <- purrr::list_merge(
 plots_km_disc_tcga <- km_disc_tcga %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Discordant Samples (TCGA Model)")
-ggsave(here(fig_path, "km_disc_tcga.pdf"), plots_km_disc_tcga, width = 7, height = 10)
+ggsave(file.path(fig_path, "km_disc_tcga.pdf"), plots_km_disc_tcga, width = 7, height = 10)
 ```

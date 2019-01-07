@@ -25,9 +25,9 @@ library(ggplot2)
 library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
-load(here("data/expCS.rda"))
-load(here("data/exp_CS3_all.rda"))
-load(here("data/cs3.norm.rda"))
+load(here("data/supp/expCS.rda"))
+load(here("data/supp/exp_CS3_all.rda"))
+load(here("data/supp/cs3.norm.rda"))
 
 fig_path <- file.path(params$outputDir, "supplementary/figures/B06")
 ```
