@@ -13,8 +13,7 @@ knitr::opts_chunk$set(
 	echo = FALSE,
 	message = FALSE,
 	warning = FALSE,
-	results = "asis",
-	fig.show = "asis"
+	results = "asis"
 )
 ```
 
@@ -68,7 +67,7 @@ pdf_files <- dir_ls(
 embed_files <- pdf_files[match(filenames, path_ext_remove(path_file(pdf_files)))]
 ```
 
-```{r graphics}
+```{r graphics, fig.show='asis'}
 knitr::include_graphics(embed_files)
 ```
 
