@@ -158,7 +158,7 @@ aa_vs_tcga_args <- list(
 )
 ```
 
-```{r entropy_scatterplot_agree, fig.height=5, fig.width=7}
+```{r entropy_scatterplot_agree, fig.width=7, fig.height=5}
 p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga, color = match)) +
   geom_point(alpha = 0.5) +
   ggtitle("Entropy on full NanoString data by model agreement") +
@@ -168,7 +168,7 @@ print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
-```{r entropy_scatterplot_pred_aa, fig.height=5, fig.width=7}
+```{r entropy_scatterplot_pred_aa, fig.width=7, fig.height=5}
 p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
                                color = predicted_array)) +
   geom_point(alpha = 0.5) +
@@ -179,7 +179,7 @@ print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
-```{r entropy_scatterplot_pred_tcga, fig.height=5, fig.width=7}
+```{r entropy_scatterplot_pred_tcga, fig.width=7, fig.height=5}
 p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
                                color = predicted_tcga)) +
   geom_point(alpha = 0.5) +
@@ -206,7 +206,7 @@ entropy_probs_grouped <- entropy_probs %>%
   ))
 ```
 
-```{r entropy_boxplot_agree, fig.height=5, fig.width=7}
+```{r entropy_boxplot_agree, fig.width=7, fig.height=5}
 p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   geom_boxplot() +
   ggtitle("Entropy Comparison of Prediction Labels by Data") +
@@ -218,7 +218,7 @@ print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
-```{r entropy_boxplot_pred_aa, fig.height=5, fig.width=7}
+```{r entropy_boxplot_pred_aa, fig.width=7, fig.height=5}
 p <- entropy_probs_grouped %>% 
   dplyr::filter(Data == "All Array") %>% 
   ggplot(aes(Subtype, Entropy, fill = match)) +
@@ -232,7 +232,7 @@ print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
-```{r entropy_boxplot_pred_tcga, fig.height=5, fig.width=7}
+```{r entropy_boxplot_pred_tcga, fig.width=7, fig.height=5}
 p <- entropy_probs_grouped %>% 
   dplyr::filter(Data == "TCGA") %>% 
   ggplot(aes(Subtype, Entropy, fill = match)) +
@@ -467,7 +467,7 @@ surv_args <- list(
 comb_args <- list(print = TRUE, ncol = 1, nrow = 2)
 ```
 
-```{r km_all_array, fig.height=10, fig.width=7}
+```{r km_all_array, fig.width=7, fig.height=10}
 km_aa <- purrr::list_merge(
   km_args,
   fit = list(
@@ -481,7 +481,7 @@ plots_km_aa <- km_aa %>%
 ggsave(file.path(fig_path, "km_all_array.pdf"), plots_km_aa, width = 7, height = 10)
 ```
 
-```{r km_tcga, fig.height=10, fig.width=7}
+```{r km_tcga, fig.width=7, fig.height=10}
 km_tcga <- purrr::list_merge(
   km_args,
   fit = list(
@@ -495,7 +495,7 @@ plots_km_tcga <- km_tcga %>%
 ggsave(file.path(fig_path, "km_tcga.pdf"), plots_km_tcga, width = 7, height = 10)
 ```
 
-```{r km_conc, fig.height=10, fig.width=7}
+```{r km_conc, fig.width=7, fig.height=10}
 km_conc <- purrr::list_merge(
   km_args,
   fit = list(
@@ -509,7 +509,7 @@ plots_km_conc <- km_conc %>%
 ggsave(file.path(fig_path, "km_conc.pdf"), plots_km_conc, width = 7, height = 10)
 ```
 
-```{r km_disc_all_array, fig.height=10, fig.width=7}
+```{r km_disc_all_array, fig.width=7, fig.height=10}
 km_disc_aa <- purrr::list_merge(
   km_args,
   fit = list(
@@ -523,7 +523,7 @@ plots_km_disc_aa <- km_disc_aa %>%
 ggsave(file.path(fig_path, "km_disc_all_array.pdf"), plots_km_disc_aa, width = 7, height = 10)
 ```
 
-```{r km_disc_tcga, fig.height=10, fig.width=7}
+```{r km_disc_tcga, fig.width=7, fig.height=10}
 km_disc_tcga <- purrr::list_merge(
   km_args,
   fit = list(

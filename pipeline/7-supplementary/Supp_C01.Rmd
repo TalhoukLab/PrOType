@@ -1,9 +1,7 @@
 ---
 output:
   word_document:
-    reference_docx: styles.docx 
-    fig_height: 5
-    fig_width: 7
+    reference_docx: styles.docx
 params:
   outputDir: outputDir
 ---
@@ -94,7 +92,7 @@ bc_OR <- confmat_metrics(confmat_OR, metrics = "byclass")
 pandoc.table(bc_OR, keep.trailing.zeros = TRUE)
 ```
 
-```{r o_vs_r_entropy}
+```{r o_vs_r_entropy, fig.width=7, fig.height=5}
 # Compute original vs replicate entropy
 entropy_OR <- compare_OR %>%
   dplyr::transmute(

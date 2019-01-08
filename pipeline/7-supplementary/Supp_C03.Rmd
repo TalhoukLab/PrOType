@@ -373,7 +373,7 @@ surv_args <- list(
 comb_args <- list(print = TRUE, ncol = 1, nrow = 2)
 ```
 
-```{r km_final_all, fig.height=10, fig.width=7}
+```{r km_final_all, fig.width=7, fig.height=10}
 km_final_all <- purrr::list_merge(
   km_args,
     fit = list(
@@ -387,7 +387,7 @@ plots_km_final_all <- km_final_all %>%
 ggsave(file.path(fig_path, "km_final_all.pdf"), plots_km_final_all, width = 7, height = 10)
 ```
 
-```{r km_final_adnexal, fig.height=10, fig.width=7}
+```{r km_final_adnexal, fig.width=7, fig.height=10}
 # Filter for adnexal sites
 d_adnexal <- dplyr::filter(d, anatomical_site %in% c("adnexal", "presumed adnexal"))
 surv_args_adnexal <- purrr::map_at(surv_args, "data", ~ d_adnexal)

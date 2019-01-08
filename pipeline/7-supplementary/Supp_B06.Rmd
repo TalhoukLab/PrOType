@@ -2,8 +2,6 @@
 output:
   word_document:
     reference_docx: styles.docx
-    fig_height: 5
-    fig_width: 7
 params:
   outputDir: outputDir
 ---
@@ -95,7 +93,7 @@ pander::pandoc.table(
 
 ## Signal/Noise vs % Genes Detected
 
-```{r snr_vs_pergd}
+```{r snr_vs_pergd, fig.width=7, fig.height=5}
 # SNR vs %GD
 p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
   geom_point() +
@@ -141,7 +139,7 @@ pools <- expCS %>%
   )
 ```
 
-```{r pools_gx_time}
+```{r pools_gx_time, fig.width=7, fig.height=5}
 # Reference pools gx across site and time
 p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
   geom_point() +
@@ -259,7 +257,7 @@ all_metrics <- all_xsites %>%
   tidyr::gather(key = "Metric", value = "Expression", -Sites)
 ```
 
-```{r cc_hist}
+```{r cc_hist, fig.width=7, fig.height=5}
 # Plot all combinations of cross-site concordance measure histograms
 p <- ggplot(all_metrics, aes(Expression)) +
   geom_histogram(bins = 30, fill = "blue") +
@@ -279,7 +277,7 @@ Concordance Measures:
 - R2: squared Pearson's correlation coefficient
 - Rc: Lin's concordance correlation
 
-```{r avg_scatter, fig.height=10, results='hide'}
+```{r avg_scatter, fig.width=7, fig.height=10, results='hide'}
 # Combined averaged gene expression
 all_gx_avg <- purrr::map_dfr(all_gx, rowMeans)
 par(mfrow = c(3, 1))
@@ -293,10 +291,5 @@ purrr::walk(all_xsites, ~ {
     Ptype = "scatter"
   )
 })
-dev.print(
-  pdf,
-  file.path(fig_path, "avg_scatter.pdf"),
-  width = 7,
-  height = 10
-)
+dev.print(pdf, file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
 ```

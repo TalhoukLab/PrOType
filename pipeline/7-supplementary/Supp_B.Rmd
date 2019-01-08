@@ -3,8 +3,6 @@ title: "Supplementary B: NanoString Sample Processing, Prediction, and Modelling
 output:
   word_document:
     reference_docx: styles.docx
-    fig_height: 5
-    fig_width: 7
 params:
   outputDir: outputDir
 ---

@@ -3,7 +3,6 @@ title: "Supplementary C: Molecular Subtypes Covariates"
 output:
   word_document:
     reference_docx: styles.docx
-    fig_width: 7
 params:
   outputDir: outputDir
 ---
@@ -16,14 +15,14 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r child="Supp_C01.Rmd", fig.height=5}
+```{r child="Supp_C01.Rmd"}
 ```
 
-```{r child="Supp_C02.Rmd", fig.height=5}
+```{r child="Supp_C02.Rmd"}
 ```
 
-```{r child="Supp_C03.Rmd", fig.height=10}
+```{r child="Supp_C03.Rmd"}
 ```
 
-```{r child="Supp_C04.Rmd", fig.height=10, fig.width=8}
+```{r child="Supp_C04.Rmd"}
 ```

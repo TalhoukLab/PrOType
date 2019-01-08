@@ -122,7 +122,7 @@ ggsave(file.path(fig_path, "pathways_graph_by_direction.pdf"), gg_direction,
 
 ### Heatmap
 
-```{r pathway_heatmap}
+```{r pathway_heatmap, fig.width=8, fig.height=7}
 hm_pdat <- pdat %>% 
   dplyr::count(gene, subtype) %>% 
   tidyr::complete(gene, subtype, fill = list(n = 0)) %>%
@@ -164,7 +164,7 @@ final_glist_ordered <- gene_order %>%
 
 ### All-Array
 
-```{r gene_ex_aa, fig.height=11, fig.width=11}
+```{r gene_ex_aa, fig.width=11, fig.height=11}
 # Joined data (all-array)
 aa_dat <- aa_raw %>%
   dplyr::select(final_glist_ordered) %>%
@@ -235,7 +235,7 @@ ggsave(file.path(fig_path, "boxplot_subtype_aa.pdf"), p_aa, width = 11, height =
 
 ### NanoString
 
-```{r gene_ex_ns, fig.height=11, fig.width=11}
+```{r gene_ex_ns, fig.width=11, fig.height=11}
 # Joined data (NanoString)
 dat_ns <- raw_ns %>%
   dplyr::rename(ottaID = OTTA.ID) %>% 
@@ -303,7 +303,7 @@ ggsave(file.path(fig_path, "boxplot_subtype_ns.pdf"), p_ns, width = 11, height =
 
 ### TCGA
 
-```{r gene_ex_tcga, fig.height=11, fig.width=11}
+```{r gene_ex_tcga, fig.width=11, fig.height=11}
 # Data and class (TCGA)
 raw_tcga <- Biobase::exprs(eset)
 class_tcga <- Biobase::pData(eset) %>%
