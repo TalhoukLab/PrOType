@@ -20,19 +20,28 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_C01}
-# Load packages, helpers, data inputs
+# Load packages, helpers, input data
 library(ggplot2)
 library(pander)
-library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
-# Cleaned data: split into original, replicates, and Xsites
 dat_raw <- readxl::read_excel(here("data/nstring/nanostring data_replicates and Xsite_20160915.xlsx"))
-dat <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/replicates_and_Xsite_predictions.csv"))
+dat <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/replicates_and_Xsite_predictions.csv"),
+                       col_types = readr::cols())
+otta_2015_raw <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/Final_Predictions.csv"),
+                                 col_types = list("X1" = readr::col_skip()))
+otta_2017_raw <- readr::read_csv(here("data/nstring/nano2_ns_predictions.csv"), col_types = readr::cols())
+otta_2018_raw <- readr::read_csv(here("data/nstring/nano3_ns_predictions.csv"), col_types = readr::cols())
+
+fig_path <- file.path(params$outputDir, "supplementary/figures/C01")
+```
+
+```{r clean_C01}
+# Cleaned data: split into original, replicates, and Xsites
 dat_clean <- dat %>%
   tidyr::separate(col = ottaID,
                   into = c("ottaID", "type"),
@@ -44,8 +53,6 @@ dat_clean <- dat %>%
 original_samples <- dat_clean %>% dplyr::filter(type == "O")
 replicate_samples <- dat_clean %>% dplyr::filter(type == "R")
 Xsite_samples <- dat_clean %>% dplyr::filter(type == "X1")
-
-fig_path <- file.path(params$outputDir, "supplementary/figures/C01")
 ```
 
 ## C.1.1 Within CodeSet Replication
@@ -163,19 +170,15 @@ irr::print.irrlist(OX_fk)
 
 ```{r cross_codeset}
 # Load OTTA predictions from different codesets, extract IDs and predictions
-otta_2015 <-
-  readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/Final_Predictions.csv"),
-                  col_types = list("X1" = readr::col_skip())) %>%
+otta_2015 <- otta_2015_raw %>%
   dplyr::select(ottaID, pred_2015 = final)
-otta_2017 <-
-  readr::read_csv(here("data/nstring/nano2_ns_predictions.csv")) %>%
+otta_2017 <- otta_2017_raw %>%
   dplyr::transmute(
     ottaID = gsub("-N1", "", stringr::str_split_fixed(sample, pattern = "_", n = 4)[, 3]),
     pred_2017 = pred
   ) %>% 
   dplyr::filter(ottaID != "TUKO00487")
-otta_2018 <-
-  readr::read_csv(here("data/nstring/nano3_ns_predictions.csv")) %>%
+otta_2018 <- otta_2018_raw %>%
   dplyr::transmute(
     ottaID = stringr::str_split_fixed(sample, pattern = "_", n = 4)[, 3],
     pred_2018 = pred

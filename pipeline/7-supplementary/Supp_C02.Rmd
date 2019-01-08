@@ -20,23 +20,26 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_C02}
-# Load packages, helpers, data inputs
+# Load packages, helpers, input data
 library(ggplot2)
 library(pander)
-library(magrittr)
-library(dplyr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
-# Cleaned data: split into original, replicates, and Xsites
 as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
 lax_van_dat <- readr::read_csv(file.path(params$outputDir,
-                                         "gene_selection/final_model/lax_van_om_test_predictions.csv"))
+                                         "gene_selection/final_model/lax_van_om_test_predictions.csv"),
+                               col_types = readr::cols())
 bro_dat <- readr::read_csv(file.path(params$outputDir,
-                                     "gene_selection/final_model/bro_het_test_predictions.csv"))
+                                     "gene_selection/final_model/bro_het_test_predictions.csv"),
+                           col_types = readr::cols())
+```
+
+```{r clean_C02}
+# Cleaned data: split into ovary and omentum
 dat_clean <- rbind(lax_van_dat, bro_dat) %>%
   tidyr::separate(ottaID, c("ottaID", "type"), sep = "_", extra = "merge", fill = "right") %>%
   tidyr::replace_na(list(type = "OV")) %>% 

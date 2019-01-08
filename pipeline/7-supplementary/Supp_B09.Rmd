@@ -16,14 +16,13 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_B09}
+# Load packages, helpers, input data
 library(pander)
-library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
 raw_ns <- load_nanostring()
-arl_samples <- 
-  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
+arl_samples <- readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
 all_pred <- readr::read_csv(here("data/nstring/predictions.csv"),
                             col_types = list("X1" = readr::col_skip()))
 ```

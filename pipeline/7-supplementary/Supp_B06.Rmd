@@ -20,11 +20,13 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_B06}
-# Load packages, helpers, data inputs
+# Load packages, helpers, input data
 library(ggplot2)
-library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
+
+arl_dat <-
+  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
 load(here("data/supp/expCS.rda"))
 load(here("data/supp/exp_CS3_all.rda"))
 load(here("data/supp/cs3.norm.rda"))
@@ -38,10 +40,6 @@ fig_path <- file.path(params$outputDir, "supplementary/figures/B06")
 - **Overall QC** fails if either **Smallest Positive Control**, **Imaging**, or **Linearity** fail
 
 ```{r qc_filter}
-# Final QC table with ARL samples removed (and keep only PrOType)
-arl_dat <-
-  readxl::read_excel(here("data/nstring/Nanostring_ARL-all samples-all gnes_20180607.xlsx"))
-
 # Filter QC samples
 exp_CS3_final <- exp_CS3_all %>%
   dplyr::mutate(

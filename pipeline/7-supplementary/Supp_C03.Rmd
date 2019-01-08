@@ -18,25 +18,29 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_C03}
+# Load packages, helpers, input data
 library(pander)
 library(survival)
 library(survminer)
 library(biostatUtil)
 library(dplyr)
-library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", TRUE)
 
-pred <- readr::read_csv(here("data/nstring/predictions.csv"),
-                        col_types = list("X1" = readr::col_skip()))
+all_pred <- readr::read_csv(here("data/nstring/predictions.csv"),
+                            col_types = list("X1" = readr::col_skip()))
 final_preds <- readr::read_csv(file.path(params$outputDir, "gene_selection/final_model/Final_Predictions.csv"),
                                col_types = list("X1" = readr::col_skip()))
-b1 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch1_20170217_updated.csv"))
-b2 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch2_20170221.csv"))
-b3 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch3_20170307_updated_NCO.csv"))
-b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170512.csv"))
+b1 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch1_20170217_updated.csv"),
+                      col_types = readr::cols())
+b2 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch2_20170221.csv"),
+                      col_types = readr::cols())
+b3 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch3_20170307_updated_NCO.csv"),
+                      col_types = readr::cols())
+b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170512.csv"),
+                      col_types = readr::cols())
 as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
 nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"))
 cd8_dat <- readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
@@ -46,7 +50,7 @@ fig_path <- file.path(params$outputDir, "supplementary/figures/C03")
 
 ```{r clin_combine}
 # Remove ARL samples
-pred <- pred %>% 
+all_pred <- all_pred %>% 
   dplyr::filter(!grepl("ARL", ottaID))
 
 final_preds <- final_preds %>% 
@@ -81,7 +85,7 @@ clin_d <- rbind(b1, b2, b3, b4) %>%
   dplyr::left_join(cd8_dat, by = "ottaID")
 
 # Check otta IDs
-stopifnot(identical(pred[["ottaID"]], clin_d[["ottaID"]]))
+stopifnot(identical(all_pred[["ottaID"]], clin_d[["ottaID"]]))
 stopifnot(identical(final_preds[["ottaID"]], clin_d[["ottaID"]]))
 ```
 
@@ -200,7 +204,7 @@ clin_d <- clin_d %>%
 
 # Join predictions with clinical data and modify case TVAN20158
 d <-
-  list(pred, final_preds, clin_d) %>%
+  list(all_pred, final_preds, clin_d) %>%
   purrr::reduce(dplyr::inner_join, by = "ottaID") %>% 
   dplyr::mutate(
     os_yrs = magrittr::inset(

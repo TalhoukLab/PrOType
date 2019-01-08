@@ -18,19 +18,21 @@ knitr::opts_chunk$set(
 ```
 
 ```{r load_B08}
+# Load packages, helpers, input data
 library(pander)
-library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
+
+eval_overlap_all <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_overlap_all.rds"))
+eval_consensus <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_consensus.rds"))
 ```
 
 ## _Table SB4:_ All-array model portability comparing predictions on NanoString to predictions on Array.
 
 ```{r aa_ns}
-eval_overlap_all <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_overlap_all.rds"))
 aa_ns_pred <- eval_overlap_all %>% 
   purrr::pluck("adaboost", "array_vs_nstring", "confmat")
 ```
@@ -95,7 +97,6 @@ pandoc.table(tcga_ns_confmat_bc_metrics, keep.trailing.zeros = TRUE)
 ## _Table SB6:_: Comparing consensus samples predictions with published labels.
 
 ```{r cons_pub}
-eval_consensus <- readRDS(file.path(params$outputDir, "nanostring/evals/eval_consensus.rds"))
 cons_pred <- eval_consensus %>% 
   purrr::pluck("adaboost", "published_vs_consensus", "confmat")
 ```
