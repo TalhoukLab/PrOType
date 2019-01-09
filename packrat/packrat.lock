@@ -456,6 +456,11 @@ Version: 1.0.0
 Hash: f4239f89feb7ddc65821e4514e9734ae
 Requires: assertthat, crayon
 
+Package: clipr
+Source: CRAN
+Version: 0.4.1
+Hash: caf20ae357bfa2ed50e0e7db267f69ce
+
 Package: clue
 Source: CRAN
 Version: 0.3-55
@@ -1349,9 +1354,9 @@ Hash: 6a8155c6fbedfb8f62f1aff21f8c000b
 
 Package: readr
 Source: CRAN
-Version: 1.1.1
-Hash: a8ad1d584ed2aba5cde6a88dc48820bf
-Requires: BH, R6, Rcpp, hms, tibble
+Version: 1.3.1
+Hash: 1ce8ad24b533004a8cf7717df16c71fa
+Requires: BH, R6, Rcpp, clipr, crayon, hms, tibble
 
 Package: readxl
 Source: CRAN
