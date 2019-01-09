@@ -43,8 +43,9 @@ b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170
                       col_types = readr::cols())
 as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
 nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"))
-cd8_dat <- readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
-
+cd8_dat <- suppressWarnings(
+  readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
+)
 fig_path <- file.path(params$outputDir, "supplementary/figures/C03")
 ```
 

@@ -283,7 +283,7 @@ max_gp_ns <- ggpubr::compare_means(
 
 # Gene expression for top genes by predicted final subtype
 p_ns <- ggplot(dat_ns, aes(x = Subtype, y = Expression, fill = Subtype)) +
-  geom_boxplot() +
+  geom_boxplot(na.rm = TRUE) +
   facet_wrap(facets = vars(Gene), nrow = 5, ncol = 11) +
   labs(
     x = "Subtype",

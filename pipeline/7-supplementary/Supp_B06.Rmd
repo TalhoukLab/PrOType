@@ -96,7 +96,7 @@ pander::pandoc.table(
 ```{r snr_vs_pergd, fig.width=7, fig.height=5}
 # SNR vs %GD
 p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
-  geom_point() +
+  geom_point(na.rm = TRUE) +
   geom_hline(yintercept = 50, linetype = "dashed") +
   geom_vline(xintercept = 170, color = "brown", size = 1) +
   lims(x = c(0, 5000)) +
