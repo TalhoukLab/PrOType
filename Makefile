@@ -160,11 +160,11 @@ supp_a:
 
 # Supp B: nanostring model
 supp_b:
-	./pipeline/7-supplementary/1-supp_b.sh $(filter-out $@,$(MAKECMDGOALS))
+	./pipeline/7-supplementary/2-supp_b.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Supp C: subtypes and covariates
 supp_c:
-	./pipeline/7-supplementary/1-supp_c.sh $(filter-out $@,$(MAKECMDGOALS))
+	./pipeline/7-supplementary/3-supp_c.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Clean target
