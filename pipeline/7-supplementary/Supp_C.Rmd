@@ -3,8 +3,6 @@ title: "Supplementary C: Molecular Subtypes Covariates"
 output:
   word_document:
     reference_docx: styles.docx
-params:
-  outputDir: outputDir
 ---
 
 ```{r setup_C, include=FALSE}
@@ -13,6 +11,7 @@ knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE
 )
+params <- list(outputDir = outputDir)
 ```
 
 ```{r child="Supp_C01.Rmd"}

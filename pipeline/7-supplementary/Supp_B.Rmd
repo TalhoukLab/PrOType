@@ -3,8 +3,6 @@ title: "Supplementary B: NanoString Sample Processing, Prediction, and Modelling
 output:
   word_document:
     reference_docx: styles.docx
-params:
-  outputDir: outputDir
 ---
 
 ```{r setup_B, include=FALSE}
@@ -13,6 +11,7 @@ knitr::opts_chunk$set(
 	message = FALSE,
 	warning = FALSE
 )
+params <- list(outputDir = outputDir)
 ```
 
 ```{r child="Supp_B06.Rmd"}
