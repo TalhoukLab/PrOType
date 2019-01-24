@@ -166,7 +166,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga, color = match)) +
   ggtitle("Entropy on full NanoString data by model agreement") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
@@ -177,7 +177,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   ggtitle("Entropy on full NanoString data by predicted all array class") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
@@ -188,7 +188,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   ggtitle("Entropy on full NanoString data by predicted TCGA class") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_pred_tcga.pdf"), p, width = 7, height = 5)
 ```
 
@@ -216,7 +216,7 @@ p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_agree.pdf"), p, width = 7, height = 5)
 ```
 
@@ -230,7 +230,7 @@ p <- entropy_probs_grouped %>%
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_pred_aa.pdf"), p, width = 7, height = 5)
 ```
 
@@ -244,7 +244,7 @@ p <- entropy_probs_grouped %>%
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_pred_tcga.pdf"), p, width = 7, height = 5)
 ```
 

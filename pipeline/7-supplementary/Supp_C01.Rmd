@@ -118,7 +118,7 @@ p <- ggplot(entropy_OR, aes(entropy_O, entropy_R, color = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_O_vs_R.pdf"), p, width = 7, height = 5)
 ```
 

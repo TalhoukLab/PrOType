@@ -109,7 +109,7 @@ p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
   scale_color_discrete(name = "Site",
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
 ```
 
@@ -155,7 +155,7 @@ p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
   scale_color_discrete(name = "Site",
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
 ```
 
@@ -267,7 +267,7 @@ p <- ggplot(all_metrics, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "cc_hist.pdf"), p, width = 7, height = 5)
 ```
 
@@ -280,6 +280,7 @@ Concordance Measures:
 ```{r avg_scatter, fig.width=7, fig.height=10, results='hide'}
 # Combined averaged gene expression
 all_gx_avg <- purrr::map_dfr(all_gx, rowMeans)
+pdf(file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
 par(mfrow = c(3, 1))
 purrr::walk(all_xsites, ~ {
   nanostringr::CCplot(
@@ -291,5 +292,6 @@ purrr::walk(all_xsites, ~ {
     Ptype = "scatter"
   )
 })
-dev.print(pdf, file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
+dev.off()
+# dev.print(pdf, file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
 ```

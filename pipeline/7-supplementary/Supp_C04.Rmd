@@ -83,7 +83,7 @@ gg_combined <- create_ggraph(
   linetype = "direction",
   title = "Gene Pathways"
 )
-print(gg_combined)
+# print(gg_combined)
 ggsave(file.path(fig_path, "pathways_graph_combined.pdf"), gg_combined,
        width = 8, height = 10)
 ```
@@ -99,7 +99,7 @@ gg_subtype <- create_ggraph(
   title = "Gene Pathways by Subtype",
   facet = "subtype"
 )
-print(gg_subtype)
+# print(gg_subtype)
 ggsave(file.path(fig_path, "pathways_graph_by_subtype.pdf"), gg_subtype,
        width = 8, height = 10)
 ```
@@ -115,7 +115,7 @@ gg_direction <- create_ggraph(
   title = "Gene Pathways by Direction",
   facet = "direction"
 )
-print(gg_direction)
+# print(gg_direction)
 ggsave(file.path(fig_path, "pathways_graph_by_direction.pdf"), gg_direction,
        width = 8, height = 10)
 ```
@@ -229,7 +229,7 @@ p_aa <- ggplot(aa_dat, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_aa)
+# print(p_aa)
 ggsave(file.path(fig_path, "boxplot_subtype_aa.pdf"), p_aa, width = 11, height = 11)
 ```
 
@@ -297,7 +297,7 @@ p_ns <- ggplot(dat_ns, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_ns)
+# print(p_ns)
 ggsave(file.path(fig_path, "boxplot_subtype_ns.pdf"), p_ns, width = 11, height = 11)
 ```
 
@@ -380,6 +380,6 @@ p_tcga <- ggplot(dat_tcga, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_tcga)
+# print(p_tcga)
 ggsave(file.path(fig_path, "boxplot_subtype_tcga.pdf"), p_tcga, width = 11, height = 11)
 ```

@@ -361,7 +361,7 @@ p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_final_data.pdf"), p, width = 7, height = 5)
 ```
 
@@ -373,6 +373,6 @@ p <- ggplot(entropy_probs_grouped, aes(Subtype, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_final_subtypes.pdf"), p, width = 7, height = 5)
 ```
