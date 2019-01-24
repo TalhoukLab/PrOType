@@ -21,6 +21,8 @@ knitr::opts_chunk$set(
 # Load packages, helpers, input data
 library(ggplot2)
 library(pander)
+library(dplyr)
+library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 

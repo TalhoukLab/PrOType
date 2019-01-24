@@ -24,6 +24,7 @@ library(survival)
 library(survminer)
 library(biostatUtil)
 library(dplyr)
+library(magrittr)
 library(here)
 source(here("pipeline/7-supplementary/utils.R"))
 
