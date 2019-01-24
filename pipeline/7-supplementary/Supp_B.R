@@ -850,7 +850,7 @@ knitr::opts_chunk$set(
 suppressPackageStartupMessages({
   library(pander)
   library(here)
-}
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 raw_ns <- load_nanostring()
