@@ -19,11 +19,13 @@ knitr::opts_chunk$set(
 
 ```{r load_B07}
 # Load packages, helpers, input data
-library(pander)
-library(survival)
-library(survminer)
-library(ggplot2)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(survival)
+  library(survminer)
+  library(ggplot2)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)

@@ -18,8 +18,10 @@ knitr::opts_chunk$set(
 
 ## ----load_A05------------------------------------------------------------
 # Load packages, helpers, input data
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(here)  
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)

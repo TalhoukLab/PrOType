@@ -18,8 +18,10 @@ knitr::opts_chunk$set(
 
 ## ----load_B06------------------------------------------------------------
 # Load packages, helpers, input data
-library(ggplot2)
-library(here)
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 arl_dat <-
@@ -98,7 +100,7 @@ p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
   scale_color_discrete(name = "Site",
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
 
 ## ----pools_data----------------------------------------------------------
@@ -140,7 +142,7 @@ p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
   scale_color_discrete(name = "Site",
                        labels = c("Melbourne", "San Francisco", "Vancouver"))
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
 
 ## ----cross-site----------------------------------------------------------
@@ -244,12 +246,13 @@ p <- ggplot(all_metrics, aes(Expression)) +
   theme_bw() +
   theme(panel.grid.minor = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "cc_hist.pdf"), p, width = 7, height = 5)
 
 ## ----avg_scatter, fig.width=7, fig.height=10, results='hide'-------------
 # Combined averaged gene expression
 all_gx_avg <- purrr::map_dfr(all_gx, rowMeans)
+pdf(file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
 par(mfrow = c(3, 1))
 purrr::walk(all_xsites, ~ {
   nanostringr::CCplot(
@@ -261,7 +264,8 @@ purrr::walk(all_xsites, ~ {
     Ptype = "scatter"
   )
 })
-dev.print(pdf, file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
+dev.off()
+# dev.print(pdf, file.path(fig_path, "avg_scatter.pdf"), width = 7, height = 10)
 
 
 ## ----child="Supp_B07.Rmd"------------------------------------------------
@@ -276,11 +280,13 @@ knitr::opts_chunk$set(
 
 ## ----load_B07------------------------------------------------------------
 # Load packages, helpers, input data
-library(pander)
-library(survival)
-library(survminer)
-library(ggplot2)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(survival)
+  library(survminer)
+  library(ggplot2)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
@@ -390,7 +396,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga, color = match)) +
   ggtitle("Entropy on full NanoString data by model agreement") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_agree.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_scatterplot_pred_aa, fig.width=7, fig.height=5--------------
@@ -400,7 +406,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   ggtitle("Entropy on full NanoString data by predicted all array class") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_pred_aa.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_scatterplot_pred_tcga, fig.width=7, fig.height=5------------
@@ -410,7 +416,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
   ggtitle("Entropy on full NanoString data by predicted TCGA class") +
   aa_vs_tcga_args
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_scatterplot_pred_tcga.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_boxplot-----------------------------------------------------
@@ -434,7 +440,7 @@ p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_agree.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_boxplot_pred_aa, fig.width=7, fig.height=5------------------
@@ -447,7 +453,7 @@ p <- entropy_probs_grouped %>%
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_pred_aa.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_boxplot_pred_tcga, fig.width=7, fig.height=5----------------
@@ -460,7 +466,7 @@ p <- entropy_probs_grouped %>%
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_pred_tcga.pdf"), p, width = 7, height = 5)
 
 ## ----clin_combine_B07----------------------------------------------------
@@ -757,8 +763,10 @@ knitr::opts_chunk$set(
 
 ## ----load_B08------------------------------------------------------------
 # Load packages, helpers, input data
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
@@ -839,8 +847,10 @@ knitr::opts_chunk$set(
 
 ## ----load_B09------------------------------------------------------------
 # Load packages, helpers, input data
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(here)
+}
 source(here("pipeline/7-supplementary/utils.R"))
 
 raw_ns <- load_nanostring()
@@ -875,11 +885,13 @@ knitr::opts_chunk$set(
 
 ## ----load_B10------------------------------------------------------------
 # Load packages, helpers, input data
-library(randomForest)
-library(pander)
-library(ggplot2)
-library(fs)
-library(here)
+suppressPackageStartupMessages({
+  library(randomForest)
+  library(pander)
+  library(ggplot2)
+  library(fs)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
@@ -1142,7 +1154,7 @@ p <- ggplot(entropy_probs_grouped, aes(Data, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_final_data.pdf"), p, width = 7, height = 5)
 
 ## ----entropy_boxplot_final_subtypes, fig.width=7, fig.height=5-----------
@@ -1153,7 +1165,7 @@ p <- ggplot(entropy_probs_grouped, aes(Subtype, Entropy, fill = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_boxplot_final_subtypes.pdf"), p, width = 7, height = 5)
 
 

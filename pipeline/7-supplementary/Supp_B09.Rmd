@@ -17,8 +17,10 @@ knitr::opts_chunk$set(
 
 ```{r load_B09}
 # Load packages, helpers, input data
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(here)
+}
 source(here("pipeline/7-supplementary/utils.R"))
 
 raw_ns <- load_nanostring()

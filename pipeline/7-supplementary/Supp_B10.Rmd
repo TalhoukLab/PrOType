@@ -19,11 +19,13 @@ knitr::opts_chunk$set(
 
 ```{r load_B10}
 # Load packages, helpers, input data
-library(randomForest)
-library(pander)
-library(ggplot2)
-library(fs)
-library(here)
+suppressPackageStartupMessages({
+  library(randomForest)
+  library(pander)
+  library(ggplot2)
+  library(fs)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)

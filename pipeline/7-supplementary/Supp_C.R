@@ -18,9 +18,11 @@ knitr::opts_chunk$set(
 
 ## ----load_C01------------------------------------------------------------
 # Load packages, helpers, input data
-library(ggplot2)
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(pander)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
@@ -101,7 +103,7 @@ p <- ggplot(entropy_OR, aes(entropy_O, entropy_R, color = match)) +
   theme_bw() +
   theme(legend.title = element_blank())
 
-print(p)
+# print(p)
 ggsave(file.path(fig_path, "entropy_O_vs_R.pdf"), p, width = 7, height = 5)
 
 ## ----o_vs_x_samples------------------------------------------------------
@@ -236,9 +238,13 @@ knitr::opts_chunk$set(
 
 ## ----load_C02------------------------------------------------------------
 # Load packages, helpers, input data
-library(ggplot2)
-library(pander)
-library(here)
+suppressPackageStartupMessages({
+  library(ggplot2)
+  library(pander)
+  library(dplyr)
+  library(magrittr)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", FALSE)
@@ -361,12 +367,15 @@ knitr::opts_chunk$set(
 
 ## ----load_C03------------------------------------------------------------
 # Load packages, helpers, input data
-library(pander)
-library(survival)
-library(survminer)
-library(biostatUtil)
-library(dplyr)
-library(here)
+suppressPackageStartupMessages({
+  library(pander)
+  library(survival)
+  library(survminer)
+  library(biostatUtil)
+  library(dplyr)
+  library(magrittr)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 
 panderOptions("keep.trailing.zeros", TRUE)
@@ -889,8 +898,10 @@ knitr::opts_chunk$set(
 
 ## ----load_C04------------------------------------------------------------
 # Load packages, helpers, input data
-library(ggraph)
-library(here)
+suppressPackageStartupMessages({
+  library(ggraph)
+  library(here)
+})
 source(here("pipeline/7-supplementary/utils.R"))
 source(here("pipeline/7-supplementary/utils-pathway.R"))
 
@@ -946,7 +957,7 @@ gg_combined <- create_ggraph(
   linetype = "direction",
   title = "Gene Pathways"
 )
-print(gg_combined)
+# print(gg_combined)
 ggsave(file.path(fig_path, "pathways_graph_combined.pdf"), gg_combined,
        width = 8, height = 10)
 
@@ -959,7 +970,7 @@ gg_subtype <- create_ggraph(
   title = "Gene Pathways by Subtype",
   facet = "subtype"
 )
-print(gg_subtype)
+# print(gg_subtype)
 ggsave(file.path(fig_path, "pathways_graph_by_subtype.pdf"), gg_subtype,
        width = 8, height = 10)
 
@@ -972,7 +983,7 @@ gg_direction <- create_ggraph(
   title = "Gene Pathways by Direction",
   facet = "direction"
 )
-print(gg_direction)
+# print(gg_direction)
 ggsave(file.path(fig_path, "pathways_graph_by_direction.pdf"), gg_direction,
        width = 8, height = 10)
 
@@ -1077,7 +1088,7 @@ p_aa <- ggplot(aa_dat, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_aa)
+# print(p_aa)
 ggsave(file.path(fig_path, "boxplot_subtype_aa.pdf"), p_aa, width = 11, height = 11)
 
 ## ----gene_ex_ns, fig.width=11, fig.height=11-----------------------------
@@ -1142,7 +1153,7 @@ p_ns <- ggplot(dat_ns, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_ns)
+# print(p_ns)
 ggsave(file.path(fig_path, "boxplot_subtype_ns.pdf"), p_ns, width = 11, height = 11)
 
 ## ----gene_ex_tcga, fig.width=11, fig.height=11---------------------------
@@ -1222,7 +1233,7 @@ p_tcga <- ggplot(dat_tcga, aes(x = Subtype, y = Expression, fill = Subtype)) +
   theme_bw() +
   theme(legend.position = "none",
         axis.text.x = element_text(angle = 90))
-print(p_tcga)
+# print(p_tcga)
 ggsave(file.path(fig_path, "boxplot_subtype_tcga.pdf"), p_tcga, width = 11, height = 11)
 
 
