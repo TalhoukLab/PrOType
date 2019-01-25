@@ -683,7 +683,7 @@ surv_args <- list(
 )
 
 # Common combine plot arguments
-comb_args <- list(print = TRUE, ncol = 1, nrow = 2)
+comb_args <- list(print = FALSE, ncol = 1, nrow = 2)
 
 ## ----km_all_array, fig.width=7, fig.height=10----------------------------
 km_aa <- purrr::list_merge(
