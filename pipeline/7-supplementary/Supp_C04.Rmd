@@ -136,7 +136,8 @@ hm_ga <- pheatmap::pheatmap(
   hm_pdat,
   fontsize_row = 5,
   fontsize_col = 6,
-  main = "Gene Pathways Heatmap"
+  main = "Gene Pathways Heatmap",
+  silent = TRUE
 )
 ggsave(file.path(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
 

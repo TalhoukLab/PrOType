@@ -698,7 +698,7 @@ surv_args <- list(
 )
 
 # Common combine plot arguments
-comb_args <- list(print = TRUE, ncol = 1, nrow = 2)
+comb_args <- list(print = FALSE, ncol = 1, nrow = 2)
 
 ## ----km_final_all, fig.width=7, fig.height=10----------------------------
 km_final_all <- purrr::list_merge(
@@ -999,7 +999,8 @@ hm_ga <- pheatmap::pheatmap(
   hm_pdat,
   fontsize_row = 5,
   fontsize_col = 6,
-  main = "Gene Pathways Heatmap"
+  main = "Gene Pathways Heatmap",
+  silent = TRUE
 )
 ggsave(file.path(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
 
