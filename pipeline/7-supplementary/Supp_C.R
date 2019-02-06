@@ -250,7 +250,7 @@ source(here("pipeline/7-supplementary/utils.R"))
 panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
-as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_04FEB2019.xlsx"))
 lax_van_dat <- readr::read_csv(file.path(params$outputDir,
                                          "gene_selection/final_model/lax_van_om_test_predictions.csv"),
                                col_types = readr::cols())
@@ -297,7 +297,6 @@ pandoc.table(bc_OV_OM, keep.trailing.zeros = TRUE)
 
 ## ----subtype_by_site-----------------------------------------------------
 ss_tab <- as_dat %>% 
-  dplyr::filter(!grepl("ARL", ottaID)) %>% 
   dplyr::mutate(
     final = factor(final),
     site = factor(
@@ -312,8 +311,7 @@ pandoc.table(ss_tab)
 
 ## ----adnexal_vs_omentum--------------------------------------------------
 aom_chisq <- as_dat %>% 
-  dplyr::filter(!grepl("ARL", ottaID),
-                `Anatomical-Category` %in% c("adnexal", "omentum")) %>% 
+  dplyr::filter(`Anatomical-Category` %in% c("adnexal", "omentum")) %>% 
   dplyr::transmute(
     final = factor(final),
     site = factor(`Anatomical-Category`)
@@ -325,8 +323,7 @@ pandoc.table(aom_chisq)
 
 ## ----adnexal_vs_presumed_adnexal-----------------------------------------
 apa_chisq <- as_dat %>% 
-  dplyr::filter(!grepl("ARL", ottaID),
-                `Anatomical-Category` %in% c("adnexal", "UNK")) %>% 
+  dplyr::filter(`Anatomical-Category` %in% c("adnexal", "UNK")) %>% 
   dplyr::transmute(
     final = factor(final),
     site = factor(`Anatomical-Category`)
@@ -339,7 +336,6 @@ pandoc.table(apa_chisq)
 ## ----adnexal_vs_other----------------------------------------------------
 aot_chisq <- as_dat %>% 
   dplyr::filter(
-    !grepl("ARL", ottaID),
     `Anatomical-Category` %in% c("adnexal", "lower genital track", "upper genital track", "peritoneal")
   ) %>% 
   dplyr::transmute(
