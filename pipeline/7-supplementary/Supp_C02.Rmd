@@ -20,7 +20,6 @@ knitr::opts_chunk$set(
 ```{r load_C02}
 # Load packages, helpers, input data
 suppressPackageStartupMessages({
-  library(ggplot2)
   library(pander)
   library(dplyr)
   library(magrittr)
@@ -98,10 +97,10 @@ ss_tab <- as_dat %>%
     final = factor(final),
     site = factor(
       `Anatomical-Category`,
-      levels = c("adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal", "UNK"),
-      labels = toupper(c("adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal", "presumed adnexal")))
+      levels = c("adnexal", "UNK", "omentum", "lower genital track", "upper genital track", "peritoneal"),
+      labels = toupper(c("adnexal", "presumed adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal")))
   ) %>% 
-  Amisc::describeBy("final", by1 = "site") %>% 
+  Amisc::describeBy("final", by1 = "site", digits = 1) %>% 
   dplyr::select(-c(Variable, Total, PValue)) %>% 
   dplyr::slice(-1)
 pandoc.table(ss_tab)

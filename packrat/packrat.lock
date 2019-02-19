@@ -5,18 +5,19 @@ Repos: CRAN=https://cran.rstudio.com/
 
 Package: Amisc
 Source: github
-Version: 0.1
+Version: 0.1.2.9000
 GithubRepo: Amisc
 GithubUsername: AlineTalhouk
 GithubRef: master
-GithubSha1: 1ea684e4584e257e5ceab61fa44394d8ef84023d
+GithubSha1: ef582b3747dfc695824091850ad85140bf91c4f5
 RemoteHost: api.github.com
 RemoteRepo: Amisc
 RemoteUsername: AlineTalhouk
 RemoteRef: master
-RemoteSha: 1ea684e4584e257e5ceab61fa44394d8ef84023d
-Hash: 29a2d75cb3ab912251b03959147a8045
-Requires: DataCombine, dplyr, magrittr, reshape, reshape2, tidyr
+RemoteSha: ef582b3747dfc695824091850ad85140bf91c4f5
+Hash: 3dcad631502f1dd553e24238b55bdfb7
+Requires: DataCombine, dplyr, magrittr, pracma, reshape, reshape2,
+    rlang, tibble, tidyr
 
 Package: AnnotationDbi
 Source: Bioconductor
@@ -1253,6 +1254,11 @@ Package: polynom
 Source: CRAN
 Version: 1.3-9
 Hash: b9cf935db3bd5cd4cc9799eba7c58b49
+
+Package: pracma
+Source: CRAN
+Version: 2.2.2
+Hash: 18276484dbc996d2f73c06c4da654725
 
 Package: preprocessCore
 Source: Bioconductor
