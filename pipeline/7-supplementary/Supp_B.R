@@ -315,7 +315,7 @@ b3 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch3_20170
                       col_types = readr::cols())
 b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170512.csv"),
                       col_types = readr::cols())
-as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_10FEB2019.xlsx"))
 nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"))
 cd8_dat <- suppressWarnings(
   readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
@@ -383,17 +383,16 @@ pandoc.table(mwu_tcga)
 
 ## ----scatterplot_args----------------------------------------------------
 aa_vs_tcga_args <- list(
-  scale_color_discrete(drop = FALSE),
   labs(x = "Adaboost - All Array",
        y = "Random Forest - TCGA"),
-  theme_bw(),
-  theme(legend.title = element_blank())
+  theme_bw()
 )
 
 ## ----entropy_scatterplot_agree, fig.width=7, fig.height=5----------------
 p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga, color = match)) +
   geom_point(alpha = 0.5) +
   ggtitle("Entropy on full NanoString data by model agreement") +
+  scale_color_brewer(name = NULL, palette = "Set2", drop = FALSE) +
   aa_vs_tcga_args
 
 # print(p)
@@ -404,6 +403,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
                                color = predicted_array)) +
   geom_point(alpha = 0.5) +
   ggtitle("Entropy on full NanoString data by predicted all array class") +
+  scale_color_discrete(name = "All Array Model Labels", drop = FALSE) +
   aa_vs_tcga_args
 
 # print(p)
@@ -414,6 +414,7 @@ p <- ggplot(entropy_probs, aes(entropy_array, entropy_tcga,
                                color = predicted_tcga)) +
   geom_point(alpha = 0.5) +
   ggtitle("Entropy on full NanoString data by predicted TCGA class") +
+  scale_color_discrete(name = "TCGA Model Labels", drop = FALSE) +
   aa_vs_tcga_args
 
 # print(p)

@@ -239,7 +239,6 @@ knitr::opts_chunk$set(
 ## ----load_C02------------------------------------------------------------
 # Load packages, helpers, input data
 suppressPackageStartupMessages({
-  library(ggplot2)
   library(pander)
   library(dplyr)
   library(magrittr)
@@ -301,10 +300,10 @@ ss_tab <- as_dat %>%
     final = factor(final),
     site = factor(
       `Anatomical-Category`,
-      levels = c("adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal", "UNK"),
-      labels = toupper(c("adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal", "presumed adnexal")))
+      levels = c("adnexal", "UNK", "omentum", "lower genital track", "upper genital track", "peritoneal"),
+      labels = toupper(c("adnexal", "presumed adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal")))
   ) %>% 
-  Amisc::describeBy("final", by1 = "site") %>% 
+  Amisc::describeBy("final", by1 = "site", digits = 1) %>% 
   dplyr::select(-c(Variable, Total, PValue)) %>% 
   dplyr::slice(-1)
 pandoc.table(ss_tab)
@@ -364,6 +363,7 @@ knitr::opts_chunk$set(
 ## ----load_C03------------------------------------------------------------
 # Load packages, helpers, input data
 suppressPackageStartupMessages({
+  library(ggplot2)
   library(pander)
   library(survival)
   library(survminer)
@@ -388,7 +388,7 @@ b3 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch3_20170
                       col_types = readr::cols())
 b4 <- readr::read_csv(here("data/nstring/nanostring_classifier_data_batch4_20170512.csv"),
                       col_types = readr::cols())
-as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_18DEC2018MA.xlsx"))
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_10FEB2019.xlsx"))
 nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"))
 cd8_dat <- suppressWarnings(
   readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
@@ -488,11 +488,16 @@ clin_d <- clin_d %>%
       TRUE ~ NA_character_
     ) %>% 
       forcats::fct_relevel("no residual"),
-    BRCA1_2 = dplyr::case_when(
+    brca_v1 = dplyr::case_when(
       brca1_2 %in% c("4", "6", "WT") ~ "all wildtypes",
       brca1_2 %in% c("1", "BRCA 1") ~ "pathogenic BRCA1 mutation",
       brca1_2 == "2" ~ "pathogenic BRCA2 mutation",
-      brca1_2 %in% c("3", "BRCA 1 and BRCA 2") ~ "pathogenic NOS",
+      TRUE ~ NA_character_
+    ) %>% 
+      factor(),
+    brca_v2 = dplyr::case_when(
+      brca1_2 %in% c("4", "6", "WT") ~ "all wildtypes",
+      brca1_2 %in% c("1", "BRCA 1", "2", "3", "BRCA 1 and BRCA 2") ~ "any pathogenic BRCA mutation",
       TRUE ~ NA_character_
     ) %>% 
       factor(),
@@ -553,6 +558,7 @@ d <-
   list(all_pred, final_preds, clin_d) %>%
   purrr::reduce(dplyr::inner_join, by = "ottaID") %>% 
   dplyr::mutate(
+    final = factor(final),
     os_yrs = magrittr::inset(
       os_yrs,
       ottaID == "TVAN20158",
@@ -590,39 +596,61 @@ disc <- d %>% dplyr::filter(array_preds != TCGA_preds)
 stopifnot(sum(d[["os_yrs"]] > 100, na.rm = TRUE) == 0)
 
 ## ----subtype_by_brca-----------------------------------------------------
-sb_tab <- d %>% 
-  dplyr::filter(!grepl("ARL", ottaID)) %>% 
-  dplyr::transmute(
-    final = factor(final),
-    BRCA1_2
-  ) %>% 
-  Amisc::describeBy("final", by1 = "BRCA1_2") %>% 
-  dplyr::select(-c(Variable, Total, PValue)) %>% 
+sb_tab <- dplyr::inner_join(
+  Amisc::describeBy(d, "final", by1 = "brca_v1", digits = 1),
+  Amisc::describeBy(d, "final", by1 = "brca_v2", digits = 1),
+  by = c("Levels", "all wildtypes")
+) %>% 
+  dplyr::select(2:5, 9) %>% 
   dplyr::slice(-1)
 pandoc.table(sb_tab, split.tables = Inf)
 
+## ----year_dx_by_subtype, fig.width=7, fig.height=5-----------------------
+bp_dat <- d %>%
+  dplyr::transmute(
+    dxyear = as.numeric(refage_revised) + as.numeric(dobyear),
+    final
+  )
+p <- ggplot(bp_dat, aes(final, dxyear)) +
+  geom_boxplot(varwidth = TRUE, outlier.shape = NA, coef = 0,
+               fill = "#D1D1D1", color = "white", na.rm = TRUE) +
+  geom_dotplot(method = "histodot", binwidth = 1, binaxis = "y", dotsize = 0.05,
+               color = "#3A6EE3", na.rm = TRUE) +
+  labs(
+    x = "Final Subtype",
+    y = "Year of Diagnosis",
+    title = "Year of Diagnosis by HGSC Final Subtype Classification",
+    subtitle = paste0("Full Cohort n=", nrow(bp_dat))
+  ) +
+  theme_minimal() +
+  theme(panel.grid.major.x = element_blank())
+
+print(p)
+ggsave(here(fig_path, "year_dx_by_subtype.pdf"), p, width = 7, height = 5)
+
 ## ----cohort_characteristics_all------------------------------------------
 var_names <- c("age_dx", "stage", "residual_disease", "necrosis",
-               "BRCA1_2", "race_v1", "anatomical_site")
+               "brca_v1", "race_v1", "cd8", "anatomical_site")
 var_desc <- c("Age at Diagnosis", "Stage", "Residual Disease", "Necrosis",
-              "BRCA 1/2", "Race", "Anatomical Site")
-d_cohort_all <- d %>%
-  dplyr::transmute(final = factor(final), !!!rlang::syms(var_names))
-uni_ass_all <- d_cohort_all %>% 
-  Amisc::describeBy(var_names, var_desc, "final", p.digits = 2) %>% 
+              "BRCA1/BRCA2", "Race", "CD8", "Anatomical Site")
+d_cohort_adnexal_all <- d %>%
+  dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
+  dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
+uni_ass_adnexal_all <- d_cohort_adnexal_all %>% 
+  Amisc::describeBy(var_names, var_desc, "final", digits = 1, p.digits = 2) %>% 
   dplyr::mutate(PValue = ifelse(PValue %in% c("0", "0.00"), "< 0.001", PValue))
-pandoc.table(uni_ass_all, split.tables = Inf,
+pandoc.table(uni_ass_adnexal_all, split.tables = Inf,
              caption = "Cohort characteristics for all cases by subtype")
 
 ## ----cohort_characteristics_adnexal--------------------------------------
-d_cohort_adnexal <- d_cohort_all %>% 
+d_cohort_adnexal_only <- d_cohort_adnexal_all %>% 
   dplyr::filter(anatomical_site == "adnexal")
-var_names_adnexal <- var_names %>% purrr::discard(~ . == "anatomical_site")
-var_desc_adnexal <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
-uni_ass_adnexal <- d_cohort_adnexal %>% 
-  Amisc::describeBy(var_names_adnexal, var_desc_adnexal, "final", p.digits = 2) %>% 
+var_names_adnexal_only <- var_names %>% purrr::discard(~ . == "anatomical_site")
+var_desc_adnexal_only <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
+uni_ass_adnexal_only <- d_cohort_adnexal_only %>% 
+  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", digits = 1, p.digits = 2) %>% 
   dplyr::mutate(PValue = ifelse(PValue %in% c("0", "0.00"), "< 0.001", PValue))
-pandoc.table(uni_ass_adnexal, split.tables = Inf,
+pandoc.table(uni_ass_adnexal_only, split.tables = Inf,
              caption = "Cohort characteristics for all known ovarian site by subtype")
 
 ## ----follow_up-----------------------------------------------------------
@@ -727,11 +755,13 @@ plots_km_final_adnexal <- km_final_adnexal %>%
 ggsave(file.path(fig_path, "km_final_adnexal.pdf"), plots_km_final_adnexal, width = 7, height = 10)
 
 ## ----mvs_dat-------------------------------------------------------------
+# Multivariate survival data sources
 mvs_dat <- d %>% 
   dplyr::transmute(
-    final = factor(final),
+    final = forcats::fct_relevel(final, "C1.MES", after = Inf),
     residual_disease,
-    BRCA1_2,
+    necrosis,
+    brca_v1,
     age_dx,
     stage,
     anatomical_site,
@@ -742,9 +772,13 @@ mvs_dat <- d %>%
     pfs_sts
   ) %>% 
   as.data.frame()
+mvs_dat_adnexal_all <- mvs_dat %>% 
+  dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
+mvs_dat_adnexal_only <- mvs_dat %>% 
+  dplyr::filter(anatomical_site == "adnexal")
 
+# Multivarite survival arguments
 mvs_args <- list(
-  input.d = mvs_dat,
   stat.test = "logtest",
   var.names.surv.time = c("os_yrs", "pfs_yrs"),
   var.names.surv.status = c("os_sts", "pfs_sts"),
@@ -752,134 +786,101 @@ mvs_args <- list(
   surv.descriptions = c("OS", "PFS"),
   show.var.detail = TRUE,
   show.group.name.for.bin.var = TRUE,
-  round.small = TRUE
+  round.small = TRUE,
+  caption = NULL
 )
+
+# Covariate variable arguments
+var_all <- purrr::set_names(
+  c("final", "age_dx", "stage", "necrosis", "cd8", "residual_disease",  "brca_v1"),
+  c("Final Subtype", "Age", "Stage", "Necrosis", "CD8", "Residual Disease", "BRCA1/BRCA2")
+)
+var_lists <- tibble::lst(
+  var_base = purrr::keep(var_all, ~ . %in% c("final", "age_dx", "stage")),
+  var_add_nec = c(var_base, var_all["Necrosis"]),
+  var_add_cd8 = c(var_add_nec, var_all["CD8"]),
+  var_add_resdx = c(var_add_cd8, var_all["Residual Disease"]),
+  var_add_brca = c(var_add_resdx, var_all["BRCA1/BRCA2"])
+)
+
+# Base title
+title_base <- "Multivariable survival analysis of overall and progression-free survival, adjusting for"
 
 ## ----mvs_all-------------------------------------------------------------
-var_all <- purrr::set_names(
-  c("final", "residual_disease", "BRCA1_2", "age_dx", "stage", "cd8"),
-  c("Final Subtype", "Residual Disease", "BRCA 1/2 mutation", "Age", "Stage", "CD8")
-)
-mvs_all <- purrr::invoke(
+# Multivariable Survival for all adexnal sites
+mvs_all <- purrr::invoke_map(
   .f = doCoxphMultivariable,
-  .x = var_all %>%
-    purrr::splice(
+  .x = var_lists %>% purrr::map(
+    ~ purrr::splice(
       mvs_args,
       var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses: all covariates"
-)
-cat(mvs_all[["result.table.bamboo"]])
+      var.descriptions = names(.)
+    )
+  ),
+  input.d = mvs_dat_adnexal_all
+) %>% 
+  purrr::set_names(names(var_lists))
 
-## ----mvs_all_no_brca1_2--------------------------------------------------
-var_all_no_brca1_2 <- purrr::discard(var_all, ~ . == "BRCA1_2")
-mvs_all_no_brca1_2 <- purrr::invoke(
+# Titles for all adnexal sites
+titles_all <- var_lists %>%
+  purrr::map( ~ {
+    paste(title_base,
+          paste(names(.), collapse = ", "),
+          "(known and presumed adnexal sites)")
+  })
+
+## ----mvs_all_base--------------------------------------------------------
+cat(purrr::pluck(mvs_all, "var_base", "result.table.bamboo"))
+
+## ----mvs_all_add_nec-----------------------------------------------------
+cat(purrr::pluck(mvs_all, "var_add_nec", "result.table.bamboo"))
+
+## ----mvs_all_add_cd8-----------------------------------------------------
+cat(purrr::pluck(mvs_all, "var_add_cd8", "result.table.bamboo"))
+
+## ----mvs_all_add_resdx---------------------------------------------------
+cat(purrr::pluck(mvs_all, "var_add_resdx", "result.table.bamboo"))
+
+## ----mvs_all_add_brca----------------------------------------------------
+cat(purrr::pluck(mvs_all, "var_add_brca", "result.table.bamboo"))
+
+## ----mvs_known-----------------------------------------------------------
+# Multivariable Survival for known adexnal sites
+mvs_known <- purrr::invoke_map(
   .f = doCoxphMultivariable,
-  .x = var_all_no_brca1_2 %>%
-    purrr::splice(
+  .x = var_lists %>% purrr::map(
+    ~ purrr::splice(
       mvs_args,
       var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses: all covariates except BRCA 1/2"
-)
-cat(mvs_all_no_brca1_2[["result.table.bamboo"]])
+      var.descriptions = names(.)
+    )
+  ),
+  input.d = mvs_dat_adnexal_only
+) %>% 
+  purrr::set_names(names(var_lists))
 
-## ----mvs_all_no_resdx----------------------------------------------------
-var_all_no_resdx <- purrr::discard(var_all, ~ . == "residual_disease")
-mvs_all_no_resdx <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_all_no_resdx %>% 
-    purrr::splice(
-      mvs_args,
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses: all covariates except residual disease"
-)
-cat(mvs_all_no_resdx[["result.table.bamboo"]])
+# Titles for known adnexal sites
+titles_known <- var_lists %>%
+  purrr::map( ~ {
+    paste(title_base,
+          paste(names(.), collapse = ", "),
+          "(known adnexal sites)")
+  })
 
-## ----mvs_all_no_cd8------------------------------------------------------
-var_all_no_cd8 <- purrr::discard(var_all, ~ . == "cd8")
-mvs_all_no_cd8 <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_all_no_cd8 %>% 
-    purrr::splice(
-      mvs_args,
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses: all covariates except CD8"
-)
-cat(mvs_all_no_cd8[["result.table.bamboo"]])
+## ----mvs_known_base------------------------------------------------------
+cat(purrr::pluck(mvs_known, "var_base", "result.table.bamboo"))
 
-## ----mvs_adnexal---------------------------------------------------------
-mvs_adnexal <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_all %>%
-    purrr::splice(
-      mvs_args %>%
-        purrr::map_at("input.d", dplyr::filter, anatomical_site == "adnexal"),
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses on Adnexal Sites Only: all covariates"
-)
-cat(mvs_adnexal[["result.table.bamboo"]])
+## ----mvs_known_add_nec---------------------------------------------------
+cat(purrr::pluck(mvs_known, "var_add_nec", "result.table.bamboo"))
 
-## ----mvs_adnexal_no_brca_12----------------------------------------------
-var_adnexal_no_brca_12 <- purrr::discard(var_all, ~ . == "BRCA1_2")
-mvs_adnexal_no_brca_12 <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_adnexal_no_brca_12 %>%
-    purrr::splice(
-      mvs_args %>%
-        purrr::map_at("input.d", dplyr::filter, anatomical_site == "adnexal"),
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses on Adnexal Sites Only: all covariates except BRCA 1/2"
-)
-cat(mvs_adnexal_no_brca_12[["result.table.bamboo"]])
+## ----mvs_known_add_cd8---------------------------------------------------
+cat(purrr::pluck(mvs_known, "var_add_cd8", "result.table.bamboo"))
 
-## ----mvs_adnexal_no_resdx------------------------------------------------
-var_adnexal_no_resdx <- purrr::discard(var_all, ~ . == "residual_disease")
-mvs_adnexal_no_resdx <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_adnexal_no_resdx %>%
-    purrr::splice(
-      mvs_args %>%
-        purrr::map_at("input.d", dplyr::filter, anatomical_site == "adnexal"),
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses on Adnexal Sites Only: all covariates except residual disease"
-)
-cat(mvs_adnexal_no_resdx[["result.table.bamboo"]])
+## ----mvs_known_add_resdx-------------------------------------------------
+cat(purrr::pluck(mvs_known, "var_add_resdx", "result.table.bamboo"))
 
-## ----mvs_adnexal_no_cd8--------------------------------------------------
-var_adnexal_no_cd8 <- purrr::discard(var_all, ~ . == "cd8")
-mvs_adnexal_no_cd8 <- purrr::invoke(
-  .f = doCoxphMultivariable,
-  .x = var_adnexal_no_cd8 %>%
-    purrr::splice(
-      mvs_args %>%
-        purrr::map_at("input.d", dplyr::filter, anatomical_site == "adnexal"),
-      var.names = .,
-      var.descriptions = names(.),
-      var.ref.groups = purrr::rep_along(., NA)
-    ),
-  caption = "Multivariable Analyses on Adnexal Sites Only: all covariates except CD8"
-)
-cat(mvs_adnexal_no_cd8[["result.table.bamboo"]])
+## ----mvs_known_add_brca--------------------------------------------------
+cat(purrr::pluck(mvs_known, "var_add_brca", "result.table.bamboo"))
 
 
 ## ----child="Supp_C04.Rmd"------------------------------------------------
