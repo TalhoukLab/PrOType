@@ -626,7 +626,7 @@ p <- ggplot(bp_dat, aes(final, dxyear)) +
   theme(panel.grid.major.x = element_blank())
 
 print(p)
-ggsave(here(fig_path, "year_dx_by_subtype.pdf"), p, width = 7, height = 5)
+ggsave(file.path(fig_path, "year_dx_by_subtype.pdf"), p, width = 7, height = 5)
 
 ## ----cohort_characteristics_all------------------------------------------
 var_names <- c("age_dx", "stage", "residual_disease", "necrosis",
