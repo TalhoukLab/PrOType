@@ -249,7 +249,7 @@ source(here("pipeline/7-supplementary/utils.R"))
 panderOptions("keep.trailing.zeros", FALSE)
 panderOptions("table.split.table", Inf)
 
-as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_04FEB2019.xlsx"))
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_10FEB2019.xlsx"))
 lax_van_dat <- readr::read_csv(file.path(params$outputDir,
                                          "gene_selection/final_model/lax_van_om_test_predictions.csv"),
                                col_types = readr::cols())
