@@ -751,6 +751,9 @@ plots_km_disc_tcga <- km_disc_tcga %>%
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Discordant Samples (TCGA Model)")
 ggsave(file.path(fig_path, "km_disc_tcga.pdf"), plots_km_disc_tcga, width = 7, height = 10)
 
+## ----rm_rplots_B07-------------------------------------------------------
+file.remove(here::here("Rplots.pdf"))
+
 
 ## ----child="Supp_B08.Rmd"------------------------------------------------
 

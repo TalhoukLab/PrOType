@@ -754,6 +754,9 @@ plots_km_final_adnexal <- km_final_adnexal %>%
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "All Adnexal Sites OTTA (Final Model)")
 ggsave(file.path(fig_path, "km_final_adnexal.pdf"), plots_km_final_adnexal, width = 7, height = 10)
 
+## ----rm_rplots_C03-------------------------------------------------------
+file.remove(here::here("Rplots.pdf"))
+
 ## ----mvs_dat-------------------------------------------------------------
 # Multivariate survival data sources
 mvs_dat <- d %>% 
