@@ -61,7 +61,6 @@ suppressPackageStartupMessages({
 })
 source(here("pipeline/7-supplementary/utils.R"))
 
-fig_path <- "supplementary/figures/C02"
 pdf_files <- fs::dir_ls(
   path = file.path(params$outputDir, "gene_selection/plots"),
   regexp = "pdf$"
@@ -98,7 +97,6 @@ suppressPackageStartupMessages({
 })
 source(here("pipeline/7-supplementary/utils.R"))
 
-fig_path <- "supplementary/figures/C03"
 pdf_files <- fs::dir_ls(
   path = file.path(params$outputDir, "gene_selection/plots"),
   regexp = "pdf$"

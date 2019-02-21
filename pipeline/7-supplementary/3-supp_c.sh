@@ -9,8 +9,6 @@ shSubDir=$shDir/$subDir
 mkdir -p $RSubDir
 mkdir -p $shSubDir
 mkdir -p $outputDir/$subDir/reports
-mkdir -p $outputDir/$subDir/figures/C02
-mkdir -p $outputDir/$subDir/figures/C03
 mkdir -p $outputDir/$subDir/figures/C04
 mkdir -p $outputDir/$subDir/figures/C05
 mkdir -p $outputDir/$subDir/tables
