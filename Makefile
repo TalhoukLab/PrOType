@@ -18,7 +18,7 @@ gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 
 cross_platform: cp_analysis cp_predictions
 
-supplementary: supp_a supp_b supp_c
+supplementary: supp_a supp_b supp_c supp_d
 
 
 # Part 1: Unsupervised Learning
@@ -158,14 +158,17 @@ cp_predictions:
 supp_a:
 	./pipeline/7-supplementary/1-supp_a.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Supp B: nanostring model
+# Supp B: nanostring processing
 supp_b:
 	./pipeline/7-supplementary/2-supp_b.sh $(filter-out $@,$(MAKECMDGOALS))
 
-# Supp C: subtypes and covariates
+# Supp C: minimal model development
 supp_c:
 	./pipeline/7-supplementary/3-supp_c.sh $(filter-out $@,$(MAKECMDGOALS))
 
+# Supp D: subtypes and covariates
+supp_d:
+	./pipeline/7-supplementary/4-supp_d.sh $(filter-out $@,$(MAKECMDGOALS))
 
 # Clean target
 %:

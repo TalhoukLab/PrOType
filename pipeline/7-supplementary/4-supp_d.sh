@@ -9,17 +9,18 @@ shSubDir=$shDir/$subDir
 mkdir -p $RSubDir
 mkdir -p $shSubDir
 mkdir -p $outputDir/$subDir/reports
-mkdir -p $outputDir/$subDir/figures/B06
-mkdir -p $outputDir/$subDir/figures/B07
+mkdir -p $outputDir/$subDir/figures/D01
+mkdir -p $outputDir/$subDir/figures/D03
+mkdir -p $outputDir/$subDir/tables
 
 # Content of R file
-R_file=$RSubDir/supp_b.R
+R_file=$RSubDir/supp_d.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
-echo 'cli::cat_line("Supplementary B: NanoString Processing")' >> $R_file
-echo 'source("pipeline/7-supplementary/2-supp_b.R")' >> $R_file
+echo 'cli::cat_line("Supplementary D: Subtypes and Covariates")' >> $R_file
+echo 'source("pipeline/7-supplementary/4-supp_d.R")' >> $R_file
 
 # Content of sh file
-sh_file=$shSubDir/supp_b.sh
+sh_file=$shSubDir/supp_d.sh
 echo "Rscript $R_file" > $sh_file
 chmod +x $sh_file
 
