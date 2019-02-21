@@ -1,0 +1,18 @@
+---
+title: "Supplementary A: Molecular Classifier Development on Legacy Gene Expression Datasets"
+output:
+  word_document:
+    reference_docx: styles.docx
+---
+
+```{r setup_A, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+params <- list(outputDir = outputDir)
+```
+
+```{r child="Supp_A05.Rmd"}
+```

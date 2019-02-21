@@ -1,7 +1,7 @@
 # Makefile to run PrOType pipeline
 
 # Run full pipeline
-all: array nanostring gene_selection cross_platform
+all: array nanostring gene_selection cross_platform supplementary
 
 # Intermediate targets
 array: unsupervised supervised post_processing
@@ -17,6 +17,8 @@ nanostring: ns_validate ns_all_array ns_tcga
 gene_selection: boot_freq sum_freq train predict evaluate retrain final_model
 
 cross_platform: cp_analysis cp_predictions
+
+supplementary: supp_a supp_b supp_c
 
 
 # Part 1: Unsupervised Learning
@@ -148,6 +150,21 @@ cp_analysis:
 # Predict cross-platform
 cp_predictions:
 	./pipeline/6-cross_platform/2-cp_predictions.sh $(filter-out $@,$(MAKECMDGOALS))
+
+
+# Part 7: paper supplementary
+
+# Supp A: molecular classifier
+supp_a:
+	./pipeline/7-supplementary/1-supp_a.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Supp B: nanostring model
+supp_b:
+	./pipeline/7-supplementary/2-supp_b.sh $(filter-out $@,$(MAKECMDGOALS))
+
+# Supp C: subtypes and covariates
+supp_c:
+	./pipeline/7-supplementary/3-supp_c.sh $(filter-out $@,$(MAKECMDGOALS))
 
 
 # Clean target

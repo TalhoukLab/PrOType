@@ -1,0 +1,159 @@
+---
+output:
+  word_document:
+    reference_docx: styles.docx
+params:
+  outputDir: outputDir
+---
+
+# C.2 Anatomical Site Variability
+
+```{r setup_C02, include=FALSE}
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE,
+	results = "asis"
+)
+```
+
+```{r load_C02}
+# Load packages, helpers, input data
+suppressPackageStartupMessages({
+  library(pander)
+  library(dplyr)
+  library(magrittr)
+  library(here)
+})
+source(here("pipeline/7-supplementary/utils.R"))
+
+panderOptions("keep.trailing.zeros", FALSE)
+panderOptions("table.split.table", Inf)
+
+as_dat <- readxl::read_excel(here("data/nstring/Predictions_Anatomical_10FEB2019.xlsx"))
+lax_van_dat <- readr::read_csv(file.path(params$outputDir,
+                                         "gene_selection/final_model/lax_van_om_test_predictions.csv"),
+                               col_types = readr::cols())
+bro_dat <- readr::read_csv(file.path(params$outputDir,
+                                     "gene_selection/final_model/bro_het_test_predictions.csv"),
+                           col_types = readr::cols())
+```
+
+```{r clean_C02}
+# Cleaned data: split into ovary and omentum
+dat_clean <- rbind(lax_van_dat, bro_dat) %>%
+  tidyr::separate(ottaID, c("ottaID", "type"), sep = "_", extra = "merge", fill = "right") %>%
+  tidyr::replace_na(list(type = "OV")) %>% 
+  dplyr::filter(!ottaID %in% c("TBRO00024", "TBRO00027", "TBRO00066"))
+
+# Filter samples by type
+ovary_samples <- dat_clean %>% dplyr::filter(type == "OV")
+omentum_samples <- dat_clean %>% dplyr::filter(type %in% c("OM", "OM1"))
+levs <- c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
+```
+
+## _Table SC5:_ Comparison of anatomical site, 53 matched pairs adnexa and omentum
+
+```{r ov_vs_om_combine}
+# Compare ovary and omentum samples
+compare_OV_OM <- dplyr::inner_join(ovary_samples,
+                                   omentum_samples,
+                                   by = "ottaID",
+                                   suffix = c("_OV", "_OM")) %>% 
+  dplyr::mutate_at(c("predicted_OV", "predicted_OM"), factor, levels = levs)
+```
+
+### A - Confusion Matrix
+
+```{r ov_vs_om_confmat}
+confmat_OV_OM <- compare_OV_OM %>% 
+  with(., table(
+    `Predicted Omentum` = predicted_OM,
+    `Final Adnexal` = predicted_OV
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_OV_OM[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r ov_vs_om_overall_metrics}
+ov_OV_OM <- confmat_metrics(confmat_OV_OM, metrics = "overall")
+pandoc.table(ov_OV_OM)
+```
+
+### C - By-Class Metrics
+
+```{r ov_vs_om_by-class_metrics}
+bc_OV_OM <- confmat_metrics(confmat_OV_OM, metrics = "byclass")
+pandoc.table(bc_OV_OM, keep.trailing.zeros = TRUE)
+```
+
+## _Table SC6:_ Molecular subtype by anatomical sampling site
+
+```{r subtype_by_site}
+ss_tab <- as_dat %>% 
+  dplyr::mutate(
+    final = factor(final),
+    site = factor(
+      `Anatomical-Category`,
+      levels = c("adnexal", "UNK", "omentum", "lower genital track", "upper genital track", "peritoneal"),
+      labels = toupper(c("adnexal", "presumed adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal")))
+  ) %>% 
+  Amisc::describeBy("final", by1 = "site", digits = 1) %>% 
+  dplyr::select(-c(Variable, Total, PValue)) %>% 
+  dplyr::slice(-1)
+pandoc.table(ss_tab)
+```
+
+## Adnexal Site Associations
+
+### Adenxal vs Omentum
+
+```{r adnexal_vs_omentum}
+aom_chisq <- as_dat %>% 
+  dplyr::filter(`Anatomical-Category` %in% c("adnexal", "omentum")) %>% 
+  dplyr::transmute(
+    final = factor(final),
+    site = factor(`Anatomical-Category`)
+  ) %>% 
+  table() %>% 
+  chisq.test() %>% 
+  broom::tidy()
+pandoc.table(aom_chisq)
+```
+
+### Adnexal vs Presumed Adnexal
+
+```{r adnexal_vs_presumed_adnexal}
+apa_chisq <- as_dat %>% 
+  dplyr::filter(`Anatomical-Category` %in% c("adnexal", "UNK")) %>% 
+  dplyr::transmute(
+    final = factor(final),
+    site = factor(`Anatomical-Category`)
+  ) %>% 
+  table() %>% 
+  chisq.test() %>% 
+  broom::tidy()
+pandoc.table(apa_chisq)
+```
+
+### Adnexal vs Other
+
+```{r adnexal_vs_other}
+aot_chisq <- as_dat %>% 
+  dplyr::filter(
+    `Anatomical-Category` %in% c("adnexal", "lower genital track", "upper genital track", "peritoneal")
+  ) %>% 
+  dplyr::transmute(
+    final = factor(final),
+    site = dplyr::case_when(
+      `Anatomical-Category` == "adnexal" ~ "adnexal",
+      TRUE ~ "other"
+    )
+  ) %>% 
+  table() %>% 
+  chisq.test() %>% 
+  broom::tidy()
+pandoc.table(aot_chisq)
+```

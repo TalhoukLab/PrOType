@@ -1,0 +1,12 @@
+---
+title: "Sample Report"
+output: word_document
+---
+
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+This is some normal text.
