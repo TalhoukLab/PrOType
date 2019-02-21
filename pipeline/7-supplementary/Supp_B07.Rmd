@@ -63,7 +63,7 @@ cd8_dat <- suppressWarnings(
 fig_path <- file.path(params$outputDir, "supplementary/figures/B07")
 ```
 
-## Agreement between All-Array and TCGA
+## _Table SB3._ Comparison of subtypes predictions from the all array model and the TCGA model.
 
 ```{r aa_tcga_table}
 pred_tab <- all_pred %>% 

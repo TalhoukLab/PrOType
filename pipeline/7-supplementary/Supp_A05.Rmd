@@ -36,11 +36,34 @@ aa_clusts <- readRDS(file.path(
   params$outputDir,
   "unsupervised/final/ov.afc1_xpn/all_clusts_ov.afc1_xpn.rds"
 ))
+sl_ci <- readr::read_csv(file.path(
+  params$outputDir,
+  "supervised/top_ci/sup_lrn_ov.afc1_xpn.csv"
+))
 tcga_dat <- readr::read_csv(
   here("data/nstring/OTTA_Cohorts_20171103_AFFY_MA.csv"),
   col_types = readr::cols()
 )
 load(here("data/nstring/tcga_data_with_molsubtypes.rda")) # eset
+```
+
+## _Table SA6_: Measures of accuracy of all generated models in internal validation. For all metrics, a higher score indicates increased accuracy.
+
+```{r aa_internal_validation}
+# All-array interval validation
+aa_iv <- sl_ci %>% 
+  dplyr::filter(grepl("accuracy|^f1", X1)) %>% 
+  tidyr::gather(alg, ci, -1, factor_key = TRUE) %>% 
+  tidyr::spread(X1, ci) %>% 
+  dplyr::select(
+    Algorithm = alg,
+    `Overall Accuracy` = accuracy,
+    `F1-score C1.MES` = f1.X4,
+    `F1-score C2.IMM` = f1.X1,
+    `F1-score C4.DIF` = f1.X2,
+    `F1-score C5.PRO` = f1.X3
+  )
+pandoc.table(aa_iv)
 ```
 
 ## _Table SA7_: Contingency table showing the relationship between predicted labels (row) and the published labels (column) (n=215).
