@@ -724,35 +724,39 @@ surv_args <- list(
 # Common combine plot arguments
 comb_args <- list(print = FALSE, ncol = 1, nrow = 2)
 
-## ----km_final_all, fig.width=7, fig.height=10----------------------------
-km_final_all <- purrr::list_merge(
+## ----km_final_aa, fig.width=7, fig.height=10-----------------------------
+# Filter for all adnexal sites
+d_aa <- dplyr::filter(d, anatomical_site %in% c("adnexal", "presumed adnexal"))
+surv_args_aa <- purrr::map_at(surv_args, "data", ~ d_aa)
+
+km_final_aa <- purrr::list_merge(
   km_args,
     fit = list(
-    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d),
-    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d)
+    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d_aa),
+    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d_aa)
   )
 )
-plots_km_final_all <- km_final_all %>% 
-  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args, title = ..1, legend = ..2, fit = ..3)) %>% 
-  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "All OTTA (Final Model)")
-ggsave(file.path(fig_path, "km_final_all.pdf"), plots_km_final_all, width = 7, height = 10)
+plots_km_final_aa <- km_final_aa %>% 
+  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_aa, title = ..1, legend = ..2, fit = ..3)) %>% 
+  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal and Presumed Adnexal Sites OTTA (Final Model)")
+ggsave(file.path(fig_path, "km_final_adnexal_all.pdf"), plots_km_final_aa, width = 7, height = 10)
 
-## ----km_final_adnexal, fig.width=7, fig.height=10------------------------
-# Filter for adnexal sites
-d_adnexal <- dplyr::filter(d, anatomical_site %in% c("adnexal", "presumed adnexal"))
-surv_args_adnexal <- purrr::map_at(surv_args, "data", ~ d_adnexal)
+## ----km_final_ka, fig.width=7, fig.height=10-----------------------------
+# Filter for known adnexal sites
+d_ka <- dplyr::filter(d, anatomical_site == "adnexal")
+surv_args_ka <- purrr::map_at(surv_args, "data", ~ d_ka)
 
-km_final_adnexal <- purrr::list_merge(
+km_final_ka <- purrr::list_merge(
   km_args,
     fit = list(
-    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d_adnexal),
-    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d_adnexal)
+    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d_ka),
+    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d_ka)
   )
 )
-plots_km_final_adnexal <- km_final_adnexal %>% 
-  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_adnexal, title = ..1, legend = ..2, fit = ..3)) %>% 
-  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "All Adnexal Sites OTTA (Final Model)")
-ggsave(file.path(fig_path, "km_final_adnexal.pdf"), plots_km_final_adnexal, width = 7, height = 10)
+plots_km_final_ka <- km_final_ka %>% 
+  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_ka, title = ..1, legend = ..2, fit = ..3)) %>% 
+  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal Sites OTTA (Final Model)")
+ggsave(file.path(fig_path, "km_final_adnexal_known.pdf"), plots_km_final_ka, width = 7, height = 10)
 
 ## ----rm_rplots_C03-------------------------------------------------------
 file.remove(here::here("Rplots.pdf"))
@@ -763,7 +767,6 @@ mvs_dat <- d %>%
   dplyr::transmute(
     final = forcats::fct_relevel(final, "C1.MES", after = Inf),
     residual_disease,
-    necrosis,
     brca_v1,
     age_dx,
     stage,
@@ -795,13 +798,12 @@ mvs_args <- list(
 
 # Covariate variable arguments
 var_all <- purrr::set_names(
-  c("final", "age_dx", "stage", "necrosis", "cd8", "residual_disease",  "brca_v1"),
-  c("Final Subtype", "Age", "Stage", "Necrosis", "CD8", "Residual Disease", "BRCA1/BRCA2")
+  c("final", "age_dx", "stage", "cd8", "residual_disease",  "brca_v1"),
+  c("Final Subtype", "Age", "Stage", "CD8", "Residual Disease", "BRCA1/BRCA2")
 )
 var_lists <- tibble::lst(
   var_base = purrr::keep(var_all, ~ . %in% c("final", "age_dx", "stage")),
-  var_add_nec = c(var_base, var_all["Necrosis"]),
-  var_add_cd8 = c(var_add_nec, var_all["CD8"]),
+  var_add_cd8 = c(var_base, var_all["CD8"]),
   var_add_resdx = c(var_add_cd8, var_all["Residual Disease"]),
   var_add_brca = c(var_add_resdx, var_all["BRCA1/BRCA2"])
 )
@@ -834,9 +836,6 @@ titles_all <- var_lists %>%
 
 ## ----mvs_all_base--------------------------------------------------------
 cat(purrr::pluck(mvs_all, "var_base", "result.table.bamboo"))
-
-## ----mvs_all_add_nec-----------------------------------------------------
-cat(purrr::pluck(mvs_all, "var_add_nec", "result.table.bamboo"))
 
 ## ----mvs_all_add_cd8-----------------------------------------------------
 cat(purrr::pluck(mvs_all, "var_add_cd8", "result.table.bamboo"))
@@ -872,9 +871,6 @@ titles_known <- var_lists %>%
 
 ## ----mvs_known_base------------------------------------------------------
 cat(purrr::pluck(mvs_known, "var_base", "result.table.bamboo"))
-
-## ----mvs_known_add_nec---------------------------------------------------
-cat(purrr::pluck(mvs_known, "var_add_nec", "result.table.bamboo"))
 
 ## ----mvs_known_add_cd8---------------------------------------------------
 cat(purrr::pluck(mvs_known, "var_add_cd8", "result.table.bamboo"))
