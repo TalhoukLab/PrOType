@@ -505,7 +505,7 @@ hm_ga <- pheatmap::pheatmap(
   fontsize_col = 6,
   main = "Gene Pathways Heatmap"
 )
-ggsave(here(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
+ggsave(file.path(fig_path, "pathways_heatmap.pdf"), hm_ga, width = 8, height = 7)
 
 gene_order <- hm_ga %>% 
   purrr::pluck("tree_col") %>% 
