@@ -34,7 +34,7 @@ load(here("data/supp/cs3.norm.rda"))
 fig_path <- file.path(params$outputDir, "supplementary/figures/B06")
 ```
 
-## QC Table
+## _Table SB2._ Quality control failures encountered in the NanoString data.  All percentages represent percent of total samples run. Percentages in the row of Total Samples run, represent the breakdown by site.
 
 - **Sample Quality** fails if either **Limit of Detection** or **Signal to Noise** fail
 - **Overall QC** fails if either **Smallest Positive Control**, **Imaging**, or **Linearity** fail

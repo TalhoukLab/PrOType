@@ -8,16 +8,14 @@ RSubDir=$RDir/$subDir
 shSubDir=$shDir/$subDir
 mkdir -p $RSubDir
 mkdir -p $shSubDir
-mkdir -p $outputDir/$subDir/reports
-mkdir -p $outputDir/$subDir/figures/C01
-mkdir -p $outputDir/$subDir/figures/C03
 mkdir -p $outputDir/$subDir/figures/C04
+mkdir -p $outputDir/$subDir/figures/C05
 mkdir -p $outputDir/$subDir/tables
 
 # Content of R file
 R_file=$RSubDir/supp_c.R
 echo 'outputDir <- "'$outputDir'"' > $R_file
-echo 'cli::cat_line("Supplementary C: Subtypes and Covariates")' >> $R_file
+echo 'cli::cat_line("Supplementary C: Minimal Model Development")' >> $R_file
 echo 'source("pipeline/7-supplementary/3-supp_c.R")' >> $R_file
 
 # Content of sh file

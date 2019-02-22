@@ -1,5 +1,5 @@
 ---
-title: "Supplementary C: Molecular Subtypes Covariates"
+title: "Supplementary C: Development of a minimal predictive model on NanoString Data"
 output:
   word_document:
     reference_docx: styles.docx
@@ -24,4 +24,7 @@ params <- list(outputDir = outputDir)
 ```
 
 ```{r child="Supp_C04.Rmd"}
+```
+
+```{r child="Supp_C05.Rmd"}
 ```

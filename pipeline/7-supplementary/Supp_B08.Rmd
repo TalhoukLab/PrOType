@@ -63,7 +63,7 @@ aa_ns_bc <- confmat_metrics(aa_ns_pred, metrics = "byclass")
 pandoc.table(aa_ns_bc, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SB5:_ TCGA model portability comparing predictions on NanoString to predictions on Array.
+## _Table SB5:_ TCGA model portability comparing predictions on a subset of samples from the Tothill et al. dataset performed on Affymetrix Array data versus those done on NanoString data.  
 
 ### A - Confusion Matrix
 
@@ -96,7 +96,7 @@ tcga_ns_confmat_bc_metrics <- confmat_metrics(tcga_ns_confmat, metrics = "byclas
 pandoc.table(tcga_ns_confmat_bc_metrics, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SB6:_: Comparing consensus samples predictions with published labels.
+## _Table SB6:_ Comparing consensus samples predictions with published labels.
 
 ```{r cons_pub}
 cons_pred <- eval_consensus %>% 
