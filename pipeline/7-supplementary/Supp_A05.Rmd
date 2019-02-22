@@ -38,9 +38,8 @@ aa_clusts <- readRDS(file.path(
 ))
 sl_ci <- readr::read_csv(file.path(
   params$outputDir,
-  "supervised/top_ci/sup_lrn_ov.afc1_xpn.csv",
-  col_types = readr::cols()
-))
+  "supervised/top_ci/sup_lrn_ov.afc1_xpn.csv"
+), col_types = readr::cols())
 tcga_dat <- readr::read_csv(
   here("data/nstring/OTTA_Cohorts_20171103_AFFY_MA.csv"),
   col_types = readr::cols()
