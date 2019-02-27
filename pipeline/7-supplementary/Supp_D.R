@@ -462,6 +462,10 @@ clin_d <- clin_d %>%
     ) %>% 
       factor(levels = c("adnexal", "omentum", "peritoneal", "upper genital track",
                         "lower genital track", "presumed adnexal")),
+    cellularity = factor(
+      `Sample Region Cellularity`,
+      levels = c("0-20", "21-40", "41-60", "61-80", "81-100")
+    ), 
     necrosis = dplyr::case_when(
       SampleRegionNecrosis2 == "1" ~ "none",
       SampleRegionNecrosis2 == "2" ~ "<=20%",
@@ -609,6 +613,7 @@ pandoc.table(sb_tab, split.tables = Inf)
 
 ## ----year_dx_by_subtype, fig.width=7, fig.height=5-----------------------
 bp_dat <- d %>%
+  dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal")) %>% 
   dplyr::transmute(
     dxyear = as.numeric(refage_revised) + as.numeric(dobyear),
     final
@@ -622,7 +627,7 @@ p <- ggplot(bp_dat, aes(final, dxyear)) +
     x = "Final Subtype",
     y = "Year of Diagnosis",
     title = "Year of Diagnosis by HGSC Final Subtype Classification",
-    subtitle = paste0("Full Cohort n=", nrow(bp_dat))
+    subtitle = paste0("Adenxal and Presumed Adnexal n=", nrow(bp_dat))
   ) +
   theme_minimal() +
   theme(panel.grid.major.x = element_blank())
@@ -631,10 +636,10 @@ p <- ggplot(bp_dat, aes(final, dxyear)) +
 ggsave(file.path(fig_path, "year_dx_by_subtype.pdf"), p, width = 7, height = 5)
 
 ## ----cohort_characteristics_all------------------------------------------
-var_names <- c("age_dx", "stage", "residual_disease", "necrosis",
-               "brca_v1", "race_v1", "cd8", "anatomical_site")
-var_desc <- c("Age at Diagnosis", "Stage", "Residual Disease", "Necrosis",
-              "BRCA1/BRCA2", "Race", "CD8", "Anatomical Site")
+var_names <- c("age_dx", "stage", "residual_disease", "cellularity",
+               "necrosis", "brca_v1", "race_v1", "cd8", "anatomical_site")
+var_desc <- c("Age at Diagnosis", "Stage", "Residual Disease", "Cellularity",
+              "Necrosis", "BRCA1/BRCA2", "Race", "CD8", "Anatomical Site")
 d_cohort_adnexal_all <- d %>%
   dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
