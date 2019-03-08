@@ -186,7 +186,36 @@ otta_2018 <- otta_2018_raw %>%
   )
 ```
 
-## _Table SD2_: Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Mixed" CodeSet
+## _Table SD2:_ Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Classifier Only" CodeSet
+
+### A - Confusion Matrix
+
+```{r 15_v_18_confmat}
+confmat_1518 <-
+  dplyr::inner_join(otta_2015, otta_2018, by = "ottaID") %>% 
+  with(., table(
+    `Predicted Classifier Only Labels` = pred_2018,
+    `Predicted Original Labels` = pred_2015
+  )) %>% 
+  caret::confusionMatrix()
+pandoc.table(ftable(confmat_1518[["table"]]))
+```
+
+### B - Overall Metrics
+
+```{r 15_v_18_overall_metrics}
+ov_1518 <- confmat_metrics(confmat_1518, metrics = "overall")
+pandoc.table(ov_1518)
+```
+
+### C - By-Class Metrics
+
+```{r 15_v_18_by-class_metrics}
+bc_1518 <- confmat_metrics(confmat_1518, metrics = "byclass")
+pandoc.table(bc_1518, keep.trailing.zeros = TRUE)
+```
+
+## _Table SD3_: Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Mixed" CodeSet
 
 ### A - Confusion Matrix
 
@@ -215,34 +244,6 @@ bc_1517 <- confmat_metrics(confmat_1517, metrics = "byclass")
 pandoc.table(bc_1517, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SD3:_ Comparison of predictions from the "OTTA original" CodeSet with the "OTTA Classifier Only" CodeSet
-
-### A - Confusion Matrix
-
-```{r 15_v_18_confmat}
-confmat_1518 <-
-  dplyr::inner_join(otta_2015, otta_2018, by = "ottaID") %>% 
-  with(., table(
-    `Predicted Classifier Only Labels` = pred_2018,
-    `Predicted Original Labels` = pred_2015
-  )) %>% 
-  caret::confusionMatrix()
-pandoc.table(ftable(confmat_1518[["table"]]))
-```
-
-### B - Overall Metrics
-
-```{r 15_v_18_overall_metrics}
-ov_1518 <- confmat_metrics(confmat_1518, metrics = "overall")
-pandoc.table(ov_1518)
-```
-
-### C - By-Class Metrics
-
-```{r 15_v_18_by-class_metrics}
-bc_1518 <- confmat_metrics(confmat_1518, metrics = "byclass")
-pandoc.table(bc_1518, keep.trailing.zeros = TRUE)
-```
 
 ## _Table SD4:_ Comparison of predictions from the "OTTA Mixed" CodeSet with the "OTTA Classifier Only" Codeset
 

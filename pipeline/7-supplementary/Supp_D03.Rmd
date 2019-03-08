@@ -280,6 +280,14 @@ bp_dat <- d %>%
     dxyear = as.numeric(refage_revised) + as.numeric(dobyear),
     final
   )
+
+num5 <- fivenum(bp_dat[["dxyear"]])
+iqr <- paste(num5[c(2, 4)], collapse = " - ")
+num5_text <- paste0(c("Min", "Median (IQR)", "Max"),
+                    ": ",
+                    c(num5[1], paste0(num5[3], " (", iqr, ")"), num5[5]),
+                    collapse = ", ")
+
 p <- ggplot(bp_dat, aes(final, dxyear)) +
   geom_boxplot(varwidth = TRUE, outlier.shape = NA, coef = 0,
                fill = "#D1D1D1", color = "white", na.rm = TRUE) +
@@ -289,10 +297,11 @@ p <- ggplot(bp_dat, aes(final, dxyear)) +
     x = "Final Subtype",
     y = "Year of Diagnosis",
     title = "Year of Diagnosis by HGSC Final Subtype Classification",
-    subtitle = paste0("Adenxal and Presumed Adnexal n=", nrow(bp_dat))
+    subtitle = paste0("All Adnexal and Presumed Adnexal n=", nrow(bp_dat), ", ", num5_text)
   ) +
   theme_minimal() +
-  theme(panel.grid.major.x = element_blank())
+  theme(panel.grid.major.x = element_blank(),
+        plot.subtitle = element_text(size = 10))
 
 # print(p)
 ggsave(file.path(fig_path, "year_dx_by_subtype.pdf"), p, width = 7, height = 5)
@@ -309,7 +318,7 @@ d_cohort_adnexal_all <- d %>%
   dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
 uni_ass_adnexal_all <- d_cohort_adnexal_all %>% 
-  Amisc::describeBy(var_names, var_desc, "final", digits = 1, p.digits = 2) %>% 
+  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 2) %>% 
   dplyr::mutate(PValue = ifelse(PValue %in% c("0", "0.00"), "< 0.001", PValue))
 pandoc.table(uni_ass_adnexal_all, split.tables = Inf,
              caption = "Cohort characteristics for all cases by subtype")
@@ -323,7 +332,7 @@ d_cohort_adnexal_only <- d_cohort_adnexal_all %>%
 var_names_adnexal_only <- var_names %>% purrr::discard(~ . == "anatomical_site")
 var_desc_adnexal_only <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
 uni_ass_adnexal_only <- d_cohort_adnexal_only %>% 
-  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", digits = 1, p.digits = 2) %>% 
+  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 2) %>% 
   dplyr::mutate(PValue = ifelse(PValue %in% c("0", "0.00"), "< 0.001", PValue))
 pandoc.table(uni_ass_adnexal_only, split.tables = Inf,
              caption = "Cohort characteristics for all known ovarian site by subtype")
