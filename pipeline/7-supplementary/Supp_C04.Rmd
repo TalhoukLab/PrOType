@@ -63,7 +63,7 @@ final_glist <- sum_freq %>%
   head(n_genes)
 ```
 
-## _Table SC1_ Comparison of final model predictions with consensus labels from the training set (group 1)
+## _Table SC2_ Comparison of final model predictions with consensus labels from the training set (group 1)
 
 ```{r cut1, include=FALSE}
 # Define cut1
@@ -103,7 +103,7 @@ cut1_bc_metrics <- confmat_metrics(cut1_cm, metrics = "byclass")
 pandoc.table(cut1_bc_metrics, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SC2_ Comparison of final model predictions with consensus labels from the confirmation set (group 2)
+## _Table SC3_ Comparison of final model predictions with consensus labels from the confirmation set (group 2)
 
 ```{r cut2, include=FALSE}
 # Define cut2 excluding overlap
@@ -143,7 +143,7 @@ cut2_bc_metrics <- confmat_metrics(cut2_cm, metrics = "byclass")
 pandoc.table(cut2_bc_metrics, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SC3_ Comparison of final model predictions with consensus labels from the first validation set (group 3)
+## _Table SC4_ Comparison of final model predictions with consensus labels from the first validation set (group 3)
 
 ```{r cut3, include=FALSE}
 # Define cut3
@@ -183,7 +183,7 @@ cut3_bc_metrics <- confmat_metrics(cut3_cm, metrics = "byclass")
 pandoc.table(cut3_bc_metrics, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SC4_ Comparison of final model predictions with consensus labels from the second validation set (group 4)
+## _Table SC5_ Comparison of final model predictions with consensus labels from the second validation set (group 4)
 
 ```{r cut4, include=FALSE}
 # Define cut4 (remove ARL samples)
@@ -223,7 +223,7 @@ cut4_bc_metrics <- confmat_metrics(cut4_cm, metrics = "byclass")
 pandoc.table(cut4_bc_metrics, keep.trailing.zeros = TRUE)
 ```
 
-## _Table SC5_ Comparison of final model predictions with consensus labels from the overlap set 
+## _Table SC6_ Comparison of final model predictions with consensus labels from the overlap set 
 
 ```{r overlap, include=FALSE}
 # Define overlap
