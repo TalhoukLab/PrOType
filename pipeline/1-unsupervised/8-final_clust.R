@@ -41,6 +41,7 @@ cr <- diceR:::consensus_rank(ii, n = 5)
 top <- cr$top.list
 ii <- ii[match(top, ii$Algorithms), ]
 finalR <- finalR[, top]
+rownames(finalR) <- rownames(cdat)
 
 # write to file
 cli::cat_line("Saving RDS")
