@@ -29,6 +29,9 @@ The outputs directory `outputDir` will have the following file structure:
 |   |-- summary
 |   |-- top_ci
 |   `-- train_eval
+|-- supplementary
+|   |-- figures
+|   `-- tables
 `-- unsupervised
     |-- clustering
     |-- consensus
@@ -96,6 +99,7 @@ The scripts directory `scriptDir` will have the following file structure:
 |   |   |-- summary
 |   |   |-- top_ci
 |   |   `-- train_eval
+|   |-- supplementary
 |   `-- unsupervised
 |       |-- clustering
 |       |-- consensus
@@ -123,6 +127,7 @@ The scripts directory `scriptDir` will have the following file structure:
     |   |-- summary
     |   |-- top_ci
     |   `-- train_eval
+    |-- supplementary
     `-- unsupervised
         |-- clustering
         |-- consensus

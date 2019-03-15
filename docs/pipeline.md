@@ -79,9 +79,18 @@ The second part of the gene selection pipeline employs a different setup:
 
 ## Cross-Platform
 
-The `6-cross_platform` pipeline evaluates expression level of the same genes (and the same samples) measured using NanoString and measured using Affymetrix array. It also evaluates the locked down model on NanoString and on Array and compares the prediction across platforms. Run the cross-platform pipeline using `run cross_platform`.
+The `6-cross_platform` pipeline evaluates expression level of the same genes (and the same samples) measured using NanoString and measured using Affymetrix array. It also evaluates the locked down model on NanoString and on Array and compares the prediction across platforms. Run the cross-platform pipeline using `make cross_platform`.
 
 Both steps below first load and map samples and genes between array and NanoString using `0-cp_map.R`.
 
 1. `1-cp_analysis`: Plot concordance values and produce reliabilty results across platform.
 2. `2-cp_predictions`: Load model obtained after gene selection, predict on each platform, compare predictions across platforms
+
+## Supplementary
+
+The `7-supplementary` pipeline runs a number of post-hoc analyses on the results of previous pipelines and summarizes the information for the Supplementary sections of the paper. Run the supplementary pipeline using `make supplementary`.
+
+1. `1-supp_a`: Supplementary A - Molecular Classifier Development on Legacy Gene Expression Datasets
+2. `2-supp_b`: Supplementary B - NanoString Sample Processing and Classifier Portability
+3. `3-supp_c`: Supplementary C - Development of a minimal predictive model on NanoString Data
+4. `4-supp_d`: Supplementary D - Biological Correlates of Molecular Subtypes 
