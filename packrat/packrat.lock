@@ -5,19 +5,18 @@ Repos: CRAN=https://cran.rstudio.com/
 
 Package: Amisc
 Source: github
-Version: 0.1.2.9000
+Version: 0.1.2.9001
 GithubRepo: Amisc
 GithubUsername: AlineTalhouk
 GithubRef: master
-GithubSha1: ef582b3747dfc695824091850ad85140bf91c4f5
+GithubSha1: c9c7ae2dc5392e5d0fe3b87d3b58b72249425a78
 RemoteHost: api.github.com
 RemoteRepo: Amisc
 RemoteUsername: AlineTalhouk
 RemoteRef: master
-RemoteSha: ef582b3747dfc695824091850ad85140bf91c4f5
-Hash: 3dcad631502f1dd553e24238b55bdfb7
-Requires: DataCombine, dplyr, magrittr, pracma, reshape, reshape2,
-    rlang, tibble, tidyr
+RemoteSha: c9c7ae2dc5392e5d0fe3b87d3b58b72249425a78
+Hash: 1da638880a7e7e17d63a861b9d736be5
+Requires: dplyr, magrittr, purrr, rlang, scales, tibble, tidyr
 
 Package: AnnotationDbi
 Source: Bioconductor
@@ -90,12 +89,6 @@ Source: CRAN
 Version: 0.4
 Hash: a6e844446350a7128c734516fa8215e3
 Requires: crosstalk, htmltools, htmlwidgets, magrittr
-
-Package: DataCombine
-Source: CRAN
-Version: 0.2.21
-Hash: 60a736fb67682ef77d305dfbd4b59623
-Requires: data.table, dplyr
 
 Package: Deducer
 Source: CRAN
@@ -1255,11 +1248,6 @@ Source: CRAN
 Version: 1.3-9
 Hash: b9cf935db3bd5cd4cc9799eba7c58b49
 
-Package: pracma
-Source: CRAN
-Version: 2.2.2
-Hash: 18276484dbc996d2f73c06c4da654725
-
 Package: preprocessCore
 Source: Bioconductor
 Version: 1.42.0
@@ -1386,12 +1374,6 @@ Package: rematch
 Source: CRAN
 Version: 1.0.1
 Hash: ad4faf59e7611117ff165817074c50c7
-
-Package: reshape
-Source: CRAN
-Version: 0.8.8
-Hash: 77b6a96819c0a99bbfc141526b60ce5a
-Requires: plyr
 
 Package: reshape2
 Source: CRAN
