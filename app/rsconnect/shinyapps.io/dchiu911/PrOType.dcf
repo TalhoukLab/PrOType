@@ -5,8 +5,8 @@ account: dchiu911
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 547545
-bundleId: 1756734
+bundleId: 1990422
 url: https://dchiu911.shinyapps.io/PrOType/
-when: 1544570675.47612
+when: 1554506303.92269
 asMultiple: FALSE
 asStatic: FALSE
