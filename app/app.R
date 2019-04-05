@@ -276,7 +276,8 @@ server <- function(input, output, session) {
       mR2 <-
         weights %>%
         purrr::imap_dfc(~ {
-          df <- dplyr::select(pools_ref2(), dplyr::matches(.y))
+          df <- dplyr::select(pools_ref2(), Name, dplyr::matches(.y)) %>%
+            tibble::column_to_rownames("Name")
           tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
         }) %>%
         dplyr::transmute(
