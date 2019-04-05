@@ -1091,18 +1091,9 @@ Version: 1.0-8
 Hash: e25c3a05f11c359f1ce641cdc4b28d92
 
 Package: nanostringr
-Source: github
-Version: 0.2.2
-GithubRepo: nanostringr
-GithubUsername: OVCARE
-GithubRef: master
-GithubSha1: 39a2fece60d9f75f2988f786e8d9f4cef3e899e7
-RemoteHost: api.github.com
-RemoteRepo: nanostringr
-RemoteUsername: OVCARE
-RemoteRef: master
-RemoteSha: 39a2fece60d9f75f2988f786e8d9f4cef3e899e7
-Hash: 519888df7228e06c59bb30da0a2a0c48
+Source: CRAN
+Version: 0.1.2
+Hash: 1bcc66b997c657fa465d4d396b44facb
 Requires: assertthat, ccaPP, dplyr, magrittr, purrr, readr, rlang,
     tibble
 
