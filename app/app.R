@@ -359,29 +359,32 @@ server <- function(input, output, session) {
     selectInput(
       inputId = "sample_id",
       label = "Select sample for report",
-      choices = dat_preds()[["sample"]]
+      choices = dat_preds()[["sample"]],
+      multiple = TRUE
     )
   })
 
   # Download patient-specific report to local word document
   output$dl_report <- downloadHandler(
-    filename = function() {
-      paste0("report_", input$sample_id, ".docx")
-    },
+    filename = "reports.zip",
     content = function(file) {
       temp_report <- file.path(tempdir(), "report.Rmd")
       file.copy("report.Rmd", temp_report, overwrite = TRUE)
-      params <- list(
-        qc_data = dplyr::filter(qc(), sample == input$sample_id),
-        pred_data = dplyr::filter(dat_preds(), sample == input$sample_id)
-      )
-      rmarkdown::render(
-        input = temp_report,
-        output_file = file,
-        params = params,
-        envir = new.env(parent = globalenv())
-      )
-    }
+      files <- purrr::map_chr(input$sample_id, ~ {
+        params <- list(
+          qc_data = dplyr::filter(qc(), sample == .),
+          pred_data = dplyr::filter(dat_preds(), sample == .)
+        )
+        rmarkdown::render(
+          input = temp_report,
+          output_file = paste0("report_", ., ".docx"),
+          params = params,
+          envir = new.env(parent = globalenv())
+        )
+      })
+      zip(zipfile = file, files = files, flags = "-j")
+    },
+    contentType = "application/zip"
   )
 
   # Preview of normalized data as DataTable
