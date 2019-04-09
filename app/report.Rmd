@@ -38,24 +38,24 @@ RNA was extracted from fixed ovarian tissue and was run on the NanoString gene e
 # Primary result
 
 ```{r primary-result}
-pred_match <- data.frame(
-  pred_short = c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO"),
-  pred_long = c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative"),
+pred <- c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative")
+conf <- pred_data[c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")] %>%
+  purrr::map_chr(scales::percent)
+result <- data.frame(
+  `Molecular Subtype` = pred,
+  Probability = conf,
+  check.names = FALSE,
   stringsAsFactors = FALSE
 )
-pred <- pred_match[pred_match$pred_short == pred_data[["pred"]], "pred_long"]
-conf <- scales::percent(pred_data[[as.character(pred_data[["pred"]])]])
-result <- data.frame(
-  `**Molecular Subtype**` = pred,
-  `**Confidence**` = conf,
-  check.names = FALSE
-)
-pander::pander(result, emphasize.strong.rows = 1)
+bold_row <- match(pred_data[["pred"]], rownames(result))
+pander::pander(result, emphasize.strong.rows = bold_row, row.names = FALSE)
 ```
+
+Predictive Entropy: `r round(pred_data[["entropy"]], 2)`
 
 # Interpretation
 
-Gene expression analysis demonstrates a `r pred` subtype with `r conf` confidence. Patients with >80% confidence for a predicted subtype are eligible for subtype-specific clinical trials (e.g. Targeting CI high grade serous ovarian cancer)
+Gene expression analysis demonstrates a `r result[bold_row, "Molecular Subtype"]` subtype with `r result[bold_row, "Probability"]` confidence. Patients with >80% confidence for a predicted subtype are eligible for subtype-specific clinical trials (e.g. Targeting CI high grade serous ovarian cancer). Predictive entropy ranges from 0 (perfect prediction) to 2 (random chance).
 
 # Reference range
 
