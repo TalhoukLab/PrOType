@@ -39,8 +39,8 @@ RNA was extracted from fixed ovarian tissue and was run on the NanoString gene e
 
 ```{r primary-result}
 pred <- c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative")
-conf <- pred_data[c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")] %>%
-  purrr::map_chr(scales::percent)
+conf <- purrr::map_chr(pred_data[c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")],
+                       scales::percent)
 result <- data.frame(
   `Molecular Subtype` = pred,
   Probability = conf,
