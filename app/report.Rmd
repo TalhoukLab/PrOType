@@ -1,0 +1,68 @@
+---
+title: "HGSC MOLECULAR SUBTYPING RESEARCH REPORT"
+output: word_document
+params:
+  qc_data: NA
+  pred_data: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, results = "asis")
+```
+
+```{r load}
+qc_data <- params$qc_data
+pred_data <- params$pred_data
+```
+
+# Clinical Details
+
+Personal history of high-grade serous ovarian cancer.
+
+```{r clinical-details}
+clin <- data.frame(
+  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:"),
+  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour")
+)
+pander::pander(clin, col.names = NULL, justify = "left")
+```
+
+# Specimen
+
+Archival formalin-fixed ovarian tissue from primary surgery.
+
+# Method
+
+RNA was extracted from fixed ovarian tissue and was run on the NanoString gene expression platform. The 55-gene NanoString expression assay was used to classify high grade serous ovarian cancer samples into 4 distinct molecular subtypes, C1, C2, C4, or C5.
+
+# Primary result
+
+```{r primary-result}
+pred_match <- data.frame(
+  pred_short = c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO"),
+  pred_long = c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative"),
+  stringsAsFactors = FALSE
+)
+pred <- pred_match[pred_match$pred_short == pred_data[["pred"]], "pred_long"]
+conf <- scales::percent(pred_data[[as.character(pred_data[["pred"]])]])
+result <- data.frame(
+  `**Molecular Subtype**` = pred,
+  `**Confidence**` = conf,
+  check.names = FALSE
+)
+pander::pander(result, emphasize.strong.rows = 1)
+```
+
+# Interpretation
+
+Gene expression analysis demonstrates a `r pred` subtype with `r conf` confidence. Patients with >80% confidence for a predicted subtype are eligible for subtype-specific clinical trials (e.g. Targeting CI high grade serous ovarian cancer)
+
+# Reference range
+
+```{r reference-range}
+ref_range <- data.frame(
+  c(">80%", "50-80%", "<50%"),
+  c("High confidence", "Moderate confidence", "Low confidence")
+)
+pander::pander(ref_range, col.names = NULL)
+```

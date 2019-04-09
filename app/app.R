@@ -56,12 +56,17 @@ ui <- fluidPage(
       # Downloads section
       h5(strong("Downloads")),
 
-      # Buttons to download QC, data, predictions
+      # Buttons to download QC, data, predictions, report
       downloadButton(outputId = "dl_qc", label = "QC"),
 
       downloadButton(outputId = "dl_data", label = "Data"),
 
       downloadButton(outputId = "dl_pred", label = "Predictions"),
+      br(), br(),
+
+      uiOutput(outputId = "sample_id"),
+
+      downloadButton(outputId = "dl_report", label = "Report"),
       br(), hr(style = "border-color: black;"),
 
       # App information
@@ -348,6 +353,37 @@ server <- function(input, output, session) {
     }
   )
 
+  # Select sample for report of prediction summary
+  output$sample_id <- renderUI({
+    req(input$rcc)
+    selectInput(
+      inputId = "sample_id",
+      label = "Select sample for report",
+      choices = dat_preds()[["sample"]]
+    )
+  })
+
+  # Download patient-specific report to local word document
+  output$dl_report <- downloadHandler(
+    filename = function() {
+      paste0("report_", input$sample_id, ".docx")
+    },
+    content = function(file) {
+      temp_report <- file.path(tempdir(), "report.Rmd")
+      file.copy("report.Rmd", temp_report, overwrite = TRUE)
+      params <- list(
+        qc_data = dplyr::filter(qc(), sample == input$sample_id),
+        pred_data = dplyr::filter(dat_preds(), sample == input$sample_id)
+      )
+      rmarkdown::render(
+        input = temp_report,
+        output_file = file,
+        params = params,
+        envir = new.env(parent = globalenv())
+      )
+    }
+  )
+
   # Preview of normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
     Ynorm()[, 1:6] %>%
@@ -444,6 +480,11 @@ server <- function(input, output, session) {
   # Enable predictions download when files are imported and predictions clicked
   observe({
     shinyjs::toggleState(id = "dl_pred", !is.null(input$rcc) && input$predict)
+  })
+
+  # Enable report download when patient selected and predictions clicked
+  observe({
+    shinyjs::toggleState(id = "dl_report", !is.null(input$sample_id) && input$predict)
   })
 
   # Switch to QC Plots tab when raw data has been imported
