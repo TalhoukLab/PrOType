@@ -17,7 +17,7 @@ pred_data <- params$pred_data
 
 # Clinical Details
 
-Personal history of high-grade serous ovarian cancer.
+Confirmed high-grade serous ovarian cancer.
 
 ```{r clinical-details}
 clin <- data.frame(
