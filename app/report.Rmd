@@ -33,7 +33,7 @@ Archival formalin-fixed ovarian tissue from primary surgery.
 
 # Method
 
-RNA was extracted from fixed ovarian tissue and was run on the NanoString gene expression platform. The 55-gene NanoString expression assay was used to classify high grade serous ovarian cancer samples into 4 distinct molecular subtypes, C1, C2, C4, or C5.
+RNA was extracted from fixed ovarian tissue and was run on the NanoString gene expression platform. The PrOTYPE 55-gene NanoString expression assay was used to classify high grade serous ovarian cancer samples into 4 distinct molecular subtypes, C1.MES, C2.IMM, C4.DIF, or C5.PRO.
 
 # Primary result
 
@@ -53,10 +53,6 @@ pander::pander(result, emphasize.strong.rows = bold_row, row.names = FALSE)
 
 Predictive Entropy: `r round(pred_data[["entropy"]], 2)`
 
-# Interpretation
-
-Gene expression analysis demonstrates a `r result[bold_row, "Molecular Subtype"]` subtype with `r result[bold_row, "Probability"]` confidence. Patients with >80% confidence for a predicted subtype are eligible for subtype-specific clinical trials (e.g. Targeting CI high grade serous ovarian cancer). Predictive entropy ranges from 0 (perfect prediction) to 2 (random chance).
-
 # Reference range
 
 ```{r reference-range}
@@ -66,3 +62,7 @@ ref_range <- data.frame(
 )
 pander::pander(ref_range, col.names = NULL)
 ```
+
+# Interpretation
+
+Gene expression analysis demonstrates a `r result[bold_row, "Molecular Subtype"]` subtype with `r result[bold_row, "Probability"]` confidence. Patients with >80% confidence for a predicted subtype are eligible for subtype-specific clinical trials (e.g. Targeting CI high grade serous ovarian cancer). Predictive entropy ranges from 0 (perfect prediction) to 2 (random chance).
