@@ -163,6 +163,16 @@ ui <- fluidPage(
                  p("The", icon("download"), code("Predictions"), "button
                    downloads the prediction data to your local machine."),
                  br(),
+                 h4("Patient Reports"),
+                 p("Patient-specific summary research reports can be generated
+                   in the form of word documents. These reports contain some
+                   QC metadata information and the primary prediction
+                   result. Multiple reports can be generated depending on
+                   samples selected in the respective dropdown menu."),
+                 p("The", icon("download"), code("Report"), "button downloads
+                   the patient reports compressed into a zip file to your local
+                   machine."),
+                 br(),
                  h4("Output Summary"),
                  p("The", strong("Summary"), "tab shows a summary of the QC
                    flags: how many samples failed and passed. It also shows the
