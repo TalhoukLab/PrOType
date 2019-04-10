@@ -1,5 +1,5 @@
 ---
-title: "HGSC MOLECULAR SUBTYPING RESEARCH REPORT"
+title: "PrOTYPE: Predictor of high-grade serous ovarian carcinoma molecular subtype\nResearch Report"
 output: word_document
 params:
   qc_data: NA
