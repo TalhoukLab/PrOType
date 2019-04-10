@@ -379,10 +379,11 @@ server <- function(input, output, session) {
           input = temp_report,
           output_file = paste0("report_", ., ".docx"),
           params = params,
-          envir = new.env(parent = globalenv())
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
         )
       })
-      zip(zipfile = file, files = files, flags = "-j")
+      zip(zipfile = file, files = files, flags = "-jq")
     },
     contentType = "application/zip"
   )
