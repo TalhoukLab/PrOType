@@ -27,15 +27,15 @@ clin <- data.frame(
 pander::pander(clin, col.names = NULL, justify = "left")
 ```
 
-# Specimen
-
-Archival formalin-fixed ovarian tissue from primary surgery.
-
 # Method
 
-RNA was extracted from fixed ovarian tissue and was run on the NanoString gene expression platform. The PrOTYPE 55-gene NanoString expression assay was used to classify high grade serous ovarian cancer samples into 4 distinct molecular subtypes, C1.MES, C2.IMM, C4.DIF, or C5.PRO.
+RNA was extracted from high-grade serous ovarian tumour tissue and a 60-gene Nanostring expression assay including 5 control genes and 55-genes for prediction of molecular subtype. Data was used to classify the sample into 4 distinct molecular subtypes: C1.MES, C2.IMM, C4.DIF, or C5.PRO.
 
-# Primary result
+# QC
+
+`r qc_data[["QCFlag"]]` (refer to data output for specific metrics)
+
+# Results
 
 ```{r primary-result}
 pred <- c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative")
@@ -57,18 +57,6 @@ pander::pander(result, emphasize.strong.rows = bold_row, row.names = FALSE)
 
 Predictive Entropy: `r entropy`
 
-# Reference range
+# Prediction and Entropy
 
-```{r reference-range}
-ref_range <- data.frame(
-  c(">80%", "50-80%", "<50%"),
-  c("High confidence", "Moderate confidence", "Low confidence")
-)
-pander::pander(ref_range, col.names = NULL)
-```
-
-Predictive entropy ranges from 0 (perfect prediction) to 2 (random chance). Entropy <1 represents good confidence.
-
-# Interpretation
-
-Gene expression analysis demonstrates a `r result[bold_row, "Probability"]` probability of a `r result[bold_row, "Molecular Subtype"]` subtype with `r conf` confidence (entropy = `r entropy`).
+The PrOTYPE assay will report a prediction (sum to 100%) for each of four gene-expression based molecular subtypes. The subtype with the highest prediction is noted as the dominant subtype. No thresholds are given. Predictive entropy (Entropy) is noted on a scale from 0-2 where 0 would indicate a perfect classification and 2 would indicate random-chance. Entropy can be affected by specimen quality, assay condition, and specimen biology.
