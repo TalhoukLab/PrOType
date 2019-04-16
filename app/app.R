@@ -481,6 +481,9 @@ server <- function(input, output, session) {
     shinyjs::toggleState(id = "predict", !is.null(input$rcc))
   })
 
+  # Disable prediction after generated for currently imported files
+  shinyjs::onclick("predict", shinyjs::disable(id = "predict"))
+
   # Enable data download when files are imported
   observe({
     shinyjs::toggleState(id = "dl_data", !is.null(input$rcc))
@@ -499,6 +502,16 @@ server <- function(input, output, session) {
   # Enable report download when patient selected and predictions clicked
   observe({
     shinyjs::toggleState(id = "dl_report", !is.null(input$sample_id) && input$predict)
+  })
+
+  # Button label prompts prediction after import
+  observeEvent(input$rcc, {
+    updateActionButton(session, "predict", label = "Predict NanoString samples")
+  })
+
+  # Button label states predictions generated
+  observeEvent(input$predict, {
+    updateActionButton(session, "predict", label = "Predictions Generated!")
   })
 
   # Switch to QC Plots tab when raw data has been imported
