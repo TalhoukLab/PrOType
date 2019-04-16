@@ -21,19 +21,16 @@ Confirmed high-grade serous ovarian cancer.
 
 ```{r clinical-details}
 clin <- data.frame(
-  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:"),
-  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour")
+  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:", "Quality Control:"),
+  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour",
+    as.character(qc_data[["QCFlag"]]))
 )
 pander::pander(clin, col.names = NULL, justify = "left")
 ```
 
 # Method
 
-RNA was extracted from high-grade serous ovarian tumour tissue and a 60-gene Nanostring expression assay including 5 control genes and 55-genes for prediction of molecular subtype. Data was used to classify the sample into 4 distinct molecular subtypes: C1.MES, C2.IMM, C4.DIF, or C5.PRO.
-
-# QC
-
-`r qc_data[["QCFlag"]]` (refer to data output for specific metrics)
+RNA was extracted from high-grade serous ovarian tumour tissue and PrOTYPE, a model using a 60-gene NanoString expression assay including 5 control genes, is used to generate a prediction of molecular subtype: C1.MES, C2.IMM, C4.DIF, or C5.PRO.
 
 # Results
 
@@ -59,4 +56,4 @@ Predictive Entropy: `r entropy`
 
 # Prediction and Entropy
 
-The PrOTYPE assay will report a prediction (sum to 100%) for each of four gene-expression based molecular subtypes. The subtype with the highest prediction is noted as the dominant subtype. No thresholds are given. Predictive entropy (Entropy) is noted on a scale from 0-2 where 0 would indicate a perfect classification and 2 would indicate random-chance. Entropy can be affected by specimen quality, assay condition, and specimen biology.
+The PrOTYPE assay reports a probability that a sample belongs to one of four gene expression-based molecular subtypes. These probabilities sum to 100%. The subtype with the highest probability is noted in bold as the dominant subtype. Predictive entropy is reported on a scale from 0-2 where 0 indicates a perfect classification and 2 indicates a random-chance classification. Entropy can be affected by specimen quality, assay condition, and specimen biology.
