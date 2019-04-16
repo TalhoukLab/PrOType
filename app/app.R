@@ -495,13 +495,19 @@ server <- function(input, output, session) {
   })
 
   # Enable predictions download when files are imported and predictions clicked
+  # and matches currently imported data
   observe({
-    shinyjs::toggleState(id = "dl_pred", !is.null(input$rcc) && input$predict)
+    shinyjs::toggleState(id = "dl_pred",
+                         !is.null(input$rcc) && input$predict &&
+                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
   })
 
-  # Enable report download when patient selected and predictions clicked
+  # Enable report download when patient selected and predictions clicked and
+  # matches currently imported data
   observe({
-    shinyjs::toggleState(id = "dl_report", !is.null(input$sample_id) && input$predict)
+    shinyjs::toggleState(id = "dl_report",
+                         !is.null(input$sample_id) && input$predict &&
+                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
   })
 
   # Button label prompts prediction after import
