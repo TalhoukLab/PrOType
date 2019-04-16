@@ -166,12 +166,6 @@ Hash: 0a16798077b14594e49bb271b360bebb
 Requires: RColorBrewer, colorspace, digest, doParallel, foreach,
     ggplot2, gridBase, pkgmaker, registry, reshape2, rngtools, stringr
 
-Package: PKI
-Source: CRAN
-Version: 0.1-5.1
-Hash: 8c194fb34ebaab38a13e43ce84feedee
-Requires: base64enc
-
 Package: PerformanceAnalytics
 Source: CRAN
 Version: 1.5.2
@@ -187,17 +181,6 @@ Package: RColorBrewer
 Source: CRAN
 Version: 1.1-2
 Hash: c0d56cd15034f395874c870141870c25
-
-Package: RCurl
-Source: CRAN
-Version: 1.95-4.11
-Hash: 98b1b04db217dc56baca68aa34079fdd
-Requires: bitops
-
-Package: RJSONIO
-Source: CRAN
-Version: 1.3-1.1
-Hash: b822a1c716af0ff7b4f8cdf7287dca14
 
 Package: ROCR
 Source: CRAN
@@ -639,11 +622,6 @@ Package: expm
 Source: CRAN
 Version: 0.999-3
 Hash: eca86de576f8b2a2661c79100cfbf647
-
-Package: fansi
-Source: CRAN
-Version: 0.4.0
-Hash: f147621f72b561485bfffcae78c4f5d5
 
 Package: fdrtool
 Source: CRAN
@@ -1421,12 +1399,6 @@ Source: CRAN
 Version: 1.3-2
 Hash: a25c3f70c166fb3fbabc410eb32b6366
 Requires: backports
-
-Package: rsconnect
-Source: CRAN
-Version: 0.8.11
-Hash: f5e506b307d063cf816823820f555de8
-Requires: RCurl, jsonlite, openssl, packrat, rstudioapi, yaml
 
 Package: rstudioapi
 Source: CRAN
