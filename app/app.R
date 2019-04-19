@@ -380,6 +380,8 @@ server <- function(input, output, session) {
     content = function(file) {
       temp_report <- file.path(tempdir(), "report.Rmd")
       file.copy("report.Rmd", temp_report, overwrite = TRUE)
+      temp_styles <- file.path(tempdir(), "styles.docx")
+      file.copy("styles.docx", temp_styles, overwrite = TRUE)
       files <- purrr::map_chr(input$sample_id, ~ {
         params <- list(
           qc_data = dplyr::filter(qc(), sample == .),
@@ -387,6 +389,7 @@ server <- function(input, output, session) {
         )
         rmarkdown::render(
           input = temp_report,
+          output_format = rmarkdown::word_document(reference_docx = temp_styles),
           output_file = paste0("report_", ., ".docx"),
           params = params,
           envir = new.env(parent = globalenv()),
