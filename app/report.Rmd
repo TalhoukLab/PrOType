@@ -21,15 +21,13 @@ To: Dr. Gottfried Konecny, UCLA
 
 Fax: (310) 794-3190
 
-# Clinical Details
-
-Confirmed high-grade serous ovarian cancer.
+# Sample Details
 
 ```{r clinical-details}
 clin <- data.frame(
-  c("Patient ID:", "Kit ID:", "Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:", "Input:", "Quality Control:"),
-  c("_", strsplit(qc_data[["sample"]], split = "_")[[1]][3], qc_data[["sample"]], qc_data[["geneRLF"]],
-    qc_data[["nanostring.date"]], "Ovarian tumour", "500ng Total RNA (measure by Nanodrop, A260/A280: _)",
+  c("Patient ID:", "Kit ID:", "Sample ID:", "Date Extracted:", "Input:", "Quality Control:"),
+  c("_", strsplit(qc_data[["sample"]], split = "_")[[1]][3], qc_data[["sample"]],
+    qc_data[["nanostring.date"]], "500ng Total RNA (measure by Nanodrop, A260/A280: _)",
     as.character(qc_data[["QCFlag"]]))
 )
 pander::pander(clin, col.names = NULL, justify = "left")
