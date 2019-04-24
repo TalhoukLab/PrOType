@@ -64,7 +64,6 @@ Predictive Entropy: `r entropy`
 The PrOTYPE assay reports a probability that a sample belongs to one of four gene expression-based molecular subtypes. These probabilities sum to 100%. The subtype with the highest probability is noted in bold as the dominant subtype. Predictive entropy is reported on a scale from 0-2 where 0 indicates a perfect classification and 2 indicates a random-chance classification. Entropy can be affected by specimen quality, assay condition, and specimen biology.
 
 &nbsp;
-&nbsp;
 
 Testing performed by: \_
 
