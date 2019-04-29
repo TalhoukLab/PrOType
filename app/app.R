@@ -217,6 +217,10 @@ server <- function(input, output, session) {
   # Read in all RCC chip files and combine count data
   dat <- reactive({
     req(input$rcc)
+    validate(
+      need(any(!grepl("Pool", input$rcc$name, ignore.case = TRUE)),
+           "No RCC sample files selected")
+    )
     input$rcc %>%
       dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
