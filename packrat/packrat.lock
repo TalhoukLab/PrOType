@@ -1070,8 +1070,8 @@ Hash: e25c3a05f11c359f1ce641cdc4b28d92
 
 Package: nanostringr
 Source: CRAN
-Version: 0.1.2
-Hash: 1bcc66b997c657fa465d4d396b44facb
+Version: 0.1.3
+Hash: 1d857d52f034823d4713684ac99f013c
 Requires: assertthat, ccaPP, dplyr, magrittr, purrr, readr, rlang,
     tibble
 
