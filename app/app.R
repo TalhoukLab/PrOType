@@ -56,12 +56,17 @@ ui <- fluidPage(
       # Downloads section
       h5(strong("Downloads")),
 
-      # Buttons to download QC, data, predictions
+      # Buttons to download QC, data, predictions, report
       downloadButton(outputId = "dl_qc", label = "QC"),
 
       downloadButton(outputId = "dl_data", label = "Data"),
 
       downloadButton(outputId = "dl_pred", label = "Predictions"),
+      br(), br(),
+
+      uiOutput(outputId = "sample_id"),
+
+      downloadButton(outputId = "dl_report", label = "Report"),
       br(), hr(style = "border-color: black;"),
 
       # App information
@@ -158,6 +163,16 @@ ui <- fluidPage(
                  p("The", icon("download"), code("Predictions"), "button
                    downloads the prediction data to your local machine."),
                  br(),
+                 h4("Patient Reports"),
+                 p("Patient-specific summary research reports can be generated
+                   in the form of word documents. These reports contain some
+                   QC metadata information and the primary prediction
+                   result. Multiple reports can be generated depending on
+                   samples selected in the respective dropdown menu."),
+                 p("The", icon("download"), code("Report"), "button downloads
+                   the patient reports compressed into a zip file to your local
+                   machine."),
+                 br(),
                  h4("Output Summary"),
                  p("The", strong("Summary"), "tab shows a summary of the QC
                    flags: how many samples failed and passed. It also shows the
@@ -175,6 +190,10 @@ server <- function(input, output, session) {
   # Reference 2: imported pools
   pools_ref2 <- reactive({
     req(input$rcc)
+    validate(
+      need(any(grepl("Pool", input$rcc$name, ignore.case = TRUE)),
+           "No RCC pool files selected")
+    )
     pools <- input$rcc %>%
       dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
@@ -196,12 +215,26 @@ server <- function(input, output, session) {
           ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
         )
     }
+
+    # Check all three pools exist
+    validate(
+      need(any(grepl("Pool1", names(pools), ignore.case = TRUE)),
+           "Missing Pool1 RCC files"),
+      need(any(grepl("Pool2", names(pools), ignore.case = TRUE)),
+           "Missing Pool2 RCC files"),
+      need(any(grepl("Pool3", names(pools), ignore.case = TRUE)),
+           "Missing Pool3 RCC files")
+    )
     nanostringr::HKnorm(as.data.frame(pools))
   })
 
   # Read in all RCC chip files and combine count data
   dat <- reactive({
     req(input$rcc)
+    validate(
+      need(any(!grepl("Pool", input$rcc$name, ignore.case = TRUE)),
+           "No RCC sample files selected")
+    )
     input$rcc %>%
       dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
@@ -348,6 +381,41 @@ server <- function(input, output, session) {
     }
   )
 
+  # Select sample for report of prediction summary
+  output$sample_id <- renderUI({
+    req(input$rcc)
+    selectInput(
+      inputId = "sample_id",
+      label = "Select sample for report",
+      choices = dat_preds()[["sample"]],
+      multiple = TRUE
+    )
+  })
+
+  # Download patient-specific report to local word document
+  output$dl_report <- downloadHandler(
+    filename = "reports.zip",
+    content = function(file) {
+      temp_report <- file.path(tempdir(), "report.Rmd")
+      file.copy("report.Rmd", temp_report, overwrite = TRUE)
+      files <- purrr::map_chr(input$sample_id, ~ {
+        params <- list(
+          qc_data = dplyr::filter(qc(), sample == .),
+          pred_data = dplyr::filter(dat_preds(), sample == .)
+        )
+        rmarkdown::render(
+          input = temp_report,
+          output_file = paste0("report_", ., ".docx"),
+          params = params,
+          envir = new.env(parent = globalenv()),
+          quiet = TRUE
+        )
+      })
+      zip(zipfile = file, files = files, flags = "-jq")
+    },
+    contentType = "application/zip"
+  )
+
   # Preview of normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
     Ynorm()[, 1:6] %>%
@@ -431,6 +499,9 @@ server <- function(input, output, session) {
     shinyjs::toggleState(id = "predict", !is.null(input$rcc))
   })
 
+  # Disable prediction after generated for currently imported files
+  shinyjs::onclick("predict", shinyjs::disable(id = "predict"))
+
   # Enable data download when files are imported
   observe({
     shinyjs::toggleState(id = "dl_data", !is.null(input$rcc))
@@ -442,8 +513,29 @@ server <- function(input, output, session) {
   })
 
   # Enable predictions download when files are imported and predictions clicked
+  # and matches currently imported data
   observe({
-    shinyjs::toggleState(id = "dl_pred", !is.null(input$rcc) && input$predict)
+    shinyjs::toggleState(id = "dl_pred",
+                         !is.null(input$rcc) && input$predict &&
+                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
+  })
+
+  # Enable report download when patient selected and predictions clicked and
+  # matches currently imported data
+  observe({
+    shinyjs::toggleState(id = "dl_report",
+                         !is.null(input$sample_id) && input$predict &&
+                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
+  })
+
+  # Button label prompts prediction after import
+  observeEvent(input$rcc, {
+    updateActionButton(session, "predict", label = "Predict NanoString samples")
+  })
+
+  # Button label states predictions generated
+  observeEvent(input$predict, {
+    updateActionButton(session, "predict", label = "Predictions Generated!")
   })
 
   # Switch to QC Plots tab when raw data has been imported

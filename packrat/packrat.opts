@@ -3,7 +3,11 @@ use.cache: FALSE
 print.banner.on.startup: auto
 vcs.ignore.lib: TRUE
 vcs.ignore.src: FALSE
-external.packages: 
+external.packages:
+    PKI
+    RCurl
+    RJSONIO
+    rsconnect
 local.repos: ~/Documents/Bitbucket/packages
 load.external.packages.on.startup: TRUE
 ignored.packages: 

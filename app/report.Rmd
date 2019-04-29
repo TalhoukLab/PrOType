@@ -1,0 +1,59 @@
+---
+title: "PrOTYPE: Predictor of high-grade serous ovarian carcinoma molecular subtype  \nResearch Report"
+output: word_document
+params:
+  qc_data: NA
+  pred_data: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, results = "asis")
+```
+
+```{r load}
+qc_data <- params$qc_data
+pred_data <- params$pred_data
+```
+
+# Clinical Details
+
+Confirmed high-grade serous ovarian cancer.
+
+```{r clinical-details}
+clin <- data.frame(
+  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:", "Quality Control:"),
+  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour",
+    as.character(qc_data[["QCFlag"]]))
+)
+pander::pander(clin, col.names = NULL, justify = "left")
+```
+
+# Method
+
+RNA was extracted from high-grade serous ovarian tumour tissue and PrOTYPE, a model using a 60-gene NanoString expression assay including 5 control genes, is used to generate a prediction of molecular subtype: C1.MES, C2.IMM, C4.DIF, or C5.PRO.
+
+# Results
+
+```{r primary-result}
+pred <- c("C1/Mesenchymal", "C2/Immunoreactive", "C4/Differentiated", "C5/Proliferative")
+prob <- purrr::map_chr(pred_data[c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")],
+                       scales::percent)
+
+entropy <- round(pred_data[["entropy"]], 2)
+conf <- ifelse(entropy < 1, "good", "little")
+
+result <- data.frame(
+  `Molecular Subtype` = pred,
+  Probability = prob,
+  check.names = FALSE,
+  stringsAsFactors = FALSE
+)
+bold_row <- match(pred_data[["pred"]], rownames(result))
+pander::pander(result, emphasize.strong.rows = bold_row, row.names = FALSE)
+```
+
+Predictive Entropy: `r entropy`
+
+# Prediction and Entropy
+
+The PrOTYPE assay reports a probability that a sample belongs to one of four gene expression-based molecular subtypes. These probabilities sum to 100%. The subtype with the highest probability is noted in bold as the dominant subtype. Predictive entropy is reported on a scale from 0-2 where 0 indicates a perfect classification and 2 indicates a random-chance classification. Entropy can be affected by specimen quality, assay condition, and specimen biology.
