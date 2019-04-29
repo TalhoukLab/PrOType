@@ -190,6 +190,10 @@ server <- function(input, output, session) {
   # Reference 2: imported pools
   pools_ref2 <- reactive({
     req(input$rcc)
+    validate(
+      need(any(grepl("Pool", input$rcc$name, ignore.case = TRUE)),
+           "No RCC pool files selected")
+    )
     pools <- input$rcc %>%
       dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
@@ -211,12 +215,26 @@ server <- function(input, output, session) {
           ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
         )
     }
+
+    # Check all three pools exist
+    validate(
+      need(any(grepl("Pool1", names(pools), ignore.case = TRUE)),
+           "Missing Pool1 RCC files"),
+      need(any(grepl("Pool2", names(pools), ignore.case = TRUE)),
+           "Missing Pool2 RCC files"),
+      need(any(grepl("Pool3", names(pools), ignore.case = TRUE)),
+           "Missing Pool3 RCC files")
+    )
     nanostringr::HKnorm(as.data.frame(pools))
   })
 
   # Read in all RCC chip files and combine count data
   dat <- reactive({
     req(input$rcc)
+    validate(
+      need(any(!grepl("Pool", input$rcc$name, ignore.case = TRUE)),
+           "No RCC sample files selected")
+    )
     input$rcc %>%
       dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
