@@ -8,7 +8,7 @@ params:
 
 # D.1 Technical Variability and Potential Sources of Bias
 
-```{r setup_C01, include=FALSE}
+```{r setup_D01, include=FALSE}
 knitr::opts_chunk$set(
 	echo = FALSE,
 	message = FALSE,

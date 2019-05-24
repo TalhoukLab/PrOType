@@ -165,6 +165,11 @@ clin_d <- clin_d %>%
       refage_revised == "." ~ NA_real_,
       TRUE ~ as.numeric(refage_revised)
     ),
+    int_yrs = dplyr::case_when(
+      timeint_revised %in% "." ~ NA_real_,
+      TRUE ~ as.numeric(timeint_revised) / 365.25
+    ),
+    age_int = age_dx + int_yrs,
     stage = dplyr::case_when(
       stagenew == "1" ~ "low",
       stagenew == "2" ~ "high",
@@ -209,7 +214,19 @@ clin_d <- clin_d %>%
     pfs_sts10 = dplyr::case_when(
       progression_assumed_OCAC == 0 | pfs_yrs10 < pfs_yrs ~ "pfs.censored",
       TRUE ~ pfs_sts
-    )
+    ),
+    age_os_lfu = age_dx + os_yrs,
+    age_dss_lfu = age_dx + dss_yrs,
+    age_pfs_lfu = age_dx + pfs_yrs,
+    age_os_lfu10 = age_dx + os_yrs10,
+    age_dss_lfu10 = age_dx + dss_yrs10,
+    age_pfs_lfu10 = age_dx + pfs_yrs10,
+    os_int = ifelse(int_yrs > os_yrs, os_yrs, os_yrs - int_yrs),
+    dss_int = ifelse(int_yrs > os_yrs, dss_yrs, dss_yrs - int_yrs),
+    pfs_int = ifelse(int_yrs > os_yrs, pfs_yrs, pfs_yrs - int_yrs),
+    os_int10 = ifelse(int_yrs > os_yrs10, os_yrs10, os_yrs10 - int_yrs),
+    dss_int10 = ifelse(int_yrs > os_yrs10, dss_yrs10, dss_yrs10 - int_yrs),
+    pfs_int10 = ifelse(int_yrs > os_yrs10, pfs_yrs10, pfs_yrs10 - int_yrs)
   ) %>% 
   dplyr::mutate_at(dplyr::vars(dplyr::matches("sts")), as.factor)
 
@@ -363,8 +380,8 @@ fu_times <- function(data, time, status, event, group = NULL, digits = 1) {
 ```
 
 ```{r times_total}
-os_args <- list(time = "os_yrs", status = "os_sts", event = "os.event")
-pfs_args <- list(time = "pfs_yrs", status = "pfs_sts", event = "pfs.event")
+os_args <- list(time = "os_int", status = "os_sts", event = "os.event")
+pfs_args <- list(time = "pfs_int", status = "pfs_sts", event = "pfs.event")
 
 os_full <- purrr::invoke(fu_times, os_args, data = d)
 pfs_full <- purrr::invoke(fu_times, pfs_args, data = d)
@@ -425,9 +442,9 @@ surv_args_aa <- purrr::map_at(surv_args, "data", ~ d_aa)
 
 km_final_aa <- purrr::list_merge(
   km_args,
-    fit = list(
-    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d_aa),
-    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d_aa)
+  fit = list(
+    survfit(Surv(os_int10, os_sts10 == "os.event") ~ final, data = d_aa),
+    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ final, data = d_aa)
   )
 )
 plots_km_final_aa <- km_final_aa %>% 
@@ -443,9 +460,9 @@ surv_args_ka <- purrr::map_at(surv_args, "data", ~ d_ka)
 
 km_final_ka <- purrr::list_merge(
   km_args,
-    fit = list(
-    survfit(Surv(os_yrs10, os_sts10 == "os.event") ~ final, data = d_ka),
-    survfit(Surv(pfs_yrs10, pfs_sts10 == "pfs.event") ~ final, data = d_ka)
+  fit = list(
+    survfit(Surv(os_int10, os_sts10 == "os.event") ~ final, data = d_ka),
+    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ final, data = d_ka)
   )
 )
 plots_km_final_ka <- km_final_ka %>% 
@@ -459,6 +476,20 @@ file.remove(here::here("Rplots.pdf"))
 ```
 
 ```{r mvs_dat}
+# Covariate variable arguments
+var_all <- purrr::set_names(
+  c("final", "age_dx", "stage", "cd8", "residual_disease",  "brca_v1"),
+  c("Final Subtype", "Age", "Stage", "CD8", "Residual Disease", "BRCA1/BRCA2")
+)
+var_lists <- tibble::lst(
+  var_base = purrr::keep(var_all, ~ . %in% c("final", "age_dx", "stage")),
+  var_add_cd8 = c(var_base, var_all["CD8"]),
+  var_add_resdx = c(var_add_cd8, var_all["Residual Disease"]),
+  var_add_brca = c(var_add_resdx, var_all["BRCA1/BRCA2"])
+)
+# Base title
+title_base <- "Multivariable survival analysis of overall and progression-free survival, adjusting for"
+
 # Multivariate survival data sources
 mvs_dat <- d %>% 
   dplyr::transmute(
@@ -472,18 +503,30 @@ mvs_dat <- d %>%
     os_yrs,
     os_sts,
     pfs_yrs,
-    pfs_sts
+    pfs_sts,
+    age_int,
+    age_os_lfu,
+    age_pfs_lfu
   ) %>% 
   as.data.frame()
+
+# Filtered by anatomical site
 mvs_dat_adnexal_all <- mvs_dat %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
 mvs_dat_adnexal_only <- mvs_dat %>% 
   dplyr::filter(anatomical_site == "adnexal")
 
+# Complete cases for each outcome
+mvs_dat_adnexal_all_comp <- mvs_dat_adnexal_all %>% 
+  tidyr::drop_na(var_all)
+mvs_dat_adnexal_only_comp <- mvs_dat_adnexal_only %>% 
+  tidyr::drop_na(var_all)
+
 # Multivarite survival arguments
 mvs_args <- list(
   stat.test = "logtest",
-  var.names.surv.time = c("os_yrs", "pfs_yrs"),
+  var.names.surv.time = c("age_int", "age_int"),
+  var.names.surv.time2 = c("age_os_lfu", "age_pfs_lfu"),
   var.names.surv.status = c("os_sts", "pfs_sts"),
   event.codes.surv = c("os.event", "pfs.event"),
   surv.descriptions = c("OS", "PFS"),
@@ -492,21 +535,6 @@ mvs_args <- list(
   round.small = TRUE,
   caption = NULL
 )
-
-# Covariate variable arguments
-var_all <- purrr::set_names(
-  c("final", "age_dx", "stage", "cd8", "residual_disease",  "brca_v1"),
-  c("Final Subtype", "Age", "Stage", "CD8", "Residual Disease", "BRCA1/BRCA2")
-)
-var_lists <- tibble::lst(
-  var_base = purrr::keep(var_all, ~ . %in% c("final", "age_dx", "stage")),
-  var_add_cd8 = c(var_base, var_all["CD8"]),
-  var_add_resdx = c(var_add_cd8, var_all["Residual Disease"]),
-  var_add_brca = c(var_add_resdx, var_all["BRCA1/BRCA2"])
-)
-
-# Base title
-title_base <- "Multivariable survival analysis of overall and progression-free survival, adjusting for"
 ```
 
 ### Known and Presumed Adnexal Sites
@@ -607,4 +635,104 @@ cat(purrr::pluck(mvs_known, "var_add_resdx", "result.table.bamboo"))
 
 ```{r mvs_known_add_brca}
 cat(purrr::pluck(mvs_known, "var_add_brca", "result.table.bamboo"))
+```
+
+### Known and Presumed Adnexal Sites, Complete Cases
+
+```{r mvs_all_comp}
+# Multivariable Survival for all adexnal sites
+mvs_all_comp <- purrr::invoke_map(
+  .f = biostatUtil::doCoxphMultivariable,
+  .x = var_lists %>% purrr::map(
+    ~ purrr::splice(
+      mvs_args,
+      var.names = .,
+      var.descriptions = names(.)
+    )
+  ),
+  input.d = mvs_dat_adnexal_all_comp
+) %>% 
+  purrr::set_names(names(var_lists))
+
+# Titles for all adnexal sites, complete cases
+titles_all_comp <- var_lists %>%
+  purrr::map( ~ {
+    paste(title_base,
+          paste(names(.), collapse = ", "),
+          "(known and presumed adnexal sites, complete cases)")
+  })
+```
+
+### `r titles_all_comp[["var_base"]]`
+
+```{r mvs_all_comp_base}
+cat(purrr::pluck(mvs_all_comp, "var_base", "result.table.bamboo"))
+```
+
+### `r titles_all_comp[["var_add_cd8"]]`
+
+```{r mvs_all_comp_add_cd8}
+cat(purrr::pluck(mvs_all_comp, "var_add_cd8", "result.table.bamboo"))
+```
+
+### `r titles_all_comp[["var_add_resdx"]]`
+
+```{r mvs_all_comp_add_resdx}
+cat(purrr::pluck(mvs_all_comp, "var_add_resdx", "result.table.bamboo"))
+```
+
+### `r titles_all_comp[["var_add_brca"]]`
+
+```{r mvs_all_comp_add_brca}
+cat(purrr::pluck(mvs_all_comp, "var_add_brca", "result.table.bamboo"))
+```
+
+### Known Adnexal Sites, Complete Cases
+
+```{r mvs_known_comp}
+# Multivariable Survival for all adexnal sites
+mvs_known_comp <- purrr::invoke_map(
+  .f = biostatUtil::doCoxphMultivariable,
+  .x = var_lists %>% purrr::map(
+    ~ purrr::splice(
+      mvs_args,
+      var.names = .,
+      var.descriptions = names(.)
+    )
+  ),
+  input.d = mvs_dat_adnexal_only_comp
+) %>% 
+  purrr::set_names(names(var_lists))
+
+# Titles for known adnexal sites, complete cases
+titles_known_comp <- var_lists %>%
+  purrr::map( ~ {
+    paste(title_base,
+          paste(names(.), collapse = ", "),
+          "(known adnexal sites, complete cases)")
+  })
+```
+
+### `r titles_known_comp[["var_base"]]`
+
+```{r mvs_known_comp_base}
+cat(purrr::pluck(mvs_known_comp, "var_base", "result.table.bamboo"))
+```
+
+### `r titles_known_comp[["var_add_cd8"]]`
+
+```{r mvs_known_comp_add_cd8}
+cat(purrr::pluck(mvs_known_comp, "var_add_cd8", "result.table.bamboo"))
+```
+
+### `r titles_known_comp[["var_add_resdx"]]`
+
+```{r mvs_known_comp_add_resdx}
+cat(purrr::pluck(mvs_known_comp, "var_add_resdx", "result.table.bamboo"))
+```
+
+### `r titles_known_comp[["var_add_brca"]]`
+
+```{r mvs_known_comp_add_brca}
+cat(purrr::pluck(mvs_known_comp, "var_add_brca", "result.table.bamboo"))
 ```
