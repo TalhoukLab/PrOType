@@ -507,6 +507,10 @@ clin_d <- clin_d %>%
       TRUE ~ NA_character_
     ) %>% 
       factor(),
+    age_dx = dplyr::case_when(
+      refage_revised == "." ~ NA_real_,
+      TRUE ~ as.numeric(refage_revised)
+    ),
     int_yrs = dplyr::case_when(
       timeint_revised %in% "." ~ NA_real_,
       TRUE ~ as.numeric(timeint_revised) / 365.25
