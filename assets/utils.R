@@ -76,3 +76,23 @@ update_cache <- function(scriptdir, output_file) {
     saveRDS(file_cache, target_file)
   }
 }
+
+#' Sync repo with server using rsync
+#'
+#' Use rsync to sync repo on local machine to with PrOType project on `genesis2`
+#' server.
+#'
+#' @param source source directory to `rsync` from
+#' @param del logical; if `TRUE`, adds the flag `--del` to `rsync` call,
+#'   deleting any objects on the server that do not exist locally.
+sync_server <- function(source = here::here(), del = FALSE) {
+  rsync_path <- "/usr/local/bin/rsync"
+  flags <- "-achvzP -f=':- .gitignore'"
+  dest <- "genesis2:~/Projects/PrOType"
+  if (del) {
+    flags <- paste(flags, "--del")
+  }
+  cmd <- paste(rsync_path, flags, source, dest)
+  cli::cat_line(cmd)
+  system(cmd)
+}
