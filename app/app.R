@@ -71,10 +71,6 @@ ui <- fluidPage(
 
       # App information
       helpText("© Copyright 2018 OVCARE", br(), "Maintained by Derek Chiu"),
-      a(icon("github"),
-        " Source Code",
-        href = "https://github.com/AlineTalhouk/PrOType/blob/master/app/app.R",
-        target = "_blank"),
       br(), br(),
 
       # OVCARE logo and link to website
