@@ -222,6 +222,25 @@ server <- function(input, output, session) {
       need(any(grepl("Pool3", names(pools), ignore.case = TRUE)),
            "Missing Pool3 RCC files")
     )
+
+    # Pools expression data
+    pools_exp <- input$rcc %>%
+      dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
+      tibble::deframe() %>%
+      purrr::map(nanostringr::parse_attributes) %>%
+      purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
+      dplyr::rename(sample = File.Name) %>%
+      as.data.frame()
+
+    # Check all pools pass QC
+    pools_qc <-
+      nanostringr::NanoStringQC(pools, pools_exp, detect = 50, sn = input$sn)
+    validate(
+      need(all(pools_qc[["QCFlag"]] == "Passed"),
+           "Some pools failed QC. Normalization failed.")
+    )
+
     nanostringr::HKnorm(as.data.frame(pools))
   })
 
