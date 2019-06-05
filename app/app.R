@@ -554,9 +554,6 @@ server <- function(input, output, session) {
   observeEvent(input$predict, {
     updateTabsetPanel(session, "tabset", selected = "Predictions")
   })
-
-  # Show source code below app by default
-  shinyjs::runjs("toggleCodePosition();")
 }
 
 # Run the application
