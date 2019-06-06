@@ -3,16 +3,11 @@ library(shiny)
 library(randomForest)
 library(ggplot2)
 `%>%` <- magrittr::`%>%`
-alg <- "rf"
-seed <- 2018
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 
-# Load Vancouver CS3 pools (ref 1), training data/labels, and gene frequencies
+# Load Vancouver CS3 pools (ref 1), final model, and final gene list
 pools_ref1 <- readRDS("data/van_pools_cs3.rds")
-train_dat <- readRDS("data/train_dat.rds")
-train_lab <- readRDS("data/train_lab.rds")
-
-# Final gene list
+final_model <- readRDS("data/final_model.rds")
 final_glist <- c(
   "FBN1", "TCF7L1", "CCL5", "FN1", "ADAMDEC1", "CTSK", "COL3A1",
   "CD74", "TIMP3", "POSTN", "CXCL9", "SALL2", "NUAK1", "SLAMF7",
@@ -355,12 +350,6 @@ server <- function(input, output, session) {
   dat_preds <- reactive({
     req(input$predict)
     withProgress(message = "Predicting samples", {
-      final_model <- splendid::classification(
-        data = train_dat[, isolate(colnames(Ynorm())), drop = FALSE],
-        class = train_lab,
-        algorithms = alg,
-        seed = seed
-      )
       set.seed(1)
       dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
       data.frame(
