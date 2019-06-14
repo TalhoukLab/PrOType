@@ -97,8 +97,10 @@ p <- ggplot(exp_CS3_all, aes(sn, pergd, color = nanostring.site)) +
   theme_bw() +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank()) +
-  scale_color_discrete(name = "Site",
-                       labels = c("Melbourne", "San Francisco", "Vancouver"))
+  scale_color_discrete(
+    name = "Site",
+    labels = c("Melbourne (AOC)", "Los Angeles (USC)", "Vancouver (UBC)")
+  )
 
 # print(p)
 ggsave(file.path(fig_path, "snr_vs_pergd.pdf"), p, width = 7, height = 5)
@@ -119,11 +121,11 @@ pools <- expCS %>%
   dplyr::mutate(
     nanostring.date = as.Date(nanostring.date),
     averageHK = log2(averageHK),
-    nanostring.site = dplyr::case_when(
+    nanostring.site = factor(dplyr::case_when(
       nanostring.site == "AOC" ~ "Melbourne",
-      nanostring.site == "USC" ~ "San Francisco",
+      nanostring.site == "USC" ~ "Los Angeles",
       TRUE ~ "Vancouver"
-    )
+    ), levels = c("Melbourne", "Los Angeles", "Vancouver"))
   )
 
 ## ----pools_gx_time, fig.width=7, fig.height=5----------------------------
@@ -139,8 +141,10 @@ p <- ggplot(pools, aes(nanostring.date, averageHK, colour = nanostring.site)) +
   theme_bw() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
   scale_x_date(date_breaks = "3 months", date_labels =  "%b %Y") +
-  scale_color_discrete(name = "Site",
-                       labels = c("Melbourne", "San Francisco", "Vancouver"))
+  scale_color_discrete(
+    name = "Site",
+    labels = c("Melbourne (AOC)", "Los Angeles (USC)", "Vancouver (UBC)")
+  )
 
 # print(p)
 ggsave(file.path(fig_path, "pools_gx_time.pdf"), p, width = 7, height = 5)
@@ -162,7 +166,7 @@ cross.site <- expCS %>%
                 summaryID != "TVAN20681") %>% 
   dplyr::mutate(nanostring.site = factor(dplyr::case_when(
     nanostring.site == "AOC" ~ "Melbourne",
-    nanostring.site == "USC" ~ "San Francisco",
+    nanostring.site == "USC" ~ "Los Angeles",
     TRUE ~ "Vancouver"
   )))
 
@@ -181,7 +185,7 @@ AOCRefs.gx <- cross.site %>%
   dplyr::select(cs3.norm, .)
 
 USCRefs.gx <- cross.site %>% 
-  dplyr::filter(nanostring.site == "San Francisco") %>% 
+  dplyr::filter(nanostring.site == "Los Angeles") %>% 
   dplyr::arrange(summaryID) %>% 
   dplyr::pull(File.Name) %>% 
   dplyr::select(cs3.norm, .)
@@ -199,7 +203,7 @@ AOCpools <- pools %>%
   dplyr::select(cs3.norm, .)
 
 USCpools <- pools %>% 
-  dplyr::filter(nanostring.site == "San Francisco") %>% 
+  dplyr::filter(nanostring.site == "Los Angeles") %>% 
   dplyr::pull(File.Name) %>% 
   dplyr::select(cs3.norm, .)
 
