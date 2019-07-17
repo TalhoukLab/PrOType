@@ -319,13 +319,13 @@ Requires: Rcpp, bindr, plogr
 
 Package: biostatUtil
 Source: source
-Version: 0.0.0.9085
-Hash: e1608f0bfbde41aa7f0ec278066ec2df
+Version: 0.0.0.9086
+Hash: f1c8e26ec8c034d377cc24e56f828012
 Requires: Deducer, Hmisc, KMsurv, PerformanceAnalytics, Rd2roxygen,
     assertthat, broom, caret, coin, coxphf, descr, doBy, dplyr, gdata,
     ggplot2, gridExtra, htmlTable, htmltools, irr, knitr, lazyeval,
-    limma, magrittr, pander, psy, purrr, readr, rms, stringr, tidyr,
-    vsn
+    limma, magrittr, pander, psy, purrr, readr, rms, stringr, tibble,
+    tidyr, vsn
 SourcePath: ~/Documents/Bitbucket/packages/biostatUtil
 
 Package: bit
@@ -1070,10 +1070,9 @@ Hash: e25c3a05f11c359f1ce641cdc4b28d92
 
 Package: nanostringr
 Source: CRAN
-Version: 0.1.3
-Hash: 1d857d52f034823d4713684ac99f013c
-Requires: assertthat, ccaPP, dplyr, magrittr, purrr, readr, rlang,
-    tibble
+Version: 0.1.4
+Hash: f7516fd32662159a8062eb8143b156fd
+Requires: assertthat, ccaPP, dplyr, epiR, magrittr, purrr, rlang
 
 Package: nloptr
 Source: CRAN
