@@ -378,11 +378,15 @@ entropy_probs <- compare_probs %>%
   dplyr::mutate_at(dplyr::vars(dplyr::contains("entropy")), round, digits = 3)
 
 ## ----mwu_aa--------------------------------------------------------------
-mwu_aa <- wilcox.test(entropy_array ~ match, entropy_probs) %>% broom::tidy()
+mwu_aa <- wilcox.test(entropy_array ~ match, entropy_probs) %>%
+  broom::tidy() %>% 
+  dplyr::mutate(p.value = scales::pvalue(p.value, accuracy = 1e-4))
 pandoc.table(mwu_aa)
 
 ## ----mwu_tcga------------------------------------------------------------
-mwu_tcga <- wilcox.test(entropy_tcga ~ match, entropy_probs) %>% broom::tidy()
+mwu_tcga <- wilcox.test(entropy_tcga ~ match, entropy_probs) %>%
+  broom::tidy() %>% 
+  dplyr::mutate(p.value = scales::pvalue(p.value, accuracy = 1e-4))
 pandoc.table(mwu_tcga)
 
 ## ----scatterplot_args----------------------------------------------------

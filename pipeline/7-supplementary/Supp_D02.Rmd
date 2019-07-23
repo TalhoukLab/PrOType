@@ -151,6 +151,7 @@ a_chisq <- dplyr::bind_rows(aom_chisq, apa_chisq, aot_chisq) %>%
   tibble::add_column(
     Comparison = c("Adnexal vs Omentum", "Adenxal vs Presumed Adnexal", "Adnexal vs Other"),
     .before = 1
-  )
+  ) %>% 
+  dplyr::mutate(`P Value` = scales::pvalue(`P Value`, accuracy = 1e-4))
 pandoc.table(a_chisq, justify = "left")
 ```

@@ -213,17 +213,29 @@ pandoc.table(ov_1718)
 bc_1718 <- confmat_metrics(confmat_1718, metrics = "byclass")
 pandoc.table(bc_1718, keep.trailing.zeros = TRUE)
 
-## ----cross_codeset_fk, results='markup'----------------------------------
-# Fleiss' Kappa
-cc_all <- otta_2015 %>% 
+## ----cross_codeset_2_fk, results='markup'--------------------------------
+cc_2 <- otta_2015 %>% 
   dplyr::inner_join(otta_2017, by = "ottaID") %>% 
   dplyr::left_join(otta_2018, by = "ottaID") %>% 
   tidyr::replace_na(list(pred_2018 = "Missing")) %>%
   as.data.frame() %>% 
   dplyr::distinct() %>% 
   tibble::column_to_rownames("ottaID")
-cc_fk <- irr::kappam.fleiss(cc_all)
-irr::print.irrlist(cc_fk)
+cc_2_fk <- cc_2 %>% 
+  irr::kappam.fleiss() %>% 
+  purrr::map_at("p.value", scales::pvalue, accuracy = 1e-4)
+irr::print.irrlist(cc_2_fk)
+
+## ----cross_codeset_3_fk, results='markup'--------------------------------
+cc_3 <- list(otta_2015, otta_2017, otta_2018) %>% 
+  purrr::reduce(dplyr::inner_join, by = "ottaID") %>%
+  dplyr::mutate(ottaID = make.unique(ottaID)) %>% 
+  as.data.frame() %>% 
+  tibble::column_to_rownames("ottaID")
+cc_3_fk <- cc_3 %>% 
+  irr::kappam.fleiss() %>% 
+  purrr::map_at("p.value", scales::pvalue, accuracy = 1e-4)
+irr::print.irrlist(cc_3_fk)
 
 
 ## ----child="Supp_D02.Rmd"------------------------------------------------
@@ -351,7 +363,8 @@ a_chisq <- dplyr::bind_rows(aom_chisq, apa_chisq, aot_chisq) %>%
   tibble::add_column(
     Comparison = c("Adnexal vs Omentum", "Adenxal vs Presumed Adnexal", "Adnexal vs Other"),
     .before = 1
-  )
+  ) %>% 
+  dplyr::mutate(`P Value` = scales::pvalue(`P Value`, accuracy = 1e-4))
 pandoc.table(a_chisq, justify = "left")
 
 
@@ -670,7 +683,7 @@ d_cohort_adnexal_all <- d %>%
   dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
 uni_ass_adnexal_all <- d_cohort_adnexal_all %>% 
-  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 3)
+  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_all, split.tables = Inf,
              caption = "Cohort characteristics for all cases by subtype")
 
@@ -680,7 +693,7 @@ d_cohort_adnexal_only <- d_cohort_adnexal_all %>%
 var_names_adnexal_only <- var_names %>% purrr::discard(~ . == "anatomical_site")
 var_desc_adnexal_only <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
 uni_ass_adnexal_only <- d_cohort_adnexal_only %>% 
-  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 3)
+  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_only, split.tables = Inf,
              caption = "Cohort characteristics for all known ovarian site by subtype")
 
