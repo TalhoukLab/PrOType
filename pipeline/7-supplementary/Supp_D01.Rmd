@@ -276,17 +276,32 @@ pandoc.table(bc_1718, keep.trailing.zeros = TRUE)
 
 ## Fleiss' Kappa
 
-The Fleiss' Kappa was calculated for the 98 unique samples common between the OTTA original CodeSet and OTTA Mixed CodeSet, across all three CodeSets.
+The Fleiss' Kappa was calculated for the 98 unique samples common between the OTTA original CodeSet and OTTA Mixed CodeSet, and adding missing cases for the OTTA Classifier Only CodeSet where necessary.
 
-```{r cross_codeset_fk, results='markup'}
-# Fleiss' Kappa
-cc_all <- otta_2015 %>% 
+```{r cross_codeset_2_fk, results='markup'}
+cc_2 <- otta_2015 %>% 
   dplyr::inner_join(otta_2017, by = "ottaID") %>% 
   dplyr::left_join(otta_2018, by = "ottaID") %>% 
   tidyr::replace_na(list(pred_2018 = "Missing")) %>%
   as.data.frame() %>% 
   dplyr::distinct() %>% 
   tibble::column_to_rownames("ottaID")
-cc_fk <- irr::kappam.fleiss(cc_all)
-irr::print.irrlist(cc_fk)
+cc_2_fk <- cc_2 %>% 
+  irr::kappam.fleiss() %>% 
+  purrr::map_at("p.value", scales::pvalue, accuracy = 1e-4)
+irr::print.irrlist(cc_2_fk)
+```
+
+We also consider Fleiss' Kappa for the 80 samples that overlapped all three CodeSets.
+
+```{r cross_codeset_3_fk, results='markup'}
+cc_3 <- list(otta_2015, otta_2017, otta_2018) %>% 
+  purrr::reduce(dplyr::inner_join, by = "ottaID") %>%
+  dplyr::mutate(ottaID = make.unique(ottaID)) %>% 
+  as.data.frame() %>% 
+  tibble::column_to_rownames("ottaID")
+cc_3_fk <- cc_3 %>% 
+  irr::kappam.fleiss() %>% 
+  purrr::map_at("p.value", scales::pvalue, accuracy = 1e-4)
+irr::print.irrlist(cc_3_fk)
 ```

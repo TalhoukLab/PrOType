@@ -335,7 +335,7 @@ d_cohort_adnexal_all <- d %>%
   dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
 uni_ass_adnexal_all <- d_cohort_adnexal_all %>% 
-  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 3)
+  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_all, split.tables = Inf,
              caption = "Cohort characteristics for all cases by subtype")
 ```
@@ -348,7 +348,7 @@ d_cohort_adnexal_only <- d_cohort_adnexal_all %>%
 var_names_adnexal_only <- var_names %>% purrr::discard(~ . == "anatomical_site")
 var_desc_adnexal_only <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
 uni_ass_adnexal_only <- d_cohort_adnexal_only %>% 
-  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 3)
+  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_only, split.tables = Inf,
              caption = "Cohort characteristics for all known ovarian site by subtype")
 ```

@@ -137,14 +137,18 @@ The null hypothesis tested within each data source is that a randomly sampled en
 #### All-Array Entropies
 
 ```{r mwu_aa}
-mwu_aa <- wilcox.test(entropy_array ~ match, entropy_probs) %>% broom::tidy()
+mwu_aa <- wilcox.test(entropy_array ~ match, entropy_probs) %>%
+  broom::tidy() %>% 
+  dplyr::mutate(p.value = scales::pvalue(p.value, accuracy = 1e-4))
 pandoc.table(mwu_aa)
 ```
 
 #### TCGA Entropies
 
 ```{r mwu_tcga}
-mwu_tcga <- wilcox.test(entropy_tcga ~ match, entropy_probs) %>% broom::tidy()
+mwu_tcga <- wilcox.test(entropy_tcga ~ match, entropy_probs) %>%
+  broom::tidy() %>% 
+  dplyr::mutate(p.value = scales::pvalue(p.value, accuracy = 1e-4))
 pandoc.table(mwu_tcga)
 ```
 
