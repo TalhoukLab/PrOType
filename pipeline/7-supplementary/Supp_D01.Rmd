@@ -58,7 +58,7 @@ Xsite_samples <- dat_clean %>% dplyr::filter(type == "X1")
 
 ## D.1.1 Within CodeSet Replication
 
-## _Table SD1_: Comparison of within site replicates on 100 samples
+## _Table SD1_: Comparison of within site replicates on 89 samples
 
 ```{r o_vs_r_combine}
 # Compare original vs replicate predictions
