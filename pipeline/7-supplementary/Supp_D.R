@@ -58,7 +58,8 @@ compare_OR <- dplyr::inner_join(original_samples,
                                 replicate_samples,
                                 by = "ottaID",
                                 suffix = c("_O", "_R")) %>% 
-  dplyr::filter(!grepl("LT|ARL", ottaID))
+  dplyr::filter(!grepl("LT|ARL", ottaID)) %>% 
+  dplyr::semi_join(otta_2015_raw, by = "ottaID")
 
 ## ----o_vs_r_confmat------------------------------------------------------
 confmat_OR <- compare_OR %>% 
