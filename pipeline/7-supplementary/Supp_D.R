@@ -749,7 +749,7 @@ pandoc.table(
 
 ## ----surv_params_C03-----------------------------------------------------
 # Common km arguments (Display legend only for top (OS) survival plot)
-km_args <- list(title = c("Overall Survival", "Progression-Free Survival"),
+km_args <- list(ylab = c("Overall survival", "Progression-free survival"),
                 legend = c(list(c(0.9, 0.9)), "none"))
 
 # Common survival plot arguments
@@ -758,11 +758,12 @@ surv_args <- list(
   conf.int = TRUE,
   pval = TRUE,
   pval.method = TRUE,
+  pval.coord = c(0, 0.1),
+  pval.method.coord = c(0, 0.20),
   risk.table = TRUE,
   risk.table.height = 1/3,
   xlab = "Time in Years",
-  ylab = "Survival Probability",
-  legend.title = "Class",
+  legend.title = "Subtype",
   legend.labs = c("C1.MES", "C2.IMM", "C4.DIF", "C5.PRO")
 )
 
@@ -782,7 +783,7 @@ km_final_aa <- purrr::list_merge(
   )
 )
 plots_km_final_aa <- km_final_aa %>% 
-  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_aa, title = ..1, legend = ..2, fit = ..3)) %>% 
+  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_aa, ylab = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal and Presumed Adnexal Sites OTTA (Final Model)")
 ggsave(file.path(fig_path, "km_final_adnexal_all.pdf"), plots_km_final_aa, width = 7, height = 10)
 
@@ -799,7 +800,7 @@ km_final_ka <- purrr::list_merge(
   )
 )
 plots_km_final_ka <- km_final_ka %>% 
-  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_ka, title = ..1, legend = ..2, fit = ..3)) %>% 
+  purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_ka, ylab = ..1, legend = ..2, fit = ..3)) %>% 
   purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal Sites OTTA (Final Model)")
 ggsave(file.path(fig_path, "km_final_adnexal_known.pdf"), plots_km_final_ka, width = 7, height = 10)
 
