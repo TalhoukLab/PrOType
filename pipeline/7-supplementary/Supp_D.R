@@ -308,15 +308,16 @@ pandoc.table(bc_OV_OM, keep.trailing.zeros = TRUE)
 ## ----subtype_by_site-----------------------------------------------------
 ss_tab <- as_dat %>% 
   dplyr::mutate(
-    final = factor(final),
+    prediction = factor(prediction),
     site = factor(
       `Anatomical-Category`,
       levels = c("adnexal", "UNK", "omentum", "lower genital track", "upper genital track", "peritoneal"),
       labels = toupper(c("adnexal", "presumed adnexal", "omentum", "lower genital track", "upper genital track", "peritoneal")))
   ) %>% 
-  Amisc::describeBy("final", by1 = "site", digits = 1) %>% 
-  dplyr::select(-c(Variable, Total, PValue)) %>% 
-  dplyr::slice(-1)
+  Amisc::describeBy("prediction", by1 = "site", digits = 1) %>% 
+  dplyr::select(-c(Variable, Total, PValue)) %>% {
+    dplyr::bind_rows(.[-1, ], .[1, ]) 
+  }
 pandoc.table(ss_tab)
 
 ## ----adnexal_comparisons-------------------------------------------------
@@ -324,7 +325,7 @@ pandoc.table(ss_tab)
 aom_chisq <- as_dat %>% 
   dplyr::filter(`Anatomical-Category` %in% c("adnexal", "omentum")) %>% 
   dplyr::transmute(
-    final = factor(final),
+    prediction = factor(prediction),
     site = factor(`Anatomical-Category`)
   ) %>% 
   table() %>% 
@@ -335,7 +336,7 @@ aom_chisq <- as_dat %>%
 apa_chisq <- as_dat %>% 
   dplyr::filter(`Anatomical-Category` %in% c("adnexal", "UNK")) %>% 
   dplyr::transmute(
-    final = factor(final),
+    prediction = factor(prediction),
     site = factor(`Anatomical-Category`)
   ) %>% 
   table() %>% 
@@ -348,7 +349,7 @@ aot_chisq <- as_dat %>%
     `Anatomical-Category` %in% c("adnexal", "lower genital track", "upper genital track", "peritoneal")
   ) %>% 
   dplyr::transmute(
-    final = factor(final),
+    prediction = factor(prediction),
     site = dplyr::case_when(
       `Anatomical-Category` == "adnexal" ~ "adnexal",
       TRUE ~ "other"
@@ -595,7 +596,7 @@ d <-
   list(all_pred, final_preds, clin_d) %>%
   purrr::reduce(dplyr::inner_join, by = "ottaID") %>% 
   dplyr::mutate(
-    final = factor(final),
+    prediction = factor(prediction),
     os_yrs = magrittr::inset(
       os_yrs,
       ottaID == "TVAN20158",
@@ -634,8 +635,8 @@ stopifnot(sum(d[["os_yrs"]] > 100, na.rm = TRUE) == 0)
 
 ## ----subtype_by_brca-----------------------------------------------------
 sb_tab <- dplyr::inner_join(
-  Amisc::describeBy(d, "final", by1 = "brca_v1", digits = 1),
-  Amisc::describeBy(d, "final", by1 = "brca_v2", digits = 1),
+  Amisc::describeBy(d, "prediction", by1 = "brca_v1", digits = 1),
+  Amisc::describeBy(d, "prediction", by1 = "brca_v2", digits = 1),
   by = c("Levels", "all wildtypes")
 ) %>% 
   dplyr::select(2:5, 9) %>% 
@@ -647,7 +648,7 @@ bp_dat <- d %>%
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal")) %>% 
   dplyr::transmute(
     dxyear = as.numeric(refage_revised) + as.numeric(dobyear),
-    final
+    prediction
   )
 
 num5 <- fivenum(bp_dat[["dxyear"]])
@@ -657,15 +658,15 @@ num5_text <- paste0(c("Min", "Median (IQR)", "Max"),
                     c(num5[1], paste0(num5[3], " (", iqr, ")"), num5[5]),
                     collapse = ", ")
 
-p <- ggplot(bp_dat, aes(final, dxyear)) +
+p <- ggplot(bp_dat, aes(prediction, dxyear)) +
   geom_boxplot(varwidth = TRUE, outlier.shape = NA, coef = 0,
                fill = "#D1D1D1", color = "white", na.rm = TRUE) +
   geom_dotplot(method = "histodot", binwidth = 1, binaxis = "y", dotsize = 0.05,
                color = "#3A6EE3", na.rm = TRUE) +
   labs(
-    x = "Final Subtype",
+    x = "Predicted Subtype",
     y = "Year of Diagnosis",
-    title = "Year of Diagnosis by HGSC Final Subtype Classification",
+    title = "Year of Diagnosis by HGSC Predicted Subtype Classification",
     subtitle = paste0("All Adnexal and Presumed Adnexal n=", nrow(bp_dat), ", ", num5_text)
   ) +
   theme_minimal() +
@@ -681,10 +682,10 @@ var_names <- c("age_dx", "stage", "residual_disease", "cellularity",
 var_desc <- c("Age at Diagnosis", "Stage", "Residual Disease", "Cellularity",
               "Necrosis", "BRCA1/BRCA2", "Race", "CD8", "Anatomical Site")
 d_cohort_adnexal_all <- d %>%
-  dplyr::transmute(final, !!!rlang::syms(var_names)) %>% 
+  dplyr::transmute(prediction, !!!rlang::syms(var_names)) %>% 
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal"))
 uni_ass_adnexal_all <- d_cohort_adnexal_all %>% 
-  Amisc::describeBy(var_names, var_desc, "final", dispersion = "sd", digits = 1, p.digits = 4)
+  Amisc::describeBy(var_names, var_desc, "prediction", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_all, split.tables = Inf,
              caption = "Cohort characteristics for all cases by subtype")
 
@@ -694,7 +695,7 @@ d_cohort_adnexal_only <- d_cohort_adnexal_all %>%
 var_names_adnexal_only <- var_names %>% purrr::discard(~ . == "anatomical_site")
 var_desc_adnexal_only <- var_desc %>% purrr::discard(~ . == "Anatomical Site")
 uni_ass_adnexal_only <- d_cohort_adnexal_only %>% 
-  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "final", dispersion = "sd", digits = 1, p.digits = 4)
+  Amisc::describeBy(var_names_adnexal_only, var_desc_adnexal_only, "prediction", dispersion = "sd", digits = 1, p.digits = 4)
 pandoc.table(uni_ass_adnexal_only, split.tables = Inf,
              caption = "Cohort characteristics for all known ovarian site by subtype")
 
@@ -717,7 +718,7 @@ fu_times <- function(data, time, status, event, group = NULL, digits = 1) {
   if (!is.null(group)) {
     dplyr::rename(fu_dat, Class = group)
   } else {
-    tibble::add_column(fu_dat, Class = "Full Cohort", .before = 1)
+    tibble::add_column(fu_dat, Class = "All Cases", .before = 1)
   }
 }
 
@@ -731,20 +732,17 @@ pfs_full <- purrr::invoke(fu_times, pfs_args, data = d)
 os_conc <- purrr::invoke(fu_times, os_args, data = conc)
 pfs_conc <- purrr::invoke(fu_times, pfs_args, data = conc)
 
-## ----times_final_os------------------------------------------------------
-times_final_os <- os_full %>% 
-  rbind(purrr::invoke(fu_times, os_args, data = d, group = "final"))
+## ----times_pred----------------------------------------------------------
+times_pred_os <- os_full %>% 
+  rbind(purrr::invoke(fu_times, os_args, data = d, group = "prediction")) %>% 
+  tibble::add_column(Outcome = "OS", .before = 1)
+times_pred_pfs <- pfs_full %>% 
+  rbind(purrr::invoke(fu_times, pfs_args, data = d, group = "prediction")) %>% 
+  tibble::add_column(Outcome = "PFS", .before = 1)
+times_pred <- rbind(times_pred_os, times_pred_pfs)
 pandoc.table(
-  times_final_os,
-  caption = "OS Median Follow-up Time in Years by Final Predictions"
-)
-
-## ----times_final_pfs-----------------------------------------------------
-times_final_pfs <- pfs_full %>% 
-  rbind(purrr::invoke(fu_times, pfs_args, data = d, group = "final"))
-pandoc.table(
-  times_final_pfs,
-  caption = "PFS Median Follow-up Time in Years by Final Predictions"
+  times_pred,
+  caption = "Median Follow-up Time in Years and Events by Predicted Subtype"
 )
 
 ## ----surv_params_C03-----------------------------------------------------
@@ -770,39 +768,39 @@ surv_args <- list(
 # Common combine plot arguments
 comb_args <- list(print = FALSE, ncol = 1, nrow = 2)
 
-## ----km_final_aa, fig.width=7, fig.height=10-----------------------------
+## ----km_pred_aa, fig.width=7, fig.height=10------------------------------
 # Filter for all adnexal sites
 d_aa <- dplyr::filter(d, anatomical_site %in% c("adnexal", "presumed adnexal"))
 surv_args_aa <- purrr::map_at(surv_args, "data", ~ d_aa)
 
-km_final_aa <- purrr::list_merge(
+km_pred_aa <- purrr::list_merge(
   km_args,
   fit = list(
-    survfit(Surv(os_int10, os_sts10 == "os.event") ~ final, data = d_aa),
-    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ final, data = d_aa)
+    survfit(Surv(os_int10, os_sts10 == "os.event") ~ prediction, data = d_aa),
+    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ prediction, data = d_aa)
   )
 )
-plots_km_final_aa <- km_final_aa %>% 
+plots_km_pred_aa <- km_pred_aa %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_aa, ylab = ..1, legend = ..2, fit = ..3)) %>% 
-  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal and Presumed Adnexal Sites OTTA (Final Model)")
-ggsave(file.path(fig_path, "km_final_adnexal_all.pdf"), plots_km_final_aa, width = 7, height = 10)
+  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal and Presumed Adnexal Sites OTTA (Predicted Model)")
+ggsave(file.path(fig_path, "km_pred_adnexal_all.pdf"), plots_km_pred_aa, width = 7, height = 10)
 
-## ----km_final_ka, fig.width=7, fig.height=10-----------------------------
+## ----km_pred_ka, fig.width=7, fig.height=10------------------------------
 # Filter for known adnexal sites
 d_ka <- dplyr::filter(d, anatomical_site == "adnexal")
 surv_args_ka <- purrr::map_at(surv_args, "data", ~ d_ka)
 
-km_final_ka <- purrr::list_merge(
+km_pred_ka <- purrr::list_merge(
   km_args,
   fit = list(
-    survfit(Surv(os_int10, os_sts10 == "os.event") ~ final, data = d_ka),
-    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ final, data = d_ka)
+    survfit(Surv(os_int10, os_sts10 == "os.event") ~ prediction, data = d_ka),
+    survfit(Surv(pfs_int10, pfs_sts10 == "pfs.event") ~ prediction, data = d_ka)
   )
 )
-plots_km_final_ka <- km_final_ka %>% 
+plots_km_pred_ka <- km_pred_ka %>% 
   purrr::pmap(~ purrr::invoke(ggsurvplot, surv_args_ka, ylab = ..1, legend = ..2, fit = ..3)) %>% 
-  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal Sites OTTA (Final Model)")
-ggsave(file.path(fig_path, "km_final_adnexal_known.pdf"), plots_km_final_ka, width = 7, height = 10)
+  purrr::invoke(arrange_ggsurvplots, comb_args, x = ., title = "Adnexal Sites OTTA (Predicted Model)")
+ggsave(file.path(fig_path, "km_pred_adnexal_known.pdf"), plots_km_pred_ka, width = 7, height = 10)
 
 ## ----rm_rplots_D03-------------------------------------------------------
 file.remove(here::here("Rplots.pdf"))
@@ -810,11 +808,11 @@ file.remove(here::here("Rplots.pdf"))
 ## ----mvs_dat-------------------------------------------------------------
 # Covariate variable arguments
 var_all <- purrr::set_names(
-  c("final", "age_dx", "stage", "cd8", "residual_disease",  "brca_v1"),
-  c("Final Subtype", "Age", "Stage", "CD8", "Residual Disease", "BRCA1/BRCA2")
+  c("prediction", "age_dx", "stage", "cd8", "residual_disease",  "brca_v1"),
+  c("Predicted Subtype", "Age", "Stage", "CD8", "Residual Disease", "BRCA1/BRCA2")
 )
 var_lists <- tibble::lst(
-  var_base = purrr::keep(var_all, ~ . %in% c("final", "age_dx", "stage")),
+  var_base = purrr::keep(var_all, ~ . %in% c("prediction", "age_dx", "stage")),
   var_add_cd8 = c(var_base, var_all["CD8"]),
   var_add_resdx = c(var_add_cd8, var_all["Residual Disease"]),
   var_add_brca = c(var_add_resdx, var_all["BRCA1/BRCA2"])
@@ -825,7 +823,7 @@ title_base <- "Multivariable survival analysis of overall and progression-free s
 # Multivariate survival data sources
 mvs_dat <- d %>% 
   dplyr::transmute(
-    final = forcats::fct_relevel(final, "C1.MES", after = Inf),
+    prediction = forcats::fct_relevel(prediction, "C1.MES", after = Inf),
     residual_disease,
     brca_v1,
     age_dx,
