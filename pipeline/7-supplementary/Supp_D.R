@@ -37,6 +37,7 @@ otta_2017_raw <- readr::read_csv(here("data/nstring/nano2_ns_predictions.csv"), 
 otta_2018_raw <- readr::read_csv(here("data/nstring/nano3_ns_predictions.csv"), col_types = readr::cols())
 
 fig_path <- file.path(params$outputDir, "supplementary/figures/D01")
+tab_path <- file.path(params$outputDir, "supplementary/tables")
 
 ## ----clean_D01-----------------------------------------------------------
 # Cleaned data: split into original, replicates, and Xsites
@@ -91,7 +92,7 @@ entropy_OR <- compare_OR %>%
                    levels = c("Agree", "Disagree"))
   ) %>%
   dplyr::mutate_at(dplyr::vars(dplyr::contains("entropy")), round, digits = 3)
-readr::write_csv(entropy_OR, file.path(params$outputDir, "supplementary/tables/entropy_O_vs_R.csv"))
+readr::write_csv(entropy_OR, file.path(tab_path, "entropy_O_vs_R.csv"))
 
 # Plot original vs replicate concordance
 p <- ggplot(entropy_OR, aes(entropy_O, entropy_R, color = match)) +

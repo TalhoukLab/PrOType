@@ -50,6 +50,7 @@ load(here("data/nstring/tcga_data_with_molsubtypes.rda")) # eset
 mapped_tcga <- readr::read_csv(here("data/nstring/TCGA_sampleIDs_OTTA-Mapped.csv"), col_types = readr::cols())
 
 fig_path <- file.path(params$outputDir, "supplementary/figures/C05")
+tab_path <- file.path(params$outputDir, "supplementary/tables")
 ```
 
 ## Network Diagrams
@@ -202,7 +203,7 @@ pp_aa <- ggpubr::compare_means(
   dplyr::inner_join(me_aa, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_aa, file.path(params$outputDir, "supplementary/tables/aa_pairwise_pvals.csv"))
+readr::write_csv(pp_aa, file.path(tab_path, "aa_pairwise_pvals.csv"))
 
 # Largest global p-value (all-array)
 max_gp_aa <- ggpubr::compare_means(
@@ -271,7 +272,7 @@ pp_ns <- ggpubr::compare_means(
   dplyr::inner_join(me_ns, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_ns, file.path(params$outputDir, "supplementary/tables/ns_pairwise_pvals.csv"))
+readr::write_csv(pp_ns, file.path(tab_path, "ns_pairwise_pvals.csv"))
 
 # Largest global p-value (NanoString)
 max_gp_ns <- ggpubr::compare_means(
@@ -353,7 +354,7 @@ pp_tcga <- ggpubr::compare_means(
   dplyr::inner_join(me_tcga, by = "Gene") %>%
   dplyr::select(-.y.) %>%
   dplyr::mutate(p.adj = p.adjust(p, method = "fdr"))
-readr::write_csv(pp_tcga, file.path(params$outputDir, "supplementary/tables/tcga_pairwise_pvals.csv"))
+readr::write_csv(pp_tcga, file.path(tab_path, "tcga_pairwise_pvals.csv"))
 
 # Largest global p-value (TCGA)
 max_gp_tcga <- ggpubr::compare_means(
