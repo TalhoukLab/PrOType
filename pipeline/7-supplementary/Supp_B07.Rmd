@@ -468,6 +468,7 @@ tech_df <- Otta2015Annot %>%
     pergd_group = ifelse(pergd < 75, "Low", "High"),
     sn_group = ifelse(sn < 1000, "Low", "High")
   )
+
 # Combine technical and biological variables
 var_names <- c("cellularity", "necrosis", "rna_absorbance_group", "hyb_time",
                "pergd_group", "sn_group", "normFlag", "age_dx",
