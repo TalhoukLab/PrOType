@@ -324,6 +324,8 @@ nec_dat <- readxl::read_excel(here("data/nstring/FinalSubtype_AnalyticFile.xlsx"
 cd8_dat <- suppressWarnings(
   readxl::read_excel(here("data/nstring/OTTA DB_CD8_20180821 for Mike_HGS CCC END_edit_all.xlsx"))
 )
+Otta2015Annot <-
+  readr::read_csv(here("data/nstring/Otta2015Annot.csv"), col_types = readr::cols())
 
 fig_path <- file.path(params$outputDir, "supplementary/figures/B07")
 
@@ -543,6 +545,10 @@ clin_d <- clin_d %>%
     ) %>% 
       factor(levels = c("adnexal", "omentum", "peritoneal", "upper genital track",
                         "lower genital track", "presumed adnexal")),
+    cellularity = factor(
+      `Sample Region Cellularity`,
+      levels = c("0-20", "21-40", "41-60", "61-80", "81-100")
+    ),
     necrosis = dplyr::case_when(
       SampleRegionNecrosis2 == "1" ~ "none",
       SampleRegionNecrosis2 == "2" ~ "<=20%",
@@ -571,11 +577,10 @@ clin_d <- clin_d %>%
       TRUE ~ NA_character_
     ) %>% 
       forcats::fct_relevel("no residual"),
-    BRCA1_2 = dplyr::case_when(
+    brca_v1 = dplyr::case_when(
       brca1_2 %in% c("4", "6", "WT") ~ "all wildtypes",
       brca1_2 %in% c("1", "BRCA 1") ~ "pathogenic BRCA1 mutation",
       brca1_2 == "2" ~ "pathogenic BRCA2 mutation",
-      brca1_2 %in% c("3", "BRCA 1 and BRCA 2") ~ "pathogenic NOS",
       TRUE ~ NA_character_
     ) %>% 
       factor(),
@@ -671,6 +676,34 @@ disc <- d %>% dplyr::filter(array_preds != TCGA_preds)
 
 # make sure there are no os_yrs > 100 years
 stopifnot(sum(d[["os_yrs"]] > 100, na.rm = TRUE) == 0)
+
+## ----conc-vs-tech-bio-vars-----------------------------------------------
+# Technical Variables
+tech_df <- Otta2015Annot %>%
+  dplyr::transmute(
+    FileNameOriginal = File.Name.Original,
+    rna_absorbance_group = ifelse(rna.absorbence < 1.5, "Low", "High"),
+    hyb_time = gsub("-Hyb", "", hyb.time),
+    pergd_group = ifelse(pergd < 75, "Low", "High"),
+    sn_group = ifelse(sn < 1000, "Low", "High")
+  )
+
+# Combine technical and biological variables
+var_names <- c("cellularity", "necrosis", "rna_absorbance_group", "hyb_time",
+               "pergd_group", "sn_group", "normFlag", "age_dx",
+               "stage", "residual_disease", "brca_v1", "race_v1", "cd8")
+var_desc <- c("Cellularity", "Necrosis", "RNA Absorbance", "Hybridization Window",
+              "Percent of Genes above Limit of Detection", "Signal to Noise Ratio", "QC", "Age at Diagnosis",
+              "Stage", "Residual Disease", "BRCA1/BRCA2", "Race", "CD8")
+d_consensus <-
+  dplyr::inner_join(d, tech_df, by = "FileNameOriginal") %>%
+  dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal")) %>%
+  dplyr::transmute(label = factor(ifelse(is.na(consensus), "non-CL", "CL")),
+                   !!!rlang::syms(var_names))
+uni_ass_consensus <- d_consensus %>% 
+  Amisc::describeBy(var_names, var_desc, "label", dispersion = "sd", digits = 1, p.digits = 4)
+pandoc.table(uni_ass_consensus, split.tables = Inf,
+             caption = "Cohort characteristics for all cases by sample label")
 
 ## ----surv_params_B07-----------------------------------------------------
 # Common km arguments (Display legend only for top (OS) survival plot)

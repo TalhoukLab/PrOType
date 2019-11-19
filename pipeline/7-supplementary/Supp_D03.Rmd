@@ -404,6 +404,24 @@ pandoc.table(
 )
 ```
 
+### _Table SD12:_ Distribution of HGSOC Molecular Subtype by CD8+ TIL Level, according to predicted subtyping data (n=`r sum(table(d$cd8))`)
+
+```{r cd8-by-pred-subtype}
+cd8_df <- Amisc::describeBy(
+  data = d,
+  var.names = "cd8",
+  var.labels = "CD8",
+  by1 = "prediction",
+  Missing = FALSE,
+  ShowTotal = FALSE,
+  per = "row",
+  digits = 2
+) %>%
+  dplyr::select(-Total)
+pandoc.table(cd8_df, split.tables = Inf,
+             caption = "CD8 by Predicted Subtypes")
+```
+
 ## D.3.3 Survival Analysis
 
 ```{r surv_params_C03}

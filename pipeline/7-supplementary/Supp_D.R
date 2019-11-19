@@ -746,6 +746,21 @@ pandoc.table(
   caption = "Median Follow-up Time in Years and Events by Predicted Subtype"
 )
 
+## ----cd8-by-pred-subtype-------------------------------------------------
+cd8_df <- Amisc::describeBy(
+  data = d,
+  var.names = "cd8",
+  var.labels = "CD8",
+  by1 = "prediction",
+  Missing = FALSE,
+  ShowTotal = FALSE,
+  per = "row",
+  digits = 2
+) %>%
+  dplyr::select(-Total)
+pandoc.table(cd8_df, split.tables = Inf,
+             caption = "CD8 by Predicted Subtypes")
+
 ## ----surv_params_C03-----------------------------------------------------
 # Common km arguments (Display legend only for top (OS) survival plot)
 km_args <- list(ylab = c("Overall survival", "Progression-free survival"),
