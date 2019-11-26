@@ -456,26 +456,25 @@ disc <- d %>% dplyr::filter(array_preds != TCGA_preds)
 stopifnot(sum(d[["os_yrs"]] > 100, na.rm = TRUE) == 0)
 ```
 
-### Comparison of Consensus vs. Non-Consensus for Technical and Biological Variables
+### Comparison of Consensus vs. Non-Consensus for Technical Variables
 
 ```{r conc-vs-tech-bio-vars}
 # Technical Variables
 tech_df <- Otta2015Annot %>%
+  dplyr::mutate(rna.absorbence = magrittr::inset(rna.absorbence, ottaID == "TNCO02285", 1.98)) %>% # typo
   dplyr::transmute(
     FileNameOriginal = File.Name.Original,
-    rna_absorbance_group = ifelse(rna.absorbence < 1.5, "Low", "High"),
+    rna_absorbance_group = ifelse(rna.absorbence < 1.85, "Low", "High"),
     hyb_time = gsub("-Hyb", "", hyb.time),
     pergd_group = ifelse(pergd < 75, "Low", "High"),
     sn_group = ifelse(sn < 1000, "Low", "High")
   )
-
 # Combine technical and biological variables
-var_names <- c("cellularity", "necrosis", "rna_absorbance_group", "hyb_time",
-               "pergd_group", "sn_group", "normFlag", "age_dx",
-               "stage", "residual_disease", "brca_v1", "race_v1", "cd8")
-var_desc <- c("Cellularity", "Necrosis", "RNA Absorbance", "Hybridization Window",
-              "Percent of Genes above Limit of Detection", "Signal to Noise Ratio", "QC", "Age at Diagnosis",
-              "Stage", "Residual Disease", "BRCA1/BRCA2", "Race", "CD8")
+var_names <- c("age_dx", "cellularity", "necrosis", "rna_absorbance_group",
+               "hyb_time", "pergd_group", "sn_group")
+var_desc <- c("Age at Diagnosis", "Cellularity", "Necrosis", "RNA Absorbance",
+              "Hybridization Window",
+              "Percent of Genes above Limit of Detection", "Signal to Noise Ratio")
 d_consensus <-
   dplyr::inner_join(d, tech_df, by = "FileNameOriginal") %>%
   dplyr::filter(anatomical_site %in% c("adnexal", "presumed adnexal")) %>%
