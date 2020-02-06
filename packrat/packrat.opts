@@ -8,7 +8,7 @@ external.packages:
     RCurl
     RJSONIO
     rsconnect
-local.repos: ~/Documents/Bitbucket/packages
+local.repos: ~/Documents/packages
 load.external.packages.on.startup: TRUE
 ignored.packages: 
 ignored.directories:
