@@ -40,10 +40,15 @@ Source: Bioconductor
 Version: 0.26.0
 Hash: 79cfa274553b9197eb19c267720d948b
 
-Package: BiocInstaller
+Package: BiocManager
+Source: CRAN
+Version: 1.30.10
+Hash: 43ec086b20519eb9b4156f70577f9f44
+
+Package: BiocVersion
 Source: Bioconductor
-Version: 1.30.0
-Hash: b7e53989dbab5dc09626192456e7abc9
+Version: 3.8.0
+Hash: 761d981e13b5100ec443b88b99ec5630
 
 Package: C50
 Source: CRAN
@@ -263,9 +268,9 @@ Hash: 5ed3b04bc1fa1a934188fc6022d3ba7c
 
 Package: affy
 Source: Bioconductor
-Version: 1.58.0
-Hash: 8c4d62a9fa0bf2a997119a0e66795f54
-Requires: Biobase, BiocGenerics, BiocInstaller, affyio, preprocessCore,
+Version: 1.60.0
+Hash: e78750df48fb669a2ac08770ccb77358
+Requires: Biobase, BiocGenerics, BiocManager, affyio, preprocessCore,
     zlibbioc
 
 Package: affyio
