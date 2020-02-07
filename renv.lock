@@ -1089,10 +1089,10 @@
     },
     "jsonlite": {
       "Package": "jsonlite",
-      "Version": "1.5",
+      "Version": "1.6.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "c9638b684f25fd947082b729e8e8d2f1"
+      "Hash": "84b0ee361e2f78d6b7d670db9471c0c5"
     },
     "kernlab": {
       "Package": "kernlab",
@@ -1472,10 +1472,10 @@
     },
     "plotly": {
       "Package": "plotly",
-      "Version": "4.8.0.9000",
+      "Version": "4.9.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "433b80a3f1283fdf2f9b301f1cbf8ef4"
+      "Hash": "f944fd279ce84daf29b179611bea0345"
     },
     "plyr": {
       "Package": "plyr",
