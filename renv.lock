@@ -774,13 +774,6 @@
       "Repository": "CRAN",
       "Hash": "7fce217eaaf8016e72065e85c73027b5"
     },
-    "fastmap": {
-      "Package": "fastmap",
-      "Version": "1.0.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "83ab58a0518afe3d17e41da01af13b60"
-    },
     "fdrtool": {
       "Package": "fdrtool",
       "Version": "1.2.15",
@@ -1033,10 +1026,10 @@
     },
     "httpuv": {
       "Package": "httpuv",
-      "Version": "1.5.2",
+      "Version": "1.4.5.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f793dad2c9ae14fbb1d22f16f23f8326"
+      "Hash": "6db7d2196b1c704ea0f0877860fe3cf8"
     },
     "httr": {
       "Package": "httr",
@@ -1750,10 +1743,10 @@
     },
     "shiny": {
       "Package": "shiny",
-      "Version": "1.4.0",
+      "Version": "1.2.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "6ca23724bb2c804c1d0b3db4862a39c7"
+      "Hash": "4dad5c94a7fcd08d9e29192d9bb80a3b"
     },
     "shinyjs": {
       "Package": "shinyjs",
