@@ -1739,7 +1739,7 @@
       "Version": "1.1-2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f1653877c3e02b0496cdd2568b2292e2"
+      "Hash": "f957795fbc8a61e84a0548e651911650"
     },
     "shiny": {
       "Package": "shiny",
