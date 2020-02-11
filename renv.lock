@@ -1040,10 +1040,10 @@
     },
     "igraph": {
       "Package": "igraph",
-      "Version": "1.2.2",
+      "Version": "1.2.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f18a4ed83ef7f95640ba82f687316848"
+      "Hash": "fffa635f747cd07ffc56bc13a23701e4"
     },
     "infotheo": {
       "Package": "infotheo",
@@ -1347,10 +1347,10 @@
     },
     "nloptr": {
       "Package": "nloptr",
-      "Version": "1.0.4",
+      "Version": "1.2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "ade075890e3c7bebd1bb074308303f2c"
+      "Hash": "123f92613e59e1f5671f80f72363ae60"
     },
     "nnet": {
       "Package": "nnet",
