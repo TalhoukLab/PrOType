@@ -50,7 +50,7 @@ dat <- file.path(outputDir, "unsupervised", "map_genes", dataset,
 y <- file.path(outputDir, "unsupervised", "final", dataset,
                paste0("all_clusts_", dat_tr, "_", top_bcm, ".rds")) %>%
   readRDS() %>%
-  dplyr::select(labs = top_cl_alg) %>%
+  dplyr::select(labs = tidyselect::all_of(top_cl_alg)) %>%
   dplyr::inner_join(build_mapping(dataset), by = "labs") %>%
   dplyr::pull(labels) %>%
   make.names()
