@@ -399,7 +399,8 @@ import_array_overlap <- function(dir = "data", osamples) {
 join_published_array <- function(pred, overlap) {
   pred %>%
     tibble::tibble(sampleID = rownames(attr(., "prob")), array = .) %>%
-    dplyr::inner_join(overlap, ., by = "sampleID")
+    dplyr::inner_join(overlap, ., by = "sampleID") %>%
+    dplyr::mutate(array = `attributes<-`(array, attributes(pred)))
 }
 
 #' Evaluate overlap array predictions using splendid and caret
