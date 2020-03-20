@@ -86,13 +86,6 @@
       "Repository": "CRAN",
       "Hash": "b86e4eee14c3aec663a65aa6e9e81973"
     },
-    "CVST": {
-      "Package": "CVST",
-      "Version": "0.2-2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "d998381c124b0b50f24d165d241998a7"
-    },
     "Cubist": {
       "Package": "Cubist",
       "Version": "0.2.2",
@@ -113,13 +106,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4fdd17df6c1b897cb59bdd9cf6621a43"
-    },
-    "DRR": {
-      "Package": "DRR",
-      "Version": "0.0.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a1374a34c7de1196b2af740be9550f8f"
     },
     "DT": {
       "Package": "DT",
@@ -280,13 +266,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "274f438bbe305cfe72a0ec712a0f17c6"
-    },
-    "RcppRoll": {
-      "Package": "RcppRoll",
-      "Version": "0.3.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "84a03997fbb5acfb3c9b43bad88fea1f"
     },
     "Rd2roxygen": {
       "Package": "Rd2roxygen",
@@ -499,7 +478,7 @@
       "Version": "0.6-6",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "e2a5a327c114f65bb112ebebccfca556"
+      "Hash": "ffe026cec62439c3ff71bd06fd828b2d"
     },
     "class": {
       "Package": "class",
@@ -648,13 +627,6 @@
       "Repository": "CRAN",
       "Hash": "db9cbc1b9cd5364510c54a5d1e50f8ac"
     },
-    "ddalpha": {
-      "Package": "ddalpha",
-      "Version": "1.3.3",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "ce43a186a6eea04b6f2d9b58e0e8150e"
-    },
     "desc": {
       "Package": "desc",
       "Version": "1.2.0",
@@ -689,13 +661,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "706759233d88683f590d78ab6c82360a"
-    },
-    "dimRed": {
-      "Package": "dimRed",
-      "Version": "0.1.0",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "7c33b5379cdc3f51fe6f39f157573e12"
     },
     "doBy": {
       "Package": "doBy",
@@ -843,13 +808,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "b8cff1d1391fd1ad8b65877f4c7f2e53"
-    },
-    "geometry": {
-      "Package": "geometry",
-      "Version": "0.3-6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "66ef314bafe45ce30d2bc66c7715179d"
     },
     "ggforce": {
       "Package": "ggforce",
@@ -1178,6 +1136,13 @@
       "Repository": "CRAN",
       "Hash": "0c03d6f1d0f5899bc08300838b6981fb"
     },
+    "lifecycle": {
+      "Package": "lifecycle",
+      "Version": "0.2.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "361811f31f71f8a617a9a68bf63f1f42"
+    },
     "limma": {
       "Package": "limma",
       "Version": "3.38.3",
@@ -1211,13 +1176,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "4917bf2f24e9121cbdc0535b6f08654b"
-    },
-    "magic": {
-      "Package": "magic",
-      "Version": "1.5-8",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "39abd725c3c09fc591d04e511c8ec8fc"
     },
     "magrittr": {
       "Package": "magrittr",
@@ -1610,10 +1568,10 @@
     },
     "recipes": {
       "Package": "recipes",
-      "Version": "0.1.2",
+      "Version": "0.1.10",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a5d661751a856eb43d39d1754e370259"
+      "Hash": "06f184a082b05693d8113dfceffe40e3"
     },
     "registry": {
       "Package": "registry",
@@ -1734,13 +1692,6 @@
       "Repository": "CRAN",
       "Hash": "1a85ed14f30c0455216702a024cba0d6"
     },
-    "sfsmisc": {
-      "Package": "sfsmisc",
-      "Version": "1.1-2",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "f957795fbc8a61e84a0548e651911650"
-    },
     "shiny": {
       "Package": "shiny",
       "Version": "1.2.0",
@@ -1846,10 +1797,10 @@
     },
     "tidyr": {
       "Package": "tidyr",
-      "Version": "0.8.1",
+      "Version": "1.0.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "95ded1450e6af17d0d3eb4b39233c43d"
+      "Hash": "fb73a010ace00d6c584c2b53a21b969c"
     },
     "tidyselect": {
       "Package": "tidyselect",
