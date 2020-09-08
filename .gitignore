@@ -3,4 +3,4 @@
 .RData
 .DS_Store
 raw_data/
-packrat/lib*/
+data/
