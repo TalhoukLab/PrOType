@@ -62,5 +62,6 @@ The PrOTYPE assay reports a probability that a sample belongs to one of four gen
 ```{r spot, eval=has_spot}
 cli::cat_line("# SPOT")
 cli::cat_line(paste("SPOT Prediction:", round(pred_data[["SPOT_pred"]], 3)))
+cli::cat_line()
 cli::cat_line(paste("SPOT Quintile:", pred_data[["SPOT_quintile"]]))
 ```
