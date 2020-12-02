@@ -4,10 +4,12 @@ library(randomForest)
 library(ggplot2)
 `%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
+spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
 
 # Load Vancouver CS3 pools (ref 1), final model, and final gene list
 pools_ref1 <- readRDS("data/van_pools_cs3.rds")
 final_model <- readRDS("data/final_model.rds")
+coefmat <- readRDS("data/coefmat.rds")
 final_glist <- c(
   "FBN1", "TCF7L1", "CCL5", "FN1", "ADAMDEC1", "CTSK", "COL3A1",
   "CD74", "TIMP3", "POSTN", "CXCL9", "SALL2", "NUAK1", "SLAMF7",
@@ -37,6 +39,11 @@ ui <- fluidPage(
                 label = "Upload RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
+
+      # Import SPOT input
+      fileInput(inputId = "spot",
+                label = "Upload SPOT input",
+                accept = ".csv"),
 
       # Analysis section
       h5(strong("Analysis")),
@@ -352,13 +359,44 @@ server <- function(input, output, session) {
     withProgress(message = "Predicting samples", {
       set.seed(1)
       dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
-      data.frame(
+      pred_df <- data.frame(
         dat_probs,
         entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
         pred = as.character(predict(final_model, isolate(Ynorm())))
       ) %>%
         tibble::rownames_to_column("sample") %>%
         tibble::as_tibble()
+
+      # Join SPOT input with normalized data, create predictions and quintiles
+      if (!is.null(input$spot)) {
+        req(input$spot)
+        spot_Ynorm <- input$spot$datapath %>%
+          readr::read_csv(col_types = readr::cols()) %>%
+          dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"), by = "sample") %>%
+          tibble::column_to_rownames("sample")
+
+        coefmat <- dplyr::filter(coefmat, Symbol %in% names(spot_Ynorm))
+
+        spot_df <- spot_Ynorm %>%
+          dplyr::select(coefmat$Symbol) %>%
+          as.matrix() %>%
+          magrittr::multiply_by_matrix(coefmat$Coefficient) %>%
+          drop() %>%
+          tibble::enframe(name = "sample", value = "SPOT_pred") %>%
+          dplyr::mutate(
+            SPOT_quintile = dplyr::case_when(
+              SPOT_pred <= spot.q[1] ~ "Q1",
+              SPOT_pred > spot.q[1] & SPOT_pred <= spot.q[2] ~ "Q2",
+              SPOT_pred > spot.q[2] & SPOT_pred <= spot.q[3] ~ "Q3",
+              SPOT_pred > spot.q[3] & SPOT_pred <= spot.q[4] ~ "Q4",
+              SPOT_pred > spot.q[4] ~ "Q5",
+              TRUE ~ NA_character_
+            )
+          )
+        dplyr::inner_join(pred_df, spot_df, by = "sample")
+      } else {
+        pred_df
+      }
     })
   })
 
@@ -512,6 +550,9 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(id = "predict", !is.null(input$rcc))
   })
+  observe({
+    shinyjs::toggleState(id = "predict", !is.null(input$spot))
+  })
 
   # Disable prediction after generated for currently imported files
   shinyjs::onclick("predict", shinyjs::disable(id = "predict"))
@@ -544,6 +585,9 @@ server <- function(input, output, session) {
 
   # Button label prompts prediction after import
   observeEvent(input$rcc, {
+    updateActionButton(session, "predict", label = "Predict NanoString samples")
+  })
+  observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
   })
 
