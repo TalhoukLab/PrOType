@@ -503,7 +503,8 @@ server <- function(input, output, session) {
         extension = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
       ) %>%
-      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2)
+      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2) %>%
+      DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
   # NanoString QC data as DataTable
@@ -549,11 +550,16 @@ server <- function(input, output, session) {
   # Predicted probabilities and classes as DataTable
   output$preds <- DT::renderDataTable({
     dat_preds() %>%
-      DT::datatable(rownames = FALSE,
-                    selection = "none",
-                    caption = "Sample predictions and probabilities") %>%
+      DT::datatable(
+        rownames = FALSE,
+        selection = "none",
+        caption = "Sample predictions and probabilities",
+        extension = "FixedColumns",
+        options = list(scrollX = TRUE, fixedColumns = TRUE)
+      ) %>%
       DT::formatRound(columns = lapply(dat_preds(), class) == "numeric",
-                      digits = 3)
+                      digits = 3) %>%
+      DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
   # QC Summary of the flags failed and passed
