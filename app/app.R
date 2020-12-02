@@ -468,15 +468,16 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # Preview of normalized data as DataTable
+  # Normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
     Ynorm() %>%
       tibble::rownames_to_column("sample") %>%
       DT::datatable(
         rownames = FALSE,
         selection = "none",
-        caption = "Preview of normalized data",
-        options = list(scrollX = TRUE)
+        caption = "Normalized data",
+        extension = "FixedColumns",
+        options = list(scrollX = TRUE, fixedColumns = TRUE)
       ) %>%
       DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2)
   })
