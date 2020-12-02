@@ -591,12 +591,12 @@ server <- function(input, output, session) {
 
   # Enable NanoString prediction when files are imported (at least RCC needed)
   observe({
-    shinyjs::toggleState(id = "predict",!is.null(input$rcc) |
+    shinyjs::toggleState(id = "predict", !is.null(input$rcc) |
                            (!is.null(input$rcc) & !is.null(input$spot)))
   })
 
   # Disable prediction after generated for currently imported files
-  shinyjs::onclick("predict", shinyjs::disable(id = "predict"))
+  shinyjs::onclick(id = "predict", shinyjs::disable(id = "predict"))
 
   # Enable data download when files are imported
   observe({
