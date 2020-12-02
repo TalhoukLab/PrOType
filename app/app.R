@@ -102,7 +102,8 @@ ui <- fluidPage(
         tabPanel("Summary",
                  htmlOutput(outputId = "counts"),
                  tableOutput(outputId = "qc_summary"),
-                 tableOutput(outputId = "freqs")),
+                 tableOutput(outputId = "freqs"),
+                 textOutput(outputId = "spot_genes")),
         tabPanel("Help",
                  h3("Welcome to the PrOType Web Tool!"),
                  p("This app allows you to import RCC files from NanoString runs
@@ -353,6 +354,22 @@ server <- function(input, output, session) {
     })
   })
 
+  # SPOT input joined with normalized data
+  spot_Ynorm <- reactive({
+    req(input$spot)
+    input$spot$datapath %>%
+      readr::read_csv(col_types = readr::cols()) %>%
+      dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
+                        by = "sample") %>%
+      tibble::column_to_rownames("sample")
+  })
+
+  # Filtered coefficient matrix
+  coefmat_f <- reactive({
+    req(input$spot)
+    dplyr::filter(coefmat, Symbol %in% names(spot_Ynorm()))
+  })
+
   # Train final model and predict NanoString samples
   dat_preds <- reactive({
     req(input$predict)
@@ -367,20 +384,13 @@ server <- function(input, output, session) {
         tibble::rownames_to_column("sample") %>%
         tibble::as_tibble()
 
-      # Join SPOT input with normalized data, create predictions and quintiles
+      # Create SPOT predictions and quintiles
       if (!is.null(input$spot)) {
         req(input$spot)
-        spot_Ynorm <- input$spot$datapath %>%
-          readr::read_csv(col_types = readr::cols()) %>%
-          dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"), by = "sample") %>%
-          tibble::column_to_rownames("sample")
-
-        coefmat <- dplyr::filter(coefmat, Symbol %in% names(spot_Ynorm))
-
-        spot_df <- spot_Ynorm %>%
-          dplyr::select(coefmat$Symbol) %>%
+        spot_df <- spot_Ynorm() %>%
+          dplyr::select(coefmat_f()$Symbol) %>%
           as.matrix() %>%
-          magrittr::multiply_by_matrix(coefmat$Coefficient) %>%
+          magrittr::multiply_by_matrix(coefmat_f()$Coefficient) %>%
           drop() %>%
           tibble::enframe(name = "sample", value = "SPOT_pred") %>%
           dplyr::mutate(
@@ -549,6 +559,15 @@ server <- function(input, output, session) {
       tibble::enframe(name = "Class", value = "Freq")
   },
   caption = "Prediction Frequencies")
+
+  # Genes used for SPOT prediction
+  output$spot_genes <- renderText({
+    req(input$predict)
+    coefmat_f()$Symbol %>%
+      grep(pattern = "age|stage", value = TRUE, invert = TRUE) %>%
+      paste(collapse = ", ") %>%
+      paste("Genes used for SPOT prediction:", .)
+  })
 
   # Enable NanoString prediction when files are imported (at least RCC needed)
   observe({
