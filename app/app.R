@@ -359,6 +359,16 @@ server <- function(input, output, session) {
     req(input$spot)
     input$spot$datapath %>%
       readr::read_csv(col_types = readr::cols()) %>%
+      dplyr::transmute(
+        sample,
+        age.fq2 = ifelse(age.f == "q2", 1, 0),
+        age.fq3 = ifelse(age.f == "q3", 1, 0),
+        age.fq4 = ifelse(age.f == "q4", 1, 0),
+        stage.f1 = ifelse(stage.f == 1, 1, 0),
+        stage.f8 = ifelse(stage.f == 8, 1, 0),
+        site,
+        treatment
+      ) %>%
       dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
                         by = "sample") %>%
       tibble::column_to_rownames("sample")
@@ -403,7 +413,11 @@ server <- function(input, output, session) {
               TRUE ~ NA_character_
             )
           )
-        dplyr::inner_join(pred_df, spot_df, by = "sample")
+        site_tx_df <- spot_Ynorm() %>%
+          tibble::rownames_to_column("sample") %>%
+          dplyr::select(sample, site, treatment)
+        list(pred_df, spot_df, site_tx_df) %>%
+          purrr::reduce(dplyr::inner_join, by = "sample")
       } else {
         pred_df
       }
