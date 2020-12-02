@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = FALSE, results = "asis")
 ```{r load}
 qc_data <- params$qc_data
 pred_data <- params$pred_data
+has_spot <- any(grepl("SPOT", names(pred_data)))
 ```
 
 # Clinical Details
@@ -57,3 +58,9 @@ Predictive Entropy: `r entropy`
 # Prediction and Entropy
 
 The PrOTYPE assay reports a probability that a sample belongs to one of four gene expression-based molecular subtypes. These probabilities sum to 100%. The subtype with the highest probability is noted in bold as the dominant subtype. Predictive entropy is reported on a scale from 0-2 where 0 indicates a perfect classification and 2 indicates a random-chance classification. Entropy can be affected by specimen quality, assay condition, and specimen biology.
+
+```{r spot, eval=has_spot}
+cli::cat_line("# SPOT")
+cli::cat_line(paste("SPOT Prediction:", round(pred_data[["SPOT_pred"]], 3)))
+cli::cat_line(paste("SPOT Quintile:", pred_data[["SPOT_quintile"]]))
+```
