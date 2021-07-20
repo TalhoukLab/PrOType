@@ -373,7 +373,9 @@
       "Package": "biostatUtil",
       "Version": "0.0.0.9090",
       "Source": "Local",
-      "Hash": "f17378af8419de47a0c94cc27e98f21b"
+      "RemoteType": "local",
+      "RemoteUrl": "C:/Users/Derek/Documents/Packages/biostatUtil_0.0.0.9090.tar.gz",
+      "Hash": "86dae59f0bb2e1ef095d29a7f303f73f"
     },
     "bit": {
       "Package": "bit",
