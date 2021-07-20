@@ -18,7 +18,7 @@ candidate model for predicting NanoString samples based on validating on overlap
 5. **Gene Selection**: select top genes based on training batch 1 of NanoString data and make final model predictions
 6. **Cross Platform**: cross platform comparisons and evaluations
 
-Please follow the manual below to run the pipeline on your system. Raw data can be provided upon request.
+Please follow the manual below to run the pipeline on your system. Data can be provided upon request in the form of a zip file. After unzipping the data, place the directory in the repository root and name it `data/`.
 
 ## Installation
 
