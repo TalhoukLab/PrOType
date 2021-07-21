@@ -341,6 +341,13 @@
       "Repository": "CRAN",
       "Hash": "c0fc8062a3dd51622fbe8aae4271d1e3"
     },
+    "askpass": {
+      "Package": "askpass",
+      "Version": "1.1",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e8a22846fff485f0be3770c2da758713"
+    },
     "assertthat": {
       "Package": "assertthat",
       "Version": "0.2.0",
@@ -610,10 +617,10 @@
     },
     "curl": {
       "Package": "curl",
-      "Version": "3.2",
+      "Version": "4.3.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "238e44ea6a3d5532b0b6f9973f4967fb"
+      "Hash": "022c42d49c28e95d69ca60446dbabf88"
     },
     "data.table": {
       "Package": "data.table",
@@ -1328,10 +1335,10 @@
     },
     "openssl": {
       "Package": "openssl",
-      "Version": "1.0.1",
+      "Version": "1.4.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f59d84c47b549d79f8bd703300292c9a"
+      "Hash": "f4dbc5a47fd93d3415249884d31d6791"
     },
     "org.Hs.eg.db": {
       "Package": "org.Hs.eg.db",
@@ -1675,10 +1682,10 @@
     },
     "rstudioapi": {
       "Package": "rstudioapi",
-      "Version": "0.7",
+      "Version": "0.13",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "360857ed01b262058c2b0b4ab6c5e829"
+      "Hash": "06c85365a03fdaf699966cc1d3cf53ea"
     },
     "rtkore": {
       "Package": "rtkore",
@@ -1796,6 +1803,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6f8f8358f37a0ccd0e2cbcee7787b4ab"
+    },
+    "sys": {
+      "Package": "sys",
+      "Version": "3.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b227d13e29222b4574486cfcbde077fa"
     },
     "tibble": {
       "Package": "tibble",
