@@ -25,13 +25,15 @@ numBootstraps=500
 
 # Directory parameters
 user="$(whoami)"
-rootDir="/scratch/ovcare"/$user
-inputDir=$rootDir"/Projects/PrOType/raw_data"
-scriptDir=$rootDir"/results/PrOType/scripts"
+rootDir="/home"/$user
+projDir=$rootDir"/Projects/PrOType"
+inputDir=$projDir"/raw_data"
+resultsDir=$rootDir"/results/PrOType"
+scriptDir=$resultsDir"/scripts"
 RDir=$scriptDir"/R"
 shDir=$scriptDir"/sh"
-outputDir=$rootDir"/results/PrOType/outputs"
-logDir=$rootDir"/results/PrOType/logs"
+outputDir=$resultsDir"/outputs"
+logDir=$resultsDir"/logs"
 
 . ./assets/dev_params.sh
 . ./assets/check.sh
