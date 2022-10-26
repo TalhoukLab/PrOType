@@ -319,11 +319,12 @@ server <- function(input, output, session) {
         tibble::enframe(rowMeans(pools_ref1), name = "Name", value = "expR1")
       mR2 <-
         weights %>%
-        purrr::imap_dfc(~ {
+        purrr::imap(~ {
           df <- dplyr::select(pools_ref2(), Name, dplyr::matches(.y)) %>%
             tibble::column_to_rownames("Name")
           tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
         }) %>%
+        purrr::reduce(dplyr::inner_join, by = "Name") %>%
         dplyr::transmute(
           Name,
           expR2 = rowSums(dplyr::select(., dplyr::contains("Pool")))
