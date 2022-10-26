@@ -30,7 +30,8 @@ import_nstring_overlap <- function(dir = "data", osamples) {
 join_published_nstring <- function(pred, overlap) {
   pred %>%
     tibble::tibble(ottaID = rownames(attr(., "prob")), nstring = .) %>%
-    dplyr::inner_join(overlap, ., by = "ottaID")
+    dplyr::inner_join(overlap, ., by = "ottaID") %>%
+    dplyr::mutate(nstring = `attributes<-`(nstring, attributes(pred)))
 }
 
 #' Combine overlap predictions for array and nanostring with published
