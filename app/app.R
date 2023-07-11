@@ -189,7 +189,7 @@ server <- function(input, output, session) {
       need(any(grepl("Pool", input$rcc$name, ignore.case = TRUE)),
            "No RCC pool files selected")
     )
-    pools <- input$rcc %>%
+    pools_raw <- input$rcc %>%
       dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
@@ -201,7 +201,7 @@ server <- function(input, output, session) {
       as.data.frame()
 
     # Special renaming system for pool files with spaces and indexing by letters
-    pools <- pools %>%
+    pools_raw <- pools_raw %>%
       rlang::set_names(~ gsub(".*(Pool)[[:space:]]*(.+)_.*", "\\1\\2", .,
                               ignore.case = TRUE)) %>%
       tibble::set_tidy_names(quiet = TRUE) %>%
@@ -213,11 +213,11 @@ server <- function(input, output, session) {
 
     # Check all three pools exist
     validate(
-      need(any(grepl("Pool1", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool1", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool1 RCC files"),
-      need(any(grepl("Pool2", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool2", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool2 RCC files"),
-      need(any(grepl("Pool3", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool3", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool3 RCC files")
     )
 
@@ -233,7 +233,7 @@ server <- function(input, output, session) {
 
     # Check all pools pass QC
     pools_qc <- nanostringr::NanoStringQC(
-      raw = pools,
+      raw = pools_raw,
       exp = pools_exp,
       detect = 50,
       sn = input$sn
@@ -243,7 +243,7 @@ server <- function(input, output, session) {
            "Some pools failed QC. Normalization failed.")
     )
 
-    nanostringr::HKnorm(pools)
+    nanostringr::HKnorm(pools_raw)
   })
 
   # Read in all RCC chip files and combine count data
