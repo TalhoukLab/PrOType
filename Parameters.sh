@@ -25,13 +25,15 @@ numBootstraps=500
 
 # Directory parameters
 user="$(whoami)"
-rootDir="/extscratch/shahlab/huntsman"/$user
-inputDir=$rootDir"/Projects/PrOType/raw_data"
-scriptDir=$rootDir"/scripts"
+rootDir="/home"/$user
+projDir=$rootDir"/Projects/PrOType"
+inputDir=$projDir"/raw_data"
+resultsDir=$rootDir"/results/PrOType"
+scriptDir=$resultsDir"/scripts"
 RDir=$scriptDir"/R"
 shDir=$scriptDir"/sh"
-outputDir=$rootDir"/outputs"
-logDir=$rootDir"/logs"
+outputDir=$resultsDir"/outputs"
+logDir=$resultsDir"/logs"
 
 . ./assets/dev_params.sh
 . ./assets/check.sh
