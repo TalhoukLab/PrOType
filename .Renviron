@@ -1,1 +1,2 @@
 RENV_PATHS_CELLAR=i:/cellar;/Volumes/files.ubc.ca/cellar
+RENV_CONFIG_MRAN_ENABLED=FALSE
