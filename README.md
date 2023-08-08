@@ -80,4 +80,4 @@ To use alternative options than the default pipeline parameters, modify the rele
 
 A tree visualization of the file structure can be found [here](https://github.com/AlineTalhouk/PrOType/blob/master/docs/files.md). Helper functions, scripts for job submission, cleaning outputs, and additional developer parameters are found in the [`assets/`](https://github.com/AlineTalhouk/PrOType/tree/master/assets) directory.
 
-A Web Tool of the PrOType pipeline is hosted at https://dchiu911.shinyapps.io/PrOType. This shiny app allows you to visualize quality control metrics, view normalized data, and predict new NanoString samples using our final model.
+A Web Tool of the PrOType pipeline is hosted at https://ovcare.shinyapps.io/PrOType. This shiny app allows you to visualize quality control metrics, view normalized data, and predict new NanoString samples using our final model.
