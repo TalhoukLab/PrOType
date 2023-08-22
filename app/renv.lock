@@ -1220,14 +1220,14 @@
     },
     "randomForest": {
       "Package": "randomForest",
-      "Version": "4.7-1.1",
+      "Version": "4.6-12",
       "Source": "Repository",
       "Repository": "CRAN",
       "Requirements": [
         "R",
         "stats"
       ],
-      "Hash": "b52825075358b1ebd159e262bf40649d"
+      "Hash": "5987efa7d3c3d26d81a340d1d91baa5a"
     },
     "rappdirs": {
       "Package": "rappdirs",
