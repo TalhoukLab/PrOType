@@ -1,5 +1,5 @@
 ---
-title: "PrOTYPE: Predictor of high-grade serous ovarian carcinoma molecular subtype  \nResearch Report"
+title: "PrOTYPE: Predictor of high-grade serous ovarian carcinoma molecular subtype  \nFOR RESEARCH USE ONLY"
 output: word_document
 params:
   qc_data: NA
@@ -15,14 +15,19 @@ qc_data <- params$qc_data
 pred_data <- params$pred_data
 ```
 
-# Clinical Details
+Report Date: `r Sys.Date()`
 
-Confirmed high-grade serous ovarian cancer.
+To: Dr. Gottfried Konecny, UCLA
+
+Fax: (310) 794-3190
+
+# Sample Details
 
 ```{r clinical-details}
 clin <- data.frame(
-  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:", "Quality Control:"),
-  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour",
+  c("Patient ID:", "Kit ID:", "Sample ID:", "Date Extracted:", "Input:", "Quality Control:"),
+  c("_", strsplit(qc_data[["sample"]], split = "_")[[1]][3], qc_data[["sample"]],
+    qc_data[["nanostring.date"]], "500ng Total RNA (measure by Nanodrop, A260/A280: _)",
     as.character(qc_data[["QCFlag"]]))
 )
 pander::pander(clin, col.names = NULL, justify = "left")
@@ -57,3 +62,9 @@ Predictive Entropy: `r entropy`
 # Prediction and Entropy
 
 The PrOTYPE assay reports a probability that a sample belongs to one of four gene expression-based molecular subtypes. These probabilities sum to 100%. The subtype with the highest probability is noted in bold as the dominant subtype. Predictive entropy is reported on a scale from 0-2 where 0 indicates a perfect classification and 2 indicates a random-chance classification. Entropy can be affected by specimen quality, assay condition, and specimen biology.
+
+&nbsp;
+
+Testing performed by: \_
+
+Reported by: \_
