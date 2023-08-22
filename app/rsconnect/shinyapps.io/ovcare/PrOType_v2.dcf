@@ -5,7 +5,7 @@ account: ovcare
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 9649653
-bundleId: 7594749
+bundleId: 7597574
 url: https://ovcare.shinyapps.io/PrOType_v2/
 version: 1
 asMultiple: FALSE
