@@ -1,0 +1,13 @@
+name: PrOType_v2
+title: PrOType_v2
+username: ovcare
+account: ovcare
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9649653
+bundleId: 7594749
+url: https://ovcare.shinyapps.io/PrOType_v2/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rprofile|renv.lock
