@@ -460,7 +460,7 @@ server <- function(input, output, session) {
   ## NanoString QC Plots
   # sn vs pergd
   output$sn_vs_pergd <- plotly::renderPlotly({
-    p <- ggplot(qc(), aes(sn, pergd,
+    p <- ggplot(qc(), aes(snr, pergd,
                           text = paste("sample:", sample),
                           color = normFlag)) +
       geom_point() +
