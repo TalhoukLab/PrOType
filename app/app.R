@@ -197,7 +197,13 @@ server <- function(input, output, session) {
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
+      dplyr::mutate(Name = dplyr::case_match(
+        Name,
+        "CD3E" ~ "CD3e",
+        "PD1" ~ "PD-1",
+        "PDL1" ~ "PD-L1",
+        .default = Name
+      )) %>%
       as.data.frame()
 
     # Special renaming system for pool files with spaces and indexing by letters
@@ -261,7 +267,13 @@ server <- function(input, output, session) {
       purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
+      dplyr::mutate(Name = dplyr::case_match(
+        Name,
+        "CD3E" ~ "CD3e",
+        "PD1" ~ "PD-1",
+        "PDL1" ~ "PD-L1",
+        .default = Name
+      )) %>%
       as.data.frame()
   })
 
