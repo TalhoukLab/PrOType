@@ -323,7 +323,8 @@ server <- function(input, output, session) {
 
       # Calculate mean gene expression for references
       mR1 <-
-        tibble::enframe(rowMeans(pools_ref1), name = "Name", value = "expR1")
+        rowMeans(pools_ref1) %>%
+        tibble::enframe(name = "Name", value = "expR1")
       mR2 <-
         weights %>%
         purrr::imap(~ {
@@ -332,10 +333,7 @@ server <- function(input, output, session) {
           tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
         }) %>%
         purrr::reduce(dplyr::inner_join, by = "Name") %>%
-        dplyr::transmute(
-          Name,
-          expR2 = rowSums(dplyr::select(., dplyr::contains("Pool")))
-        )
+        dplyr::transmute(Name, expR2 = rowSums(dplyr::select(., dplyr::contains("Pool"))))
 
       # Combine samples with batch effect (difference in means)
       Y <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
