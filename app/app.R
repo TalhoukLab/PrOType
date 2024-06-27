@@ -455,7 +455,7 @@ server <- function(input, output, session) {
       DT::datatable(rownames = FALSE,
                     selection = "none",
                     caption = "Preview of normalized data") %>%
-      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2)
+      DT::formatRound(columns = -1, digits = 2)
   })
 
   # NanoString QC data as DataTable
