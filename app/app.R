@@ -194,7 +194,7 @@ server <- function(input, output, session) {
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
       dplyr::mutate(Name = dplyr::case_match(
@@ -264,7 +264,7 @@ server <- function(input, output, session) {
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
       dplyr::mutate(Name = dplyr::case_match(
