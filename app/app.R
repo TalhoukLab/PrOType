@@ -513,7 +513,7 @@ server <- function(input, output, session) {
     qc() %>%
       dplyr::select(dplyr::matches("Flag")) %>%
       purrr::map(table) %>%
-      purrr::invoke(rbind, .) %>%
+      rlang::exec(rbind, !!!.) %>% 
       as.data.frame() %>%
       tibble::rownames_to_column("Flag")
   },
