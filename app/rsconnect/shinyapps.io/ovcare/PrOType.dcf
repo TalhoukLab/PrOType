@@ -1,12 +1,11 @@
 name: PrOType
 title: PrOType
 username:
-account: dchiu911
+account: ovcare
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 547545
-bundleId: 2134677
-url: https://dchiu911.shinyapps.io/PrOType/
-when: 1559793824.28334
+bundleId: 8797084
+url: https://ovcare.shinyapps.io/PrOType/
 asMultiple: FALSE
 asStatic: FALSE

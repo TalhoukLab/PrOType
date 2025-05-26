@@ -21,6 +21,9 @@ final_glist <- c(
   "FGF1", "CSF1R", "TAGLN", "TLR4", "ZNF423"
 )
 
+# Pattern to match control pool files
+pool_regexp <- ".*Pool *[0-9]{1,2}_[0-9]{2}\\.RCC"
+
 # User interface
 ui <- fluidPage(
   # Use CSS theme spacelab from http://bootswatch.com/ (version 3)
@@ -194,41 +197,47 @@ server <- function(input, output, session) {
       need(any(grepl("Pool", input$rcc$name, ignore.case = TRUE)),
            "No RCC pool files selected")
     )
-    pools <- input$rcc %>%
-      dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
+    pools_raw <- input$rcc %>%
+      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
-      purrr::set_names(gsub(" ", "", names(.))) %>%
-      purrr::set_names(gsub(".*(Pool.*)_.*", "\\1", names(.))) %>%
-      tibble::set_tidy_names(quiet = TRUE)
+      dplyr::mutate(Name = dplyr::case_match(
+        Name,
+        "CD3E" ~ "CD3e",
+        "PD1" ~ "PD-1",
+        "PDL1" ~ "PD-L1",
+        .default = Name
+      )) %>%
+      as.data.frame()
 
-    # Special renaming system if there are pools indexed by letters
-    if (any(grepl("Pool[A-Z]", names(pools)))) {
-      pools <- pools %>%
-        dplyr::rename_at(
-          grep("Pool[A-Z]", names(.)),
-          ~ gsub("Pool", "", .) %>% paste0("Pool", match(., LETTERS), .)
-        )
-    }
+    # Special renaming system for pool files with spaces and indexing by letters
+    pools_raw <- pools_raw %>%
+      rlang::set_names(~ gsub(".*(Pool)[[:space:]]*(.+)_.*", "\\1\\2", .,
+                              ignore.case = TRUE)) %>%
+      tibble::set_tidy_names(quiet = TRUE) %>%
+      dplyr::rename_with(
+        ~ gsub("Pool", "", .) %>%
+          paste0("Pool", match(., LETTERS), ., recycle0 = TRUE),
+        matches("Pool[A-Z]")
+      )
 
     # Check all three pools exist
     validate(
-      need(any(grepl("Pool1", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool1", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool1 RCC files"),
-      need(any(grepl("Pool2", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool2", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool2 RCC files"),
-      need(any(grepl("Pool3", names(pools), ignore.case = TRUE)),
+      need(any(grepl("Pool3", names(pools_raw), ignore.case = TRUE)),
            "Missing Pool3 RCC files")
     )
 
     # Pools expression data
     pools_exp <- input$rcc %>%
-      dplyr::filter(grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_attributes) %>%
@@ -237,14 +246,18 @@ server <- function(input, output, session) {
       as.data.frame()
 
     # Check all pools pass QC
-    pools_qc <-
-      nanostringr::NanoStringQC(pools, pools_exp, detect = 50, sn = input$sn)
+    pools_qc <- nanostringr::NanoStringQC(
+      raw = pools_raw,
+      exp = pools_exp,
+      detect = 50,
+      sn = input$sn
+    )
     validate(
       need(all(pools_qc[["QCFlag"]] == "Passed"),
            "Some pools failed QC. Normalization failed.")
     )
 
-    nanostringr::HKnorm(as.data.frame(pools))
+    nanostringr::HKnorm(pools_raw)
   })
 
   # Read in all RCC chip files and combine count data
@@ -255,14 +268,20 @@ server <- function(input, output, session) {
            "No RCC sample files selected")
     )
     input$rcc %>%
-      dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ `names<-`(.x, c(names(.x)[-4], .y))) %>%
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
       purrr::reduce(dplyr::inner_join,
                     by = c("Code.Class", "Name", "Accession")) %>%
-      dplyr::mutate(Name = ifelse(Name == "CD3E", "CD3e", Name)) %>%
+      dplyr::mutate(Name = dplyr::case_match(
+        Name,
+        "CD3E" ~ "CD3e",
+        "PD1" ~ "PD-1",
+        "PDL1" ~ "PD-L1",
+        .default = Name
+      )) %>%
       as.data.frame()
   })
 
@@ -270,7 +289,7 @@ server <- function(input, output, session) {
   exp <- reactive({
     req(input$rcc)
     input$rcc %>%
-      dplyr::filter(!grepl("Pool", name, ignore.case = TRUE)) %>%
+      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) %>%
       dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
       tibble::deframe() %>%
       purrr::map(nanostringr::parse_attributes) %>%
@@ -324,18 +343,17 @@ server <- function(input, output, session) {
 
       # Calculate mean gene expression for references
       mR1 <-
-        tibble::enframe(rowMeans(pools_ref1), name = "Name", value = "expR1")
+        rowMeans(pools_ref1) %>%
+        tibble::enframe(name = "Name", value = "expR1")
       mR2 <-
         weights %>%
-        purrr::imap_dfc(~ {
-          df <- dplyr::select(pools_ref2(), Name, dplyr::matches(.y)) %>%
+        purrr::imap(~ {
+          df <- dplyr::select(pools_ref2(), Name, dplyr::matches(paste0(.y, "(?![0-9])"), perl = TRUE)) %>%
             tibble::column_to_rownames("Name")
           tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
         }) %>%
-        dplyr::transmute(
-          Name,
-          expR2 = rowSums(dplyr::select(., dplyr::contains("Pool")))
-        )
+        purrr::reduce(dplyr::inner_join, by = "Name") %>%
+        dplyr::transmute(Name, expR2 = rowSums(dplyr::select(., dplyr::contains("Pool"))))
 
       # Combine samples with batch effect (difference in means)
       Y <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
@@ -519,7 +537,7 @@ server <- function(input, output, session) {
   ## NanoString QC Plots
   # sn vs pergd
   output$sn_vs_pergd <- plotly::renderPlotly({
-    p <- ggplot(qc(), aes(sn, pergd,
+    p <- ggplot(qc(), aes(snr, pergd,
                           text = paste("sample:", sample),
                           color = normFlag)) +
       geom_point() +
@@ -567,7 +585,7 @@ server <- function(input, output, session) {
     qc() %>%
       dplyr::select(dplyr::matches("Flag")) %>%
       purrr::map(table) %>%
-      purrr::invoke(rbind, .) %>%
+      rlang::exec(rbind, !!!.) %>% 
       as.data.frame() %>%
       tibble::rownames_to_column("Flag")
   },
