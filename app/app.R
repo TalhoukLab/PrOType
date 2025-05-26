@@ -448,14 +448,19 @@ server <- function(input, output, session) {
     contentType = "application/zip"
   )
 
-  # Preview of normalized data as DataTable
+  # Normalized data as DataTable
   output$Ynorm <- DT::renderDataTable({
-    Ynorm()[, 1:6] %>%
+    Ynorm() %>%
       tibble::rownames_to_column("sample") %>%
-      DT::datatable(rownames = FALSE,
-                    selection = "none",
-                    caption = "Preview of normalized data") %>%
-      DT::formatRound(columns = -1, digits = 2)
+      DT::datatable(
+        rownames = FALSE,
+        selection = "none",
+        caption = "Normalized data",
+        extensions = "FixedColumns",
+        options = list(scrollX = TRUE, fixedColumns = TRUE)
+      ) %>% 
+      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2) %>%
+      DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
   # NanoString QC data as DataTable
