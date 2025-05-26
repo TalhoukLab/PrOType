@@ -458,7 +458,7 @@ server <- function(input, output, session) {
         caption = "Normalized data",
         extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
-      ) %>% 
+      ) %>%
       DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2) %>%
       DT::formatStyle("sample", "white-space" = "nowrap")
   })
