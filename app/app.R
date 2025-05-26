@@ -500,7 +500,7 @@ server <- function(input, output, session) {
         rownames = FALSE,
         selection = "none",
         caption = "Normalized data",
-        extension = "FixedColumns",
+        extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
       ) %>%
       DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2) %>%
@@ -554,7 +554,7 @@ server <- function(input, output, session) {
         rownames = FALSE,
         selection = "none",
         caption = "Sample predictions and probabilities",
-        extension = "FixedColumns",
+        extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
       ) %>%
       DT::formatRound(columns = lapply(dat_preds(), class) == "numeric",
