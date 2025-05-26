@@ -375,21 +375,23 @@ server <- function(input, output, session) {
   # SPOT input joined with normalized data
   spot_Ynorm <- reactive({
     req(input$spot)
-    input$spot$datapath %>%
-      readr::read_csv(col_types = readr::cols()) %>%
-      dplyr::transmute(
-        sample,
-        age.fq2 = ifelse(age.f == "q2", 1, 0),
-        age.fq3 = ifelse(age.f == "q3", 1, 0),
-        age.fq4 = ifelse(age.f == "q4", 1, 0),
-        stage.f1 = ifelse(stage.f == 1, 1, 0),
-        stage.f8 = ifelse(stage.f == 8, 1, 0),
-        site,
-        treatment
-      ) %>%
-      dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
-                        by = "sample") %>%
-      tibble::column_to_rownames("sample")
+    if (!is.null(input$spot)) {
+      input$spot$datapath %>%
+        readr::read_csv(col_types = readr::cols()) %>%
+        dplyr::transmute(
+          sample,
+          age.fq2 = ifelse(age.f == "q2", 1, 0),
+          age.fq3 = ifelse(age.f == "q3", 1, 0),
+          age.fq4 = ifelse(age.f == "q4", 1, 0),
+          stage.f1 = ifelse(stage.f == 1, 1, 0),
+          stage.f8 = ifelse(stage.f == 8, 1, 0),
+          site,
+          treatment
+        ) %>%
+        dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
+                          by = "sample") %>%
+        tibble::column_to_rownames("sample")
+    }
   })
 
   # Filtered coefficient matrix
@@ -600,11 +602,13 @@ server <- function(input, output, session) {
 
   # Genes used for SPOT prediction
   output$spot_genes <- renderText({
-    req(input$predict)
-    coefmat_f()$Symbol %>%
-      grep(pattern = "age|stage", value = TRUE, invert = TRUE) %>%
-      paste(collapse = ", ") %>%
-      paste("Genes used for SPOT prediction:", .)
+    req(input$spot, input$predict)
+    if (!is.null(input$spot)) {
+      coefmat_f()$Symbol %>%
+        grep(pattern = "age|stage", value = TRUE, invert = TRUE) %>%
+        paste(collapse = ", ") %>%
+        paste("Genes used for SPOT prediction:", .)
+    }
   })
 
   # Enable NanoString prediction when files are imported (at least RCC needed)
