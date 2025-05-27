@@ -83,7 +83,7 @@ ui <- fluidPage(
       br(), hr(style = "border-color: black;"),
 
       # App information
-      helpText("© Copyright 2018 OVCARE", br(), "Maintained by Derek Chiu"),
+      helpText("© Copyright 2025 OVCARE", br(), "Maintained by Derek Chiu"),
       downloadLink(outputId = "dl_code", label = "Source Code"),
       br(), br(),
 
