@@ -4,10 +4,12 @@ library(randomForest)
 library(ggplot2)
 `%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
+spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
 
 # Load Vancouver CS3 pools (ref 1), final model, and final gene list
 pools_ref1 <- readRDS("data/van_pools_cs3.rds")
 final_model <- readRDS("data/final_model.rds")
+coefmat <- readRDS("data/coefmat.rds")
 final_glist <- c(
   "FBN1", "TCF7L1", "CCL5", "FN1", "ADAMDEC1", "CTSK", "COL3A1",
   "CD74", "TIMP3", "POSTN", "CXCL9", "SALL2", "NUAK1", "SLAMF7",
@@ -40,6 +42,19 @@ ui <- fluidPage(
                 label = "Upload RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
+      
+      # Option to SPOT prediction
+      checkboxInput(inputId = "spot_check",
+                    label = "Add SPOT Prediction",
+                    value = FALSE), 
+
+      # Import SPOT input shown only if requested above
+      conditionalPanel(
+        condition = "input.spot_check == 1",
+        fileInput(inputId = "spot",
+                  label = "Upload SPOT input",
+                  accept = ".csv")
+      ),
 
       # Analysis section
       h5(strong("Analysis")),
@@ -68,7 +83,7 @@ ui <- fluidPage(
       br(), hr(style = "border-color: black;"),
 
       # App information
-      helpText("© Copyright 2018 OVCARE", br(), "Maintained by Derek Chiu"),
+      helpText("© Copyright 2025 OVCARE", br(), "Maintained by Derek Chiu"),
       downloadLink(outputId = "dl_code", label = "Source Code"),
       br(), br(),
 
@@ -98,7 +113,8 @@ ui <- fluidPage(
         tabPanel("Summary",
                  htmlOutput(outputId = "counts"),
                  tableOutput(outputId = "qc_summary"),
-                 tableOutput(outputId = "freqs")),
+                 tableOutput(outputId = "freqs"),
+                 textOutput(outputId = "spot_genes")),
         tabPanel("Help",
                  h3("Welcome to the PrOType Web Tool!"),
                  p("This app allows you to import RCC files from NanoString runs
@@ -292,13 +308,15 @@ server <- function(input, output, session) {
 
   # Print normalized genes common in references, total genes, total samples
   output$counts <- renderText({
-    paste(h4(strong("Data Summary")),
-          "Normalized Common Top Genes:", ncol(Ynorm()),
-          br(),
-          "Total Genes:", nrow(dat()),
-          br(),
-          "Total Samples:", ncol(dat()) - 3,
-          br(), br())
+    if (!is.null(input$rcc)) {
+      paste(h4(strong("Data Summary")),
+            "Normalized Common Top Genes:", ncol(Ynorm()),
+            br(),
+            "Total Genes:", nrow(dat()),
+            br(),
+            "Total Samples:", ncol(dat()) - 3,
+            br(), br())
+    }
   })
 
   # Slider to control signal to noise ratio
@@ -364,19 +382,74 @@ server <- function(input, output, session) {
     })
   })
 
+  # SPOT input joined with normalized data
+  spot_Ynorm <- reactive({
+    req(input$spot)
+    if (!is.null(input$spot)) {
+      input$spot$datapath %>%
+        readr::read_csv(col_types = readr::cols()) %>%
+        dplyr::transmute(
+          sample,
+          age.fq2 = ifelse(age.f == "q2", 1, 0),
+          age.fq3 = ifelse(age.f == "q3", 1, 0),
+          age.fq4 = ifelse(age.f == "q4", 1, 0),
+          stage.f1 = ifelse(stage.f == 1, 1, 0),
+          stage.f8 = ifelse(stage.f == 8, 1, 0),
+          site,
+          treatment
+        ) %>%
+        dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
+                          by = "sample")
+    }
+  })
+
   # Train final model and predict NanoString samples
   dat_preds <- reactive({
     req(input$predict)
     withProgress(message = "Predicting samples", {
       set.seed(1)
       dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
-      data.frame(
+      pred_df <- data.frame(
         dat_probs,
         entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
         pred = as.character(predict(final_model, isolate(Ynorm())))
       ) %>%
         tibble::rownames_to_column("sample") %>%
         tibble::as_tibble()
+
+      # Create SPOT predictions and quintiles
+      if (!is.null(input$spot)) {
+        req(input$spot)
+        spot_df <- spot_Ynorm() |>
+          tidyr::pivot_longer(cols = dplyr::where(is.numeric),
+                              names_to = "Symbol",
+                              values_to = "Expression") |>
+          dplyr::left_join(coefmat, by = "Symbol") |>
+          dplyr::mutate(SPOT_pred = sum(Expression * Coefficient, na.rm = TRUE),
+                        .by = sample) |>
+          tidyr::pivot_wider(
+            id_cols = c(dplyr::where(is.character), "SPOT_pred"),
+            names_from = Symbol,
+            values_from = Expression
+          ) |>
+          dplyr::mutate(
+            SPOT_quintile = dplyr::case_when(
+              SPOT_pred <= spot.q[1] ~ "Q1",
+              SPOT_pred > spot.q[1] & SPOT_pred <= spot.q[2] ~ "Q2",
+              SPOT_pred > spot.q[2] & SPOT_pred <= spot.q[3] ~ "Q3",
+              SPOT_pred > spot.q[3] & SPOT_pred <= spot.q[4] ~ "Q4",
+              SPOT_pred > spot.q[4] ~ "Q5",
+              TRUE ~ NA_character_
+            )
+          ) |>
+          dplyr::select(sample, SPOT_pred, SPOT_quintile)
+        site_tx_df <- spot_Ynorm() %>%
+          dplyr::select(sample, site, treatment)
+        list(pred_df, spot_df, site_tx_df) %>%
+          purrr::reduce(dplyr::inner_join, by = "sample")
+      } else {
+        pred_df
+      }
     })
   })
 
@@ -506,21 +579,28 @@ server <- function(input, output, session) {
   # Predicted probabilities and classes as DataTable
   output$preds <- DT::renderDataTable({
     dat_preds() %>%
-      DT::datatable(rownames = FALSE,
-                    selection = "none",
-                    caption = "Sample predictions and probabilities") %>%
+      DT::datatable(
+        rownames = FALSE,
+        selection = "none",
+        caption = "Sample predictions and probabilities",
+        extensions = "FixedColumns",
+        options = list(scrollX = TRUE, fixedColumns = TRUE)
+      ) %>%
       DT::formatRound(columns = lapply(dat_preds(), class) == "numeric",
-                      digits = 3)
+                      digits = 3) %>%
+      DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
   # QC Summary of the flags failed and passed
   output$qc_summary <- renderTable({
-    qc() %>%
-      dplyr::select(dplyr::matches("Flag")) %>%
-      purrr::map(table) %>%
-      rlang::exec(rbind, !!!.) %>% 
-      as.data.frame() %>%
-      tibble::rownames_to_column("Flag")
+    if (!is.null(input$rcc)) {
+      qc() %>%
+        dplyr::select(dplyr::matches("Flag")) %>%
+        purrr::map(table) %>%
+        rlang::exec(rbind, !!!.) %>% 
+        as.data.frame() %>%
+        tibble::rownames_to_column("Flag") 
+    }
   },
   caption = "QC Summary")
 
@@ -531,13 +611,27 @@ server <- function(input, output, session) {
   },
   caption = "Prediction Frequencies")
 
-  # Enable NanoString prediction when files are imported
+  # Genes used for SPOT prediction
+  output$spot_genes <- renderText({
+    req(input$spot, input$predict)
+    if (!is.null(input$spot)) {
+      coefmat %>%
+        dplyr::filter(Symbol %in% names(spot_Ynorm())) %>%
+        dplyr::pull(Symbol) %>%
+        grep(pattern = "age|stage", x = ., value = TRUE, invert = TRUE) %>%
+        paste(collapse = ", ") %>%
+        paste("Genes used for SPOT prediction:", .)
+    }
+  })
+
+  # Enable NanoString prediction when files are imported (at least RCC needed)
   observe({
-    shinyjs::toggleState(id = "predict", !is.null(input$rcc))
+    shinyjs::toggleState(id = "predict", !is.null(input$rcc) |
+                           (!is.null(input$rcc) & !is.null(input$spot)))
   })
 
   # Disable prediction after generated for currently imported files
-  shinyjs::onclick("predict", shinyjs::disable(id = "predict"))
+  shinyjs::onclick(id = "predict", shinyjs::disable(id = "predict"))
 
   # Enable data download when files are imported
   observe({
@@ -567,6 +661,9 @@ server <- function(input, output, session) {
 
   # Button label prompts prediction after import
   observeEvent(input$rcc, {
+    updateActionButton(session, "predict", label = "Predict NanoString samples")
+  })
+  observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
   })
 
