@@ -42,11 +42,19 @@ ui <- fluidPage(
                 label = "Upload RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
+      
+      # Option to SPOT prediction
+      checkboxInput(inputId = "spot_check",
+                    label = "Add SPOT Prediction",
+                    value = FALSE), 
 
-      # Import SPOT input
-      fileInput(inputId = "spot",
-                label = "Upload SPOT input",
-                accept = ".csv"),
+      # Import SPOT input shown only if requested above
+      conditionalPanel(
+        condition = "input.spot_check == 1",
+        fileInput(inputId = "spot",
+                  label = "Upload SPOT input",
+                  accept = ".csv")
+      ),
 
       # Analysis section
       h5(strong("Analysis")),
@@ -300,13 +308,15 @@ server <- function(input, output, session) {
 
   # Print normalized genes common in references, total genes, total samples
   output$counts <- renderText({
-    paste(h4(strong("Data Summary")),
-          "Normalized Common Top Genes:", ncol(Ynorm()),
-          br(),
-          "Total Genes:", nrow(dat()),
-          br(),
-          "Total Samples:", ncol(dat()) - 3,
-          br(), br())
+    if (!is.null(input$rcc)) {
+      paste(h4(strong("Data Summary")),
+            "Normalized Common Top Genes:", ncol(Ynorm()),
+            br(),
+            "Total Genes:", nrow(dat()),
+            br(),
+            "Total Samples:", ncol(dat()) - 3,
+            br(), br())
+    }
   })
 
   # Slider to control signal to noise ratio
@@ -584,12 +594,14 @@ server <- function(input, output, session) {
 
   # QC Summary of the flags failed and passed
   output$qc_summary <- renderTable({
-    qc() %>%
-      dplyr::select(dplyr::matches("Flag")) %>%
-      purrr::map(table) %>%
-      rlang::exec(rbind, !!!.) %>% 
-      as.data.frame() %>%
-      tibble::rownames_to_column("Flag")
+    if (!is.null(input$rcc)) {
+      qc() %>%
+        dplyr::select(dplyr::matches("Flag")) %>%
+        purrr::map(table) %>%
+        rlang::exec(rbind, !!!.) %>% 
+        as.data.frame() %>%
+        tibble::rownames_to_column("Flag") 
+    }
   },
   caption = "QC Summary")
 
