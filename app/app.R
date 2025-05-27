@@ -399,15 +399,8 @@ server <- function(input, output, session) {
           treatment
         ) %>%
         dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
-                          by = "sample") %>%
-        tibble::column_to_rownames("sample")
+                          by = "sample")
     }
-  })
-
-  # Filtered coefficient matrix
-  coefmat_f <- reactive({
-    req(input$spot)
-    dplyr::filter(coefmat, Symbol %in% names(spot_Ynorm()))
   })
 
   # Train final model and predict NanoString samples
@@ -427,12 +420,18 @@ server <- function(input, output, session) {
       # Create SPOT predictions and quintiles
       if (!is.null(input$spot)) {
         req(input$spot)
-        spot_df <- spot_Ynorm() %>%
-          dplyr::select(coefmat_f()$Symbol) %>%
-          as.matrix() %>%
-          magrittr::multiply_by_matrix(coefmat_f()$Coefficient) %>%
-          drop() %>%
-          tibble::enframe(name = "sample", value = "SPOT_pred") %>%
+        spot_df <- spot_Ynorm() |>
+          tidyr::pivot_longer(cols = dplyr::where(is.numeric),
+                              names_to = "Symbol",
+                              values_to = "Expression") |>
+          dplyr::left_join(coefmat, by = "Symbol") |>
+          dplyr::mutate(SPOT_pred = sum(Expression * Coefficient, na.rm = TRUE),
+                        .by = sample) |>
+          tidyr::pivot_wider(
+            id_cols = c(dplyr::where(is.character), "SPOT_pred"),
+            names_from = Symbol,
+            values_from = Expression
+          ) |>
           dplyr::mutate(
             SPOT_quintile = dplyr::case_when(
               SPOT_pred <= spot.q[1] ~ "Q1",
@@ -442,9 +441,9 @@ server <- function(input, output, session) {
               SPOT_pred > spot.q[4] ~ "Q5",
               TRUE ~ NA_character_
             )
-          )
+          ) |>
+          dplyr::select(sample, SPOT_pred, SPOT_quintile)
         site_tx_df <- spot_Ynorm() %>%
-          tibble::rownames_to_column("sample") %>%
           dplyr::select(sample, site, treatment)
         list(pred_df, spot_df, site_tx_df) %>%
           purrr::reduce(dplyr::inner_join, by = "sample")
@@ -616,8 +615,10 @@ server <- function(input, output, session) {
   output$spot_genes <- renderText({
     req(input$spot, input$predict)
     if (!is.null(input$spot)) {
-      coefmat_f()$Symbol %>%
-        grep(pattern = "age|stage", value = TRUE, invert = TRUE) %>%
+      coefmat %>%
+        dplyr::filter(Symbol %in% names(spot_Ynorm())) %>%
+        dplyr::pull(Symbol) %>%
+        grep(pattern = "age|stage", x = ., value = TRUE, invert = TRUE) %>%
         paste(collapse = ", ") %>%
         paste("Genes used for SPOT prediction:", .)
     }
