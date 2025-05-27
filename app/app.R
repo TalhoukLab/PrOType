@@ -107,14 +107,16 @@ ui <- fluidPage(
                                                  width = "75%")),
                    tabPanel("Table",
                             DT::dataTableOutput(outputId = "qc_table"))),
-        tabPanel("Data", DT::dataTableOutput(outputId = "Ynorm")),
+        tabPanel("Data", DT::dataTableOutput(outputId = "Yfinal")),
         tabPanel("Predictions",
                  DT::dataTableOutput(outputId = "preds")),
         tabPanel("Summary",
                  htmlOutput(outputId = "counts"),
                  tableOutput(outputId = "qc_summary"),
                  tableOutput(outputId = "freqs"),
-                 textOutput(outputId = "spot_genes")),
+                 htmlOutput(outputId = "spot_genes"),
+                 br(),
+                 htmlOutput(outputId = "spot_unused_genes")),
         tabPanel("Help",
                  h3("Welcome to the PrOType Web Tool!"),
                  p("This app allows you to import RCC files from NanoString runs
@@ -377,9 +379,14 @@ server <- function(input, output, session) {
         dplyr::select(-c(be, Code.Class, Accession)) %>%
         apply(2, `+`, Y[["be"]]) %>%
         t() %>%
-        magrittr::extract(, final_glist, drop = FALSE) %>%
         as.data.frame()
     })
+  })
+  
+  # Normalized data with final gene list
+  Yfinal <- reactive({
+    req(input$rcc)
+    Ynorm()[, final_glist, drop = FALSE]
   })
 
   # SPOT input joined with normalized data
@@ -408,11 +415,11 @@ server <- function(input, output, session) {
     req(input$predict)
     withProgress(message = "Predicting samples", {
       set.seed(1)
-      dat_probs <- predict(final_model, isolate(Ynorm()), type = "prob")
+      dat_probs <- predict(final_model, isolate(Yfinal()), type = "prob")
       pred_df <- data.frame(
         dat_probs,
         entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
-        pred = as.character(predict(final_model, isolate(Ynorm())))
+        pred = as.character(predict(final_model, isolate(Yfinal())))
       ) %>%
         tibble::rownames_to_column("sample") %>%
         tibble::as_tibble()
@@ -457,7 +464,7 @@ server <- function(input, output, session) {
   output$dl_data <- downloadHandler(
     filename = "normalized_data.csv",
     content = function(file) {
-      readr::write_csv(tibble::rownames_to_column(Ynorm(), "sample"), file)
+      readr::write_csv(tibble::rownames_to_column(Yfinal(), "sample"), file)
     }
   )
 
@@ -522,8 +529,8 @@ server <- function(input, output, session) {
   )
 
   # Normalized data as DataTable
-  output$Ynorm <- DT::renderDataTable({
-    Ynorm() %>%
+  output$Yfinal <- DT::renderDataTable({
+    Yfinal() %>%
       tibble::rownames_to_column("sample") %>%
       DT::datatable(
         rownames = FALSE,
@@ -532,7 +539,7 @@ server <- function(input, output, session) {
         extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
       ) %>%
-      DT::formatRound(columns = seq_along(Ynorm()) + 1, digits = 2) %>%
+      DT::formatRound(columns = seq_along(Yfinal()) + 1, digits = 2) %>%
       DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
@@ -615,12 +622,21 @@ server <- function(input, output, session) {
   output$spot_genes <- renderText({
     req(input$spot, input$predict)
     if (!is.null(input$spot)) {
-      coefmat %>%
-        dplyr::filter(Symbol %in% names(spot_Ynorm())) %>%
-        dplyr::pull(Symbol) %>%
-        grep(pattern = "age|stage", x = ., value = TRUE, invert = TRUE) %>%
+      intersect(coefmat$Symbol, names(spot_Ynorm())) |> 
+        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) %>%
         paste(collapse = ", ") %>%
-        paste("Genes used for SPOT prediction:", .)
+        paste("Genes <font color=\"#008000\">used</font> for SPOT prediction:", .)
+    }
+  })
+  
+  # Genes not used for SPOT prediction
+  output$spot_unused_genes <- renderText({
+    req(input$spot, input$predict)
+    if (!is.null(input$spot)) {
+      setdiff(coefmat$Symbol, names(spot_Ynorm())) |> 
+        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) %>%
+        paste(collapse = ", ") %>%
+        paste("Genes <font color=\"#FF0000\">not used</font> for SPOT prediction:", .)
     }
   })
 
@@ -648,7 +664,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(id = "dl_pred",
                          !is.null(input$rcc) && input$predict &&
-                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
+                           all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
 
   # Enable report download when patient selected and predictions clicked and
@@ -656,7 +672,7 @@ server <- function(input, output, session) {
   observe({
     shinyjs::toggleState(id = "dl_report",
                          !is.null(input$sample_id) && input$predict &&
-                           all(rownames(Ynorm()) == dat_preds()[["sample"]]))
+                           all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
 
   # Button label prompts prediction after import
