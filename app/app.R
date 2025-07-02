@@ -5,6 +5,7 @@ library(ggplot2)
 `%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
+options(shiny.maxRequestSize = 10 * 1024^2)
 
 # Load Vancouver CS3 pools (ref 1), final model, and final gene list
 pools_ref1 <- readRDS("data/van_pools_cs3.rds")
@@ -43,7 +44,7 @@ ui <- fluidPage(
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
       
-      # Option to SPOT prediction
+      # Option to add SPOT prediction
       checkboxInput(inputId = "spot_check",
                     label = "Add SPOT Prediction",
                     value = FALSE), 
@@ -55,7 +56,22 @@ ui <- fluidPage(
                   label = "Upload SPOT input",
                   accept = ".csv")
       ),
-
+      
+      # Option to perform ovarian histotypes prediction
+      checkboxInput(inputId = "histotypes_check",
+                    label = "Add Ovarian Histotypes prediction",
+                    value = FALSE),
+      
+      # Import ovarian histotypes data only if requested above
+      conditionalPanel(
+        condition = "input.histotypes_check == 1",
+        fileInput(
+          inputId = "histotypes",
+          label = "Upload Ovarian Histotypes data",
+          accept = ".csv"
+        )
+      ), 
+      
       # Analysis section
       h5(strong("Analysis")),
 
