@@ -2,6 +2,7 @@
 library(shiny)
 library(randomForest)
 library(ggplot2)
+library(workflows)
 `%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
@@ -80,6 +81,13 @@ ui <- fluidPage(
 
       # Button to predict NanoString samples
       actionButton(inputId = "predict", label = "Predict NanoString samples"),
+      
+      # Button to predict ovarian histotype samples
+      conditionalPanel(
+        condition = "input.histotypes_check == 1",
+        br(),
+        actionButton(inputId = "histotype_predict", label = "Predict Ovarian Histotype samples"),
+      ),
       br(), br(),
 
       # Downloads section
@@ -91,6 +99,11 @@ ui <- fluidPage(
       downloadButton(outputId = "dl_data", label = "Data"),
 
       downloadButton(outputId = "dl_pred", label = "Predictions"),
+      
+      conditionalPanel(
+        condition = "input.histotypes_check == 1",
+        downloadButton(outputId = "dl_ov_hist_pred", label = "Ovarian Histotype Predictions")
+      ),
       br(), br(),
 
       uiOutput(outputId = "sample_id"),
@@ -125,7 +138,9 @@ ui <- fluidPage(
                             DT::dataTableOutput(outputId = "qc_table"))),
         tabPanel("Data", DT::dataTableOutput(outputId = "Yfinal")),
         tabPanel("Predictions",
-                 DT::dataTableOutput(outputId = "preds")),
+                 DT::dataTableOutput(outputId = "preds"),
+                 br(),
+                 DT::dataTableOutput(outputId = "ov_preds")),
         tabPanel("Summary",
                  htmlOutput(outputId = "counts"),
                  tableOutput(outputId = "qc_summary"),
@@ -475,6 +490,27 @@ server <- function(input, output, session) {
       }
     })
   })
+  
+  # Ovarian histotypes data to predict for
+  ov_hist_data <- reactive({
+    req(input$histotypes)
+    if (!is.null(input$histotypes)) {
+      input$histotypes$datapath |> 
+        readr::read_csv(col_types = readr::cols())
+    }
+  })
+  
+  # Predict ovarian histotypes on final model
+  dat_ov_hist_preds <- reactive({
+    req(input$histotypes)
+    mod_smote_rf_opt <-  readRDS("data/mod_smote_rf_opt.rds")
+    pred_prob <- predict(mod_smote_rf_opt, ov_hist_data(), type = "prob")
+    pred_class <- predict(mod_smote_rf_opt, ov_hist_data(), type = "class")
+    preds <- dplyr::bind_cols(pred_class, pred_prob) |> 
+      tibble::add_column(FileName = ov_hist_data()[["FileName"]], .before = 1) |> 
+      dplyr::rename_with(~ gsub(".pred_", "", .))
+    preds
+  })
 
   # Download normalized data to local CSV file
   output$dl_data <- downloadHandler(
@@ -497,6 +533,14 @@ server <- function(input, output, session) {
     filename = "ns_predictions.csv",
     content = function(file) {
       readr::write_csv(dat_preds(), file)
+    }
+  )
+  
+  # Download ovarian histotype predictions to local CSV file
+  output$dl_ov_hist_pred <- downloadHandler(
+    filename = "ov_hist_predictions.csv",
+    content = function(file) {
+      readr::write_csv(dat_ov_hist_preds(), file)
     }
   )
 
@@ -613,6 +657,21 @@ server <- function(input, output, session) {
                       digits = 3) %>%
       DT::formatStyle("sample", "white-space" = "nowrap")
   })
+  
+  # Ovarian histotype predicted probabilities and classes as DataTable
+  output$ov_preds <- DT::renderDataTable({
+    dat_ov_hist_preds() |> 
+      DT::datatable(
+        rownames = FALSE,
+        selection = "none",
+        caption = "Ovarian Histotype sample predictions and probabilities",
+        extensions = "FixedColumns",
+        options = list(scrollX = TRUE, fixedColumns = TRUE)
+      ) |> 
+      DT::formatRound(columns = lapply(dat_ov_hist_preds(), class) == "numeric",
+                      digits = 3) |>
+      DT::formatStyle("FileName", "white-space" = "nowrap")
+  })
 
   # QC Summary of the flags failed and passed
   output$qc_summary <- renderTable({
@@ -661,9 +720,17 @@ server <- function(input, output, session) {
     shinyjs::toggleState(id = "predict", !is.null(input$rcc) |
                            (!is.null(input$rcc) & !is.null(input$spot)))
   })
+  
+  # Enable ovarian histotype prediction when CSV file is imported
+  observe({
+    shinyjs::toggleState(id = "histotype_predict", !is.null(input$histotypes))
+  })
 
   # Disable prediction after generated for currently imported files
   shinyjs::onclick(id = "predict", shinyjs::disable(id = "predict"))
+  
+  # Disable ovarian histotype prediction after generated for currently imported file
+  shinyjs::onclick(id = "histotype_predict", shinyjs::disable(id = "histotype_predict"))
 
   # Enable data download when files are imported
   observe({
@@ -682,6 +749,13 @@ server <- function(input, output, session) {
                          !is.null(input$rcc) && input$predict &&
                            all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
+  
+  # Enable ovarian histotype predictions download when file is imported and
+  # predictions clicked and matches currently imported data
+  observe({
+    shinyjs::toggleState(id = "dl_ov_hist_pred",
+                         !is.null(input$histotypes) && input$histotype_predict)
+  })
 
   # Enable report download when patient selected and predictions clicked and
   # matches currently imported data
@@ -698,10 +772,18 @@ server <- function(input, output, session) {
   observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
   })
+  observeEvent(input$histotype, {
+    updateActionButton(session, "histotype_predict", label = "Predict Ovarian Histotype samples")
+  })
 
   # Button label states predictions generated
   observeEvent(input$predict, {
     updateActionButton(session, "predict", label = "Predictions Generated!")
+  })
+  
+  # Button label states ovarian histotype predictions generated
+  observeEvent(input$histotype_predict, {
+    updateActionButton(session, "histotype_predict", label = "Ovarian Histotype Predictions Generated!")
   })
 
   # Switch to QC Plots tab when raw data has been imported
@@ -711,6 +793,11 @@ server <- function(input, output, session) {
 
   # Switch to Predictions tab when predict button is clicked
   observeEvent(input$predict, {
+    updateTabsetPanel(session, "tabset", selected = "Predictions")
+  })
+  
+  # Switch to Predictions tab when ovarian histotypes predict button is clicked
+  observeEvent(input$histotype_predict, {
     updateTabsetPanel(session, "tabset", selected = "Predictions")
   })
 }
