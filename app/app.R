@@ -3,6 +3,7 @@ library(shiny)
 library(randomForest)
 library(ggplot2)
 library(workflows)
+library(ranger)
 `%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
