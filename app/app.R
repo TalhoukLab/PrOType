@@ -518,8 +518,22 @@ server <- function(input, output, session) {
   ov_hist_data <- reactive({
     req(input$histotypes)
     if (!is.null(input$histotypes)) {
-      input$histotypes$datapath |> 
+      input_data <- input$histotypes$datapath |> 
         readr::read_csv(col_types = readr::cols())
+      ov_genes <- c(
+        "COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1", 
+        "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2", 
+        "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF", 
+        "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9", 
+        "HNF1B", "TFF3", "TPX2", "SLC3A1", "CYP2C18", "TFF1", "WT1", 
+        "KLK7", "IGFBP1", "LGALS4", "GAD1", "GCNT3", "C1orf173", "CAPN2", 
+        "FUT3", "DKK4"
+      )
+      validate(
+        need(all(ov_genes %in% colnames(input_data)),
+             "Input data is missing genes required for model prediction")
+      )
+      input_data
     }
   })
   
@@ -755,6 +769,9 @@ server <- function(input, output, session) {
   
   # Disable ovarian histotype prediction after generated for currently imported file
   shinyjs::onclick(id = "histotype_predict", shinyjs::disable(id = "histotype_predict"))
+  shinyjs::onclick(id = "histotypes", {
+    updateActionButton(session, "histotype_predict", label = "Predict Ovarian Histotype samples")
+  })
 
   # Enable data download when files are imported
   observe({
@@ -795,9 +812,6 @@ server <- function(input, output, session) {
   })
   observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
-  })
-  observeEvent(input$histotype, {
-    updateActionButton(session, "histotype_predict", label = "Predict Ovarian Histotype samples")
   })
 
   # Button label states predictions generated
