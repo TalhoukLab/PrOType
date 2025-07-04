@@ -530,6 +530,7 @@ server <- function(input, output, session) {
     pred_prob <- predict(mod_smote_rf_opt, ov_hist_data(), type = "prob")
     pred_class <- predict(mod_smote_rf_opt, ov_hist_data(), type = "class")
     preds <- dplyr::bind_cols(pred_class, pred_prob) |> 
+      dplyr::mutate(entropy = apply(pred_prob, 1, entropy::entropy, unit = "log2")) |> 
       tibble::add_column(FileName = ov_hist_data()[["FileName"]], .before = 1) |> 
       dplyr::rename_with(~ gsub(".pred_", "", .))
     preds
