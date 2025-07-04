@@ -503,8 +503,8 @@ server <- function(input, output, session) {
   
   # Predict ovarian histotypes on final model
   dat_ov_hist_preds <- reactive({
-    req(input$histotypes)
-    mod_smote_rf_opt <-  readRDS("data/mod_smote_rf_opt.rds")
+    req(input$histotypes, input$histotype_predict)
+    mod_smote_rf_opt <- readRDS("data/mod_smote_rf_opt.rds")
     pred_prob <- predict(mod_smote_rf_opt, ov_hist_data(), type = "prob")
     pred_class <- predict(mod_smote_rf_opt, ov_hist_data(), type = "class")
     preds <- dplyr::bind_cols(pred_class, pred_prob) |> 
