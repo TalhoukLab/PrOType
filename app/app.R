@@ -212,18 +212,18 @@ ui <- fluidPage(
           p("NanoString QC metrics are automatically computed after
           sample RCC files are imported. Two visualizations are
           displayed under the", strong("QC"), ">", strong("Plots"),
-          "tab: signal to noise ratio vs. percentage of genes detected,
+            "tab: signal to noise ratio vs. percentage of genes detected,
           binding density vs. limit of detection. Both plots colour
           points by their respective flag. The plots contain
           interactive components such as zoom, pan, hover, and
           download. The QC data metrics are displayed under the",
-          strong("QC"), ">", strong("Table"), "tab."),
+            strong("QC"), ">", strong("Table"), "tab."),
           p("The", icon("download"), code("QC"), "button downloads the
             QC data to your local machine."),
           br(),
           h4("Model Prediction"),
           p("To predict NanoString samples, click the",
-          code("Predict NanoString samples"), "button and the data will
+            code("Predict NanoString samples"), "button and the data will
           be displayed in the", strong("Predictions"), "tab. A random
           forest model trained on the genes common in both reference
           pools is used for prediction. The prediction output shows
