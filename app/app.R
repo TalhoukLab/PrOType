@@ -4,7 +4,6 @@ library(randomForest)
 library(ggplot2)
 library(workflows)
 library(ranger)
-`%>%` <- magrittr::`%>%`
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
 spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
 options(shiny.maxRequestSize = 10 * 1024^2)
@@ -45,11 +44,11 @@ ui <- fluidPage(
                 label = "Upload RCC files",
                 accept = c(".RCC", ".rcc"),
                 multiple = TRUE),
-      
+
       # Option to add SPOT prediction
       checkboxInput(inputId = "spot_check",
                     label = "Add SPOT Prediction",
-                    value = FALSE), 
+                    value = FALSE),
 
       # Import SPOT input shown only if requested above
       conditionalPanel(
@@ -58,12 +57,12 @@ ui <- fluidPage(
                   label = "Upload SPOT input",
                   accept = ".csv")
       ),
-      
+
       # Option to perform ovarian histotypes prediction
       checkboxInput(inputId = "histotypes_check",
                     label = "Add Ovarian Histotypes prediction",
                     value = FALSE),
-      
+
       # Import ovarian histotypes data only if requested above
       conditionalPanel(
         condition = "input.histotypes_check == 1",
@@ -72,8 +71,8 @@ ui <- fluidPage(
           label = "Upload Ovarian Histotypes data",
           accept = ".csv"
         )
-      ), 
-      
+      ),
+
       # Analysis section
       h5(strong("Analysis")),
 
@@ -82,7 +81,7 @@ ui <- fluidPage(
 
       # Button to predict NanoString samples
       actionButton(inputId = "predict", label = "Predict NanoString samples"),
-      
+
       # Button to predict ovarian histotype samples
       conditionalPanel(
         condition = "input.histotypes_check == 1",
@@ -100,7 +99,7 @@ ui <- fluidPage(
       downloadButton(outputId = "dl_data", label = "Data"),
 
       downloadButton(outputId = "dl_pred", label = "Predictions"),
-      
+
       conditionalPanel(
         condition = "input.histotypes_check == 1",
         downloadButton(outputId = "dl_ov_hist_pred", label = "Ovarian Histotype Predictions")
@@ -192,9 +191,9 @@ ui <- fluidPage(
                     101 genes, 3 contrasts for age, and 2 contrasts for stage. The intersection of
                     these genes and covariates with the imported NanoString samples will be used
                     to generate a SPOT signature, a continuous score calculated using
-                    a linear combination of the coefficients and normalized expression. 
+                    a linear combination of the coefficients and normalized expression.
                     A quintile breakdown of the numeric signature is also reported."),
-                 p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon. 
+                 p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon.
                     Only CSV files are allowed. Genes used in the SPOT signature are detailed in the", strong("Summary"), "tab."),
                  br(),
                  h4("Ovarian Histotype Prediction"),
@@ -261,33 +260,30 @@ server <- function(input, output, session) {
       need(any(grepl("Pool", input$rcc$name, ignore.case = TRUE)),
            "No RCC pool files selected")
     )
-    pools_raw <- input$rcc %>%
-      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) %>%
-      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
-      tibble::deframe() %>%
-      purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
-      purrr::reduce(dplyr::inner_join,
-                    by = c("Code.Class", "Name", "Accession")) %>%
+    pools_raw <- input$rcc |>
+      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) |>
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) |>
+      tibble::deframe() |>
+      purrr::map(nanostringr::parse_counts) |>
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) |>
+      purrr::reduce(\(x, y) dplyr::inner_join(x, y, by = c("Code.Class", "Name", "Accession"))) |>
       dplyr::mutate(Name = dplyr::case_match(
         Name,
         "CD3E" ~ "CD3e",
         "PD1" ~ "PD-1",
         "PDL1" ~ "PD-L1",
         .default = Name
-      )) %>%
-      as.data.frame()
+      ))
 
     # Special renaming system for pool files with spaces and indexing by letters
-    pools_raw <- pools_raw %>%
+    pools_raw <- pools_raw |>
       rlang::set_names(~ gsub(".*(Pool)[[:space:]]*(.+)_.*", "\\1\\2", .,
-                              ignore.case = TRUE)) %>%
-      tibble::set_tidy_names(quiet = TRUE) %>%
-      dplyr::rename_with(
-        ~ gsub("Pool", "", .) %>%
-          paste0("Pool", match(., LETTERS), ., recycle0 = TRUE),
-        matches("Pool[A-Z]")
-      )
+                              ignore.case = TRUE)) |>
+      tibble::set_tidy_names(quiet = TRUE) |>
+      dplyr::rename_with(\(x) {
+        letter <- gsub("Pool([A-Z])", "\\1", x)
+        paste0("Pool", match(letter, LETTERS), letter, recycle0 = TRUE)
+      }, matches("Pool[A-Z]"))
 
     # Check all three pools exist
     validate(
@@ -300,14 +296,13 @@ server <- function(input, output, session) {
     )
 
     # Pools expression data
-    pools_exp <- input$rcc %>%
-      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) %>%
-      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
-      tibble::deframe() %>%
-      purrr::map(nanostringr::parse_attributes) %>%
-      purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
-      dplyr::rename(sample = File.Name) %>%
-      as.data.frame()
+    pools_exp <- input$rcc |>
+      dplyr::filter(grepl(pool_regexp, name, ignore.case = TRUE)) |>
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) |>
+      tibble::deframe() |>
+      purrr::map(nanostringr::parse_attributes) |>
+      dplyr::bind_rows(.id = "sample") |>
+      dplyr::select(-File.Name)
 
     # Check all pools pass QC
     pools_qc <- nanostringr::NanoStringQC(
@@ -331,35 +326,32 @@ server <- function(input, output, session) {
       need(any(!grepl("Pool", input$rcc$name, ignore.case = TRUE)),
            "No RCC sample files selected")
     )
-    input$rcc %>%
-      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) %>%
-      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
-      tibble::deframe() %>%
-      purrr::map(nanostringr::parse_counts) %>%
-      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) %>%
-      purrr::reduce(dplyr::inner_join,
-                    by = c("Code.Class", "Name", "Accession")) %>%
+    input$rcc |>
+      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) |>
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) |>
+      tibble::deframe() |>
+      purrr::map(nanostringr::parse_counts) |>
+      purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) |>
+      purrr::reduce(\(x, y) dplyr::inner_join(x, y, by = c("Code.Class", "Name", "Accession"))) |>
       dplyr::mutate(Name = dplyr::case_match(
         Name,
         "CD3E" ~ "CD3e",
         "PD1" ~ "PD-1",
         "PDL1" ~ "PD-L1",
         .default = Name
-      )) %>%
-      as.data.frame()
+      ))
   })
 
   # Read in all RCC chip files and combine attribute data
   exp <- reactive({
     req(input$rcc)
-    input$rcc %>%
-      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) %>%
-      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) %>%
-      tibble::deframe() %>%
-      purrr::map(nanostringr::parse_attributes) %>%
-      purrr::imap_dfr(~ magrittr::inset(.x, "File.Name", .y)) %>%
-      dplyr::rename(sample = File.Name) %>%
-      as.data.frame()
+    input$rcc |>
+      dplyr::filter(!grepl(pool_regexp, name, ignore.case = TRUE)) |>
+      dplyr::transmute(name = tools::file_path_sans_ext(name), datapath) |>
+      tibble::deframe() |>
+      purrr::map(nanostringr::parse_attributes) |>
+      dplyr::bind_rows(.id = "sample") |>
+      dplyr::select(-File.Name)
   })
 
   # Print normalized genes common in references, total genes, total samples
@@ -396,7 +388,7 @@ server <- function(input, output, session) {
       exp = exp(),
       detect = 50,
       sn = input$sn
-    ) %>%
+    ) |>
       dplyr::mutate_at(c("bdFlag", "normFlag"), as.factor)
   })
 
@@ -407,36 +399,17 @@ server <- function(input, output, session) {
       # Normalize data to housekeeping genes
       dat_norm <- nanostringr::HKnorm(dat())
 
-      # Calculate mean gene expression for references
-      mR1 <-
-        rowMeans(pools_ref1) %>%
-        tibble::enframe(name = "Name", value = "expR1")
-      mR2 <-
-        weights %>%
-        purrr::imap(~ {
-          df <- dplyr::select(pools_ref2(), Name, dplyr::matches(paste0(.y, "(?![0-9])"), perl = TRUE)) %>%
-            tibble::column_to_rownames("Name")
-          tibble::enframe(.x * rowSums(df) / ncol(df), name = "Name", value = .y)
-        }) %>%
-        purrr::reduce(dplyr::inner_join, by = "Name") %>%
-        dplyr::transmute(Name, expR2 = rowSums(dplyr::select(., dplyr::contains("Pool"))))
-
-      # Combine samples with batch effect (difference in means)
-      Y <- dplyr::inner_join(mR1, mR2, by = "Name") %>%
-        dplyr::transmute(Name, be = expR1 - expR2) %>%
-        dplyr::inner_join(dat_norm, by = "Name")
-
-      # Normalize each gene by adding BE values
-      Y %>%
-        as.data.frame() %>%
-        tibble::column_to_rownames("Name") %>%
-        dplyr::select(-c(be, Code.Class, Accession)) %>%
-        apply(2, `+`, Y[["be"]]) %>%
-        t() %>%
-        as.data.frame()
+      # Normalize data to pools
+      nanostringr::normalize_pools(
+        x = dat_norm,
+        x_pools = pools_ref2(),
+        ref_pools = pools_ref1,
+        p = 3
+      ) |>
+        tibble::column_to_rownames("FileName")
     })
   })
-  
+
   # Normalized data with final gene list
   Yfinal <- reactive({
     req(input$rcc)
@@ -447,8 +420,8 @@ server <- function(input, output, session) {
   spot_Ynorm <- reactive({
     req(input$spot)
     if (!is.null(input$spot)) {
-      input$spot$datapath %>%
-        readr::read_csv(col_types = readr::cols()) %>%
+      input$spot$datapath |>
+        readr::read_csv(col_types = readr::cols()) |>
         dplyr::transmute(
           sample,
           age.fq2 = ifelse(age.f == "q2", 1, 0),
@@ -458,7 +431,7 @@ server <- function(input, output, session) {
           stage.f8 = ifelse(stage.f == 8, 1, 0),
           site,
           treatment
-        ) %>%
+        ) |>
         dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
                           by = "sample")
     }
@@ -474,8 +447,8 @@ server <- function(input, output, session) {
         dat_probs,
         entropy = apply(dat_probs, 1, entropy::entropy, unit = "log2"),
         pred = as.character(predict(final_model, isolate(Yfinal())))
-      ) %>%
-        tibble::rownames_to_column("sample") %>%
+      ) |>
+        tibble::rownames_to_column("sample") |>
         tibble::as_tibble()
 
       # Create SPOT predictions and quintiles
@@ -504,29 +477,29 @@ server <- function(input, output, session) {
             )
           ) |>
           dplyr::select(sample, SPOT_pred, SPOT_quintile)
-        site_tx_df <- spot_Ynorm() %>%
+        site_tx_df <- spot_Ynorm() |>
           dplyr::select(sample, site, treatment)
-        list(pred_df, spot_df, site_tx_df) %>%
+        list(pred_df, spot_df, site_tx_df) |>
           purrr::reduce(dplyr::inner_join, by = "sample")
       } else {
         pred_df
       }
     })
   })
-  
+
   # Ovarian histotypes data to predict for
   ov_hist_data <- reactive({
     req(input$histotypes)
     if (!is.null(input$histotypes)) {
-      input_data <- input$histotypes$datapath |> 
+      input_data <- input$histotypes$datapath |>
         readr::read_csv(col_types = readr::cols())
       ov_genes <- c(
-        "COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1", 
-        "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2", 
-        "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF", 
-        "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9", 
-        "HNF1B", "TFF3", "TPX2", "SLC3A1", "CYP2C18", "TFF1", "WT1", 
-        "KLK7", "IGFBP1", "LGALS4", "GAD1", "GCNT3", "C1orf173", "CAPN2", 
+        "COL11A1", "CD74", "CD2", "TIMP3", "LUM", "CYTIP", "COL3A1",
+        "THBS2", "TCF7L1", "HMGA2", "FN1", "POSTN", "COL1A2", "COL5A2",
+        "PDZK1IP1", "FBN1", "HIF1A", "CXCL10", "DUSP4", "SOX17", "MITF",
+        "CDKN3", "BRCA2", "CEACAM5", "ANXA4", "SERPINE1", "CRABP2", "DNAJC9",
+        "HNF1B", "TFF3", "TPX2", "SLC3A1", "CYP2C18", "TFF1", "WT1",
+        "KLK7", "IGFBP1", "LGALS4", "GAD1", "GCNT3", "C1orf173", "CAPN2",
         "FUT3", "DKK4"
       )
       validate(
@@ -536,16 +509,16 @@ server <- function(input, output, session) {
       input_data
     }
   })
-  
+
   # Predict ovarian histotypes on final model
   dat_ov_hist_preds <- reactive({
     req(input$histotypes, input$histotype_predict)
     mod_smote_rf_opt <- readRDS("data/mod_smote_rf_opt.rds")
     pred_prob <- predict(mod_smote_rf_opt, ov_hist_data(), type = "prob")
     pred_class <- predict(mod_smote_rf_opt, ov_hist_data(), type = "class")
-    preds <- dplyr::bind_cols(pred_class, pred_prob) |> 
-      dplyr::mutate(entropy = apply(pred_prob, 1, entropy::entropy, unit = "log2")) |> 
-      tibble::add_column(FileName = ov_hist_data()[["FileName"]], .before = 1) |> 
+    preds <- dplyr::bind_cols(pred_class, pred_prob) |>
+      dplyr::mutate(entropy = apply(pred_prob, 1, entropy::entropy, unit = "log2")) |>
+      tibble::add_column(FileName = ov_hist_data()[["FileName"]], .before = 1) |>
       dplyr::rename_with(~ gsub(".pred_", "", .))
     preds
   })
@@ -573,7 +546,7 @@ server <- function(input, output, session) {
       readr::write_csv(dat_preds(), file)
     }
   )
-  
+
   # Download ovarian histotype predictions to local CSV file
   output$dl_ov_hist_pred <- downloadHandler(
     filename = "ov_hist_predictions.csv",
@@ -628,25 +601,25 @@ server <- function(input, output, session) {
 
   # Normalized data as DataTable
   output$Yfinal <- DT::renderDataTable({
-    Yfinal() %>%
-      tibble::rownames_to_column("sample") %>%
+    Yfinal() |>
+      tibble::rownames_to_column("sample") |>
       DT::datatable(
         rownames = FALSE,
         selection = "none",
         caption = "Normalized data",
         extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
-      ) %>%
-      DT::formatRound(columns = seq_along(Yfinal()) + 1, digits = 2) %>%
+      ) |>
+      DT::formatRound(columns = seq_along(Yfinal()) + 1, digits = 2) |>
       DT::formatStyle("sample", "white-space" = "nowrap")
   })
 
   # NanoString QC data as DataTable
   output$qc_table <- DT::renderDataTable({
-    qc() %>%
+    qc() |>
       DT::datatable(rownames = FALSE,
                     selection = "none",
-                    caption = "Quality Control data") %>%
+                    caption = "Quality Control data") |>
       DT::formatRound(columns = lapply(qc(), class) == "numeric", digits = 2)
   })
 
@@ -683,29 +656,29 @@ server <- function(input, output, session) {
 
   # Predicted probabilities and classes as DataTable
   output$preds <- DT::renderDataTable({
-    dat_preds() %>%
+    dat_preds() |>
       DT::datatable(
         rownames = FALSE,
         selection = "none",
         caption = "Sample predictions and probabilities",
         extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
-      ) %>%
+      ) |>
       DT::formatRound(columns = lapply(dat_preds(), class) == "numeric",
-                      digits = 3) %>%
+                      digits = 3) |>
       DT::formatStyle("sample", "white-space" = "nowrap")
   })
-  
+
   # Ovarian histotype predicted probabilities and classes as DataTable
   output$ov_preds <- DT::renderDataTable({
-    dat_ov_hist_preds() |> 
+    dat_ov_hist_preds() |>
       DT::datatable(
         rownames = FALSE,
         selection = "none",
         caption = "Ovarian Histotype sample predictions and probabilities",
         extensions = "FixedColumns",
         options = list(scrollX = TRUE, fixedColumns = TRUE)
-      ) |> 
+      ) |>
       DT::formatRound(columns = lapply(dat_ov_hist_preds(), class) == "numeric",
                       digits = 3) |>
       DT::formatStyle("FileName", "white-space" = "nowrap")
@@ -714,19 +687,20 @@ server <- function(input, output, session) {
   # QC Summary of the flags failed and passed
   output$qc_summary <- renderTable({
     if (!is.null(input$rcc)) {
-      qc() %>%
-        dplyr::select(dplyr::matches("Flag")) %>%
-        purrr::map(table) %>%
-        rlang::exec(rbind, !!!.) %>% 
-        as.data.frame() %>%
-        tibble::rownames_to_column("Flag") 
+      qc() |>
+        dplyr::select(dplyr::matches("Flag")) |>
+        purrr::map(table) |>
+        do.call(rbind, args = _) |>
+        as.data.frame() |>
+        tibble::rownames_to_column("Flag")
     }
   },
   caption = "QC Summary")
 
   # Class frequencies
   output$freqs <- renderTable({
-    table(dat_preds()[["pred"]]) %>%
+    dat_preds()[["pred"]] |>
+      table() |>
       tibble::enframe(name = "Class", value = "Freq")
   },
   caption = "Prediction Frequencies")
@@ -735,21 +709,21 @@ server <- function(input, output, session) {
   output$spot_genes <- renderText({
     req(input$spot, input$predict)
     if (!is.null(input$spot)) {
-      intersect(coefmat$Symbol, names(spot_Ynorm())) |> 
-        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) %>%
-        paste(collapse = ", ") %>%
-        paste("Genes <font color=\"#008000\">used</font> for SPOT prediction:", .)
+      intersect(coefmat$Symbol, names(spot_Ynorm())) |>
+        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) |>
+        paste(collapse = ", ") |>
+        paste("Genes <font color=\"#008000\">used</font> for SPOT prediction:", ... = _)
     }
   })
-  
+
   # Genes not used for SPOT prediction
   output$spot_unused_genes <- renderText({
     req(input$spot, input$predict)
     if (!is.null(input$spot)) {
-      setdiff(coefmat$Symbol, names(spot_Ynorm())) |> 
-        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) %>%
-        paste(collapse = ", ") %>%
-        paste("Genes <font color=\"#FF0000\">not used</font> for SPOT prediction:", .)
+      setdiff(coefmat$Symbol, names(spot_Ynorm())) |>
+        grep(pattern = "age|stage", x = _, value = TRUE, invert = TRUE) |>
+        paste(collapse = ", ") |>
+        paste("Genes <font color=\"#FF0000\">not used</font> for SPOT prediction:", ... = _)
     }
   })
 
@@ -758,7 +732,7 @@ server <- function(input, output, session) {
     shinyjs::toggleState(id = "predict", !is.null(input$rcc) |
                            (!is.null(input$rcc) & !is.null(input$spot)))
   })
-  
+
   # Enable ovarian histotype prediction when CSV file is imported
   observe({
     shinyjs::toggleState(id = "histotype_predict", !is.null(input$histotypes))
@@ -766,7 +740,7 @@ server <- function(input, output, session) {
 
   # Disable prediction after generated for currently imported files
   shinyjs::onclick(id = "predict", shinyjs::disable(id = "predict"))
-  
+
   # Disable ovarian histotype prediction after generated for currently imported file
   shinyjs::onclick(id = "histotype_predict", shinyjs::disable(id = "histotype_predict"))
   shinyjs::onclick(id = "histotypes", {
@@ -790,7 +764,7 @@ server <- function(input, output, session) {
                          !is.null(input$rcc) && input$predict &&
                            all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
-  
+
   # Enable ovarian histotype predictions download when file is imported and
   # predictions clicked and matches currently imported data
   observe({
@@ -805,13 +779,13 @@ server <- function(input, output, session) {
                          !is.null(input$sample_id) && input$predict &&
                            all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
-  
+
   # Data Import: Prompt prediction and switch to QC Plots tab when raw data has been imported
   observeEvent(input$rcc, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
     updateTabsetPanel(session, "tabset", selected = "Plots")
   })
-  
+
   # SPOT Import: Prompt prediction after SPOT inputted
   observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
@@ -822,7 +796,7 @@ server <- function(input, output, session) {
     updateActionButton(session, "predict", label = "Predictions Generated!")
     updateTabsetPanel(session, "tabset", selected = "Predictions")
   })
-  
+
   # Ovarian Histotypes Prediction button: update button text and switch to Predictions tab when clicked
   observeEvent(input$histotype_predict, {
     updateActionButton(session, "histotype_predict", label = "Ovarian Histotype Predictions Generated!")
