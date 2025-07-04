@@ -5,7 +5,7 @@ library(ggplot2)
 library(workflows)
 library(ranger)
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
-spot.q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
+spot_q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
 options(shiny.maxRequestSize = 10 * 1024^2)
 
 # Load Vancouver CS3 pools (ref 1), final model, and final gene list
@@ -470,11 +470,11 @@ server <- function(input, output, session) {
           ) |>
           dplyr::mutate(
             SPOT_quintile = dplyr::case_when(
-              SPOT_pred <= spot.q[1] ~ "Q1",
-              SPOT_pred > spot.q[1] & SPOT_pred <= spot.q[2] ~ "Q2",
-              SPOT_pred > spot.q[2] & SPOT_pred <= spot.q[3] ~ "Q3",
-              SPOT_pred > spot.q[3] & SPOT_pred <= spot.q[4] ~ "Q4",
-              SPOT_pred > spot.q[4] ~ "Q5",
+              SPOT_pred <= spot_q[1] ~ "Q1",
+              SPOT_pred > spot_q[1] & SPOT_pred <= spot_q[2] ~ "Q2",
+              SPOT_pred > spot_q[2] & SPOT_pred <= spot_q[3] ~ "Q3",
+              SPOT_pred > spot_q[3] & SPOT_pred <= spot_q[4] ~ "Q4",
+              SPOT_pred > spot_q[4] ~ "Q5",
               TRUE ~ NA_character_
             )
           ) |>
