@@ -805,37 +805,27 @@ server <- function(input, output, session) {
                          !is.null(input$sample_id) && input$predict &&
                            all(rownames(Yfinal()) == dat_preds()[["sample"]]))
   })
-
-  # Button label prompts prediction after import
+  
+  # Data Import: Prompt prediction and switch to QC Plots tab when raw data has been imported
   observeEvent(input$rcc, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
+    updateTabsetPanel(session, "tabset", selected = "Plots")
   })
+  
+  # SPOT Import: Prompt prediction after SPOT inputted
   observeEvent(input$spot, {
     updateActionButton(session, "predict", label = "Predict NanoString samples")
   })
 
-  # Button label states predictions generated
+  # Subtype Prediction button: update button text and switch to Predictions tab when clicked
   observeEvent(input$predict, {
     updateActionButton(session, "predict", label = "Predictions Generated!")
-  })
-  
-  # Button label states ovarian histotype predictions generated
-  observeEvent(input$histotype_predict, {
-    updateActionButton(session, "histotype_predict", label = "Ovarian Histotype Predictions Generated!")
-  })
-
-  # Switch to QC Plots tab when raw data has been imported
-  observeEvent(input$rcc, {
-    updateTabsetPanel(session, "tabset", selected = "Plots")
-  })
-
-  # Switch to Predictions tab when predict button is clicked
-  observeEvent(input$predict, {
     updateTabsetPanel(session, "tabset", selected = "Predictions")
   })
   
-  # Switch to Predictions tab when ovarian histotypes predict button is clicked
+  # Ovarian Histotypes Prediction button: update button text and switch to Predictions tab when clicked
   observeEvent(input$histotype_predict, {
+    updateActionButton(session, "histotype_predict", label = "Ovarian Histotype Predictions Generated!")
     updateTabsetPanel(session, "tabset", selected = "Predictions")
   })
 }
