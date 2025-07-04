@@ -184,6 +184,28 @@ ui <- fluidPage(
                  p("The", icon("download"), code("Data"), "button downloads the
                    normalized data to your local machine."),
                  br(),
+                 h4("SPOT Prediction"),
+                 p("Additionally, we can add a SPOT prediction to the NanoString samples,
+                    provided that we input a SPOT design matrix with clinical covariates
+                    age (in quartiles) and stage (low/high), and other characteristics such as
+                    cancer site and treatment type. There are coefficients for
+                    101 genes, 3 contrasts for age, and 2 contrasts for stage. The intersection of
+                    these genes and covariates with the imported NanoString samples will be used
+                    to generate a SPOT signature, a continuous score calculated using
+                    a linear combination of the coefficients and normalized expression. 
+                    A quintile breakdown of the numeric signature is also reported."),
+                 p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon. 
+                    Only CSV files are allowed. Genes used in the SPOT signature are detailed in the", strong("Summary"), "tab."),
+                 br(),
+                 h4("Ovarian Histotype Prediction"),
+                 p("If we have a separate set of NanoString files that arise from all ovarian histotypes,
+                    and not just HGSC, we can perform histotype prediction to classify samples into one of the 5
+                    major histotypes: HGSC, CCOC, ENOC, MUC, and LGSC. The final model used has already been trained
+                    on an external training set."),
+                 p("Import a data set with new predictors to predict on by checking off 'Add Ovarian Histotypes Prediction'.
+                    Only CSV files are allowed. Click the", code("Predict Ovarian Histotype samples"),
+                    "button and results will be shown on the", strong("Predictions"), "tab."),
+                 br(),
                  h4("Quality Control Metrics"),
                  p("NanoString QC metrics are automatically computed after
                    sample RCC files are imported. Two visualizations are
