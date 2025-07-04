@@ -127,124 +127,126 @@ ui <- fluidPage(
       tabsetPanel(
         id = "tabset",
         selected = "Help",
-        navbarMenu("QC",
-                   tabPanel("Plots",
-                            plotly::plotlyOutput(outputId = "sn_vs_pergd",
-                                                 width = "75%"),
-                            br(),
-                            plotly::plotlyOutput(outputId = "bd_vs_lod",
-                                                 width = "75%")),
-                   tabPanel("Table",
-                            DT::dataTableOutput(outputId = "qc_table"))),
+        navbarMenu(
+          "QC",
+          tabPanel(
+            "Plots",
+            plotly::plotlyOutput(outputId = "sn_vs_pergd", width = "75%"),
+            br(),
+            plotly::plotlyOutput(outputId = "bd_vs_lod", width = "75%")
+          ),
+          tabPanel("Table", DT::dataTableOutput(outputId = "qc_table"))
+        ),
         tabPanel("Data", DT::dataTableOutput(outputId = "Yfinal")),
-        tabPanel("Predictions",
-                 DT::dataTableOutput(outputId = "preds"),
-                 br(),
-                 DT::dataTableOutput(outputId = "ov_preds")),
-        tabPanel("Summary",
-                 htmlOutput(outputId = "counts"),
-                 tableOutput(outputId = "qc_summary"),
-                 tableOutput(outputId = "freqs"),
-                 htmlOutput(outputId = "spot_genes"),
-                 br(),
-                 htmlOutput(outputId = "spot_unused_genes")),
-        tabPanel("Help",
-                 h3("Welcome to the PrOType Web Tool!"),
-                 p("This app allows you to import RCC files from NanoString runs
-                   and perform normalization, compute and visualize quality
-                   control metrics, and predict samples with selected genes.
-                   The following information is intended to help you use the
-                   app's various features."),
-                 br(),
-                 h4("Upload RCC files"),
-                 p("Batch effect correction requires two reference pools. The
-                   Vancouver CodeSet 3 reference pools are always used as the
-                   first reference. The imported reference pools use the
-                   proportion of pools 1-3 in Vancouver CodeSet 3 to compute a
-                   weighted average before batch effect correction. Note that
-                   these reference pool RCCs must have 'Pool' in their file
-                   names."),
-                 p("Using your operating system's file explorer/finder, import
-                   all reference pool", em("and"), "sample RCC files you wish to
-                   analyze. In the current implementation, files cannot be
-                   selected from multiple directories. For example, if there are
-                   6 reference pools and 10 chips with 12 samples each, all 126
-                   RCC files must be placed in a single directory first. Files
-                   can then be imported using a 'Select All' and 'Open' in your
-                   file chooser dialog box."),
-                 p("After import, the data is normalized to housekeeping genes",
-                   em("and"),
-                   "to the reference pools for batch effect correction and
-                   displayed in the", strong("Data"), "tab.
-                   Some metadata is displayed in the", strong("Summary"), "tab:
-                   the number of normalized genes common to both reference
-                   pools, the original total number of genes, and the total
-                   number of samples imported."),
-                 p("The", icon("download"), code("Data"), "button downloads the
-                   normalized data to your local machine."),
-                 br(),
-                 h4("SPOT Prediction"),
-                 p("Additionally, we can add a SPOT prediction to the NanoString samples,
-                    provided that we input a SPOT design matrix with clinical covariates
-                    age (in quartiles) and stage (low/high), and other characteristics such as
-                    cancer site and treatment type. There are coefficients for
-                    101 genes, 3 contrasts for age, and 2 contrasts for stage. The intersection of
-                    these genes and covariates with the imported NanoString samples will be used
-                    to generate a SPOT signature, a continuous score calculated using
-                    a linear combination of the coefficients and normalized expression.
-                    A quintile breakdown of the numeric signature is also reported."),
-                 p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon.
-                    Only CSV files are allowed. Genes used in the SPOT signature are detailed in the", strong("Summary"), "tab."),
-                 br(),
-                 h4("Ovarian Histotype Prediction"),
-                 p("If we have a separate set of NanoString files that arise from all ovarian histotypes,
-                    and not just HGSC, we can perform histotype prediction to classify samples into one of the 5
-                    major histotypes: HGSC, CCOC, ENOC, MUC, and LGSC. The final model used has already been trained
-                    on an external training set."),
-                 p("Import a data set with new predictors to predict on by checking off 'Add Ovarian Histotypes Prediction'.
-                    Only CSV files are allowed. Click the", code("Predict Ovarian Histotype samples"),
-                    "button and results will be shown on the", strong("Predictions"), "tab."),
-                 br(),
-                 h4("Quality Control Metrics"),
-                 p("NanoString QC metrics are automatically computed after
-                   sample RCC files are imported. Two visualizations are
-                   displayed under the", strong("QC"), ">", strong("Plots"),
-                   "tab: signal to noise ratio vs. percentage of genes detected,
-                   binding density vs. limit of detection. Both plots colour
-                   points by their respective flag. The plots contain
-                   interactive components such as zoom, pan, hover, and
-                   download. The QC data metrics are displayed under the",
-                   strong("QC"), ">", strong("Table"), "tab."),
-                 p("The", icon("download"), code("QC"), "button downloads the
-                   QC data to your local machine."),
-                 br(),
-                 h4("Model Prediction"),
-                 p("To predict NanoString samples, click the",
-                   code("Predict NanoString samples"), "button and the data will
-                   be displayed in the", strong("Predictions"), "tab. A random
-                   forest model trained on the genes common in both reference
-                   pools is used for prediction. The prediction output shows
-                   the predicted class, predicted probabilties for each class,
-                   and the associated entropy (log 2 scale)."),
-                 p("The", icon("download"), code("Predictions"), "button
-                   downloads the prediction data to your local machine."),
-                 br(),
-                 h4("Patient Reports"),
-                 p("Patient-specific summary research reports can be generated
-                   in the form of word documents. These reports contain some
-                   QC metadata information and the primary prediction
-                   result. Multiple reports can be generated depending on
-                   samples selected in the respective dropdown menu."),
-                 p("The", icon("download"), code("Report"), "button downloads
-                   the patient reports compressed into a zip file to your local
-                   machine."),
-                 br(),
-                 h4("Output Summary"),
-                 p("The", strong("Summary"), "tab shows a summary of the QC
-                   flags: how many samples failed and passed. It also shows the
-                   distribution of predicted classes in a table.")
-                 )
-
+        tabPanel(
+          "Predictions",
+          DT::dataTableOutput(outputId = "preds"),
+          br(),
+          DT::dataTableOutput(outputId = "ov_preds")
+        ),
+        tabPanel(
+          "Summary",
+          htmlOutput(outputId = "counts"),
+          tableOutput(outputId = "qc_summary"),
+          tableOutput(outputId = "freqs"),
+          htmlOutput(outputId = "spot_genes"),
+          br(),
+          htmlOutput(outputId = "spot_unused_genes")
+        ),
+        tabPanel(
+          "Help",
+          h3("Welcome to the PrOType Web Tool!"),
+          p("This app allows you to import RCC files from NanoString runs
+          and perform normalization, compute and visualize quality
+          control metrics, and predict samples with selected genes.
+          The following information is intended to help you use the
+          app's various features."),
+          br(),
+          h4("Upload RCC files"),
+          p("Batch effect correction requires two reference pools. The
+          Vancouver CodeSet 3 reference pools are always used as the
+          first reference. The imported reference pools use the
+          proportion of pools 1-3 in Vancouver CodeSet 3 to compute a
+          weighted average before batch effect correction. Note that
+          these reference pool RCCs must have 'Pool' in their file names."),
+          p("Using your operating system's file explorer/finder, import
+          all reference pool", em("and"), "sample RCC files you wish to
+          analyze. In the current implementation, files cannot be
+          selected from multiple directories. For example, if there are
+          6 reference pools and 10 chips with 12 samples each, all 126
+          RCC files must be placed in a single directory first. Files
+          can then be imported using a 'Select All' and 'Open' in your
+          file chooser dialog box."),
+          p("After import, the data is normalized to housekeeping genes",
+            em("and"), "to the reference pools for batch effect correction and
+            displayed in the", strong("Data"), "tab. Some metadata is displayed
+            in the", strong("Summary"), "tab: the number of normalized genes
+            common to both reference pools, the original total number of genes,
+            and the total number of samples imported."),
+          p("The", icon("download"), code("Data"), "button downloads the
+            normalized data to your local machine."),
+          br(),
+          h4("SPOT Prediction"),
+          p("Additionally, we can add a SPOT prediction to the NanoString samples,
+          provided that we input a SPOT design matrix with clinical covariates
+          age (in quartiles) and stage (low/high), and other characteristics such as
+          cancer site and treatment type. There are coefficients for
+          101 genes, 3 contrasts for age, and 2 contrasts for stage. The intersection of
+          these genes and covariates with the imported NanoString samples will be used
+          to generate a SPOT signature, a continuous score calculated using
+          a linear combination of the coefficients and normalized expression.
+          A quintile breakdown of the numeric signature is also reported."),
+          p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon.
+          Only CSV files are allowed. Genes used in the SPOT signature are detailed in the", strong("Summary"), "tab."),
+          br(),
+          h4("Ovarian Histotype Prediction"),
+          p("If we have a separate set of NanoString files that arise from all ovarian histotypes,
+          and not just HGSC, we can perform histotype prediction to classify samples into one of the 5
+          major histotypes: HGSC, CCOC, ENOC, MUC, and LGSC. The final model used has already been trained
+            on an external training set."),
+          p("Import a data set with new predictors to predict on by checking off 'Add Ovarian Histotypes Prediction'.
+            Only CSV files are allowed. Click the", code("Predict Ovarian Histotype samples"),
+            "button and results will be shown on the", strong("Predictions"), "tab."),
+          br(),
+          h4("Quality Control Metrics"),
+          p("NanoString QC metrics are automatically computed after
+          sample RCC files are imported. Two visualizations are
+          displayed under the", strong("QC"), ">", strong("Plots"),
+          "tab: signal to noise ratio vs. percentage of genes detected,
+          binding density vs. limit of detection. Both plots colour
+          points by their respective flag. The plots contain
+          interactive components such as zoom, pan, hover, and
+          download. The QC data metrics are displayed under the",
+          strong("QC"), ">", strong("Table"), "tab."),
+          p("The", icon("download"), code("QC"), "button downloads the
+            QC data to your local machine."),
+          br(),
+          h4("Model Prediction"),
+          p("To predict NanoString samples, click the",
+          code("Predict NanoString samples"), "button and the data will
+          be displayed in the", strong("Predictions"), "tab. A random
+          forest model trained on the genes common in both reference
+          pools is used for prediction. The prediction output shows
+          the predicted class, predicted probabilties for each class,
+          and the associated entropy (log 2 scale)."),
+          p("The", icon("download"), code("Predictions"), "button downloads the
+          prediction data to your local machine."),
+          br(),
+          h4("Patient Reports"),
+          p("Patient-specific summary research reports can be generated
+          in the form of word documents. These reports contain some
+          QC metadata information and the primary prediction
+          result. Multiple reports can be generated depending on
+            samples selected in the respective dropdown menu."),
+          p("The", icon("download"), code("Report"), "button downloads
+          the patient reports compressed into a zip file to your local
+          machine."),
+          br(),
+          h4("Output Summary"),
+          p("The", strong("Summary"), "tab shows a summary of the QC
+          flags: how many samples failed and passed. It also shows the
+          distribution of predicted classes in a table.")
+        )
       )
     )
   )
