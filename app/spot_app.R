@@ -424,12 +424,24 @@ server <- function(input, output, session) {
           ) |>
           dplyr::mutate(
             SPOT_quintile = dplyr::case_when(
-              SPOT_pred <= spot_q[1] ~ "Q1",
-              SPOT_pred > spot_q[1] & SPOT_pred <= spot_q[2] ~ "Q2",
-              SPOT_pred > spot_q[2] & SPOT_pred <= spot_q[3] ~ "Q3",
-              SPOT_pred > spot_q[3] & SPOT_pred <= spot_q[4] ~ "Q4",
-              SPOT_pred > spot_q[4] ~ "Q5",
-              TRUE ~ NA_character_
+              treatment == "primary" & site == "adnexal" ~ santoku::chop(
+                SPOT_pred,
+                breaks = th_pds_adnexal,
+                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                left = FALSE
+              ),
+              treatment == "primary" & site == "omentum" ~ santoku::chop(
+                SPOT_pred,
+                breaks = th_pds_omentum,
+                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                left = FALSE
+              ),
+              treatment == "post-NACT" ~ santoku::chop(
+                SPOT_pred,
+                breaks = th_nact,
+                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                left = FALSE
+              )
             )
           ) |>
           dplyr::select(sample, SPOT_pred, SPOT_quintile)
