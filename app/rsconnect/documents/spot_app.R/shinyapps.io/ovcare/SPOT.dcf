@@ -1,0 +1,13 @@
+name: SPOT
+title: SPOT
+username: ovcare
+account: ovcare
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 15075390
+bundleId: 10622480
+url: https://ovcare.shinyapps.io/SPOT/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app.R|report.Rmd
