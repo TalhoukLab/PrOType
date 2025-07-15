@@ -115,7 +115,7 @@ ui <- fluidPage(
           "Summary",
           htmlOutput(outputId = "counts"),
           tableOutput(outputId = "qc_summary"),
-          tableOutput(outputId = "freqs"),
+          tableOutput(outputId = "spot_freqs"),
           htmlOutput(outputId = "spot_genes"),
           br(),
           htmlOutput(outputId = "spot_unused_genes")
@@ -609,7 +609,8 @@ server <- function(input, output, session) {
   caption = "QC Summary")
 
   # SPOT quintile frequencies
-  output$freqs <- renderTable({
+  output$spot_freqs <- renderTable({
+    req(input$spot, input$predict)
     dat_preds()[["SPOT_quintile"]] |>
       table() |>
       tibble::enframe(name = "Quintile", value = "Frequency")
