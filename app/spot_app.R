@@ -452,6 +452,7 @@ server <- function(input, output, session) {
             ),
             .keep = "used"
           )
+        spot_df
       }
     })
   })

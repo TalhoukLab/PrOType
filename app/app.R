@@ -5,7 +5,9 @@ library(ggplot2)
 library(workflows)
 library(ranger)
 weights <- purrr::set_names(c(12, 5, 5) / 22, c("Pool1", "Pool2", "Pool3"))
-spot_q <- c(-0.86697992, -0.37336052, -0.07486426,  0.20987383)
+th_pds_adnexal <- c(-0.86697992, -0.37336052, -0.07486426, 0.20987383)
+th_pds_omentum <- c(-0.22398146, -0.02006981, 0.21263632, 0.41430278)
+th_nact <- c(-0.32177400, -0.08815859, 0.18609397, 0.40834019)
 options(shiny.maxRequestSize = 10 * 1024^2)
 
 # Load Vancouver CS3 pools (ref 1), final model, and final gene list
@@ -424,16 +426,6 @@ server <- function(input, output, session) {
     if (!is.null(input$spot)) {
       input$spot$datapath |>
         readr::read_csv(col_types = readr::cols()) |>
-        dplyr::transmute(
-          sample,
-          age.fq2 = ifelse(age.f == "q2", 1, 0),
-          age.fq3 = ifelse(age.f == "q3", 1, 0),
-          age.fq4 = ifelse(age.f == "q4", 1, 0),
-          stage.f1 = ifelse(stage.f == 1, 1, 0),
-          stage.f8 = ifelse(stage.f == 8, 1, 0),
-          site,
-          treatment
-        ) |>
         dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
                           by = "sample")
     }
@@ -457,9 +449,27 @@ server <- function(input, output, session) {
       if (!is.null(input$spot)) {
         req(input$spot)
         spot_df <- spot_Ynorm() |>
-          tidyr::pivot_longer(cols = dplyr::where(is.numeric),
-                              names_to = "Symbol",
-                              values_to = "Expression") |>
+          dplyr::mutate(
+            age.brks = santoku::chop(
+              x = age,
+              breaks = c(53, 60, 67),
+              labels = c("q1", "q2", "q3", "q4")
+            ),
+            age.fq2 = ifelse(age.brks == "q2", 1, 0),
+            age.fq3 = ifelse(age.brks == "q3", 1, 0),
+            age.fq4 = ifelse(age.brks == "q4", 1, 0),
+            stage.f1 = ifelse(stage %in% c(
+              "I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"
+            ), 1, 0),
+            stage.f8 = ifelse(is.na(stage), 1, 0),
+            .keep = "unused",
+            .after = treatment
+          ) |>
+          tidyr::pivot_longer(
+            cols = dplyr::where(is.numeric),
+            names_to = "Symbol",
+            values_to = "Expression"
+          ) |>
           dplyr::left_join(coefmat, by = "Symbol") |>
           dplyr::mutate(SPOT_pred = sum(Expression * Coefficient, na.rm = TRUE),
                         .by = sample) |>
@@ -469,20 +479,32 @@ server <- function(input, output, session) {
             values_from = Expression
           ) |>
           dplyr::mutate(
+            sample,
             SPOT_quintile = dplyr::case_when(
-              SPOT_pred <= spot_q[1] ~ "Q1",
-              SPOT_pred > spot_q[1] & SPOT_pred <= spot_q[2] ~ "Q2",
-              SPOT_pred > spot_q[2] & SPOT_pred <= spot_q[3] ~ "Q3",
-              SPOT_pred > spot_q[3] & SPOT_pred <= spot_q[4] ~ "Q4",
-              SPOT_pred > spot_q[4] ~ "Q5",
-              TRUE ~ NA_character_
-            )
-          ) |>
-          dplyr::select(sample, SPOT_pred, SPOT_quintile)
-        site_tx_df <- spot_Ynorm() |>
-          dplyr::select(sample, site, treatment)
-        list(pred_df, spot_df, site_tx_df) |>
-          purrr::reduce(dplyr::inner_join, by = "sample")
+              treatment == "primary" & site == "adnexal" ~ santoku::chop(
+                SPOT_pred,
+                breaks = th_pds_adnexal,
+                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                left = FALSE
+              ),
+              treatment == "primary" &
+                site == "omentum" ~ santoku::chop(
+                  SPOT_pred,
+                  breaks = th_pds_omentum,
+                  labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                  left = FALSE
+                ),
+              treatment == "post-NACT" ~ santoku::chop(
+                SPOT_pred,
+                breaks = th_nact,
+                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                left = FALSE
+              )
+            ),
+            .keep = "used"
+          )
+        pred_df |>
+          dplyr::inner_join(spot_df, by = "sample")
       } else {
         pred_df
       }
