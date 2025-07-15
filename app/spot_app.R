@@ -385,24 +385,6 @@ server <- function(input, output, session) {
     if (!is.null(input$spot)) {
       input$spot$datapath |>
         readr::read_csv(col_types = readr::cols()) |>
-        dplyr::mutate(
-          sample,
-          age.brks = santoku::chop(
-            x = age,
-            breaks = c(53, 60, 67),
-            labels = c("q1", "q2", "q3", "q4")
-          ),
-          age.fq2 = ifelse(age.brks == "q2", 1, 0),
-          age.fq3 = ifelse(age.brks == "q3", 1, 0),
-          age.fq4 = ifelse(age.brks == "q4", 1, 0),
-          stage.f1 = ifelse(stage %in% c(
-            "I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"
-          ), 1, 0),
-          stage.f8 = ifelse(is.na(stage), 1, 0),
-          site,
-          treatment,
-          .keep = "none"
-        ) |>
         dplyr::inner_join(tibble::rownames_to_column(isolate(Ynorm()), "sample"),
                           by = "sample")
     }
@@ -416,6 +398,22 @@ server <- function(input, output, session) {
       if (!is.null(input$spot)) {
         req(input$spot)
         spot_df <- spot_Ynorm() |>
+          dplyr::mutate(
+            age.brks = santoku::chop(
+              x = age,
+              breaks = c(53, 60, 67),
+              labels = c("q1", "q2", "q3", "q4")
+            ),
+            age.fq2 = ifelse(age.brks == "q2", 1, 0),
+            age.fq3 = ifelse(age.brks == "q3", 1, 0),
+            age.fq4 = ifelse(age.brks == "q4", 1, 0),
+            stage.f1 = ifelse(stage %in% c(
+              "I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"
+            ), 1, 0),
+            stage.f8 = ifelse(is.na(stage), 1, 0),
+            .keep = "unused",
+            .after = treatment
+          ) |>
           tidyr::pivot_longer(
             cols = dplyr::where(is.numeric),
             names_to = "Symbol",
