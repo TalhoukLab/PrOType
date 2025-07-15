@@ -385,13 +385,21 @@ server <- function(input, output, session) {
     if (!is.null(input$spot)) {
       input$spot$datapath |>
         readr::read_csv(col_types = readr::cols()) |>
+        dplyr::mutate(
+          age.brks = santoku::chop(
+            x = age,
+            breaks = c(53, 60, 67),
+            labels = c("q1", "q2", "q3", "q4")
+          ),
+
+        )
         dplyr::transmute(
           sample,
-          age.fq2 = ifelse(age.f == "q2", 1, 0),
-          age.fq3 = ifelse(age.f == "q3", 1, 0),
-          age.fq4 = ifelse(age.f == "q4", 1, 0),
-          stage.f1 = ifelse(stage.f == 1, 1, 0),
-          stage.f8 = ifelse(stage.f == 8, 1, 0),
+          age.fq2 = ifelse(age.brks == "q2", 1, 0),
+          age.fq3 = ifelse(age.brks == "q3", 1, 0),
+          age.fq4 = ifelse(age.brks == "q4", 1, 0),
+          stage.f1 = ifelse(stage %in% c("I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"), 1, 0),
+          stage.f8 = ifelse(is.na(stage), 1, 0),
           site,
           treatment
         ) |>
@@ -422,6 +430,7 @@ server <- function(input, output, session) {
             values_from = Expression
           ) |>
           dplyr::mutate(
+            sample,
             SPOT_quintile = dplyr::case_when(
               treatment == "primary" & site == "adnexal" ~ santoku::chop(
                 SPOT_pred,
@@ -429,25 +438,22 @@ server <- function(input, output, session) {
                 labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
                 left = FALSE
               ),
-              treatment == "primary" & site == "omentum" ~ santoku::chop(
-                SPOT_pred,
-                breaks = th_pds_omentum,
-                labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
-                left = FALSE
-              ),
+              treatment == "primary" &
+                site == "omentum" ~ santoku::chop(
+                  SPOT_pred,
+                  breaks = th_pds_omentum,
+                  labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
+                  left = FALSE
+                ),
               treatment == "post-NACT" ~ santoku::chop(
                 SPOT_pred,
                 breaks = th_nact,
                 labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
                 left = FALSE
               )
-            )
-          ) |>
-          dplyr::select(sample, SPOT_pred, SPOT_quintile)
-        site_tx_df <- spot_Ynorm() |>
-          dplyr::select(sample, site, treatment)
-        spot_df |>
-          dplyr::inner_join(site_tx_df, by = "sample")
+            ),
+            .keep = "used"
+          )
       }
     })
   })
