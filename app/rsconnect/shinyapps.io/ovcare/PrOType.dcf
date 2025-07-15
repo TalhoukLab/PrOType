@@ -5,7 +5,8 @@ account: ovcare
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 547545
-bundleId: 10563639
+bundleId: 10622453
 url: https://ovcare.shinyapps.io/PrOType/
 asMultiple: FALSE
 asStatic: FALSE
+ignoredFiles: spot_app.R|spot_report.Rmd
