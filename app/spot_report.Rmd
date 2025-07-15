@@ -1,0 +1,41 @@
+---
+title: "SPOT Prediction of high-grade serous ovarian carcinoma\nResearch Report"
+output: word_document
+params:
+  qc_data: NA
+  pred_data: NA
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, results = "asis")
+```
+
+```{r load}
+qc_data <- params$qc_data
+pred_data <- params$pred_data
+has_spot <- any(grepl("SPOT", names(pred_data)))
+```
+
+# Clinical Details
+
+Confirmed high-grade serous ovarian cancer.
+
+```{r clinical-details}
+clin <- data.frame(
+  c("Sample ID:", "Gene RLF:", "Date Extracted:", "Specimen:", "Quality Control:"),
+  c(qc_data[["sample"]], qc_data[["geneRLF"]], qc_data[["nanostring.date"]], "Ovarian tumour",
+    as.character(qc_data[["QCFlag"]]))
+)
+pander::pander(clin, col.names = NULL, justify = "left")
+```
+
+```{r spot, eval=has_spot}
+cli::cat_line("# SPOT")
+cli::cat_line(paste("SPOT Prediction:", round(pred_data[["SPOT_pred"]], 3)))
+cli::cat_line()
+cli::cat_line(paste("SPOT Quintile:", pred_data[["SPOT_quintile"]]))
+cli::cat_line()
+cli::cat_line(paste("Anatomical Site:", pred_data[["site"]]))
+cli::cat_line()
+cli::cat_line(paste("Treatment:", pred_data[["treatment"]]))
+```
