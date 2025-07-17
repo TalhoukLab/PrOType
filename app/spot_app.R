@@ -408,10 +408,18 @@ server <- function(input, output, session) {
             age.fq2 = ifelse(age.brks == "q2", 1, 0),
             age.fq3 = ifelse(age.brks == "q3", 1, 0),
             age.fq4 = ifelse(age.brks == "q4", 1, 0),
-            stage.f1 = ifelse(stage %in% c(
-              "I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"
-            ), 1, 0),
-            stage.f8 = ifelse(is.na(stage), 1, 0),
+            stage.f1 = if ("stagenew" %in% names(spot_input)) {
+              ifelse(stagenew == 1, 1, 0)
+            } else {
+              ifelse(stage %in% c("I", "IA", "IB", "IC", "II", "IIA", "IIB", "IIC"),
+                     1,
+                     0)
+            },
+            stage.f8 = if ("stagenew" %in% names(spot_input)) {
+              ifelse(stagenew == 8, 1, 0)
+            } else {
+              ifelse(is.na(stage), 1, 0)
+            },
             .keep = "unused",
             .after = treatment
           ) |>
