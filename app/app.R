@@ -454,7 +454,8 @@ server <- function(input, output, session) {
             age.brks = santoku::chop(
               x = age,
               breaks = c(53, 60, 67),
-              labels = c("q1", "q2", "q3", "q4")
+              labels = c("q1", "q2", "q3", "q4"),
+              extend = TRUE
             ),
             age.fq2 = ifelse(age.brks == "q2", 1, 0),
             age.fq3 = ifelse(age.brks == "q3", 1, 0),
@@ -486,20 +487,23 @@ server <- function(input, output, session) {
                 SPOT_pred,
                 breaks = th_pds_adnexal,
                 labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
-                left = FALSE
+                left = FALSE,
+                extend = TRUE
               ),
               treatment == "primary" &
                 site == "omentum" ~ santoku::chop(
                   SPOT_pred,
                   breaks = th_pds_omentum,
                   labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
-                  left = FALSE
+                  left = FALSE,
+                  extend = TRUE
                 ),
               treatment == "post-NACT" ~ santoku::chop(
                 SPOT_pred,
                 breaks = th_nact,
                 labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
-                left = FALSE
+                left = FALSE,
+                extend = TRUE
               )
             ),
             .keep = "used"
