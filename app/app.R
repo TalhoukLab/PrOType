@@ -393,8 +393,7 @@ server <- function(input, output, session) {
       exp = exp(),
       detect = 50,
       sn = input$sn
-    ) |>
-      dplyr::mutate_at(c("bdFlag", "normFlag"), as.factor)
+    )
   })
 
   # Normalize to HK genes and correct for BE before prediction
