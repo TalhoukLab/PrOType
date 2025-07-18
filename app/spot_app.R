@@ -165,15 +165,8 @@ ui <- fluidPage(
           A quintile breakdown of the numeric signature is also reported."),
           p("Import a SPOT design matrix input by checking off 'Add SPOT Prediction' to reveal the file upload control icon.
           Only CSV files are allowed. Genes used in the SPOT signature are detailed in the", strong("Summary"), "tab."),
-          br(),
-          h4("Ovarian Histotype Prediction"),
-          p("If we have a separate set of NanoString files that arise from all ovarian histotypes,
-          and not just HGSC, we can perform histotype prediction to classify samples into one of the 5
-          major histotypes: HGSC, CCOC, ENOC, MUC, and LGSC. The final model used has already been trained
-            on an external training set."),
-          p("Import a data set with new predictors to predict on by checking off 'Add Ovarian Histotypes Prediction'.
-            Only CSV files are allowed. Click the", code("Predict Ovarian Histotype samples"),
-            "button and results will be shown on the", strong("Predictions"), "tab."),
+          p("The", icon("download"), code("Predictions"), "button downloads the
+          prediction data to your local machine."),
           br(),
           h4("Quality Control Metrics"),
           p("NanoString QC metrics are automatically computed after
@@ -187,17 +180,6 @@ ui <- fluidPage(
             strong("QC"), ">", strong("Table"), "tab."),
           p("The", icon("download"), code("QC"), "button downloads the
             QC data to your local machine."),
-          br(),
-          h4("Model Prediction"),
-          p("To predict NanoString samples, click the",
-            code("Predict NanoString samples"), "button and the data will
-          be displayed in the", strong("Predictions"), "tab. A random
-          forest model trained on the genes common in both reference
-          pools is used for prediction. The prediction output shows
-          the predicted class, predicted probabilties for each class,
-          and the associated entropy (log 2 scale)."),
-          p("The", icon("download"), code("Predictions"), "button downloads the
-          prediction data to your local machine."),
           br(),
           h4("Patient Reports"),
           p("Patient-specific summary research reports can be generated
