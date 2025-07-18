@@ -439,15 +439,14 @@ server <- function(input, output, session) {
           dplyr::mutate(
             sample,
             SPOT_quintile = dplyr::case_when(
-              treatment == "primary" & site == "adnexal" ~ santoku::chop(
+              treatment %in% c("PDS", "pre-NACT") & site == "adnexal" ~ santoku::chop(
                 SPOT_pred,
                 breaks = th_pds_adnexal,
                 labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
                 left = FALSE,
                 extend = TRUE
               ),
-              treatment == "primary" &
-                site == "omentum" ~ santoku::chop(
+              treatment %in% c("PDS", "pre-NACT") & site == "omentum" ~ santoku::chop(
                   SPOT_pred,
                   breaks = th_pds_omentum,
                   labels = c("Q1", "Q2", "Q3", "Q4", "Q5"),
