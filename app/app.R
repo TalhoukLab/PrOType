@@ -272,12 +272,11 @@ server <- function(input, output, session) {
       purrr::map(nanostringr::parse_counts) |>
       purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) |>
       purrr::reduce(\(x, y) dplyr::inner_join(x, y, by = c("Code.Class", "Name", "Accession"))) |>
-      dplyr::mutate(Name = dplyr::case_match(
+      dplyr::mutate(Name = dplyr::replace_values(
         Name,
         "CD3E" ~ "CD3e",
         "PD1" ~ "PD-1",
-        "PDL1" ~ "PD-L1",
-        .default = Name
+        "PDL1" ~ "PD-L1"
       ))
 
     # Special renaming system for pool files with spaces and indexing by letters
@@ -338,12 +337,11 @@ server <- function(input, output, session) {
       purrr::map(nanostringr::parse_counts) |>
       purrr::imap(~ dplyr::rename_with(.x, rlang::quo(.y), 4)) |>
       purrr::reduce(\(x, y) dplyr::inner_join(x, y, by = c("Code.Class", "Name", "Accession"))) |>
-      dplyr::mutate(Name = dplyr::case_match(
+      dplyr::mutate(Name = dplyr::replace_values(
         Name,
         "CD3E" ~ "CD3e",
         "PD1" ~ "PD-1",
-        "PDL1" ~ "PD-L1",
-        .default = Name
+        "PDL1" ~ "PD-L1"
       ))
   })
 
