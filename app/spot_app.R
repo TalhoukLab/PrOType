@@ -28,6 +28,10 @@ final_glist <- c(
 # Pattern to match control pool files
 pool_regexp <- ".*Pool *[0-9]{1,2}_[0-9]{2}\\.RCC"
 
+# Use standard gene names in SPOT signature
+coefmat <- coefmat |>
+  dplyr::mutate(Symbol = dplyr::replace_values(Symbol, "PD.1" ~ "PD-1"))
+
 # User interface
 ui <- fluidPage(
   # Use CSS theme spacelab from http://bootswatch.com/ (version 3)
